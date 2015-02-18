@@ -7,15 +7,15 @@ permalink:        pretty
 relative_permalinks: true
 
 # Setup
-title:            grit commit
-tagline:          'a coding blog by jam'
-description:      'Documenting learning of Fullstack Rails Development & Design' #<a href="http://jekyllrb.com" target="_blank">Jekyll</a> theme that pairs a prominent sidebar with uncomplicated content. Made by <a href="https://twitter.com/mdo" target="_blank">@mdo</a>.'
-url:              http://jamelablack.github.io
-baseurl:          http://jamelablack.github.io
+title:            Hyde
+tagline:          'A Jekyll theme'
+description:      'A brazen two-column <a href="http://jekyllrb.com" target="_blank">Jekyll</a> theme that pairs a prominent sidebar with uncomplicated content. Made by <a href="https://twitter.com/mdo" target="_blank">@mdo</a>.'
+url:              http://hyde.getpoole.com
+baseurl:          /
 
 author:
-  name:           'Jam Black'
-  url:            https://twitter.com/pplcallmejam
+  name:           'Mark Otto'
+  url:            https://twitter.com/mdo
 
 paginate:         5
 
@@ -23,4 +23,4 @@ paginate:         5
 version:          2.1.0
 
 github:
-  repo:           https://github.com/jamelablack
+  repo:           https://github.com/poole/hyde
