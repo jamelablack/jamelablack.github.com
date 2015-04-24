@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
- <title>dev& design</title>
+ <title>grit& commit</title>
  <link href="http://jamelablack.github.io/atom.xml" rel="self"/>
  <link href="http://jamelablack.github.io/"/>
- <updated>2015-03-03T08:14:22-05:00</updated>
+ <updated>2015-04-23T20:40:53-04:00</updated>
  <id>http://jamelablack.github.io</id>
  <author>
    <name>Jam Black</name>
