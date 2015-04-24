@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
  <title>dev& design</title>
- <link href="http://jamelalback.github.io/atom.xml" rel="self"/>
- <link href="http://jamelalback.github.io/"/>
- <updated>2015-02-28T20:42:18-05:00</updated>
- <id>http://jamelalback.github.io</id>
+ <link href="http://jamelablack.github.io/atom.xml" rel="self"/>
+ <link href="http://jamelablack.github.io/"/>
+ <updated>2015-03-03T08:14:22-05:00</updated>
+ <id>http://jamelablack.github.io</id>
  <author>
    <name>Jam Black</name>
    <email></email>
@@ -14,9 +14,9 @@
  
  <entry>
    <title>Introducing Hyde</title>
-   <link href="http://jamelalback.github.io/2013/12/28/introducing-hyde/"/>
+   <link href="http://jamelablack.github.io/2013/12/28/introducing-hyde/"/>
    <updated>2013-12-28T00:00:00-05:00</updated>
-   <id>http://jamelalback.github.io/2013/12/28/introducing-hyde</id>
+   <id>http://jamelablack.github.io/2013/12/28/introducing-hyde</id>
    <content type="html">&lt;p&gt;Hyde is a brazen two-column &lt;a href=&quot;http://jekyllrb.com&quot;&gt;Jekyll&lt;/a&gt; theme that pairs a prominent sidebar with uncomplicated content. It&amp;#39;s based on &lt;a href=&quot;http://getpoole.com&quot;&gt;Poole&lt;/a&gt;, the Jekyll butler.&lt;/p&gt;
 
 &lt;h3&gt;Built on Poole&lt;/h3&gt;
@@ -58,9 +58,9 @@
  
  <entry>
    <title>Example content</title>
-   <link href="http://jamelalback.github.io/2012/02/07/example-content/"/>
+   <link href="http://jamelablack.github.io/2012/02/07/example-content/"/>
    <updated>2012-02-07T00:00:00-05:00</updated>
-   <id>http://jamelalback.github.io/2012/02/07/example-content</id>
+   <id>http://jamelablack.github.io/2012/02/07/example-content</id>
    <content type="html">&lt;div class=&quot;message&quot;&gt;
   Howdy! This is an example blog post that shows several types of HTML content supported in this theme.
 &lt;/div&gt;
@@ -204,9 +204,9 @@
  
  <entry>
    <title>What's Jekyll?</title>
-   <link href="http://jamelalback.github.io/2012/02/06/whats-jekyll/"/>
+   <link href="http://jamelablack.github.io/2012/02/06/whats-jekyll/"/>
    <updated>2012-02-06T00:00:00-05:00</updated>
-   <id>http://jamelalback.github.io/2012/02/06/whats-jekyll</id>
+   <id>http://jamelablack.github.io/2012/02/06/whats-jekyll</id>
    <content type="html">&lt;p&gt;&lt;a href=&quot;http://jekyllrb.com&quot;&gt;Jekyll&lt;/a&gt; is a static site generator, an open-source tool for creating simple yet powerful websites of all shapes and sizes. From &lt;a href=&quot;https://github.com/mojombo/jekyll/blob/master/README.markdown&quot;&gt;the project&amp;#39;s readme&lt;/a&gt;:&lt;/p&gt;
 
 &lt;blockquote&gt;
@@ -216,6 +216,12 @@
 &lt;p&gt;It&amp;#39;s an immensely useful tool and one we encourage you to use here with Hyde.&lt;/p&gt;
 
 &lt;p&gt;Find out more by &lt;a href=&quot;https://github.com/mojombo/jekyll&quot;&gt;visiting the project on GitHub&lt;/a&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;foo&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;foo&amp;#39;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Tags:  &lt;a href=&quot;Ruby&quot;&gt; Ruby &lt;/a&gt;&lt;/p&gt;
 </content>
  </entry>
  
