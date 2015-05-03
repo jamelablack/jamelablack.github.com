@@ -7,7 +7,7 @@ permalink:        pretty
 relative_permalinks: true
 
 # Setup
-title:            'grit commit'
+title:            'grit| commit'
 tagline:          'A coding blog by Jam'
 description:      'daily learnings as a ruby dev'#'A brazen two-column <a href="http://jekyllrb.com" target="_blank">Jekyll</a> theme that pairs a prominent sidebar with uncomplicated content. Made by <a href="https://twitter.com/mdo" target="_blank">@mdo</a>.'
 url:              http://jamelablack.github.io
