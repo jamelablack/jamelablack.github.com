@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Intro to Ruby & Web Dev: Lesson 1 &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Intro to Ruby & Web Dev: Lesson 1</h1>
+  <span class="post-date">01 Sep 2014</span>
+  <h1>Items covered:</h1>
+
+<ol>
+<li>Hashes vs. Arrays</li>
+<li>Debugging</li>
+<li>Pass by Reference vs. Pass by Value</li>
+<li>Enumerables</li>
+</ol>
+
+<h2>Hashes vs. Arrays</h2>
+
+<h2>Debugging</h2>
+
+<p>How to debug?
+ - Tips on how to work through bugs in your code or large problems where you don&#39;t know where to start.</p>
+
+<ol>
+<li>Google - copy and paste error into Google. Someone has had your issue before.</li>
+<li>Write out pseudocode - write what you are attempting to do in code in plain engish</li>
+<li>Break problems into small, numerical steps - start with what looks familiar ( or you know how to do)</li>
+<li>Ask questions in the forum (Tealeaf)</li>
+<li>Use binding.pry</li>
+<li>Paste Errors or problems in Gist - take issue to IRC chat</li>
+<li>Rubberduck debugging.
+When you come across a problem - explain how to came to that problem to your (fictitious) coworker - Ms. Rubberduck. Even better, explain the problem to someone who has no programming experience at all.</li>
+<li>Step away from the problem.</li>
+</ol>
+
+<h2>Pass by Value va. Pass by Reference</h2>
+
+<p>Some methods mutuate the caller, while others do not. To better understand this fact, let&#39;s look at:
+Pass by Value vs Pass by Reference:
+  Pass by Value - when a method is called on an object, the variable is just representation of the value and not the actual object (the reference), itself. When called, the method can never change the object itself. To effect change to the object, you must reassign the variable.</p>
+
+<p>In this case below, outter_str remains unchanged as a result of the method being called.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">some_method</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
+  <span class="n">str</span><span class="o">.</span><span class="n">changeit</span>
+<span class="k">end</span>
+
+<span class="n">outter_str</span> <span class="o">=</span> <span class="s2">&quot;hi&quot;</span>
+<span class="n">some_method</span><span class="p">(</span><span class="n">outter_str</span><span class="p">)</span></code></pre></div>
+
+<hr>
+
+<p>Pass by Reference - When a method is called, the object acts a pointer and a modification is actually made to an actual space in memory.</p>
+
+<p>In the case below, outter_str is just a reference (pointer) to str, therefore any mutations to str will be reflected in the value of str</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">some_method</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
+  <span class="n">str</span><span class="o">.</span><span class="n">changeit</span>
+<span class="k">end</span>
+
+<span class="n">outter_str</span> <span class="o">=</span> <span class="s2">&quot;hi&quot;</span>
+<span class="n">some_method</span><span class="p">(</span><span class="n">outter_str</span><span class="p">)</span></code></pre></div>
+
+<p>Ruby is Passing by the Reference of the Caller: Whether or not the method creates a pass by reference or pass by reference scenario depends on whether the method mutates the caller or not</p>
+
+<h2>Enumerables</h2>
+
+<p>Tags:  <a href="tealeaf"> tealeaf </a></p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2014/09/25/blackjack-oo-game/">
+            Intro to Ruby & Web Dev: Blackjack OO Game
+            <small>25 Sep 2014</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2014/09/22/tic-tac-toe-oo/">
+            Intro to Ruby & Web Dev: Tic-Tac-Toe OO Game
+            <small>22 Sep 2014</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2014/09/21/course1-lesson4/">
+            Intro to Ruby & Web Dev: Lesson 3
+            <small>21 Sep 2014</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

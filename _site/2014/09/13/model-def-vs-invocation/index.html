@@ -11,7 +11,7 @@
 
   <title>
     
-      My name is Jam, and I am a Rails Developer &middot; grit| commit
+      Intro to Ruby & Web Dev: Method Definition vs. Method Invocation &middot; grit| commit
     
   </title>
 
@@ -82,11 +82,38 @@
 
     <div class="content container">
       <div class="post">
-  <h1 class="post-title">My name is Jam, and I am a Rails Developer</h1>
-  <span class="post-date">30 Aug 2014</span>
-  <p>This is my path to becoming a Ruby on Rails Developer. I first was exposed to code back in June 2013, after attending a Rails Girls Workshop in Washington, DC. At that workshop, a very notable leader in the Ruby community, <a href="http://www.sandimetz.com/">Sandi Metz</a> gave a talk on <a href="http://en.wikipedia%20org/wiki/Grit_%28personality_trait%29">grit</a>. Up until that point, I thought that being a developer was reserved for those with computer science majors and or mathmeticians. But her talk, gave me some sort of hope that if I worked hard enough, becoming a developer was possible. So with that, I set on my journey of being a self taught developer. One thing that I have learned in this process, learning to code is circular.. not linear. Often times, it may require seeing a concept 3 or 4 times before you can tackle it without googling the concept.. and what I&#39;ve had to learn is that is okay. I had to let go the idea that I wasn&#39;t going to remember everything but with experience.. I could figure it out or at least know resources to leverage to find my answer. This blog is to document concepts that I&#39;ve learned becasue I am bound to forget.. and that&#39;s okay. In case you&#39;re reading this... I hope you enjoy.</p>
+  <h1 class="post-title">Intro to Ruby & Web Dev: Method Definition vs. Method Invocation</h1>
+  <span class="post-date">13 Sep 2014</span>
+  <h2>Method Definition</h2>
 
-<p>Tags:  <a href="thoughts"> thoughts </a></p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">method</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+  <span class="vi">@name</span> <span class="o">=</span> <span class="nb">name</span>
+<span class="k">end</span></code></pre></div>
+
+<h2>Method Invocation using self.</h2>
+
+<p>If you call a method that does not have a caller, ruby will append self. the caller
+When calling the self. inside an instance method =&gt; the instance variable itself is returned.</p>
+
+<p>=&gt; self is an object from within the instance method, self changeses depending on what instance method is calling it.
+Self being called outside of an instance method refers to the class.</p>
+
+<ul>
+<li>Use .inspect to see what self is.</li>
+</ul>
+
+<ol>
+<li>Singleton (ghost) class shadows a particular object, only
+=&gt; will not show up in ancestors
++&gt; you can declare methods on objects and is only callable/accessible by that object.</li>
+<li>All classes are objects also.</li>
+<li>DSL - Doman Specific Language =&gt; example Rails is a DSL for Ruby, which gives you colligiual sytanx to work with.</li>
+<li>Abtractions - all abstractions leak, not every code base is going fit 100% to a Specific way of writing.</li>
+</ol>
+
+<p>All Classes are Objects also.
+=&gt; All classes are objects of the Class class
+=&gt; Everything that starts with a capital letter is a constant, including classes =&gt; that&#39;s why we can store methods in them.</p>
 
 </div>
 

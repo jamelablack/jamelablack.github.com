@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Intro to Ruby & Web Dev: Lesson 2 &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Intro to Ruby & Web Dev: Lesson 2</h1>
+  <span class="post-date">07 Sep 2014</span>
+  <h1>Items covered:</h1>
+
+<ol>
+<li>Classes, Instances, &amp; Objects</li>
+<li>Modules</li>
+<li>Inheritance</li>
+<li>Method Lookup Chain</li>
+<li>Procedural vs OOP</li>
+</ol>
+
+<h2>Classes &amp; Objects</h2>
+
+<ul>
+<li>Objects are instantized through classes and contant states and behaviors</li>
+<li>Classes are the cookie cutters</li>
+<li>Instance methods encapsulate behaviors and are defined in classes.</li>
+<li>Instance variables = state</li>
+<li>Instance methods = behaviors
+Interesting syntax when using equals, setter:</li>
+</ul>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">set_name</span><span class="o">=</span><span class="p">(</span><span class="n">new_name</span><span class="p">)</span>
+  <span class="vi">@name</span> <span class="o">=</span> <span class="nb">name</span>
+<span class="k">end</span>
+
+<span class="n">jamela</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">new</span>
+
+<span class="n">jamela</span><span class="o">.</span><span class="n">set_name</span> <span class="o">=</span> <span class="s2">&quot;Jam&quot;</span></code></pre></div>
+
+<p>or</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">set_name</span><span class="p">(</span><span class="n">new_name</span><span class="p">)</span>
+  <span class="vi">@name</span> <span class="o">=</span> <span class="nb">name</span>
+<span class="k">end</span>
+
+<span class="n">jamela</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="s2">&quot;Jam&quot;</span><span class="p">)</span></code></pre></div>
+
+<p>Setters:</p>
+
+<p>You have to use .self when using the setter method within an instance method of the same class.
+Instance methods are like raw data and you can access them but in general, you always want to use the getters and setters when available for encapsulation and santization.</p>
+
+<h3>Class Variables:</h3>
+
+<p>Track states that are common across all instances within a class.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#To keep track of number of objects</span>
+<span class="vc">@@class</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+  <span class="vi">@name</span> <span class="o">=</span> <span class="n">n</span>
+  <span class="vi">@height</span> <span class="o">=</span> <span class="n">h</span>
+  <span class="vi">@weight</span> <span class="o">=</span> <span class="n">w</span>
+  <span class="vc">@@count</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="k">end</span>
+
+<span class="vc">@@class_variable</span> <span class="o">+=</span><span class="mi">1</span></code></pre></div>
+
+<h3>Class Methods:</h3>
+
+<p>Performs behaviors at the class level</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">total_count</span>
+<span class="s2">&quot;The total number of dogs is </span><span class="si">#{</span><span class="vc">@@count</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="k">end</span>
+
+<span class="nb">puts</span> <span class="no">Dog</span><span class="o">.</span><span class="n">total_count</span></code></pre></div>
+
+<h2>Inheritance</h2>
+
+<p>SubClass &lt; SuperClass</p>
+
+<p>object.ancestors shows you the method look-up chain</p>
+
+<h2>Namespace</h2>
+
+<p>class User &lt; ActiveRecord::Base
+refers to the inheritance of the Base class inside the ActiveRecord module
+Just like with Cms::User - refers to the User class in the CMS module.</p>
+
+<h2>Modules</h2>
+
+<p>Allows you to mixin in behavior. The difference between modules and classes are that modules cannot be instantiated.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">module</span> <span class="nn">Swimmable</span>
+  <span class="k">def</span> <span class="nf">swim</span>
+  <span class="nb">puts</span> <span class="s2">&quot;I&#39;m swimming!&quot;</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>In method, you can mixin in the module by typing &quot;include Swimmable&quot;.
+When creating modules you simply add &quot;-able&quot; to the end of your method name and then type &quot;include swimmable&quot; in the method you want to add that behavior.</p>
+
+<p>-In method lookups, a module that is mixin will superecede (be listed first) super classes. This means that if a module and a superclass has the same method, the module method will have precedence. When mixin two modules, the method lookup chain will be effected based on reverse inclusion, meanging the last module included will be looked at first.</p>
+
+<p>The point of modules is extract code that is non-specific to a class... and make it reusable.</p>
+
+<p>Some modules can require methods or behaviors:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">module</span> <span class="nn">Fetchable</span>
+  <span class="k">def</span> <span class="nf">fetch</span>
+  <span class="c1">#{name} is fetching!</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>The above module requires the name getter method look up chain</p>
+
+<h2>OOP vs Procedural</h2>
+
+<p>Procedural thinks about &quot;what happens next...&quot; and small changes can have big impacts throughout your code.</p>
+
+<p>OOP thinks in terms of objects and how they behave Generally consider classes to be nouns and verbs to be methods. Start by first writing out requirements in pseudo-code.</p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2014/09/25/blackjack-oo-game/">
+            Intro to Ruby & Web Dev: Blackjack OO Game
+            <small>25 Sep 2014</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2014/09/22/tic-tac-toe-oo/">
+            Intro to Ruby & Web Dev: Tic-Tac-Toe OO Game
+            <small>22 Sep 2014</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2014/09/21/course1-lesson4/">
+            Intro to Ruby & Web Dev: Lesson 3
+            <small>21 Sep 2014</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

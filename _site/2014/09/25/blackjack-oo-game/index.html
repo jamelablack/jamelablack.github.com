@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Intro to Ruby & Web Dev: Blackjack OO Game &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Intro to Ruby & Web Dev: Blackjack OO Game</h1>
+  <span class="post-date">25 Sep 2014</span>
+  <h2>Object Oriented Blackjack Game</h2>
+
+<ol>
+<li>Abstraction - the interaction of objects (keeping track of state and behaviors</li>
+<li>Encapsulation - encapsulates certain behaviors</li>
+</ol>
+
+<h3>Steps</h3>
+
+<ol>
+<li>Look at the Requirements</li>
+<li>Pick nouns</li>
+<li>Think off all actions you want the object to perform and write down method calls (i.e. player.deal) as though the methods already exists.</li>
+<li>Do this for each class.</li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Card</span>
+  <span class="kp">attr_accessor</span> <span class="ss">:suit</span><span class="p">,</span> <span class="ss">:face_value</span>
+
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">fv</span><span class="p">)</span>
+    <span class="vi">@suit</span> <span class="o">=</span> <span class="n">s</span>
+    <span class="vi">@face_value</span> <span class="o">=</span> <span class="n">fv</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">pretty_output</span>
+    <span class="s2">&quot;The </span><span class="si">#{</span><span class="n">face_value</span><span class="si">}</span><span class="s2"> of </span><span class="si">#{</span><span class="n">find_suit</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">to_s</span>
+    <span class="n">pretty_output</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">find_suit</span>
+    <span class="n">ret_val</span> <span class="o">=</span> <span class="k">case</span> <span class="n">suit</span>
+                <span class="k">when</span> <span class="s1">&#39;H&#39;</span> <span class="k">then</span> <span class="s1">&#39;Hearts&#39;</span>
+                <span class="k">when</span> <span class="s1">&#39;D&#39;</span> <span class="k">then</span> <span class="s1">&#39;Diamonds&#39;</span>
+                <span class="k">when</span> <span class="s1">&#39;S&#39;</span> <span class="k">then</span> <span class="s1">&#39;Spades&#39;</span>
+                <span class="k">when</span> <span class="s1">&#39;C&#39;</span> <span class="k">then</span> <span class="s1">&#39;Clubs&#39;</span>
+              <span class="k">end</span>
+    <span class="n">ret_val</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Deck</span>
+  <span class="kp">attr_accessor</span> <span class="ss">:cards</span>
+
+  <span class="k">def</span> <span class="nf">initialize</span>
+    <span class="vi">@cards</span> <span class="o">=</span> <span class="o">[]</span>
+    <span class="o">[</span><span class="s1">&#39;H&#39;</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">suit</span><span class="o">|</span>
+      <span class="o">[</span><span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">,</span> <span class="s1">&#39;6&#39;</span><span class="p">,</span> <span class="s1">&#39;7&#39;</span><span class="p">,</span> <span class="s1">&#39;8&#39;</span><span class="p">,</span> <span class="s1">&#39;9&#39;</span><span class="p">,</span> <span class="s1">&#39;10&#39;</span><span class="p">,</span> <span class="s1">&#39;J&#39;</span><span class="p">,</span> <span class="s1">&#39;Q&#39;</span><span class="p">,</span> <span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">face_value</span><span class="o">|</span>
+        <span class="vi">@cards</span> <span class="o">&lt;&lt;</span> <span class="no">Card</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">suit</span><span class="p">,</span> <span class="n">face_value</span><span class="p">)</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="n">scramble!</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">scramble!</span>
+    <span class="n">cards</span><span class="o">.</span><span class="n">shuffle!</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">deal_one</span>
+    <span class="n">cards</span><span class="o">.</span><span class="n">pop</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">size</span>
+    <span class="n">cards</span><span class="o">.</span><span class="n">size</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">module</span> <span class="nn">Hand</span>
+  <span class="k">def</span> <span class="nf">show_hand</span>
+    <span class="nb">puts</span> <span class="s2">&quot;---- </span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2">&#39;s Hand ----&quot;</span>
+    <span class="n">cards</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span><span class="o">|</span><span class="n">card</span><span class="o">|</span>
+      <span class="nb">puts</span> <span class="s2">&quot;=&gt; </span><span class="si">#{</span><span class="n">card</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">end</span>
+    <span class="nb">puts</span> <span class="s2">&quot;=&gt; Total: </span><span class="si">#{</span><span class="n">total</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">total</span>
+    <span class="n">face_values</span> <span class="o">=</span> <span class="n">cards</span><span class="o">.</span><span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="n">card</span><span class="o">|</span> <span class="n">card</span><span class="o">.</span><span class="n">face_value</span> <span class="p">}</span>
+
+    <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">face_values</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">val</span><span class="o">|</span>
+      <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="s2">&quot;A&quot;</span>
+        <span class="n">total</span> <span class="o">+=</span> <span class="mi">11</span>
+      <span class="k">else</span>
+        <span class="n">total</span> <span class="o">+=</span> <span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">to_i</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">?</span> <span class="mi">10</span> <span class="p">:</span> <span class="n">val</span><span class="o">.</span><span class="n">to_i</span><span class="p">)</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="c1">#correct for Aces</span>
+    <span class="n">face_values</span><span class="o">.</span><span class="n">select</span><span class="p">{</span><span class="o">|</span><span class="n">val</span><span class="o">|</span> <span class="n">val</span> <span class="o">==</span> <span class="s2">&quot;A&quot;</span><span class="p">}</span><span class="o">.</span><span class="n">count</span><span class="o">.</span><span class="n">times</span> <span class="k">do</span>
+      <span class="k">break</span> <span class="k">if</span> <span class="n">total</span> <span class="o">&lt;=</span> <span class="mi">21</span>
+      <span class="n">total</span> <span class="o">-=</span> <span class="mi">10</span>
+    <span class="k">end</span>
+
+    <span class="n">total</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">add_card</span><span class="p">(</span><span class="n">new_card</span><span class="p">)</span>
+    <span class="n">cards</span> <span class="o">&lt;&lt;</span> <span class="n">new_card</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">is_busted?</span>
+    <span class="n">total</span> <span class="o">&gt;</span> <span class="no">Blackjack</span><span class="o">::</span><span class="no">BLACKJACK_AMOUNT</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Player</span>
+  <span class="kp">include</span> <span class="no">Hand</span>
+
+  <span class="kp">attr_accessor</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:cards</span>
+
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="vi">@name</span> <span class="o">=</span> <span class="n">n</span>
+    <span class="vi">@cards</span> <span class="o">=</span> <span class="o">[]</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">show_flop</span>
+    <span class="n">show_hand</span>
+  <span class="k">end</span>
+
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Dealer</span>
+  <span class="kp">include</span> <span class="no">Hand</span>
+
+  <span class="kp">attr_accessor</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:cards</span>
+
+  <span class="k">def</span> <span class="nf">initialize</span>
+    <span class="vi">@name</span> <span class="o">=</span> <span class="s2">&quot;Dealer&quot;</span>
+    <span class="vi">@cards</span> <span class="o">=</span> <span class="o">[]</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">show_flop</span>
+    <span class="nb">puts</span> <span class="s2">&quot;---- Dealer&#39;s Hand ----&quot;</span>
+    <span class="nb">puts</span> <span class="s2">&quot;=&gt; First card is hidden&quot;</span>
+    <span class="nb">puts</span> <span class="s2">&quot;=&gt; Second card is </span><span class="si">#{</span><span class="n">cards</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Blackjack</span>
+  <span class="kp">attr_accessor</span> <span class="ss">:deck</span><span class="p">,</span> <span class="ss">:player</span><span class="p">,</span> <span class="ss">:dealer</span>
+
+  <span class="no">BLACKJACK_AMOUNT</span> <span class="o">=</span> <span class="mi">21</span>
+  <span class="no">DEALER_HIT_MIN</span> <span class="o">=</span> <span class="mi">17</span>
+
+  <span class="k">def</span> <span class="nf">initialize</span>
+    <span class="vi">@deck</span> <span class="o">=</span> <span class="no">Deck</span><span class="o">.</span><span class="n">new</span>
+    <span class="vi">@player</span> <span class="o">=</span> <span class="no">Player</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;Player1&quot;</span><span class="p">)</span>
+    <span class="vi">@dealer</span> <span class="o">=</span> <span class="no">Dealer</span><span class="o">.</span><span class="n">new</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">set_player_name</span>
+    <span class="nb">puts</span> <span class="s2">&quot;What&#39;s your name?&quot;</span>
+    <span class="n">player</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="nb">gets</span><span class="o">.</span><span class="n">chomp</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">deal_cards</span>
+    <span class="n">player</span><span class="o">.</span><span class="n">add_card</span><span class="p">(</span><span class="n">deck</span><span class="o">.</span><span class="n">deal_one</span><span class="p">)</span>
+    <span class="n">dealer</span><span class="o">.</span><span class="n">add_card</span><span class="p">(</span><span class="n">deck</span><span class="o">.</span><span class="n">deal_one</span><span class="p">)</span>
+    <span class="n">player</span><span class="o">.</span><span class="n">add_card</span><span class="p">(</span><span class="n">deck</span><span class="o">.</span><span class="n">deal_one</span><span class="p">)</span>
+    <span class="n">dealer</span><span class="o">.</span><span class="n">add_card</span><span class="p">(</span><span class="n">deck</span><span class="o">.</span><span class="n">deal_one</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">show_flop</span>
+    <span class="n">player</span><span class="o">.</span><span class="n">show_flop</span>
+    <span class="n">dealer</span><span class="o">.</span><span class="n">show_flop</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">blackjack_or_bust?</span><span class="p">(</span><span class="n">player_or_dealer</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">player_or_dealer</span><span class="o">.</span><span class="n">total</span> <span class="o">==</span> <span class="no">BLACKJACK_AMOUNT</span>
+      <span class="k">if</span> <span class="n">player_or_dealer</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Dealer</span><span class="p">)</span>
+        <span class="nb">puts</span> <span class="s2">&quot;Sorry, dealer hit blackjack. </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> loses.&quot;</span>
+      <span class="k">else</span>
+        <span class="nb">puts</span> <span class="s2">&quot;Congratulations, you hit blackjack! </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> win!&quot;</span>
+      <span class="k">end</span>
+      <span class="n">play_again?</span>
+    <span class="k">elsif</span> <span class="n">player_or_dealer</span><span class="o">.</span><span class="n">is_busted?</span>
+      <span class="k">if</span> <span class="n">player_or_dealer</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Dealer</span><span class="p">)</span>
+        <span class="nb">puts</span> <span class="s2">&quot;Congratulations, dealer busted. </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> win!&quot;</span>
+      <span class="k">else</span>
+        <span class="nb">puts</span> <span class="s2">&quot;Sorry, </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> busted. </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> loses.&quot;</span>
+      <span class="k">end</span>
+      <span class="n">play_again?</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">player_turn</span>
+    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;s turn.&quot;</span>
+
+    <span class="n">blackjack_or_bust?</span><span class="p">(</span><span class="n">player</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="o">!</span><span class="n">player</span><span class="o">.</span><span class="n">is_busted?</span>
+      <span class="nb">puts</span> <span class="s2">&quot;What would you like to do? 1) hit 2) stay&quot;</span>
+      <span class="n">response</span> <span class="o">=</span> <span class="nb">gets</span><span class="o">.</span><span class="n">chomp</span>
+
+      <span class="k">if</span> <span class="o">![</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="o">].</span><span class="n">include?</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="nb">puts</span> <span class="s2">&quot;Error: you must enter 1 or 2&quot;</span>
+        <span class="k">next</span>
+      <span class="k">end</span>
+
+      <span class="k">if</span> <span class="n">response</span> <span class="o">==</span> <span class="s1">&#39;2&#39;</span>
+        <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> chose to stay.&quot;</span>
+        <span class="k">break</span>
+      <span class="k">end</span>
+
+      <span class="c1">#hit</span>
+      <span class="n">new_card</span> <span class="o">=</span> <span class="n">deck</span><span class="o">.</span><span class="n">deal_one</span>
+      <span class="nb">puts</span> <span class="s2">&quot;Dealing card to </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="n">new_card</span><span class="si">}</span><span class="s2">&quot;</span>
+      <span class="n">player</span><span class="o">.</span><span class="n">add_card</span><span class="p">(</span><span class="n">new_card</span><span class="p">)</span>
+      <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;s total is now: </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">total</span><span class="si">}</span><span class="s2">&quot;</span>
+
+      <span class="n">blackjack_or_bust?</span><span class="p">(</span><span class="n">player</span><span class="p">)</span>
+    <span class="k">end</span>
+    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> stays at </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">total</span><span class="si">}</span><span class="s2">.&quot;</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">dealer_turn</span>
+    <span class="nb">puts</span> <span class="s2">&quot;Dealer&#39;s turn.&quot;</span>
+
+    <span class="n">blackjack_or_bust?</span><span class="p">(</span><span class="n">dealer</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">dealer</span><span class="o">.</span><span class="n">total</span> <span class="o">&lt;</span> <span class="no">DEALER_HIT_MIN</span>
+      <span class="n">new_card</span> <span class="o">=</span> <span class="n">deck</span><span class="o">.</span><span class="n">deal_one</span>
+      <span class="nb">puts</span> <span class="s2">&quot;Dealing card to dealer: </span><span class="si">#{</span><span class="n">new_card</span><span class="si">}</span><span class="s2">&quot;</span>
+      <span class="n">dealer</span><span class="o">.</span><span class="n">add_card</span><span class="p">(</span><span class="n">new_card</span><span class="p">)</span>
+      <span class="nb">puts</span> <span class="s2">&quot;Dealer total is now: </span><span class="si">#{</span><span class="n">dealer</span><span class="o">.</span><span class="n">total</span><span class="si">}</span><span class="s2">&quot;</span>
+
+      <span class="n">blackjack_or_bust?</span><span class="p">(</span><span class="n">dealer</span><span class="p">)</span>
+    <span class="k">end</span>
+    <span class="nb">puts</span> <span class="s2">&quot;Dealer stays at </span><span class="si">#{</span><span class="n">dealer</span><span class="o">.</span><span class="n">total</span><span class="si">}</span><span class="s2">.&quot;</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">who_won?</span>
+    <span class="k">if</span> <span class="n">player</span><span class="o">.</span><span class="n">total</span> <span class="o">&gt;</span> <span class="n">dealer</span><span class="o">.</span><span class="n">total</span>
+      <span class="nb">puts</span> <span class="s2">&quot;Congratulations, </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> wins!&quot;</span>
+    <span class="k">elsif</span> <span class="n">player</span><span class="o">.</span><span class="n">total</span> <span class="o">&lt;</span> <span class="n">dealer</span><span class="o">.</span><span class="n">total</span>
+      <span class="nb">puts</span> <span class="s2">&quot;Sorry, </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> loses.&quot;</span>
+    <span class="k">else</span>
+      <span class="nb">puts</span> <span class="s2">&quot;It&#39;s a tie!&quot;</span>
+    <span class="k">end</span>
+    <span class="n">play_again?</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">play_again?</span>
+    <span class="nb">puts</span> <span class="s2">&quot;&quot;</span>
+    <span class="nb">puts</span> <span class="s2">&quot;Would you like to play again? 1) yes 2) no, exit&quot;</span>
+    <span class="k">if</span> <span class="nb">gets</span><span class="o">.</span><span class="n">chomp</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span>
+      <span class="nb">puts</span> <span class="s2">&quot;Starting new game...&quot;</span>
+      <span class="nb">puts</span> <span class="s2">&quot;&quot;</span>
+      <span class="n">deck</span> <span class="o">=</span> <span class="no">Deck</span><span class="o">.</span><span class="n">new</span>
+      <span class="n">player</span><span class="o">.</span><span class="n">cards</span> <span class="o">=</span> <span class="o">[]</span>
+      <span class="n">dealer</span><span class="o">.</span><span class="n">cards</span> <span class="o">=</span> <span class="o">[]</span>
+      <span class="n">start</span>
+    <span class="k">else</span>
+      <span class="nb">puts</span> <span class="s2">&quot;Goodbye!&quot;</span>
+      <span class="nb">exit</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">start</span>
+    <span class="n">set_player_name</span>
+    <span class="n">deal_cards</span>
+    <span class="n">show_flop</span>
+    <span class="n">player_turn</span>
+    <span class="n">dealer_turn</span>
+    <span class="n">who_won?</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">game</span> <span class="o">=</span> <span class="no">Blackjack</span><span class="o">.</span><span class="n">new</span>
+<span class="n">game</span><span class="o">.</span><span class="n">start</span></code></pre></div>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2014/09/22/tic-tac-toe-oo/">
+            Intro to Ruby & Web Dev: Tic-Tac-Toe OO Game
+            <small>22 Sep 2014</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2014/09/21/course1-lesson4/">
+            Intro to Ruby & Web Dev: Lesson 3
+            <small>21 Sep 2014</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2014/09/14/course1-lesson3/">
+            Intro to Ruby & Web Dev: Lesson 3
+            <small>14 Sep 2014</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

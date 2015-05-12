@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Intro to Ruby & Web Dev: Lesson 3 &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Intro to Ruby & Web Dev: Lesson 3</h1>
+  <span class="post-date">21 Sep 2014</span>
+  <h1>Items covered:</h1>
+
+<ol>
+<li>Ajax</li>
+<li>Un-obstrusive Javascript</li>
+<li>Jquery</li>
+<li>Deployment Options</li>
+</ol>
+
+<h2>Ajax</h2>
+
+<p>is used in a scernario when elements on the page are changing but you only want thos elements
+to change rather reload (reconstituting the state of your application) each time.
+Pages can be computationally expensive and create a bad user interface.
+Ajax will issue the request behind the scences and the when the response comes back, your Javascript code must handle that data.
+This is using unobstrusive Javascript. For example, if you have likes on your Facebook page, we will want
+to see an increment in the number of likes and the like button go from &quot;like&quot; to &quot;unlike&quot;.
+However, for our use case, only the URL won&#39;t change.</p>
+
+<h2>Un-obsturive Javascript</h2>
+
+<p>Back in the day, Js used to be added directly to the HTML but now a js file is created just like
+the stylesheet.css file added to the layout.erb
+JQuery is now the defacto Js Library.</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html">You must add the <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;/application.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span> to the layout.erb
+Google hosts Jquery for you!
+1.x snippet: <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span></code></pre></div>
+
+<ul>
+<li># is an anchor tag
+##JQuery
+.class - same style
+#id - unique element on your DOM</li>
+</ul>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="nx">funtion</span><span class="p">(){</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;element&quot;</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="nx">funtion</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">$</span><span class="p">(</span><span class="err">#</span><span class="nx">player</span><span class="p">)</span><span class="nx">_area</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="s1">&#39;background-color&#39;</span><span class="p">,</span> <span class="s1">&#39;yellow&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="p">;</span><span class="o">===&gt;</span> <span class="k">do</span> <span class="nx">not</span> <span class="nx">re</span><span class="o">-</span><span class="nx">execute</span>
+      <span class="p">});</span>
+  <span class="p">});</span></code></pre></div>
+
+<p>un-obstrusive Js allows you to hijack the webpage.
+You shouldn&#39;t create elaborate pages with a bunch of event-listeners.
+Using JQuery in this manner can be hard to manage. So if you&#39;re looking to create an enriched
+user-experience, you should use Angular, Backbone, and/or Ember.
+So more like dashes and sprinkles of Jquery rather than overload of JQuery</p>
+
+<p>Hijacking (Adding JQuery to) the &quot;hit-button&quot;</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#hit_form input&#39;</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;hit button clicked!&#39;</span><span class="p">);</span>
+    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">});</span>
+  <span class="p">});</span></code></pre></div>
+
+<p>use console.log (to inspect/debug in Firefox)</p>
+
+<p>Using Ajax</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="err">#</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#hit_form input&#39;</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="err">#</span><span class="nx">must</span> <span class="nx">be</span> <span class="nx">rebind</span> <span class="kd">with</span> <span class="nx">the</span> <span class="nx">input</span> <span class="nx">again</span> <span class="nx">after</span> <span class="nx">indcating</span> <span class="nx">layout</span> <span class="kc">false</span>
+    <span class="nx">$document</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="nx">click</span><span class="p">,</span> <span class="s1">&#39;#hit_form input&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">())</span> <span class="p">{</span>
+
+    <span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span> <span class="err">#</span><span class="k">this</span> <span class="nx">is</span> <span class="nx">a</span> <span class="nx">hash</span><span class="p">,</span> <span class="nx">much</span> <span class="nx">include</span> <span class="nx">comma</span> <span class="nx">after</span> <span class="nx">entry</span>
+      <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+      <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/game/player/hit&#39;</span>
+      <span class="err">#</span><span class="nx">data</span><span class="o">:</span> <span class="err">#</span><span class="nx">also</span> <span class="nx">known</span> <span class="nx">as</span> <span class="nx">parameters</span>
+      <span class="p">)}.</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span> <span class="p">{</span>
+        <span class="err">#</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#game&#39;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span> <span class="err">#</span><span class="nx">create</span> <span class="nx">div</span> <span class="k">for</span> <span class="nx">game</span><span class="p">.</span> <span class="nx">Can</span><span class="s1">&#39;t use HTML b/c its creating a duplicate game div id</span>
+<span class="s1">        $(&#39;</span><span class="err">#</span><span class="nx">game</span><span class="err">&#39;</span><span class="p">).</span><span class="nx">replaceWith</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
+        <span class="p">});</span>
+      <span class="p">});</span>
+
+    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">});</span>
+  <span class="p">});</span></code></pre></div>
+
+<h2>Deployment Options</h2>
+
+<ol>
+<li>Self-managed</li>
+<li>Shared host (no longer popular)</li>
+<li>VPS (most popular)
+
+<ul>
+<li>AWS, Rackspace, Linode, Digital Ocean</li>
+<li>must have sys admin knowledge</li>
+</ul></li>
+<li><p>Dedicated Server (hardware) - most expensive</p></li>
+<li><p>Managed - no sys admin needs, no access to file system</p></li>
+<li><p>Heroku</p></li>
+<li><p>Google App Engine</p></li>
+<li><p>Ninefold</p></li>
+</ol>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2014/09/25/blackjack-oo-game/">
+            Intro to Ruby & Web Dev: Blackjack OO Game
+            <small>25 Sep 2014</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2014/09/22/tic-tac-toe-oo/">
+            Intro to Ruby & Web Dev: Tic-Tac-Toe OO Game
+            <small>22 Sep 2014</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2014/09/14/course1-lesson3/">
+            Intro to Ruby & Web Dev: Lesson 3
+            <small>14 Sep 2014</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>
