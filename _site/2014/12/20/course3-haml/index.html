@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications: Precourse, Haml &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications: Precourse, Haml</h1>
+  <span class="post-date">20 Dec 2014</span>
+  <p>Writing Basic Haml
+1. No closing tags
+2. Nesting controlled via strict white-spacing and indenting
+3. Nesting tags must be indented on a new line
+4. Use spaces or tabs to nest tags within other tags
+5. Tabs must be consistent</p>
+
+<p>Examples:</p>
+
+<h3>Haml:</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">h2</span>
+<span class="o">%</span><span class="n">ul</span>
+  <span class="o">%</span><span class="n">li</span>
+  <span class="o">%</span><span class="n">li</span>
+  <span class="o">%</span><span class="n">li</span></code></pre></div>
+
+<h3>Links:</h3>
+
+<p>Haml:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">a</span><span class="p">{</span><span class="ss">href</span><span class="p">:</span> <span class="s1">&#39;/courses&#39;</span><span class="p">,</span> <span class="ss">title</span><span class="p">:</span> <span class="s1">&#39;Courses&#39;</span><span class="p">}</span> <span class="no">Courses</span></code></pre></div>
+
+<p>or</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">a</span><span class="p">(</span><span class="n">href</span><span class="o">=</span><span class="s2">&quot;/courses&quot;</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Courses&quot;</span><span class="p">)</span> <span class="no">Courses</span></code></pre></div>
+
+<p>HTML:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;courses&#39;</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Courses&#39;</span><span class="o">&gt;</span><span class="no">Courses</span><span class="o">&lt;</span><span class="sr">/a&gt;</span></code></pre></div>
+
+<h3>Divs:</h3>
+
+<p>Haml:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">section</span><span class="c1">#content.container</span>
+  <span class="o">%</span><span class="n">div</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">container</span></code></pre></div>
+
+<p>HTML:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">section</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;content&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;container&quot;</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;stats container&quot;</span><span class="o">&gt;&lt;</span><span class="sr">/div&gt;</span>
+<span class="sr">    &lt;/se</span><span class="n">ction</span><span class="o">&gt;</span></code></pre></div>
+
+<h3>Haml will insert a div if no HTML tag is explicitly defined:</h3>
+
+<p>Haml:</p>
+
+<h4>Note: stats.container is the same as %div.stats.container</h4>
+
+<p>HTML</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;stats container&quot;</span><span class="o">&gt;&lt;</span><span class="sr">/div&gt;</span></code></pre></div>
+
+<h2>Adding Ruby:</h2>
+
+<ul>
+<li>Lines to evaluated begin with a hyphen (-) instead of erb (&lt;%  %&gt;)</li>
+<li>Lines to be output begin with an equals sign (=) instead of erb (&lt;%=  %&gt;)</li>
+</ul>
+
+<p>Haml:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">-</span> <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Rails for Zombies&#39;</span>
+<span class="o">%</span><span class="n">h1</span><span class="o">=</span> <span class="n">title</span></code></pre></div>
+
+<p>Erb:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="sx">% title </span><span class="o">=</span> <span class="s1">&#39;Rails for Zombies&#39;</span> <span class="sx">%&gt;</span>
+<span class="sx">&lt;h1&gt;</span><span class="o">&lt;%=</span> <span class="n">title</span><span class="sx">%&gt;&lt;/h1&gt;</span></code></pre></div>
+
+<p>HTML output:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span> <span class="no">Rails</span> <span class="k">for</span> <span class="no">Zombies</span> <span class="o">&lt;</span><span class="sr">/h1&gt;</span></code></pre></div>
+
+<h3>Loops:</h3>
+
+<p>Haml:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">-</span> <span class="n">zombies</span> <span class="o">=</span> <span class="sx">%w{Ash Bob Jim}</span>
+<span class="o">%</span><span class="n">section</span><span class="c1">#zombies</span>
+  <span class="o">%</span><span class="n">ul</span>
+    <span class="o">-</span> <span class="n">zombies</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">zombie</span><span class="o">|</span>
+    <span class="o">%</span><span class="n">li</span><span class="o">=</span> <span class="n">zombie</span></code></pre></div>
+
+<p>HTML:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">section</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;zombies&quot;</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">ul</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;</span><span class="no">Ash</span><span class="o">&lt;</span><span class="sr">/li&gt;</span>
+<span class="sr">   &lt;li&gt;Bob&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;</span><span class="no">Jim</span><span class="o">&lt;</span><span class="sr">/li&gt;</span>
+<span class="sr">  &lt;/se</span><span class="n">ction</span><span class="o">&gt;</span></code></pre></div>
+
+<h4>You can use the same view helpers as before:</h4>
+
+<p>Haml:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">=</span><span class="n">link_to</span> <span class="s2">&quot;Check us out on twitter&quot;</span><span class="p">,</span> <span class="s2">&quot;http://twitter.com/codeschool&quot;</span></code></pre></div>
+
+<p>HTML:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;http://&quot;</span><span class="n">twitter</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">codeschool</span><span class="s2">&quot;&gt;&lt;Check us out on twitter&lt;/a&gt;</span></code></pre></div>
+
+<h2>Interpolation:</h2>
+
+<h3>You can also use #{} interpolation to insert Ruby expressions</h3>
+
+<p>Haml:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="nb">p</span> <span class="no">Hi</span><span class="p">,</span> <span class="no">My</span> <span class="nb">name</span> <span class="n">is</span> <span class="c1">#{@user.name}</span></code></pre></div>
+
+<p>HTML:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span> <span class="no">Hi</span><span class="p">,</span> <span class="no">My</span> <span class="nb">name</span> <span class="n">is</span> <span class="no">Casey</span><span class="o">&lt;</span><span class="sr">/p&gt;</span></code></pre></div>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/03/20/course3-three-styles-of-bdd/">
+            Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
+            <small>20 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/17/course3-transactions/">
+            Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
+            <small>17 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/15/course3-parameter-naming-conventions/">
+            Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions
+            <small>15 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

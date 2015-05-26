@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications - Lesson 1: Custom Form Builders &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 1: Custom Form Builders</h1>
+  <span class="post-date">05 Feb 2015</span>
+  <p>Let&#39;s say we have a Todo&#39;s app, where we allow our users to create a new todo. We also want to show errors when validation errors occur:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#new.html.haml</span>
+<span class="o">%</span><span class="n">section</span><span class="o">.</span><span class="n">new_todo</span>
+  <span class="o">%</span><span class="n">h3</span> <span class="no">Add</span> <span class="n">a</span> <span class="kp">new</span> <span class="n">todo</span>
+  <span class="o">=</span> <span class="n">form_for</span> <span class="vi">@todo</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:name</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:name</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:description</span><span class="p">,</span> <span class="ss">rows</span><span class="p">:</span> <span class="mi">6</span>
+    <span class="o">%</span><span class="n">br</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">submit</span> <span class="s2">&quot;Add This Todo&quot;</span></code></pre></div>
+
+<p>The issue with this code above is that it is not pulling in the
+errors on the Todos object.</p>
+
+<p>We could:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#new.html.haml</span>
+<span class="o">%</span><span class="n">section</span><span class="o">.</span><span class="n">new_todo</span>
+  <span class="o">%</span><span class="n">h3</span> <span class="no">Add</span> <span class="n">a</span> <span class="kp">new</span> <span class="n">todo</span>
+  <span class="o">=</span> <span class="n">form_for</span> <span class="vi">@todo</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+  <span class="k">if</span><span class="vi">@todos</span><span class="o">.</span><span class="n">errors?</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:name</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:name</span></code></pre></div>
+
+<p>...but this is cumbersome to do for each form.</p>
+
+<p>Lets create a helper called MyFormBuilder that will customize the label:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">MyFormBuilder</span> <span class="o">&lt;</span> <span class="no">ActionView</span><span class="o">::</span><span class="no">Helpers</span><span class="o">::</span><span class="no">FormBuilder</span>
+  <span class="k">def</span> <span class="nf">label</span><span class="p">(</span><span class="nb">method</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">,</span> <span class="n">options</span> <span class="o">=</span> <span class="p">{},</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="n">object</span><span class="o">.</span><span class="n">errors</span><span class="o">[</span><span class="nb">method</span><span class="o">.</span><span class="n">to_sym</span><span class="o">]</span>
+    <span class="k">if</span> <span class="n">errors</span>
+      <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot; &lt;span class =</span><span class="se">\&quot;</span><span class="s2">error&quot;</span><span class="o">&gt;</span><span class="c1">#{errors.first}&lt;/span&gt;&quot; #pull the first error from the errors object (an array)</span>
+    <span class="k">end</span>
+    <span class="k">super</span><span class="p">(</span><span class="nb">method</span><span class="p">,</span> <span class="n">text</span><span class="o">.</span><span class="n">html_safe</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span> <span class="c1">#delegates control back to the custom form builder</span>
+    <span class="k">end</span>
+  <span class="k">end</span></code></pre></div>
+
+<p>Update new.html.haml, make sure you add &quot;MyFormBuilder&quot; to your form_for block:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">section</span><span class="o">.</span><span class="n">new_todo</span>
+  <span class="o">%</span><span class="n">h3</span> <span class="no">Add</span> <span class="n">a</span> <span class="kp">new</span> <span class="n">todo</span>
+  <span class="o">=</span> <span class="n">form_for</span> <span class="vi">@todo</span><span class="p">,</span> <span class="ss">builder</span><span class="p">:</span> <span class="no">MyFormBuilder</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:name</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:name</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:description</span><span class="p">,</span> <span class="ss">rows</span><span class="p">:</span> <span class="mi">6</span>
+    <span class="o">%</span><span class="n">br</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">submit</span> <span class="s2">&quot;Add This Todo&quot;</span></code></pre></div>
+
+<hr>
+
+<h3>Alternate Option: my_ form_ for helper</h3>
+
+<p>This is still somewhat repetitive. Let&#39;s create a my_ form_ for helper. We can manually merge in the my<em>form</em>for rather passing in the MyFormBuilder:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">app</span><span class="o">/</span><span class="n">helpers</span><span class="o">/</span><span class="n">my_form_builder</span><span class="o">.</span><span class="n">rb</span>
+<span class="k">module</span> <span class="nn">ApplicationHelper</span>
+  <span class="k">def</span> <span class="nf">my_form_for</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">options</span> <span class="o">=</span> <span class="p">{},</span> <span class="o">&amp;</span><span class="nb">proc</span><span class="p">)</span> <span class="c1">#takes 3 arguements</span>
+    <span class="n">form_for</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">merge!</span><span class="p">({</span><span class="ss">builder</span><span class="p">:</span> <span class="no">MyFormBuidler</span><span class="p">}),</span> <span class="o">&amp;</span><span class="nb">proc</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<h4>Update the new.html.haml</h4>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">section</span><span class="o">.</span><span class="n">new_todo</span>
+  <span class="o">%</span><span class="n">h3</span> <span class="no">Add</span> <span class="n">a</span> <span class="kp">new</span> <span class="n">todo</span>
+  <span class="o">=</span> <span class="n">my_form_for</span> <span class="vi">@todo</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:name</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:name</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:description</span><span class="p">,</span> <span class="ss">rows</span><span class="p">:</span> <span class="mi">6</span>
+    <span class="o">%</span><span class="n">br</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">submit</span> <span class="s2">&quot;Add This Todo&quot;</span></code></pre></div>
+
+<hr>
+
+<h2>Custom Form Builders in The Wild!</h2>
+
+<h3>1. Formtastic</h3>
+
+<ul>
+<li>You can use semantic form_ for</li>
+</ul>
+
+<h3>2. Simple_form (creators of devise)</h3>
+
+<ul>
+<li>allows integration with Twitter Bootstrap &amp; Zurb Foundation 3</li>
+<li>is not best for those with alot of customization</li>
+<li>has default mapping - which is not the best for complex forms</li>
+</ul>
+
+<h3>3. BootstapForm</h3>
+
+<ul>
+<li>minimal dsl</li>
+<li>similar flow/syntax to Rails</li>
+</ul>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/03/20/course3-three-styles-of-bdd/">
+            Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
+            <small>20 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/17/course3-transactions/">
+            Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
+            <small>17 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/15/course3-parameter-naming-conventions/">
+            Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions
+            <small>15 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

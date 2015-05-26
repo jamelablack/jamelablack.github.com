@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD</h1>
+  <span class="post-date">20 Mar 2015</span>
+  <h2>Testing Styles in Rails: Three Styles of Behavior Driven Development</h2>
+
+<p>Traditionally we have followed the following flow:</p>
+
+<h3>Meet in the Middle Technique</h3>
+
+<ol>
+<li>Turn mock ups into view templates:
+copy the mockups and replace the placeholder data</li>
+<li>Controller Tests (inner layer)- the controller tests will drive the model layer
+tests, routes, db migrations, etc.</li>
+<li>Model Level Tests(inner layer) - if we need active record based and non-active record based
+model - logic, we will need to drop down to model layer to test their</li>
+<li>Feature Specs/Integration - (Outer most layer) Tests will allow us to test everything including the view templates</li>
+</ol>
+
+<ul>
+<li>Here you will end up with less feature/integration specs than outside in because they are typically written after multiple specs.</li>
+</ul>
+
+<h3>Inside out Approach</h3>
+
+<ol>
+<li>Start from the models and migrations that are required for that feature and then
+right specs to test that model</li>
+<li>Controller Level</li>
+<li>View/Intergation Specs</li>
+</ol>
+
+<ul>
+<li>easier to start .. allows you to work with something small</li>
+<li>But you sometimes don&#39;t know where you&#39;re going and you may end up
+adding alot of code that is not needed.</li>
+<li>This is used primarily in productized shops where its easier to add a model to a more mature product.</li>
+</ul>
+
+<h3>Outside in Approach</h3>
+
+<p>Start at the Integration Level - This integration level does not mean in the
+same way that we reference the Integration Tests in the &quot;Meet in the Middle&quot; technique where where we test multiple features (horizontal) but rather vertical -integration means where we test for models, controllers and views for one feature
+- written in a very business level decision level - you have to think &#39;what is the business value we are looking to provide?&#39;</p>
+
+<ul>
+<li>route, controller, models</li>
+<li>also called BDD or ABDD (A is for Acceptance)</li>
+<li>often used in consultancys, clients provide the feature</li>
+<li>often follows more a natural flow</li>
+<li>requires you to know rails really well and how things work together</li>
+<li>people often use cucumber or rspec feature tests for this.</li>
+</ul>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/03/17/course3-transactions/">
+            Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
+            <small>17 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/15/course3-parameter-naming-conventions/">
+            Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions
+            <small>15 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/10/course3-update-review-in-queue/">
+            Build Robust & Production Quality Applications - Lesson 4: Update Review in Queue
+            <small>10 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

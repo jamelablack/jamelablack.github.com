@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Rapid Prototyping with Rails: Lesson 3, part 4 &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Rapid Prototyping with Rails: Lesson 3, part 4</h1>
+  <span class="post-date">28 Oct 2014</span>
+  <h3>1. Create vote controller action</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">PostsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="k">def</span> <span class="nf">vote</span>
+    <span class="nb">binding</span><span class="o">.</span><span class="n">pry</span>
+  <span class="k">end</span>
+ <span class="k">end</span></code></pre></div>
+
+<p>Entering params in rails console, will show us that we passing an id parameter but not the
+ boolean to indicate true/false, whether the post is up or down.</p>
+
+<h3>2. Add boolean parameter to views to create link</h3>
+
+<p>Add boolean parameter to views to create link  /posts/2/vote?vote=true&amp;param2=2</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#posts/index.html.erb</span>
+ <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s1">&#39;row&#39;</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s1">&#39;span0 well text-center&#39;</span><span class="o">&gt;</span>
+      <span class="o">&lt;%=</span> <span class="n">link_to</span> <span class="n">vote_post_path</span><span class="p">(</span><span class="n">post</span><span class="p">,</span> <span class="ss">vote</span><span class="p">:</span> <span class="kp">true</span><span class="p">),</span> <span class="nb">method</span><span class="p">:</span> <span class="s1">&#39;post&#39;</span> <span class="k">do</span> <span class="o">%&gt;</span></code></pre></div>
+
+<h3>3. Now that we have our thing we are voting on and our vote, we can create our vote action</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">PostsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="n">before_action</span> <span class="ss">:set_post</span><span class="p">,</span> <span class="ss">only</span><span class="p">:</span> <span class="o">[</span><span class="ss">:show</span><span class="p">,</span> <span class="n">edit</span><span class="p">,</span> <span class="ss">:update</span><span class="p">,</span> <span class="ss">:vote</span><span class="o">]</span>
+
+<span class="k">def</span> <span class="nf">vote</span>
+  <span class="c1">#post = Post.find(params[:id]) or use @post(created in the before_action)</span>
+  <span class="vi">@vote</span> <span class="o">=</span> <span class="no">Vote</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">voteable</span><span class="p">:</span> <span class="vi">@post</span><span class="p">,</span> <span class="ss">creator</span><span class="p">:</span> <span class="n">current_user</span><span class="p">,</span> <span class="ss">vote</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:vote</span><span class="o">]</span><span class="p">)</span>
+
+  <span class="k">if</span> <span class="vi">@vote</span><span class="o">.</span><span class="n">valid?</span>
+    <span class="n">flash</span><span class="o">[</span><span class="ss">:notice</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Your vote was recorded&quot;</span>
+  <span class="k">else</span>
+    <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Your vote was not recorded&quot;</span>
+  <span class="k">end</span>
+    <span class="n">redirect_to</span> <span class="ss">:back</span> <span class="p">(</span><span class="n">to</span> <span class="n">go</span> <span class="n">back</span> <span class="n">to</span> <span class="n">the</span> <span class="n">original</span> <span class="n">page</span> <span class="n">viewed</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>4. Wire up the same for the down vote in the views/posts/index</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s1">&#39;row&#39;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s1">&#39;span0 well text-center&#39;</span><span class="o">&gt;</span>
+    <span class="o">&lt;%=</span> <span class="n">link_to</span> <span class="n">vote_post_path</span><span class="p">(</span><span class="n">post</span><span class="p">,</span> <span class="ss">vote</span><span class="p">:</span> <span class="kp">false</span><span class="p">),</span> <span class="nb">method</span><span class="p">:</span> <span class="s1">&#39;post&#39;</span> <span class="k">do</span> <span class="o">%&gt;</span></code></pre></div>
+
+<h3>5. What if I want to display the number of votes</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;%</span><span class="n">post</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">size</span><span class="o">%&gt;</span></code></pre></div>
+
+<h3>6. What if I want the number of votes to decrease when pressing the down button.</h3>
+
+<p>Although this may seem like a presentational concern that would require a helper
+method - however storing the number of votes is a data concern and not a presentational one.
+Method regarding business logic belong in the model itself.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Post</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+   <span class="k">def</span> <span class="nf">total_votes</span>
+    <span class="n">up_votes</span> <span class="o">-</span> <span class="n">down_votes</span>
+   <span class="k">end</span>
+
+   <span class="k">def</span> <span class="nf">up_votes</span>
+    <span class="nb">self</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">vote</span><span class="p">:</span> <span class="kp">true</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
+   <span class="k">end</span>
+
+   <span class="k">def</span> <span class="nf">down_votes</span>
+    <span class="nb">self</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">vote</span><span class="p">:</span> <span class="kp">false</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
+   <span class="k">end</span>
+ <span class="k">end</span></code></pre></div>
+
+<p>So now in the presentation layer, we can call total_votes:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="sx">% post.total_votes </span><span class="o">%&gt;</span></code></pre></div>
+
+<h3>7. What if we wanted to sort</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">PostsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+
+  <span class="k">def</span> <span class="nf">index</span>
+    <span class="vi">@posts</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="n">x</span><span class="o">.</span><span class="n">total_votes</span><span class="p">)</span><span class="o">.</span><span class="n">reverse</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>8. How can we make sure that each user only votes once for post:</h3>
+
+<p>There are many ways to accomplish this but the best way would be to add the
+uniqueness validation to the model:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span>  <span class="nc">Vote</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="n">validates_uniqueness_of</span> <span class="ss">:creator</span><span class="p">,</span> <span class="ss">scope</span><span class="p">:</span> <span class="ss">:voteable</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>9. Using html_safe</h3>
+
+<p>Rails by default escapes everything so user input html, js or script tags are escaped to
+prevent malicious intent.
+In order to write html in any place besides the html.erb files, you must append html_safe
+at the end of your statement</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">vote</span>
+  <span class="c1">#post = Post.find(params[:id]) or use @post(created in the before_action)</span>
+  <span class="vi">@vote</span> <span class="o">=</span> <span class="no">Vote</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">voteable</span><span class="p">:</span> <span class="vi">@post</span><span class="p">,</span> <span class="ss">creator</span><span class="p">:</span> <span class="n">current_user</span><span class="p">,</span> <span class="ss">vote</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:vote</span><span class="o">]</span><span class="p">)</span>
+    <span class="o">**</span> <span class="no">We</span> <span class="k">do</span> <span class="ow">not</span> <span class="n">need</span> <span class="n">to</span> <span class="n">use</span> <span class="n">strong_params</span> <span class="n">because</span> <span class="n">we</span> <span class="n">are</span> <span class="ow">not</span> <span class="n">using</span> <span class="n">the</span> <span class="n">key</span> <span class="n">value</span>
+    <span class="n">pairs</span> <span class="k">for</span> <span class="n">mass</span> <span class="n">assignment</span><span class="p">,</span> <span class="n">instead</span> <span class="n">we</span> <span class="n">are</span> <span class="n">hard</span> <span class="n">coding</span> <span class="k">in</span> <span class="n">the</span> <span class="n">keys</span><span class="o">.</span>
+  <span class="k">if</span> <span class="vi">@vote</span><span class="o">.</span><span class="n">valid?</span>
+    <span class="n">flash</span><span class="o">[</span><span class="ss">:notice</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Your vote was recorded&quot;</span>
+  <span class="k">else</span>
+    <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Your vote was &lt;strong&gt;not&lt;/strong&gt; recorded&quot;</span><span class="o">.</span><span class="n">html_safe</span>
+  <span class="k">end</span>
+    <span class="n">redirect_to</span> <span class="ss">:back</span> <span class="c1">#(to go back to the original page viewed)</span>
+<span class="k">end</span></code></pre></div>
+
+<p>This will cause the rails to not escape those tags and apply the html. You generally do not
+want to add html_safe on user input elements.</p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/03/20/course3-three-styles-of-bdd/">
+            Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
+            <small>20 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/17/course3-transactions/">
+            Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
+            <small>17 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/15/course3-parameter-naming-conventions/">
+            Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions
+            <small>15 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

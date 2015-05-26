@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Rapid Prototyping with Rails: Lesson 1 &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Rapid Prototyping with Rails: Lesson 1</h1>
+  <span class="post-date">01 Oct 2014</span>
+  <h1>Items covered:</h1>
+
+<ol>
+<li>Bundle Install/Bundle Exec</li>
+<li>Creating your Rails App</li>
+<li>Folder Directory</li>
+<li>Rake Routes</li>
+<li>Relational Databases</li>
+</ol>
+
+<h2>Bundle Install</h2>
+
+<p>Before you couldn&#39;t have multiple versions of gems installed on your machine when
+switching b/w projects.</p>
+
+<p>Bundler creates a sandbox in your application where the proper versions of your gems
+are stored.</p>
+
+<h3>Bundle exec</h3>
+
+<p>does the samething and is used when your system level rake (rake db:migrate) for example
+is not compatible with the current settings.
+Therefore you have to use bundle exec rake db:migrate or just bundle exec.</p>
+
+<p>Heroku also uses Bundler.</p>
+
+<h2>Creating your app:</h2>
+
+<p>Files you should always look at:</p>
+
+<h3>1. database.yml</h3>
+
+<p>Tells the application how to connect to the database
+*In development - we use sqlite3
+*In production - we use postgres (although in this course Heroku takes care it for us)</p>
+
+<p>For sqlite - your database is in your code base and its one file, unlike others
+where is an application and usually your database is hosted somewhere:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">production</span>
+        <span class="ss">adapter</span><span class="p">:</span> <span class="n">mysql</span>
+        <span class="ss">database</span><span class="p">:</span> <span class="n">myapp_development</span>
+        <span class="ss">host</span><span class="p">:</span> <span class="n">localhost</span>
+        <span class="ss">username</span><span class="p">:</span>
+        <span class="ss">password</span><span class="p">:</span></code></pre></div>
+
+<p>You will want to mimick your local enviornment as much as possible to your production
+enviornment in order to catch bugs</p>
+
+<h2>2. Gemfile</h2>
+
+<h3>3. Routes File</h3>
+
+<p>How the request initally get&#39;s routed. The blueprint of your application ad its
+capabilities.</p>
+
+<h2>Folder Directory</h2>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">app</span> <span class="o">-</span> <span class="n">where</span> <span class="n">you</span> <span class="n">spend</span> <span class="n">most</span> <span class="n">time</span>
+  <span class="n">assets</span> <span class="o">-</span> <span class="n">where</span> <span class="n">you</span> <span class="n">put</span> <span class="n">all</span> <span class="n">static</span> <span class="n">files</span><span class="p">,</span> <span class="n">images</span><span class="p">,</span> <span class="n">etc</span><span class="o">.</span>
+  <span class="n">controllers</span>
+  <span class="n">mailers</span> <span class="o">-</span> <span class="n">outbound</span> <span class="n">mail</span><span class="o">.</span> <span class="no">Not</span> <span class="n">good</span> <span class="n">to</span> <span class="n">use</span> <span class="n">because</span> <span class="n">you</span> <span class="n">can</span> <span class="n">easily</span> <span class="n">get</span> <span class="n">flagged</span> <span class="n">as</span> <span class="n">spam</span>
+   <span class="p">(</span><span class="n">use</span> <span class="n">a</span> <span class="n">transactional</span> <span class="n">email</span> <span class="n">provider</span> <span class="p">(</span><span class="n">stmp</span> <span class="n">mailers</span><span class="p">)</span> <span class="n">hosts</span> <span class="n">such</span> <span class="n">as</span> <span class="n">mailgun</span><span class="p">,</span> <span class="n">postmark</span><span class="p">,</span> <span class="n">etc</span><span class="o">.</span> <span class="p">)</span>
+   <span class="n">models</span>
+   <span class="n">views</span> <span class="o">-</span> <span class="n">where</span> <span class="n">our</span> <span class="n">erb</span> <span class="n">goes</span>
+<span class="n">bin</span> <span class="o">-</span> <span class="n">where</span> <span class="n">your</span> <span class="n">executable</span> <span class="n">code</span> <span class="n">goes</span> <span class="o">-</span> <span class="n">we</span> <span class="n">never</span> <span class="n">touch</span> <span class="n">this</span>
+<span class="n">application</span><span class="o">.</span><span class="n">rb</span> <span class="o">-</span> <span class="n">sets</span> <span class="n">application</span> <span class="n">defaults</span> <span class="n">such</span> <span class="n">as</span> <span class="n">timezone</span><span class="p">,</span> <span class="nb">load</span> <span class="n">path</span>
+<span class="n">enviornment</span> <span class="n">folder</span> <span class="o">-</span> <span class="n">configurations</span> <span class="k">for</span> <span class="n">development</span> <span class="ow">and</span> <span class="n">production</span><span class="p">,</span> <span class="ow">and</span> <span class="n">testing</span><span class="o">.</span>
+                  <span class="o">-</span> <span class="n">you</span> <span class="n">can</span> <span class="n">also</span> <span class="n">create</span> <span class="n">custom</span> <span class="n">enviornments</span> <span class="o">-</span> <span class="n">such</span> <span class="no">QA</span><span class="p">,</span> <span class="n">intergration</span> <span class="ow">or</span> <span class="n">staging</span>
+<span class="n">initializers</span> <span class="n">folder</span> <span class="o">-</span> <span class="n">where</span> <span class="n">you</span> <span class="n">files</span> <span class="n">that</span> <span class="n">you</span> <span class="n">want</span> <span class="n">to</span> <span class="nb">load</span> <span class="k">when</span> <span class="n">your</span> <span class="n">application</span>
+                    <span class="n">is</span> <span class="n">initialized</span>
+<span class="no">Config</span> <span class="n">folder</span>
+  <span class="n">locales</span> <span class="o">-</span> <span class="n">yml</span> <span class="n">files</span> <span class="o">-</span> <span class="n">is</span> <span class="n">a</span> <span class="n">way</span> <span class="n">to</span> <span class="n">internationalize</span> <span class="n">your</span> <span class="n">app</span><span class="o">.</span> <span class="no">Is</span> <span class="n">comprised</span> <span class="n">of</span> <span class="n">comlicated</span> <span class="n">hashes</span>
+        <span class="ow">and</span> <span class="n">you</span> <span class="n">no</span> <span class="n">longer</span> <span class="n">write</span> <span class="n">using</span> <span class="n">strings</span><span class="o">.</span> <span class="no">Extremely</span> <span class="n">painful</span> <span class="n">to</span> <span class="n">manage</span> <span class="n">files</span>
+<span class="no">Lib</span> <span class="o">-</span> <span class="n">you</span> <span class="n">can</span> <span class="n">also</span> <span class="n">put</span> <span class="n">assets</span> <span class="k">in</span> <span class="n">there</span>
+<span class="no">Tasks</span> <span class="o">-</span> <span class="n">you</span> <span class="n">can</span> <span class="n">place</span> <span class="n">rake</span> <span class="n">tasks</span> <span class="k">in</span> <span class="n">here</span>
+<span class="n">log</span> <span class="o">-</span> <span class="n">stores</span> <span class="n">all</span> <span class="n">terminal</span> <span class="n">logs</span> <span class="n">from</span> <span class="n">your</span> <span class="n">application</span>
+<span class="kp">public</span> <span class="o">-</span> <span class="n">where</span> <span class="n">you</span> <span class="n">store</span> <span class="n">your</span> <span class="n">error</span> <span class="n">pages</span>
+      <span class="o">-</span> <span class="n">robosts</span> <span class="o">-</span> <span class="n">tell</span> <span class="n">search</span> <span class="n">engines</span> <span class="n">where</span> <span class="n">to</span> <span class="n">go</span> <span class="n">within</span> <span class="n">your</span> <span class="n">application</span>
+<span class="no">Vendor</span> <span class="o">-</span> <span class="n">a</span> <span class="n">relic</span> <span class="n">from</span> <span class="n">the</span> <span class="n">past</span>
+<span class="o">.</span><span class="n">gitignore</span> <span class="o">-</span> <span class="n">tells</span> <span class="n">git</span> <span class="n">what</span> <span class="n">files</span> <span class="n">to</span> <span class="n">ignore</span> <span class="k">when</span> <span class="n">committing</span><span class="o">.</span> <span class="p">(</span><span class="o">.</span><span class="n">files</span> <span class="n">are</span> <span class="n">hidden</span> <span class="n">files</span><span class="p">)</span>
+<span class="no">Readme</span> <span class="o">-</span> <span class="n">is</span> <span class="n">what</span> <span class="n">is</span> <span class="n">dispayed</span> <span class="k">when</span> <span class="n">you</span> <span class="n">push</span> <span class="n">your</span> <span class="n">app</span> <span class="n">to</span> <span class="no">Github</span><span class="o">.</span></code></pre></div>
+
+<h2>Rake Routes</h2>
+
+<p>shows all possible endpoints in your application
+You can also view your routes in your browser by going to localhost:3000/rails/info/routes
+in Rails 4 only or you can use the terminal: rake routes | grep _______</p>
+
+<h2>Relational Databases:</h2>
+
+<p>A series of spreadsheets.</p>
+
+<p>To connect these tables in order to link infromation:
+1. primary<em>key in rails is the &quot;id&quot;
+2. foreign</em>key is the creation of a &quot;user<em>id&quot; column with the primary</em>key in on
+other tables to connect to the main table.</p>
+
+<h3>There are 2 Views</h3>
+
+<ol>
+<li>Data View: very much like Excel</li>
+<li>Schema View: lists the column name and the data type allowed for that column.</li>
+</ol>
+
+<h3>1:M</h3>
+
+<p>the Foreign_key is always on the many side of a one to many relationship</p>
+
+<h3>ORMs</h3>
+
+<p>ActiveRecord is an ORM (Object Relational Mapper), a pattern created by Martin Fowler
+which describes how to abstract data from a database into code. Prior to this, using
+PHP, you would write sql code directly in the views.</p>
+
+<p>In console, using &quot;= _&quot; is equivalent to your last returned item.</p>
+
+<p>Rails is good for simple, applications with quick builds that aren&#39;t for existing
+application is analytics.</p>
+
+<p>Setting up 1:M b/w posts and users (Posts were previously created)</p>
+
+<ol>
+<li><p>Create user table
+Terminal: rails g migration create_users</p></li>
+<li><p>Create Users model
+Create model - singular, snack_case of Class name</p></li>
+<li><p>Need to add foreign key to the many side (the Posts table)
+Terminal: rails g migration add<em>user</em>id<em>to</em>posts</p></li>
+</ol>
+
+<p>Inside migration file:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">change</span>
+    <span class="n">add_column</span> <span class="ss">:table_name</span> <span class="ss">:foreign_key</span> <span class="p">(</span><span class="n">which</span> <span class="n">is</span> <span class="n">normally</span> <span class="n">the</span> <span class="n">resource</span><span class="o">+</span><span class="n">primary_key</span><span class="p">),</span> <span class="ss">:datatype</span> <span class="p">(</span><span class="n">always</span> <span class="n">will</span> <span class="n">be</span> <span class="n">integer</span><span class="p">)</span>
+
+    <span class="n">add_column</span> <span class="ss">:posts</span><span class="p">,</span> <span class="ss">:user_id</span><span class="p">,</span> <span class="ss">:integer</span>
+  <span class="k">end</span></code></pre></div>
+
+<ol>
+<li>Write in has<em>many and belongs</em>to on the models</li>
+</ol>
+
+<h3>Virtual Attribute</h3>
+
+<p>attributes that are not columns, are given through associations</p>
+
+<h2>Mass Assignment</h2>
+
+<p>The ability create/update AR obj through a hash where the keys match the attirbute
+or virtual attribute.
+example:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Post</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;some title&quot;</span><span class="p">,</span> <span class="ss">url</span><span class="p">:</span> <span class="s2">&quot;some url&quot;</span><span class="p">,</span> <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">first</span><span class="p">)</span></code></pre></div>
+
+<h3>Post.new &amp; Post.create</h3>
+
+<p>Both can be used for mass assignment. Post.new is in memory (no user id assigned)
+while Post.create will update to the database immediately.</p>
+
+<p>Post.build and Post.new are the same.</p>
+
+<h3>When in the console:</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">You</span> <span class="n">can</span> <span class="n">run</span> <span class="n">the</span> <span class="n">following</span> <span class="ss">commands</span><span class="p">:</span>
+  <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">first</span>
+  <span class="n">post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">first</span>
+  <span class="n">post</span><span class="o">.</span><span class="n">user</span> <span class="o">****</span> <span class="n">virtual</span> <span class="n">attribute</span>
+  <span class="n">post</span><span class="o">.</span><span class="n">title</span>
+  <span class="n">post</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">user</span> <span class="o">***</span><span class="no">NO</span><span class="p">,</span> <span class="n">you</span> <span class="n">can</span> <span class="n">only</span> <span class="n">set</span> <span class="n">objects</span> <span class="n">to</span> <span class="n">object</span> <span class="ow">and</span> <span class="n">integers</span> <span class="n">to</span> <span class="n">integers</span>
+  <span class="n">post</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span></code></pre></div>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/03/20/course3-three-styles-of-bdd/">
+            Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
+            <small>20 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/17/course3-transactions/">
+            Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
+            <small>17 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/15/course3-parameter-naming-conventions/">
+            Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions
+            <small>15 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

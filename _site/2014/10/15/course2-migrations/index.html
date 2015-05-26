@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Rapid Prototyping with Rails: Lesson 2, Migrations &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Rapid Prototyping with Rails: Lesson 2, Migrations</h1>
+  <span class="post-date">15 Oct 2014</span>
+  <h1>Items Covered:</h1>
+
+<ol>
+<li>Changes to Schema</li>
+<li>data definition statements vs query statements</li>
+<li>setting up db and creating migration</li>
+<li>rolling back
+
+<ul>
+<li>up/down methods</li>
+</ul></li>
+<li>How does Rails keep track of migrations we have run</li>
+<li>When to modify a migration</li>
+<li>What happens if I can&#39;t run migrations cleanly from end to end</li>
+</ol>
+
+<h2>Data Definitions</h2>
+
+<p>Data Definitions are to databases what metaprogramming is to code.
+* statement that alter the database rather than query statements that manipulate the
+data within a database
+* the steup commands before we can even query the database
+* statements that alter the metadata and schema
+* these occur outside of the code (kinda like setting up the spreadsheet before entering data)
+* migrations are a good example of this</p>
+
+<h2>Migrations</h2>
+
+<p>We never want to push our database to other developers when working on a team,
+we want to push our schema however, and this is done in the form of migrations.
+- by default, all sqlite3 files under db will be ignored when pushing to git, as per gitignore
+- To list rake commands pertaining to db:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">rake</span> <span class="o">-</span><span class="n">T</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">db</span></code></pre></div>
+
+<h2>Database Schema Migrations</h2>
+
+<ul>
+<li>There is table called schema_migrations which stores the migrations of all currently within
+your database</li>
+<li>rake db:rollback will roll back you most recently ran</li>
+</ul>
+
+<h2>Rollbacks</h2>
+
+<p><strong>Have you pushed the migration to github... have you shared locally?</strong>
+If not, then rollback is fine, if not.. don&#39;t. Because rollback will not create a diff file name.
+The code changed and its fine on your end.. but for your team members, since the filename hasn&#39;t
+changed, it will cause their application to blow-up since their migration did not re-run. Instead,
+create a new migration such as rails g migration rename_users. Always google, &quot;rails migrations methods&quot;</p>
+
+<p><strong>What happens if applications can&#39;t run cleanly from end-to-end?</strong>
+One of the first thing your team-members will do is run rake db:migrate when cloning your projectand migrations that don&#39;t run smoothly is a red flag.
+Schema.rb
+- can also be loaded when your migrations don&#39;t run from to end-to-end.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">=&gt;</span> <span class="n">rake</span> <span class="ss">db</span><span class="p">:</span><span class="ss">schema</span><span class="p">:</span><span class="nb">load</span></code></pre></div>
+
+<ul>
+<li>you can search for available commands using</li>
+</ul>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">=&gt;</span> <span class="n">rake</span> <span class="o">-</span><span class="n">T</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">schema</span></code></pre></div>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/03/20/course3-three-styles-of-bdd/">
+            Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
+            <small>20 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/17/course3-transactions/">
+            Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
+            <small>17 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/15/course3-parameter-naming-conventions/">
+            Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions
+            <small>15 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

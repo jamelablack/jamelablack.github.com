@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications - Lesson 2: Object Generation with Fabricators &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 2: Object Generation with Fabricators</h1>
+  <span class="post-date">26 Feb 2015</span>
+  <p>It&#39;s typical to create many objects during testing and the more attributes you have
+the more cumbersome it could be to maintain, moreover, if an attribute changes, it then becomes very difficult
+to update all those tests.</p>
+
+<p>To make this better, we can use an object generator framework called Fabrication.</p>
+
+<h3>Steps:</h3>
+
+<h4>1. Create a folder under specs called &quot;Fabricators&quot;</h4>
+
+<h4>2. create fabricator_todo.rb</h4>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="k">do</span>
+    <span class="nb">name</span> <span class="p">{</span> <span class="s2">&quot;cooking&quot;</span> <span class="p">}</span>
+  <span class="k">end</span></code></pre></div>
+
+<h4>3. You can also create a user each time a todo is created:</h4>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="k">do</span>
+  <span class="nb">name</span> <span class="p">{</span> <span class="s2">&quot;cooking&quot;</span> <span class="p">}</span>
+  <span class="n">user</span> <span class="p">{</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span> <span class="p">}</span>
+<span class="k">end</span></code></pre></div>
+
+<p>or</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="k">do</span>
+  <span class="nb">name</span> <span class="p">{</span> <span class="s2">&quot;cooking&quot;</span> <span class="p">}</span>
+  <span class="n">user</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>In your test suite:</h3>
+
+<p>If you want to create an object in your database:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;#display_text&quot;</span> <span class="k">do</span>
+  <span class="n">let</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="p">{</span> <span class="n">fabricate</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="p">}</span>
+  <span class="n">subject</span> <span class="p">{</span> <span class="n">todo</span><span class="o">.</span><span class="n">display_text</span> <span class="p">}</span></code></pre></div>
+
+<p>If you would rather create an object in memory, you could:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;#display_text&quot;</span> <span class="k">do</span>
+  <span class="n">let</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="p">{</span> <span class="n">fabricate</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="p">}</span>
+  <span class="n">subject</span> <span class="p">{</span> <span class="n">todo</span><span class="o">.</span><span class="n">display_text</span> <span class="p">}</span></code></pre></div>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/03/20/course3-three-styles-of-bdd/">
+            Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
+            <small>20 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/17/course3-transactions/">
+            Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
+            <small>17 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/15/course3-parameter-naming-conventions/">
+            Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions
+            <small>15 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

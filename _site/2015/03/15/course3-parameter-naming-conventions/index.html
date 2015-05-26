@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions</h1>
+  <span class="post-date">15 Mar 2015</span>
+  <h2>Parameter Naming Conventions</h2>
+
+<p>Visit Rails Guides&#39; <a href="http://guides.rubyonrails.org/form_helpers.html#understanding-parameter-naming-conventions.">Parameter Naming Conventions</a>
+Use that as the starting point to construct the params that hit the server.</p>
+
+<p>As you&#39;ve seen in the previous sections, values from forms can be at the top level of
+the params hash or nested in another hash. For example, in a standard create action for a
+Person model, params[:person] would usually be a hash of all the attributes for the person to create.
+The params hash can also contain arrays, arrays of hashes and so on.</p>
+
+<p>Fundamentally HTML forms don&#39;t know about any sort of structured data, all they generate
+is name-value pairs, where pairs are just plain strings. The arrays and hashes you see
+in your application are the result of some parameter naming conventions that Rails uses.</p>
+
+<h3>Basic Structures</h3>
+
+<p>The two basic structures are arrays and hashes. Hashes mirror the syntax used for accessing the value in params. For example, if a form contains:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">input</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;person_name&quot;</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;person[name]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;Henry&quot;</span><span class="o">/&gt;</span></code></pre></div>
+
+<p>the params hash will contain</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="p">{</span><span class="s1">&#39;person&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Henry&#39;</span><span class="p">}}</span></code></pre></div>
+
+<p>and params[:person][:name] will retrieve the submitted value in the controller.</p>
+
+<p>Hashes can be nested as many levels as required, for example:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">input</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;person_address_city&quot;</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;person[address][city]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;New York&quot;</span><span class="o">/&gt;</span></code></pre></div>
+
+<p>will result in the params hash being</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="p">{</span><span class="s1">&#39;person&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="s1">&#39;address&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="s1">&#39;city&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;New York&#39;</span><span class="p">}}}</span></code></pre></div>
+
+<p>Normally Rails ignores duplicate parameter names. If the parameter name contains
+an empty set of square brackets [] then they will be accumulated in an array.
+If you wanted users to be able to input multiple phone numbers, you
+could place this in the form:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">input</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;person[phone_number][]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">input</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;person[phone_number][]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">input</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;person[phone_number][]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="o">/&gt;</span></code></pre></div>
+
+<p>This would result in params[:person][:phone_number] being an array containing the inputted phone numbers.</p>
+
+<h3>Combining Them</h3>
+
+<p>We can mix and match these two concepts. One element of a hash might be an array as in the previous example,
+or you can have an array of hashes. For example, a form might let you create any number of addresses by repeating the following form fragment</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">input</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;addresses[][line1]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">input</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;addresses[][line2]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">input</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;addresses[][city]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="o">/&gt;</span></code></pre></div>
+
+<p>This would result in params[:addresses] being an array of hashes with keys line1, line2 and city.
+Rails decides to start accumulating values in a new hash whenever it encounters an input name that
+already exists in the current hash.</p>
+
+<p>There&#39;s a restriction, however, while hashes can be nested arbitrarily, only one level of &quot;arrayness&quot; is allowed. Arrays can usually be replaced by hashes; for example, instead of having an array of model objects, one can have a hash of model objects keyed by their id, an array index or some other parameter.</p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/03/20/course3-three-styles-of-bdd/">
+            Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
+            <small>20 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/17/course3-transactions/">
+            Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
+            <small>17 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/10/course3-update-review-in-queue/">
+            Build Robust & Production Quality Applications - Lesson 4: Update Review in Queue
+            <small>10 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

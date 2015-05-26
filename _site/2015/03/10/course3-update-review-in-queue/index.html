@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications - Lesson 4: Update Review in Queue &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 4: Update Review in Queue</h1>
+  <span class="post-date">10 Mar 2015</span>
+  <p>In Myfix, we want to be able to allow the user to update video rating in the video_play queue.</p>
+
+<p>Goal: To change video rating from the queue<em>item index.
+To do so, we have to create the virtual attribute on the queue</em>item model, as though it is a column on the queue_item model (table). Since it is not in the model, we have to define the getter and setter.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#queue_item.rb</span>
+<span class="k">def</span> <span class="nf">rating</span>
+
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">rating</span><span class="o">=</span><span class="p">(</span><span class="n">new_rating</span><span class="p">)</span>
+ <span class="o">-</span><span class="n">this</span> <span class="n">is</span> <span class="n">where</span> <span class="n">you</span> <span class="k">begin</span> <span class="n">to</span> <span class="n">write</span> <span class="n">your</span> <span class="n">tests</span>
+<span class="k">end</span></code></pre></div>
+
+<h2>Update Column vs Update Attribute</h2>
+
+<p>update<em>attributes will go through validation error unlike the update</em>column method,which will bypass validation.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">rating</span><span class="o">=</span><span class="p">(</span><span class="n">new_rating</span><span class="p">)</span>
+  <span class="n">review</span> <span class="o">=</span> <span class="no">Review</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">user_id</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="ss">video_id</span><span class="p">:</span> <span class="n">video</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
+  <span class="n">review</span><span class="o">.</span><span class="n">update_column</span><span class="p">(</span><span class="ss">:rating</span><span class="p">,</span> <span class="n">new_rating</span><span class="p">)</span>
+<span class="k">end</span></code></pre></div>
+
+<h2>Memoization</h2>
+
+<p>Memoization means the first time the record is called, it will hit the database only once and store that info
+into the instance variable and will not database again when record is called.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">review</span>
+  <span class="vi">@review</span> <span class="o">||=</span> <span class="no">Review</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">user_id</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="ss">video_id</span><span class="p">:</span> <span class="n">video</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
+<span class="k">end</span></code></pre></div>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/03/20/course3-three-styles-of-bdd/">
+            Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
+            <small>20 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/17/course3-transactions/">
+            Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
+            <small>17 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/15/course3-parameter-naming-conventions/">
+            Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions
+            <small>15 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

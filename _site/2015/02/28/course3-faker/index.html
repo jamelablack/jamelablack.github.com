@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications - Lesson 2: Generate Fake Data with Faker &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 2: Generate Fake Data with Faker</h1>
+  <span class="post-date">28 Feb 2015</span>
+  <h2>Use Faker to Generate Fake Data</h2>
+
+<p>Creating fake data when your model has uniqueness validations will throw errors
+if your data is not unique.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="k">do</span>
+  <span class="nb">name</span> <span class="p">{</span> <span class="s2">&quot;cooking&quot;</span> <span class="p">}</span>
+  <span class="n">user</span>
+<span class="k">end</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span> <span class="k">do</span>
+  <span class="n">email</span> <span class="p">{</span> <span class="s2">&quot;joe@example.com&quot;</span><span class="p">}</span> <span class="c1">#This will throw an error eventually if email record already exists.</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>Examples</h3>
+
+<p>Creating a category:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:category</span><span class="p">)</span> <span class="k">do</span>
+  <span class="nb">name</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Name</span><span class="o">.</span><span class="n">name</span> <span class="p">}</span>
+<span class="k">end</span></code></pre></div>
+
+<p>Creating a video:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:video</span><span class="p">)</span> <span class="k">do</span>
+  <span class="n">title</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Lorem</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="p">}</span>
+  <span class="n">description</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Lorem</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="p">}</span>
+<span class="k">end</span></code></pre></div>
+
+<p>Creating an invitation:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">)</span> <span class="k">do</span>
+  <span class="n">recipient_name</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Name</span><span class="o">.</span><span class="n">name</span> <span class="p">}</span>
+  <span class="n">recipient_email</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Internet</span><span class="o">.</span><span class="n">email</span> <span class="p">}</span>
+  <span class="n">message</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Lorem</span><span class="o">.</span><span class="n">paragraphs</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="p">}</span>
+<span class="k">end</span></code></pre></div>
+
+<p>Read more: <a href="https://github.com/stympy/faker">Faker Docs</a></p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/03/20/course3-three-styles-of-bdd/">
+            Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
+            <small>20 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/17/course3-transactions/">
+            Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
+            <small>17 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/15/course3-parameter-naming-conventions/">
+            Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions
+            <small>15 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

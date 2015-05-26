@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications - Lesson 3: Part 3 &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 3: Part 3</h1>
+  <span class="post-date">07 Mar 2015</span>
+  <h2>Items Covered:</h2>
+
+<ol>
+<li>Feature Specs</li>
+<li>Capybara</li>
+<li>Request Specs</li>
+</ol>
+
+<h3>Types of Testing We&#39;ve Covered:</h3>
+
+<ul>
+<li>Models (Model Specs)</li>
+<li>Controllers (Controller Specs)</li>
+<li>Views, Routes, Helpers, Mailers (Feature Specs)</li>
+</ul>
+
+<h2>Feature Specs</h2>
+
+<p>Feature Specs cover all the above in integration, although there are also specs
+for every item listed above, however mailers, routes, views, and helpers do not need to be tested in isolation.</p>
+
+<p>With feature specs, you mimic the user&#39;s experience originating with the browser.
+This is the first example of vertical integration.
+Specs are typically broken into features.</p>
+
+<p>There is something called &quot;request specs&quot; which focuses more horizontal integration. This is when you want to test multiple requests and responses across various controllers, making sure that things flow in a sequence.</p>
+
+<p>In this course, we will NOT use request<em>specs, becasue typically request</em>specs are used to capture
+business processes from end to end. However any business process worth measuring must be
+centered around the customer expereince...</p>
+
+<h2>Capybara</h2>
+
+<p>The Capybara gem is the way you can simulate user interaction with the browser.
+Load RSpec 2.x support by adding the following line (typically to your spec_helper.rb file):</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;capybara/rspec&#39;</span></code></pre></div>
+
+<p>If you are using Rails, put your Capybara specs in spec/features.</p>
+
+<p>If you are not using Rails, tag all the example groups in which you want to use Capybara with :type =&gt; :feature.</p>
+
+<p>You can now write your specs like so:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;the signin process&quot;</span><span class="p">,</span> <span class="ss">:type</span> <span class="o">=&gt;</span> <span class="ss">:feature</span> <span class="k">do</span>
+  <span class="n">before</span> <span class="ss">:each</span> <span class="k">do</span>
+    <span class="no">User</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="ss">:email</span> <span class="o">=&gt;</span> <span class="s1">&#39;user@example.com&#39;</span><span class="p">,</span> <span class="ss">:password</span> <span class="o">=&gt;</span> <span class="s1">&#39;password&#39;</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="n">it</span> <span class="s2">&quot;signs me in&quot;</span> <span class="k">do</span>
+    <span class="n">visit</span> <span class="s1">&#39;/sessions/new&#39;</span>
+    <span class="n">within</span><span class="p">(</span><span class="s2">&quot;#session&quot;</span><span class="p">)</span> <span class="k">do</span>
+      <span class="n">fill_in</span> <span class="s1">&#39;Email&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="s1">&#39;user@example.com&#39;</span>
+      <span class="n">fill_in</span> <span class="s1">&#39;Password&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="s1">&#39;password&#39;</span>
+    <span class="k">end</span>
+    <span class="n">click_button</span> <span class="s1">&#39;Sign in&#39;</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_content</span> <span class="s1">&#39;Success&#39;</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>Use :js =&gt; true to switch to the Capybara.javascript_driver (:selenium by default), or provide a :driver option to switch to one specific driver. For example:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s1">&#39;some stuff which requires js&#39;</span><span class="p">,</span> <span class="ss">:js</span> <span class="o">=&gt;</span> <span class="kp">true</span> <span class="k">do</span>
+  <span class="n">it</span> <span class="s1">&#39;will use the default js driver&#39;</span>
+  <span class="n">it</span> <span class="s1">&#39;will switch to one specific driver&#39;</span><span class="p">,</span> <span class="ss">:driver</span> <span class="o">=&gt;</span> <span class="ss">:webkit</span>
+<span class="k">end</span></code></pre></div>
+
+<p>**Capybara Built in DSL (reads more like UAT - User Accpetance tests) - reads more higher level
+- feature is in fact just an alias for describe ...,
+- :type =&gt; :feature,
+- background is an alias for before, scenario for it,
+- and given/given! aliases for let/let!, respectively.</p>
+
+<p>Finally, Capybara also comes with a built in DSL for creating descriptive acceptance tests:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">feature</span> <span class="s2">&quot;Signing in&quot;</span> <span class="k">do</span>
+  <span class="n">background</span> <span class="k">do</span>
+    <span class="no">User</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="ss">:email</span> <span class="o">=&gt;</span> <span class="s1">&#39;user@example.com&#39;</span><span class="p">,</span> <span class="ss">:password</span> <span class="o">=&gt;</span> <span class="s1">&#39;caplin&#39;</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="n">scenario</span> <span class="s2">&quot;Signing in with correct credentials&quot;</span> <span class="k">do</span>
+    <span class="n">visit</span> <span class="s1">&#39;/sessions/new&#39;</span>
+    <span class="n">within</span><span class="p">(</span><span class="s2">&quot;#session&quot;</span><span class="p">)</span> <span class="k">do</span>
+      <span class="n">fill_in</span> <span class="s1">&#39;Email&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="s1">&#39;user@example.com&#39;</span>
+      <span class="n">fill_in</span> <span class="s1">&#39;Password&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="s1">&#39;caplin&#39;</span>
+    <span class="k">end</span>
+    <span class="n">click_button</span> <span class="s1">&#39;Sign in&#39;</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_content</span> <span class="s1">&#39;Success&#39;</span>
+  <span class="k">end</span>
+
+  <span class="n">given</span><span class="p">(</span><span class="ss">:other_user</span><span class="p">)</span> <span class="p">{</span> <span class="no">User</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="ss">:email</span> <span class="o">=&gt;</span> <span class="s1">&#39;other@example.com&#39;</span><span class="p">,</span> <span class="ss">:password</span> <span class="o">=&gt;</span> <span class="s1">&#39;rous&#39;</span><span class="p">)</span> <span class="p">}</span>
+
+  <span class="n">scenario</span> <span class="s2">&quot;Signing in as another user&quot;</span> <span class="k">do</span>
+    <span class="n">visit</span> <span class="s1">&#39;/sessions/new&#39;</span>
+    <span class="n">within</span><span class="p">(</span><span class="s2">&quot;#session&quot;</span><span class="p">)</span> <span class="k">do</span>
+      <span class="n">fill_in</span> <span class="s1">&#39;Email&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="n">other_user</span><span class="o">.</span><span class="n">email</span>
+      <span class="n">fill_in</span> <span class="s1">&#39;Password&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="n">other_user</span><span class="o">.</span><span class="n">password</span>
+    <span class="k">end</span>
+    <span class="n">click_button</span> <span class="s1">&#39;Sign in&#39;</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_content</span> <span class="s1">&#39;Invalid email or password&#39;</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>Capybara Drivers</h3>
+
+<ol>
+<li><p>RackTest is really fast, and does not really fire-up the browser. It&#39;s a headless driver
+therefore doesn&#39;t really simulate the browser experience. RackTest does not support Js.</p></li>
+<li><p>Selenuim is a popular driver that does handle Js and fire-ups Firefox.
+But this option is very slow.</p></li>
+<li><p>Capybara Webkit is another headless driver that can execute Js well.
+It&#39;s much faster than selenium but slower than RackTest.</p></li>
+</ol>
+
+<h3>First feature spec</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;spec/helper&#39;</span>
+<span class="n">feature</span> <span class="s1">&#39;User signs in&#39;</span> <span class="k">do</span>
+  <span class="n">background</span> <span class="k">do</span>
+    <span class="no">User</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">username</span><span class="p">:</span> <span class="s2">&quot;john&quot;</span><span class="p">,</span> <span class="ss">full_name</span><span class="p">:</span> <span class="s2">&quot;John Doe&quot;</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="n">scenario</span> <span class="s2">&quot;with existing username&quot;</span> <span class="k">do</span>
+    <span class="n">visit</span> <span class="n">root_path</span>
+    <span class="n">fill_in</span> <span class="s2">&quot;Username&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s2">&quot;john&quot;</span>
+    <span class="n">click_button</span> <span class="s2">&quot;Sign in&quot;</span>
+    <span class="n">page</span><span class="o">.</span><span class="n">should</span> <span class="n">have_content</span> <span class="s2">&quot;John Doe&quot;</span>
+    <span class="k">end</span>
+  <span class="k">end</span></code></pre></div>
+
+<p>The &#39;fill<em>in &quot;Username&quot;, &#39; is referring to the label</em>tag :username, &quot;Username&quot;
+  - you can also refer to fill<em>in the label tag, the name, or the input</em>id,
+  although its best practice to use the label tag because it easier to read.</p>
+
+<h3>Request Specs</h3>
+
+<p>Watch RailsCast video on <a href="http://railscasts.com/episodes/257-request-specs-and-capybara">Capybara &amp; Request Specs</a></p>
+
+<ul>
+<li>Request Specs are alternatives to the Rails Builtin Integration Testing
+(Refer to RailsCast video 187)</li>
+</ul>
+
+<p>In terminal, run:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="mi">1</span><span class="o">.</span> <span class="n">rails</span> <span class="n">g</span> <span class="ss">rspec</span><span class="p">:</span><span class="n">install</span>
+
+<span class="mi">2</span><span class="o">.</span> <span class="n">rails</span> <span class="n">g</span> <span class="n">intergration_test</span> <span class="n">task</span>
+
+<span class="mi">3</span><span class="o">.</span> <span class="no">Open</span> <span class="n">up</span> <span class="n">task_spec</span><span class="p">,</span> <span class="n">code</span> <span class="n">should</span> <span class="n">be</span> <span class="n">fine</span> <span class="n">as</span> <span class="n">is</span><span class="p">,</span> <span class="n">but</span> <span class="n">you</span> <span class="n">would</span>
+<span class="n">change</span> <span class="n">the</span> <span class="n">request</span> <span class="n">verb</span> <span class="ow">and</span> <span class="n">the</span> <span class="n">assertion</span>
+
+<span class="mi">4</span><span class="o">.</span> <span class="n">rake</span> <span class="ss">spec</span><span class="p">:</span><span class="n">requests</span></code></pre></div>
+
+<p>Example:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;Tasks&quot;</span> <span class="k">do</span>
+  <span class="n">describe</span> <span class="s2">&quot;GET /tasks&quot;</span> <span class="k">do</span>
+    <span class="n">it</span>  <span class="s2">&quot;displays tasks&quot;</span> <span class="k">do</span>
+      <span class="no">Task</span><span class="o">.</span><span class="n">create!</span><span class="p">(</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s2">&quot;paint fence&quot;</span><span class="p">)</span>
+      <span class="n">get</span> <span class="n">tasks_path</span>
+      <span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">should</span> <span class="kp">include</span><span class="p">(</span><span class="s2">&quot;paint fence&quot;</span><span class="p">)</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+<span class="n">describe</span> <span class="s2">&quot;POST /tasks&quot;</span> <span class="k">do</span>
+    <span class="n">it</span> <span class="s2">&quot;create task&quot;</span> <span class="k">do</span>
+      <span class="n">post_via_redirect</span> <span class="n">tasks_path</span><span class="p">,</span> <span class="ss">tasks</span><span class="p">:</span> <span class="p">{</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;mow lawn&quot;</span><span class="p">}</span>
+      <span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">should</span> <span class="kp">include</span><span class="p">(</span><span class="s2">&quot;mow lawn&quot;</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>One issue with request specs this that they dont mimic the user&#39;s experience
+becasue you&#39;e submitting the request directly, rather than going through the form
+like the user would - that is why we use Capybara (rather than webrat) &amp; Launchy</p>
+
+<p>Installing Capybara, allows us to change our existing tests:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;Tasks&quot;</span> <span class="k">do</span>
+  <span class="n">describe</span> <span class="s2">&quot;GET /tasks&quot;</span> <span class="k">do</span>
+    <span class="n">it</span>  <span class="s2">&quot;displays tasks&quot;</span> <span class="k">do</span>
+      <span class="no">Task</span><span class="o">.</span><span class="n">create!</span><span class="p">(</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s2">&quot;paint fence&quot;</span><span class="p">)</span>
+      <span class="n">visit</span> <span class="n">tasks_path</span>
+      <span class="n">page</span><span class="o">.</span><span class="n">should</span> <span class="kp">include</span><span class="p">(</span><span class="s2">&quot;paint fence&quot;</span><span class="p">)</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+<span class="n">describe</span> <span class="s2">&quot;POST /tasks&quot;</span> <span class="k">do</span>
+    <span class="n">it</span> <span class="s2">&quot;create task&quot;</span> <span class="k">do</span>
+      <span class="n">visit</span> <span class="n">tasks_path</span>
+      <span class="n">fill_in</span> <span class="s2">&quot;New Task&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s2">&quot;mow lawn&quot;</span>
+      <span class="n">click_button</span> <span class="s2">&quot;Add&quot;</span>
+      <span class="n">page</span><span class="o">.</span><span class="n">should</span> <span class="n">have_content</span><span class="p">(</span><span class="s2">&quot;successfully added task&quot;</span><span class="p">)</span>
+      <span class="n">page</span><span class="o">.</span><span class="n">should</span> <span class="n">have_content</span><span class="p">(</span><span class="s2">&quot;mow lawn&quot;</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>*What if the test fails and you don&#39;t know why?
+Thats where the gem &quot;Launchy&quot; comes in:
+ -anywhere in the test, you can write:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">save_and_open_page</span></code></pre></div>
+
+<p>Capybara does not test Javascript with out Selenium:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">it</span> <span class="s2">&quot;supports js&quot;</span><span class="p">,</span> <span class="ss">js</span><span class="p">:</span> <span class="kp">true</span> <span class="k">do</span>
+   <span class="n">visit</span> <span class="n">tasks_path</span>
+   <span class="n">click_link</span> <span class="s2">&quot;test js&quot;</span>
+   <span class="n">page</span><span class="o">.</span><span class="n">should</span> <span class="n">have_content</span><span class="p">(</span><span class="s2">&quot;js works&quot;</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<hr>
+
+<p>Let&#39;s try adding Js to our first test and see if it is supported by
+Selenium.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;Tasks&quot;</span> <span class="k">do</span>
+<span class="n">describe</span> <span class="s2">&quot;GET /tasks&quot;</span> <span class="k">do</span><span class="p">,</span> <span class="ss">js</span><span class="p">:</span> <span class="kp">true</span> <span class="k">do</span>
+  <span class="n">it</span>  <span class="s2">&quot;displays tasks&quot;</span> <span class="k">do</span>
+    <span class="no">Task</span><span class="o">.</span><span class="n">create!</span><span class="p">(</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s2">&quot;paint fence&quot;</span><span class="p">)</span>
+    <span class="n">visit</span> <span class="n">tasks_path</span>
+    <span class="n">page</span><span class="o">.</span><span class="n">should</span> <span class="kp">include</span><span class="p">(</span><span class="s2">&quot;paint fence&quot;</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>The test will fail because Selenium does not support database transactions</p>
+
+<h3>In #spec_helper.rb:</h3>
+
+<p>Change config.use<em>transactional</em>fixtures = true, to false.
+Selenium does not support database transactions.</p>
+
+<p>But this will mean our database transactions will carryover in between
+tests and we dont want that. So the answer is the database cleaner
+gem that will run in between tests. You must add the config code
+from the documentation into the spec_helper, removing transactions since the
+arent supported by Selenuim.</p>
+
+<hr>
+
+<p>To run pry in a spec, you must use:
+require &#39;pry&#39;; binding.pry before the error/after the action
+During pry. you can use Launchy &quot;save<em>and</em>open_page&quot;</p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/03/20/course3-three-styles-of-bdd/">
+            Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
+            <small>20 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/17/course3-transactions/">
+            Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
+            <small>17 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/15/course3-parameter-naming-conventions/">
+            Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions
+            <small>15 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

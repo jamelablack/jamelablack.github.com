@@ -15,7 +15,7 @@ Board with two players
 One player is "x", the other is "o", and player "x" goes first. Then they alternate until 3 of x/o in a row or
 all cells are ful, which means its a tie.
 
-1. Extract Classes
+##Extract Classes
 ###Board
   - squares
   - Are all squares marked?

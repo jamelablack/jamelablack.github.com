@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Rapid Prototyping with Rails: Lesson 2, Walk-through (model-backed forms) &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Rapid Prototyping with Rails: Lesson 2, Walk-through (model-backed forms)</h1>
+  <span class="post-date">17 Oct 2014</span>
+  <h2>Rails Model Backed Forms - Create a Resource called: Dog</h2>
+
+<p>Command to change port: rails s -p 3001</p>
+
+<ol>
+<li>Run migration</li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">rails</span> <span class="n">g</span> <span class="n">create_dogs</span>
+
+    <span class="k">class</span> <span class="nc">CreateDogs</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+      <span class="k">def</span> <span class="nf">change</span>
+        <span class="n">create_table</span> <span class="ss">:dogs</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
+          <span class="n">t</span><span class="o">.</span><span class="n">string</span> <span class="ss">:name</span>
+          <span class="n">t</span><span class="o">.</span><span class="n">integer</span> <span class="ss">:height_in_inches</span><span class="p">,</span> <span class="ss">:weight_in_lbs</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+    <span class="k">end</span></code></pre></div>
+
+<ol>
+<li>Create dog.rb under Models</li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Dogs</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+<span class="k">end</span></code></pre></div>
+
+<ol>
+<li><p>rake db:migrate or bundle exec rake:db migrate</p></li>
+<li><p>Hop into Rails Console to add instances of Dog class</p></li>
+<li><p>Create Resources or Routes manually</p></li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="mi">1</span><span class="o">.</span> <span class="no">Create</span> <span class="no">Using</span> <span class="no">Resources</span>
+    <span class="n">resources</span> <span class="ss">:dogs</span><span class="p">,</span> <span class="n">except</span> <span class="o">[</span><span class="ss">:destroy</span><span class="o">]</span>
+<span class="mi">2</span><span class="o">.</span> <span class="no">Write</span> <span class="n">routes</span> <span class="n">manually</span> <span class="k">in</span> <span class="n">routes</span> <span class="n">file</span>
+    <span class="n">get</span> <span class="s1">&#39;/dogs/&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;dogs#index&#39;</span>
+    <span class="n">get</span> <span class="s1">&#39;/dogs/:id&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;dogs#show&#39;</span>
+    <span class="n">get</span> <span class="s1">&#39;dogs/new&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;dogs#new&#39;</span>
+    <span class="n">post</span> <span class="s1">&#39;/dogs&#39;</span><span class="p">,</span>   <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;dogs#create&#39;</span>
+    <span class="n">get</span> <span class="s1">&#39;/dogs/:id/edit&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">dogs</span><span class="c1">#edit</span>
+    <span class="n">patch</span> <span class="s1">&#39;/dogs/:id&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">dogs</span><span class="c1">#update</span>
+    <span class="n">delete</span>  <span class="s1">&#39;dogs/:id&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">dogs</span><span class="c1">#destroy</span></code></pre></div>
+
+<ol>
+<li>Create Dogs Controller</li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#dogs_controller.rb</span>
+<span class="k">class</span> <span class="nc">DogsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="k">def</span> <span class="nf">index</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<ol>
+<li><p>We will get an error because there no index.html.erb under the dogs folders within
+the views folder</p></li>
+<li><p>Create instance variable to pass into the template</p></li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">index</span>
+  <span class="vi">@dogs</span> <span class="o">=</span> <span class="no">Dogs</span><span class="o">.</span><span class="n">all</span>
+ <span class="k">end</span></code></pre></div>
+
+<ol>
+<li>Better yet, in your model, you could:</li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Dog</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+    <span class="k">def</span> <span class="nf">info</span>
+      <span class="s2">&quot;</span><span class="si">#{</span><span class="nb">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> is </span><span class="si">#{</span><span class="nb">self</span><span class="o">.</span><span class="n">height_in_inches</span><span class="si">}</span><span class="s2"> inches tall and weighs </span><span class="si">#{</span><span class="nb">self</span><span class="o">.</span><span class="n">weight_in_lbs</span><span class="si">}</span><span class="s2"> lbs.&quot;</span>
+    <span class="k">end</span>
+  <span class="k">end</span></code></pre></div>
+
+<p>Something like the above is okay, but not okay to add html to that statement. In no way should you ever add presentational concerns at the model level. Application_helpers is for formatting logic on the user interface</p>
+
+<ol>
+<li>A better solution is to add this code to the application_helper.</li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#application_helper.rb</span>
+    <span class="k">def</span> <span class="nf">dog_info</span><span class="p">(</span><span class="n">dog</span><span class="p">)</span>
+      <span class="s2">&quot;</span><span class="si">#{</span><span class="n">dog</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> is </span><span class="si">#{</span><span class="n">dog</span><span class="o">.</span><span class="n">height_in_inches</span><span class="si">}</span><span class="s2"> inches tall and weighs </span><span class="si">#{</span><span class="n">dog</span><span class="o">.</span><span class="n">weight_in_lbs</span><span class="si">}</span><span class="s2"> lbs.&quot;</span>
+    <span class="k">end</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#index.html.erb</span>
+    <span class="o">&lt;</span><span class="n">h2</span><span class="o">&gt;</span><span class="no">All</span> <span class="n">the</span> <span class="n">dogs</span> <span class="o">&lt;</span><span class="sr">/h2&gt;</span>
+
+<span class="sr">    &lt;ul&gt;</span>
+<span class="sr">    &lt;% @dogs.each do |dog| %&gt;</span>
+<span class="sr">      &lt;li&gt;&lt;%= dog_info(dog) %&gt;&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="sx">% end %&gt;</span>
+<span class="sx">    &lt;/ul&gt;</span></code></pre></div>
+
+<hr>
+
+<h2>Lets add the new action to the controller:</h2>
+
+<ol>
+<li>Add link to navigation bar for a new dog:</li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s1">&#39;nav_item&#39;</span><span class="o">&gt;</span>
+    <span class="o">&lt;%=</span> <span class="n">link_to</span> <span class="s1">&#39;New Dog&#39;</span><span class="p">,</span> <span class="n">new_dog_path</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;btn btn-success btn-small&#39;</span> <span class="sx">%&gt;</span>
+<span class="sx">  &lt;/div&gt;</span></code></pre></div>
+
+<ol>
+<li>Must update routes to include the named route:</li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">get</span> <span class="s1">&#39;/dogs/&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;dogs#index&#39;</span>
+    <span class="n">get</span> <span class="s1">&#39;/dogs/:id&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;dogs#show&#39;</span>
+    <span class="n">get</span> <span class="s1">&#39;dogs/new&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;dogs#new&#39;</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="s1">&#39;new_dog&#39;</span>
+    <span class="n">post</span> <span class="s1">&#39;/dogs&#39;</span><span class="p">,</span>   <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;dogs#create&#39;</span>
+    <span class="n">get</span> <span class="s1">&#39;/dogs/:id/edit&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">dogs</span><span class="c1">#edit</span>
+    <span class="n">patch</span> <span class="s1">&#39;/dogs/:id&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">dogs</span><span class="c1">#update</span>
+    <span class="n">delete</span>  <span class="s1">&#39;dogs/:id&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">dogs</span><span class="c1">#destroy</span></code></pre></div>
+
+<ol>
+<li>You must list routes in proper order - order matters</li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">get</span> <span class="s1">&#39;dogs/new&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;dogs#new&#39;</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="s1">&#39;new_dog&#39;</span>
+    <span class="n">get</span> <span class="s1">&#39;/dogs/&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;dogs#index&#39;</span> <span class="ss">as</span><span class="p">:</span> <span class="s1">&#39;dogs&#39;</span>
+    <span class="n">get</span> <span class="s1">&#39;/dogs/:id&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;dogs#show&#39;</span>  <span class="ss">as</span><span class="p">:</span> <span class="s1">&#39;dog&#39;</span>
+    <span class="n">post</span> <span class="s1">&#39;/dogs&#39;</span><span class="p">,</span>   <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;dogs#create&#39;</span>
+    <span class="n">get</span> <span class="s1">&#39;/dogs/:id/edit&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">dogs</span><span class="c1">#edit</span>
+    <span class="n">patch</span> <span class="s1">&#39;/dogs/:id&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">dogs</span><span class="c1">#update</span>
+    <span class="n">delete</span>  <span class="s1">&#39;dogs/:id&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">dogs</span><span class="c1">#destroy</span></code></pre></div>
+
+<ol>
+<li>Create</li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#new.html.erb</span>
+    <span class="o">&lt;</span><span class="n">h4</span><span class="o">&gt;</span> <span class="no">Create</span> <span class="n">a</span> <span class="kp">new</span> <span class="n">dog</span> <span class="o">&lt;</span><span class="sr">/h4&gt;</span>
+
+<span class="sr">    &lt;%= form_for @dog do |f| %&gt;</span>
+<span class="sr">      &lt;%= f.label :name %&gt;</span>
+<span class="sr">      &lt;%= f.text_field :name %&gt;</span>
+<span class="sr">      &lt;br/</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="sx">%= f.label :weight %&gt;</span>
+<span class="sx">      &lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:weight_in_inches</span> <span class="sx">%&gt;</span>
+<span class="sx">      &lt;br/&gt;</span>
+      <span class="o">&lt;</span><span class="sx">%= f.label :height %&gt;</span>
+<span class="sx">      &lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:height_in_inches</span> <span class="sx">%&gt;</span>
+<span class="sx">      &lt;/br&gt;</span>
+      <span class="o">&lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">submit</span> <span class="s2">&quot;Create dog&quot;</span> <span class="sx">%&gt;</span>
+
+<span class="sx">    &lt;% end %&gt;</span></code></pre></div>
+
+<h2>Create</h2>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">create</span>
+
+  <span class="vi">@dog</span> <span class="o">=</span> <span class="no">Dog</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="ss">:dog</span><span class="p">)</span><span class="o">.</span><span class="n">permit!</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="vi">@dog</span><span class="o">.</span><span class="n">save</span>
+      <span class="n">flash</span><span class="o">[</span><span class="ss">:notice</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;You created a dog!&quot;</span>
+      <span class="n">redirect_to</span> <span class="n">dogs_path</span>
+    <span class="k">else</span>
+      <span class="n">render</span> <span class="ss">:new</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>Render can take a string or a method. Form_for looks at @post  and determines are you a new post or are you an existing post. If it is in a existing object, then the _method is injected to execute a patch, rather than post.  Params is a nested hash.</p>
+
+<h2>Edit</h2>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#dogs_controller.rb</span>
+<span class="k">def</span> <span class="nf">edit</span>
+  <span class="vi">@dog</span> <span class="o">=</span> <span class="no">Dog</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">)</span>
+<span class="k">end</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">edit</span><span class="o">.</span><span class="n">hmtl</span><span class="o">.</span><span class="n">erb</span>
+
+    <span class="o">&lt;</span><span class="n">h4</span><span class="o">&gt;</span> <span class="no">Create</span> <span class="n">a</span> <span class="kp">new</span> <span class="n">dog</span> <span class="o">&lt;</span><span class="sr">/h4&gt;</span>
+
+<span class="sr">    &lt;%= form_for @dog do |f| %&gt;</span>
+<span class="sr">      &lt;%= f.label :name %&gt;</span>
+<span class="sr">      &lt;%= f.text_field :name %&gt;</span>
+<span class="sr">      &lt;br/</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="sx">%= f.label :weight %&gt;</span>
+<span class="sx">      &lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:weight_in_inches</span> <span class="sx">%&gt;</span>
+<span class="sx">      &lt;br/&gt;</span>
+      <span class="o">&lt;</span><span class="sx">%= f.label :height %&gt;</span>
+<span class="sx">      &lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:height_in_inches</span> <span class="sx">%&gt;</span>
+<span class="sx">      &lt;/br&gt;</span>
+      <span class="o">&lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">submit</span> <span class="s2">&quot;Create dog&quot;</span> <span class="sx">%&gt;</span>
+<span class="sx">    &lt;% end %&gt;</span></code></pre></div>
+
+<h2>Update</h2>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">update</span>
+<span class="vi">@dog</span> <span class="o">=</span> <span class="no">Dog</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="vi">@dog</span><span class="o">.</span><span class="n">update?</span>
+      <span class="n">flash</span><span class="o">[</span><span class="ss">:notice</span><span class="o">]</span> <span class="o">=</span> <span class="no">Your</span> <span class="n">dog</span> <span class="n">has</span> <span class="n">been</span> <span class="n">updated!</span>
+      <span class="n">redirect_to</span> <span class="n">dogs_path</span>
+    <span class="k">else</span>
+      <span class="n">render</span> <span class="ss">:edit</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<h2>Resources</h2>
+
+<p>So all the routes from below:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">get</span> <span class="s1">&#39;dogs/new&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;dogs#new&#39;</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="s1">&#39;new_dog&#39;</span>
+    <span class="n">get</span> <span class="s1">&#39;/dogs/&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;dogs#index&#39;</span> <span class="ss">as</span><span class="p">:</span> <span class="s1">&#39;dogs&#39;</span>
+    <span class="n">get</span> <span class="s1">&#39;/dogs/:id&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;dogs#show&#39;</span>  <span class="ss">as</span><span class="p">:</span> <span class="s1">&#39;dog&#39;</span>
+    <span class="n">post</span> <span class="s1">&#39;/dogs&#39;</span><span class="p">,</span>   <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;dogs#create&#39;</span>
+    <span class="n">get</span> <span class="s1">&#39;/dogs/:id/edit&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">dogs</span><span class="c1">#edit</span>
+    <span class="n">patch</span> <span class="s1">&#39;/dogs/:id&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">dogs</span><span class="c1">#update</span>
+    <span class="n">delete</span>  <span class="s1">&#39;dogs/:id&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="n">dogs</span><span class="c1">#destroy</span></code></pre></div>
+
+<p>Can be replaced with resources :dogs</p>
+
+<h2>Add an edit link to the index page:</h2>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">index</span><span class="o">.</span><span class="n">html</span><span class="o">.</span><span class="n">erb</span>
+    <span class="o">&lt;</span><span class="n">h2</span><span class="o">&gt;</span><span class="no">All</span> <span class="n">the</span> <span class="n">dogs</span> <span class="o">&lt;</span><span class="sr">/h2&gt;</span>
+
+<span class="sr">    &lt;ul&gt;</span>
+<span class="sr">    &lt;% @dogs.each do |dog| %&gt;</span>
+<span class="sr">      &lt;li&gt;&lt;%= dog_info(dog) %&gt;&lt;/</span><span class="n">li</span><span class="o">&gt;&lt;%=</span> <span class="n">link_to</span> <span class="s1">&#39;[edit]&#39;</span><span class="p">,</span> <span class="n">edit_dog_path</span><span class="p">(</span><span class="n">dog</span><span class="p">)</span><span class="sx">%&gt;&lt;/li&gt;</span>
+    <span class="o">&lt;</span><span class="sx">% end %&gt;</span>
+<span class="sx">    &lt;/ul&gt;</span></code></pre></div>
+
+<h2>Extract common code from new and edit forms into partial:</h2>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">_form</span><span class="o">.</span><span class="n">html</span><span class="o">.</span><span class="n">erb</span>
+    <span class="o">&lt;</span><span class="sx">%= form_for @dog do |f| %&gt;</span>
+<span class="sx">      &lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:name</span> <span class="sx">%&gt;</span>
+<span class="sx">      &lt;%= f.text_field :name %&gt;</span>
+      <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+      <span class="o">&lt;</span><span class="sx">%= f.label :weight %&gt;</span>
+<span class="sx">      &lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:weight_in_inches</span> <span class="sx">%&gt;</span>
+<span class="sx">      &lt;br/&gt;</span>
+      <span class="o">&lt;</span><span class="sx">%= f.label :height %&gt;</span>
+<span class="sx">      &lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:height_in_inches</span> <span class="sx">%&gt;</span>
+<span class="sx">      &lt;/br&gt;</span>
+      <span class="o">&lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">submit</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="vi">@dog</span><span class="o">.</span><span class="n">new_record?</span> <span class="p">?</span> <span class="s1">&#39;Create&#39;</span> <span class="p">:</span> <span class="s1">&#39;Update&#39;</span><span class="si">}</span><span class="s2">dog&quot;</span> <span class="o">%&gt;</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="kp">new</span><span class="o">.</span><span class="n">html</span><span class="o">.</span><span class="n">erb</span>
+<span class="o">&lt;</span><span class="n">h4</span><span class="o">&gt;</span> <span class="no">Create</span> <span class="n">a</span> <span class="no">Dog</span> <span class="o">&lt;</span><span class="sr">/h4&gt;</span>
+<span class="sr">&lt;%= render &#39;form&#39; %&gt;</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">edit</span><span class="o">.</span><span class="n">hmtl</span><span class="o">.</span><span class="n">erb</span>
+<span class="o">&lt;</span><span class="n">h4</span><span class="o">&gt;</span> <span class="no">Edit</span> <span class="n">a</span> <span class="no">Dog</span> <span class="o">&lt;</span><span class="sr">/h4&gt;</span>
+<span class="sr">&lt;%= render &#39;form&#39; %&gt;</span></code></pre></div>
+
+<h2>Validations</h2>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">dog</span><span class="o">.</span><span class="n">rb</span>
+<span class="n">validates</span> <span class="ss">:name</span> <span class="ss">presence</span><span class="p">:</span> <span class="kp">true</span>
+<span class="n">validates</span> <span class="ss">:height_in_inches</span> <span class="ss">presence</span><span class="p">:</span> <span class="kp">true</span>
+<span class="n">validates</span> <span class="ss">:weight_in_lbs</span> <span class="ss">presence</span><span class="p">:</span> <span class="kp">true</span></code></pre></div>
+
+<h2>rails console</h2>
+
+<p>Failure to satisfy strong_paramters will generate errors. There are several methods
+we can call regarding errors in our rails console</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">dog</span> <span class="o">=</span> <span class="no">Dog</span><span class="o">.</span><span class="n">new</span><span class="p">(),</span> <span class="k">then</span> <span class="n">dog</span><span class="o">.</span><span class="n">save</span> <span class="n">will</span> <span class="n">generate</span> <span class="n">the</span> <span class="n">errors</span> <span class="n">array</span> <span class="n">on</span> <span class="n">the</span> <span class="n">object</span> <span class="n">itself</span>
+
+  <span class="mi">1</span><span class="o">.</span> <span class="n">dog</span><span class="o">.</span><span class="n">errors</span> <span class="c1">#will list errors</span>
+  <span class="mi">2</span><span class="o">.</span> <span class="n">dog</span><span class="o">.</span><span class="n">valid?</span> <span class="c1"># will be false because there were errors</span>
+  <span class="mi">3</span><span class="o">.</span> <span class="n">dog</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">empty?</span> <span class="c1">#false</span>
+  <span class="mi">4</span><span class="o">.</span> <span class="n">dog</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">full_messages</span> <span class="c1">#will display an array of current error messages that you can use to display on the user interface</span></code></pre></div>
+
+<h2>Display errors in _form.html.erb</h2>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">_form</span><span class="o">.</span><span class="n">html</span><span class="o">.</span><span class="n">erb</span>
+  <span class="o">&lt;</span><span class="sx">% if </span><span class="vi">@dog</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">any?</span> <span class="sx">%&gt;</span>
+<span class="sx">  Please correct the following errors:</span>
+
+<span class="sx">  &lt;ul&gt;</span>
+    <span class="o">&lt;</span><span class="sx">% @dog.errors.full_messages.each </span><span class="k">do</span> <span class="o">|</span><span class="n">msg</span><span class="o">|</span>
+    <span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;&lt;</span><span class="sx">%= msg %&gt;&lt;/li&gt;</span>
+<span class="sx">    &lt;% end %&gt;</span>
+<span class="sx">    &lt;/ul&gt;</span>
+<span class="sx">  &lt;% end %&gt;</span>
+
+<span class="sx">&lt;%=</span> <span class="n">form_for</span> <span class="vi">@dog</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="sx">%&gt;</span>
+<span class="sx">  &lt;%= f.label :name %&gt;</span>
+  <span class="o">&lt;</span><span class="sx">%= f.text_field :name %&gt;</span>
+<span class="sx">  &lt;br/&gt;</span>
+<span class="sx">  &lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:weight</span> <span class="sx">%&gt;</span>
+<span class="sx">  &lt;%= f.text_field :weight_in_inches %&gt;</span>
+  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+  <span class="o">&lt;</span><span class="sx">%= f.label :height %&gt;</span>
+<span class="sx">  &lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:height_in_inches</span> <span class="sx">%&gt;</span>
+<span class="sx">  &lt;/br&gt;</span>
+ <span class="o">&lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">submit</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="vi">@dog</span><span class="o">.</span><span class="n">new_record?</span> <span class="p">?</span> <span class="s1">&#39;Create&#39;</span> <span class="p">:</span> <span class="s1">&#39;Update&#39;</span><span class="si">}</span><span class="s2">dog&quot;</span> <span class="o">%&gt;</span></code></pre></div>
+
+<h2>Field with errors</h2>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">When</span> <span class="n">an</span> <span class="s1">&#39;form_for&#39;</span> <span class="n">is</span> <span class="n">submitted</span> <span class="n">with</span> <span class="n">errors</span><span class="p">,</span> <span class="n">automatically</span> <span class="n">insert</span> <span class="n">a</span> <span class="n">div</span> <span class="n">called</span> <span class="s1">&#39;field_with_errors&#39;</span> <span class="n">around</span> <span class="n">those</span> <span class="n">fields</span> <span class="n">with</span> <span class="n">errors</span> <span class="n">to</span> <span class="n">allow</span> <span class="k">for</span> <span class="n">styling</span><span class="o">.</span> <span class="no">This</span> <span class="n">will</span> <span class="n">also</span> <span class="n">cause</span> <span class="n">the</span> <span class="n">form</span> <span class="n">fields</span> <span class="n">to</span> <span class="n">appear</span> <span class="n">wider</span> <span class="n">apart</span> <span class="p">(</span><span class="n">padding</span><span class="p">)</span></code></pre></div>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/03/20/course3-three-styles-of-bdd/">
+            Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
+            <small>20 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/17/course3-transactions/">
+            Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
+            <small>17 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/15/course3-parameter-naming-conventions/">
+            Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions
+            <small>15 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

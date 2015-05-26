@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Rapid Prototyping with Rails: Lesson 3, part 3 &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Rapid Prototyping with Rails: Lesson 3, part 3</h1>
+  <span class="post-date">26 Oct 2014</span>
+  <h2>Items Covered</h2>
+
+<ol>
+<li>polymorphic associations
+
+<ul>
+<li>databases (syntax)</li>
+<li>models (syntax)</li>
+</ul></li>
+<li>Voting</li>
+</ol>
+
+<h2>Polymorphic Associations:</h2>
+
+<p>At the database level:</p>
+
+<p>When you have one subject but many objects for example, 1 comment or like can be placed on
+ many objects or foreign keys - post<em>id, photo</em>id, video_id, etc.
+ - This creates alot of spaces and ineffiencies in the database.
+ This is solved by restricting the database from:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="s2">&quot;id, body, user_id, post_id, photo_id, video_id&quot;</span> <span class="n">to</span>
+
+ <span class="s2">&quot;id, body, user_id, commentable type, commentable_id&quot;</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="ss">commentable_type</span><span class="p">:</span> <span class="n">must</span> <span class="n">be</span> <span class="n">the</span> <span class="n">model</span> <span class="nb">name</span><span class="p">,</span> <span class="n">capitialize</span> <span class="n">first</span> <span class="n">initial</span><span class="p">,</span> <span class="n">string</span>
+ <span class="ss">commentable_id</span><span class="p">:</span> <span class="n">is</span> <span class="n">the</span> <span class="n">primary_key</span> <span class="n">on</span> <span class="n">the</span> <span class="mi">1</span> <span class="n">side</span><span class="o">.</span>
+
+ <span class="n">commentable_type</span> <span class="n">to</span> <span class="ss">commentable_id</span><span class="p">:</span> <span class="n">is</span> <span class="n">a</span> <span class="n">composite</span> <span class="n">foreign_key</span></code></pre></div>
+
+<p>In our application, we will implement voting using polymorphic associations and we can
+ practically vote on anything, but in this case, we will vote on just posts and comments.</p>
+
+<h3>Step 1: Generate Migration</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Create</span> <span class="n">votes</span> <span class="n">table</span>
+  <span class="o">=&gt;</span><span class="n">rails</span> <span class="n">g</span> <span class="n">migration</span> <span class="n">create_votes</span></code></pre></div>
+
+<h3>Step 2: Generate Table</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">create_table</span> <span class="ss">:votes</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
+  <span class="n">t</span><span class="o">.</span><span class="n">boolean</span> <span class="ss">:vote</span>
+  <span class="n">t</span><span class="o">.</span><span class="n">integer</span> <span class="ss">:user_id</span>
+  <span class="n">t</span><span class="o">.</span><span class="n">string</span> <span class="ss">:voteable_type</span>
+  <span class="n">t</span><span class="o">.</span><span class="n">integer</span> <span class="ss">:voteable_id</span>
+  <span class="n">t</span><span class="o">.</span><span class="n">timestamps</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>or use</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">t</span><span class="o">.</span><span class="n">references</span> <span class="ss">:voteable</span><span class="p">,</span> <span class="ss">polymorphic</span><span class="p">:</span> <span class="kp">true</span></code></pre></div>
+
+<h3>Step 3: Create Vote Model</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Vote</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="n">belongs_to</span> <span class="ss">:creator</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s1">&#39;User&#39;</span><span class="p">,</span> <span class="ss">foreign_key</span><span class="p">:</span> <span class="s1">&#39;user_id&#39;</span>
+  <span class="n">belongs_to</span> <span class="ss">:voteable</span><span class="p">,</span> <span class="ss">polymorphic</span><span class="p">:</span> <span class="kp">true</span>
+<span class="k">end</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">User</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="n">has_many</span> <span class="ss">:votes</span>
+<span class="k">end</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Post</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="n">has_many</span> <span class="ss">:votes</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="n">voteable</span>
+<span class="k">end</span></code></pre></div>
+
+<p>Do the same for comments.</p>
+
+<p>The above action gives you voteable getters/setters and now you can assign a variable to your user and call .votes</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">So</span> <span class="k">in</span> <span class="n">the</span> <span class="ss">console</span><span class="p">:</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="no">Votes</span><span class="o">.</span><span class="n">first</span>
+    <span class="n">v</span><span class="o">.</span><span class="n">voteable</span> <span class="o">=&gt;</span> <span class="kp">nil</span>
+    <span class="n">post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">first</span>
+    <span class="n">post</span><span class="o">.</span><span class="n">votes</span> <span class="o">&lt;&lt;</span> <span class="n">v</span>
+    <span class="ow">or</span> <span class="n">another</span> <span class="n">way</span> <span class="n">to</span> <span class="n">assign</span> <span class="n">is</span>
+    <span class="n">v</span><span class="o">.</span><span class="n">votable</span> <span class="o">=</span> <span class="no">Comments</span><span class="o">.</span><span class="n">first</span>
+    <span class="n">v</span><span class="o">.</span><span class="n">save</span></code></pre></div>
+
+<p>In the above - the user and vote are the subjects while the comments and posts
+are the objects being voted on.</p>
+
+<h3>Remember</h3>
+
+<ul>
+<li>Subjects - has_many, can use same gatters and setters as ususal</li>
+<li>Objects - belongs<em>to, will expect subject foreign</em>keys, voteable is now your getter/setter
+where you pass voteable an object or set the voteable</li>
+</ul>
+
+<h2>Voting</h2>
+
+<p>Step 1. Now let&#39;s show votes on posts index page</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#posts/index.html.erb</span>
+<span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s1">&#39;row&#39;</span>
+  <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s1">&#39;span0 well text-center&#39;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="sx">%= link_to &#39;&#39; do %&gt;</span>
+<span class="sx">    &lt;i class=</span><span class="s1">&#39;icon-arrow-up&#39;</span><span class="o">&gt;&lt;</span><span class="sr">/i&gt;</span>
+<span class="sr">    &lt;% end %&gt;</span>
+<span class="sr">    &lt;br/</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="sx">%= link_to &#39;&#39; do %&gt;</span>
+<span class="sx">    &lt;i class=</span><span class="s1">&#39;icon-arrow-down&#39;</span><span class="o">&gt;&lt;</span><span class="sr">/i&gt;</span>
+<span class="sr">    &lt;% end %&gt;</span>
+<span class="sr">&lt;/</span><span class="n">div</span><span class="o">&gt;</span></code></pre></div>
+
+<p>Step 2. How do we reflect the increase/decrease of votes every time the link is clicked:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#routes.rb</span>
+<span class="no">Two</span> <span class="n">ways</span><span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="n">.</span>
+<span class="n">a</span><span class="p">)</span> <span class="no">POST</span><span class="o">/</span><span class="n">votes</span> <span class="o">=&gt;</span> <span class="s1">&#39;VotesController#create&#39;</span>
+  <span class="o">-</span> <span class="n">needs</span> <span class="n">to</span> <span class="n">pass</span> <span class="k">in</span> <span class="n">two</span> <span class="n">pieces</span> <span class="n">of</span> <span class="n">information</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">whether</span> <span class="n">its</span> <span class="n">the</span> <span class="n">post</span><span class="o">/</span><span class="n">comment</span>
+  <span class="n">being</span> <span class="n">voted</span> <span class="n">on</span><span class="p">,</span> <span class="mi">2</span><span class="o">.</span> <span class="no">The</span> <span class="n">post</span><span class="o">/</span><span class="n">comment</span> <span class="nb">id</span>
+  <span class="o">-</span> <span class="n">also</span> <span class="n">this</span> <span class="n">would</span> <span class="n">create</span> <span class="n">another</span> <span class="n">top</span> <span class="n">level</span> <span class="n">resource</span><span class="p">)</span>
+  <span class="o">-</span> <span class="n">best</span> <span class="k">for</span> <span class="k">if</span> <span class="n">you</span><span class="s1">&#39;re voting on alot of objects</span>
+
+<span class="s1">        How to implement this in your routes:</span>
+<span class="s1">        resources :votes, only: [:create]</span>
+
+<span class="s1">b) POST/posts/3/vote =&gt; &#39;</span><span class="no">PostsController</span><span class="c1">#vote&#39;</span>
+<span class="no">POST</span><span class="o">/</span><span class="n">posts</span><span class="o">/</span><span class="mi">3</span><span class="o">/</span><span class="n">comments</span><span class="o">/</span><span class="mi">4</span><span class="o">/</span><span class="n">vote</span> <span class="o">=&gt;</span> <span class="s1">&#39;CommentsController#vote&#39;</span>
+    <span class="no">How</span> <span class="n">to</span> <span class="n">implement</span> <span class="n">this</span> <span class="k">in</span> <span class="n">your</span> <span class="n">routes</span><span class="p">,</span> <span class="n">you</span> <span class="n">must</span> <span class="n">use</span> <span class="n">something</span> <span class="n">called</span> <span class="n">a</span> <span class="n">member</span><span class="p">,</span> <span class="n">where</span>
+    <span class="n">each</span> <span class="n">action</span> <span class="n">will</span> <span class="n">be</span> <span class="n">exposed</span> <span class="n">to</span> <span class="n">the</span> <span class="n">member</span> <span class="n">of</span> <span class="n">that</span> <span class="n">url</span>
+
+    <span class="n">resources</span> <span class="ss">:posts</span><span class="p">,</span> <span class="ss">except</span><span class="p">:</span> <span class="o">[</span><span class="ss">:destroy</span><span class="o">]</span> <span class="k">do</span>
+
+      <span class="n">member</span> <span class="k">do</span>
+        <span class="n">post</span> <span class="ss">:vote</span>
+      <span class="k">end</span>
+
+      <span class="p">(</span><span class="n">where</span> <span class="n">post</span> <span class="n">is</span> <span class="n">the</span> <span class="n">member</span> <span class="ow">and</span> <span class="n">vote</span> <span class="n">is</span> <span class="n">the</span> <span class="n">action</span><span class="p">)</span>
+
+
+      <span class="o">**</span><span class="n">rake</span> <span class="n">routes</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">vote</span>
+      <span class="n">vote_post</span> <span class="no">POST</span> <span class="sr">/posts/</span><span class="ss">:id</span><span class="o">/</span><span class="n">vote</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>   <span class="n">post</span><span class="c1">#vote</span></code></pre></div>
+
+<p>Step 3. Also what about if we want to see archives of our posts</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1"># GET /posts/archives</span>
+
+  <span class="n">collection</span> <span class="k">do</span>
+    <span class="n">get</span> <span class="ss">:archives</span>
+  <span class="k">end</span>
+  <span class="o">**</span><span class="n">rake</span> <span class="n">routes</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">archives</span>
+  <span class="n">archives_posts</span> <span class="no">GET</span> <span class="sr">/posts/</span><span class="n">archives</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>  <span class="n">posts</span><span class="c1">#archives</span></code></pre></div>
+
+<p>So to compare using post vs get, post will require pass in an object.
+So basically you can create any route that you want using member, collections, and nested resources</p>
+
+<h2>Steps from UX</h2>
+
+<ul>
+<li>Lofi/hifi</li>
+<li>ERD</li>
+<li>Tables</li>
+<li>URL design</li>
+</ul>
+
+<p>Step 4. Let&#39;s include these new routes in our posts/index.html.erb</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#posts/index.html.erb</span>
+<span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s1">&#39;row&#39;</span>
+  <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s1">&#39;span0 well text-center&#39;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="sx">%= link_to vote_post_path(post) method: &#39;post&#39; do %&gt;</span>
+<span class="sx">    &lt;i class=</span><span class="s1">&#39;icon-arrow-up&#39;</span><span class="o">&gt;&lt;</span><span class="sr">/i&gt;</span>
+<span class="sr">    &lt;% end %&gt;</span>
+<span class="sr">    &lt;br/</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="sx">%= link_to &#39;&#39; do %&gt;</span>
+<span class="sx">    &lt;i class=</span><span class="s1">&#39;icon-arrow-down&#39;</span><span class="o">&gt;&lt;</span><span class="sr">/i&gt;</span>
+<span class="sr">  &lt;% end %&gt;</span>
+<span class="sr">&lt;/</span><span class="n">div</span><span class="o">&gt;</span></code></pre></div>
+
+<p>You must specify method: &#39;post&#39; because with out it the default will be the GET method and the link, post/id/vote will not work on a GET.
+* method: &#39;post&#39; create data method: There is javascript that comes with rails
+that looks for anchor tags and the data-method=&quot;post&quot;,  that will turn the link
+into an actual form and submit content.</p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/03/20/course3-three-styles-of-bdd/">
+            Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
+            <small>20 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/17/course3-transactions/">
+            Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
+            <small>17 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/15/course3-parameter-naming-conventions/">
+            Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions
+            <small>15 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

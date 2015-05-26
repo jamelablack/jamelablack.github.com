@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications - Lesson 3: Part 2 &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 3: Part 2</h1>
+  <span class="post-date">05 Mar 2015</span>
+  <h2>Items Covered:</h2>
+
+<ol>
+<li>Structural Refactor</li>
+<li>Skinny Controller, Fat Models</li>
+<li>Rspec Macros</li>
+<li>Rspec Shared Examples</li>
+</ol>
+
+<h2>Structural Refactor</h2>
+
+<p>Controllers are more of traffic control and methods containing logic should refarctored to the model level</p>
+
+<ul>
+<li>For simple refactors such as moving methods from controllers to methods,
+since your test suite is already comprehensive enough to cover the current model, you dont have to create additional tests at the model level, only if you decide to add additional functionality.</li>
+</ul>
+
+<p>Typically you shouldn&#39;t have more than one conditional or return from a method within a method. You should refactor by moving a piece of the code to private method.</p>
+
+<h2>Skinny Controller, Fat Models</h2>
+
+<p>One of the most common refactors in Rails and one of the most well-known architectural principals in rails.</p>
+
+<p>Fat Models, means the models assume the most responsibilty.
+Good blog post to read: <a href="http://weblog.jamisbuck.org/2006/10/18/skinny-controller-fat-model">Skinny Models, Fat Controllers</a>
+Here - James talks about moving responsibilty from the view, to the controller, and then to the model.</p>
+
+<p>Examples of Opensource Project Management Tools that have need to go on a Fat Controller Diet:
+<a href="https://github.com/chiliproject/chiliproject">ChilliProject</a>
+<a href="https://github.com/edavis10/redmine">Redmine</a></p>
+
+<h3>Refactoring to fat models in MyFlix</h3>
+
+<p>Tip: When refactoring your controllers to fat models, do not move methods that take parameters in a form
+because that is the purpose of the controller - to talk to the views and models.
+Look for those that iterate through the model.</p>
+
+<h2>Rspec Macros</h2>
+
+<p>Allows you to extract logic that can be used by multiple rspec controllers.</p>
+
+<p>So rather than the following at the begining of each controller test:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">before</span> <span class="k">do</span>
+  <span class="n">frank</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
+  <span class="n">session</span><span class="o">[</span><span class="ss">:user_id</span><span class="o">]</span> <span class="o">=</span> <span class="n">frank</span><span class="o">.</span><span class="n">id</span>
+<span class="k">end</span></code></pre></div>
+
+<p>We could create a macro, spec/support/macros.rb and include the above code:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">set_current_user</span>
+  <span class="n">frank</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
+    <span class="n">session</span><span class="o">[</span><span class="ss">:user_id</span><span class="o">]</span> <span class="o">=</span> <span class="n">frank</span><span class="o">.</span><span class="n">id</span>
+  <span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">current_user</span>
+  <span class="no">User</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">session</span><span class="o">[</span><span class="n">user_id</span><span class="o">]</span><span class="p">)</span>
+<span class="k">end</span></code></pre></div>
+
+<p>AND in your test:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">before</span> <span class="p">{</span><span class="n">set_current_user</span><span class="p">}</span></code></pre></div>
+
+<p>Now, if I want to clear the current user to test the path of an unauthorized user
+create another macro called clear<em>current</em>user, make it the first line in your test.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">clear_current_user</span>
+  <span class="n">session</span><span class="o">[</span><span class="n">user_id</span><span class="o">]</span> <span class="o">=</span> <span class="kp">nil</span>
+<span class="k">end</span></code></pre></div>
+
+<h2>Shared Examples</h2>
+
+<p>What bout you want to test the redirect for unauthenticated users for not just index but index and new</p>
+
+<p>Create a Shared Example:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#spec/support/shares_examples.rb</span>
+<span class="n">shared_examples</span> <span class="s2">&quot;require_sign_in&quot;</span> <span class="k">do</span>
+  <span class="n">it</span> <span class="s2">&quot;redirects to the front page&quot;</span> <span class="k">do</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">should</span> <span class="n">redirect_to</span> <span class="n">root_path</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>In your test: you can&#39;t just write:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">it</span> <span class="n">behaves_like</span> <span class="s2">&quot;require_sign_in&quot;</span></code></pre></div>
+
+<p>because you have to clear the current user and hit the action first:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">context</span> <span class="s2">&quot;user not signed in&quot;</span> <span class="k">do</span>
+  <span class="n">before</span> <span class="k">do</span>
+    <span class="n">clear_current_user</span>
+    <span class="n">get</span> <span class="ss">:index</span>
+  <span class="k">end</span>
+  <span class="n">it</span> <span class="n">behaves_like</span> <span class="s2">&quot;require_sign_in&quot;</span>
+<span class="k">end</span></code></pre></div>
+
+<p>But this is frustrating becasue although we DRY&#39;d up our code a little,
+we still have to add a before block for the clear<em>current</em>user and the index.</p>
+
+<p>It would be great if there&#39;s a way to pass the action to the shared example, and there is:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">shared_examples</span> <span class="s2">&quot;require_sign_in&quot;</span> <span class="k">do</span>
+  <span class="n">it</span> <span class="s2">&quot;redirects to the front page&quot;</span> <span class="k">do</span>
+    <span class="n">clear_current_user</span>
+    <span class="n">action</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">should</span> <span class="n">redirect_to</span> <span class="n">root_path</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>AND in your test:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">context</span> <span class="s2">&quot;not_signed_in&quot;</span> <span class="k">do</span>
+    <span class="n">it_behaves_like</span> <span class="s2">&quot;require_sign_in&quot;</span> <span class="k">do</span>
+    <span class="n">let</span><span class="p">(</span><span class="ss">:action</span><span class="p">)</span> <span class="p">{</span> <span class="n">get</span> <span class="ss">:index</span> <span class="p">}</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>AND you actually don&#39;t need the context anymore:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">index</span><span class="o">&gt;</span>
+<span class="n">it_behaves_like</span> <span class="s2">&quot;require_sign_in&quot;</span> <span class="k">do</span>
+  <span class="n">let</span><span class="p">(</span><span class="ss">:action</span><span class="p">)</span> <span class="p">{</span> <span class="n">get</span> <span class="ss">:index</span> <span class="p">}</span>
+<span class="k">end</span>
+
+<span class="o">&lt;</span><span class="kp">new</span><span class="o">&gt;</span>
+<span class="n">it_behaves_like</span> <span class="s2">&quot;require_sign_in&quot;</span> <span class="k">do</span>
+  <span class="n">let</span><span class="p">(</span><span class="ss">:action</span><span class="p">)</span> <span class="p">{</span> <span class="n">get</span> <span class="ss">:new</span> <span class="p">}</span>
+<span class="k">end</span>
+
+<span class="o">&lt;</span><span class="n">create</span><span class="o">&gt;</span>
+<span class="n">it_behaves_like</span> <span class="s2">&quot;require_sign_in&quot;</span> <span class="k">do</span>
+  <span class="n">let</span><span class="p">(</span><span class="ss">:action</span><span class="p">)</span> <span class="p">{</span> <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">todo</span><span class="p">:</span> <span class="p">{</span><span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;something&#39;</span><span class="p">}</span> <span class="p">}</span>
+<span class="k">end</span></code></pre></div>
+
+<p>Shared examples can be used on both controller and model levels
+For more info:</p>
+
+<p><a href="https://www.relishapp.com/rspec/rspec-core/docs/example-groups/shared-examples">Shared Examples Docs</a></p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/03/20/course3-three-styles-of-bdd/">
+            Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
+            <small>20 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/17/course3-transactions/">
+            Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
+            <small>17 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/15/course3-parameter-naming-conventions/">
+            Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions
+            <small>15 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

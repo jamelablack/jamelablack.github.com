@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Rapid Prototyping with Rails: Lesson 4, part 1 &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Rapid Prototyping with Rails: Lesson 4, part 1</h1>
+  <span class="post-date">10 Nov 2014</span>
+  <h2>Items Covered</h2>
+
+<ol>
+<li>Ajax</li>
+<li>Slugs</li>
+<li>Simple Admin Role</li>
+<li>Time Zones</li>
+<li>Exposing APIs</li>
+</ol>
+
+<h2>Ajax</h2>
+
+<p>There are two forms of Javascript,
+1. (UJR) Unobstursive Js - which seperates the behavior layer from the websites content
+structure and presentation
+2. (SJR) Server Generated Responses (The Rails Way)</p>
+
+<p>Ajax is good for reloading only part of a page when all else stays the same.
+Really helpful when you have an expensive page that has alot of aggregate information.
+JQuery sits on top of Javascript to resolve the browser-specific qwerks</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">An</span> <span class="n">example</span> <span class="n">of</span> <span class="n">an</span> <span class="no">Ajax</span> <span class="n">request</span> <span class="k">in</span> <span class="n">jQuery</span> <span class="ss">code</span><span class="p">:</span>
+    <span class="err">$</span><span class="p">(</span><span class="n">document</span><span class="p">)</span><span class="o">.</span><span class="n">ready</span><span class="p">(</span><span class="n">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="err">$</span><span class="p">(</span><span class="s1">&#39;#hit_form input&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">click</span><span class="p">(</span><span class="n">function</span><span class="p">()</span> <span class="p">{</span> <span class="o">**</span> <span class="mi">1</span><span class="o">.</span> <span class="no">Unobstrusive</span> <span class="n">javascript</span> <span class="n">event</span> <span class="n">listener</span>
+        <span class="vg">$.</span><span class="n">ajax</span><span class="p">({</span><span class="o">**</span> <span class="mi">2</span><span class="o">.</span> <span class="no">Trigger</span> <span class="n">ajax</span>  <span class="n">request</span>
+        <span class="ss">type</span><span class="p">:</span> <span class="s1">&#39;POST&#39;</span>
+        <span class="ss">url</span><span class="p">:</span> <span class="s1">&#39;player/hit&#39;</span>
+        <span class="ss">data</span><span class="p">:</span> <span class="p">{</span><span class="ss">param1</span><span class="p">:</span> <span class="s2">&quot;hi&quot;</span><span class="p">,</span> <span class="ss">param2</span><span class="p">:</span> <span class="s2">&quot;There&quot;</span><span class="p">}</span>
+      <span class="p">})</span><span class="o">.</span><span class="n">done</span><span class="p">(</span><span class="n">function</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="p">{</span> <span class="o">**</span> <span class="mi">3</span><span class="o">.</span> <span class="no">Handle</span> <span class="n">the</span> <span class="no">Response</span>
+        <span class="err">$</span><span class="p">(</span><span class="s1">&#39;#some_element&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">html</span><span class="p">(</span><span class="n">msg</span><span class="p">);</span>
+      <span class="p">})</span>
+    <span class="p">});</span>
+  <span class="p">)};</span></code></pre></div>
+
+<p>So the steps to an ajax request are:
+  1. Unobstrusive Javascript Event Listener
+  2. Trigger ajax request
+  3. Handle the response</p>
+
+<h3>Step 1. Unobstrusive Javascript Event Listener</h3>
+
+<ol>
+<li>To add the ajax call to your up vote in your postit app, add remote: true:
+&lt;%= link<em>to vote</em>post_path(post, vote:&#39;true&#39;), method: &#39;post&#39;, remote: true do %&gt;
+<i class='icon-arrow-down'></i>
+&lt;% end %&gt;
+&lt;% end %&gt;</li>
+</ol>
+
+<p>*This will add a data-remote=&quot;true&quot;, similar to the data-method=&quot;post&quot;
+so similarly, just as with the data-method=&#39;post&#39; looks for data-method
+and applies javascript that turns the anchor tag into &#39;get&#39; link to &#39;post&#39; form,
+the same occurs when remote: true is identified, it turns those anchor tags
+into an ajax call(as seen above)</p>
+
+<p>In terminal, when clicking the up link, you should see:
+Processing by PostsController#vote as JS, but normally its as html,
+this let&#39;s you know that its an ajax call.</p>
+
+<h3>Step 2. Trigger ajax request</h3>
+
+<p>We have to be able to handle this response in the PostsController#vote:
+2. We have add code to handle the js request in vote controller action:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">vote</span>
+    <span class="n">vote</span> <span class="o">=</span> <span class="no">Vote</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">voteable</span><span class="p">:</span> <span class="vi">@post</span><span class="p">,</span> <span class="ss">creator</span><span class="p">:</span> <span class="n">current_user</span><span class="p">,</span> <span class="ss">vote</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:vote</span><span class="o">]</span><span class="p">)</span>
+
+    <span class="n">respond_to</span> <span class="k">do</span> <span class="o">|</span><span class="nb">format</span><span class="o">|</span>
+      <span class="nb">format</span><span class="o">.</span><span class="n">html</span> <span class="k">do</span>
+        <span class="k">if</span> <span class="n">vote</span><span class="o">.</span><span class="n">valid?</span>
+          <span class="n">flash</span><span class="o">[</span><span class="ss">:notice</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Your vote was counted!&quot;</span>
+        <span class="k">else</span>
+          <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Your vote was &lt;strong&gt;not&lt;/strong&gt; recorded!&quot;</span><span class="o">.</span><span class="n">html_safe</span>
+        <span class="k">end</span>
+        <span class="n">redirect_to</span> <span class="ss">:back</span>
+      <span class="k">end</span>
+      <span class="nb">format</span><span class="o">.</span><span class="n">js</span>
+    <span class="k">end</span>
+  <span class="k">end</span></code></pre></div>
+
+<p>We add format.js becasue instead of adding unobstrusive js, format.js will
+cause rails to render a js.erb template under the same name as the controller action name.
+The method determines if it can take a block. You can only render a template and redirect_to a url, the default is to render a template</p>
+
+<h3>Step 3. Testing out vote.js.erb</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#posts/vote.js.erb</span>
+<span class="o">**</span> <span class="no">You</span> <span class="n">have</span> <span class="n">access</span> <span class="n">to</span> <span class="n">the</span> <span class="n">instance</span> <span class="n">variables</span> <span class="n">created</span> <span class="k">in</span> <span class="n">the</span> <span class="n">action</span>
+
+<span class="n">alert</span><span class="p">(</span><span class="s1">&#39;total votes for &lt;%= @post.title %&gt; is &lt;%= @post.total_votes %&gt;&#39;</span><span class="p">);</span></code></pre></div>
+
+<p>The above action creates a pop up alert but does not change the number of votes on the main page.
+When inspecting the element, it shows that this is just an empty span in the html. Js needs away to
+identify the empty span to change to the number, that is accomplished through an  html id class:</p>
+
+<h3>Step 4. Changing the number of votes</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#posts/_post.html.erb</span>
+
+<span class="o">&lt;</span><span class="n">span</span> <span class="nb">id</span><span class="o">=</span><span class="s1">&#39;post_&lt;%=post.id%&gt;_votes&#39;</span><span class="o">&gt;&lt;%=</span> <span class="n">post</span><span class="o">.</span><span class="n">total_votes</span> <span class="sx">%&gt;&lt;/span&gt;</span></code></pre></div>
+
+<p>Rails gives you the ability to use js and parse out active record objects
+which isnt possible with normal js.
+So now, we can update the vote.js.erb file:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="err">$</span><span class="p">(</span><span class="s1">&#39;#post_&lt;%= @post.id %&gt;&#39;</span><span class="n">_votes</span><span class="p">)</span><span class="o">.</span><span class="n">html</span> <span class="p">(</span><span class="s1">&#39;&lt;%= post.total_votes %&gt;&#39;</span><span class="p">);</span></code></pre></div>
+
+<p>You can now also add remote: true to the down vote also.</p>
+
+<h3>Step 5. Limiting the number of votes</h3>
+
+<p>So when add the ajax request, we now do not get an error if we try to vote
+ on a post we&#39;ve already voted on.
+ 5a) We need to turn the local variable &#39;vote&#39; into an instance variable under
+ the vote action:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">vote</span>
+    <span class="vi">@vote</span> <span class="o">=</span> <span class="no">Vote</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">voteable</span><span class="p">:</span> <span class="vi">@post</span><span class="p">,</span> <span class="ss">creator</span><span class="p">:</span> <span class="n">current_user</span><span class="p">,</span> <span class="ss">vote</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:vote</span><span class="o">]</span><span class="p">)</span>
+
+    <span class="n">respond_to</span> <span class="k">do</span> <span class="o">|</span><span class="nb">format</span><span class="o">|</span>
+      <span class="nb">format</span><span class="o">.</span><span class="n">html</span> <span class="k">do</span>
+        <span class="k">if</span> <span class="n">vote</span><span class="o">.</span><span class="n">valid?</span>
+          <span class="n">flash</span><span class="o">[</span><span class="ss">:notice</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Your vote was counted!&quot;</span>
+        <span class="k">else</span>
+          <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Your vote was &lt;strong&gt;not&lt;/strong&gt; recorded!&quot;</span><span class="o">.</span><span class="n">html_safe</span>
+        <span class="k">end</span>
+        <span class="n">redirect_to</span> <span class="ss">:back</span>
+      <span class="k">end</span>
+      <span class="nb">format</span><span class="o">.</span><span class="n">js</span>
+    <span class="k">end</span>
+  <span class="k">end</span></code></pre></div>
+
+<p>5b) Write an if statement in the vote.js.erb file:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="sx">% if </span><span class="vi">@vote</span><span class="o">.</span><span class="n">valid?</span> <span class="sx">%&gt;</span>
+<span class="sx">      $(&quot;#post_&lt;%= @post.id %&gt;</span><span class="n">_votes</span><span class="s2">&quot;).html(&quot;</span><span class="o">&lt;%=</span> <span class="vi">@post</span><span class="o">.</span><span class="n">total_votes</span> <span class="sx">%&gt; votes&quot;)</span>
+<span class="sx">    &lt;% else %&gt;</span>
+      <span class="n">alert</span><span class="p">(</span><span class="s2">&quot;You can only vote on a post once.&quot;</span><span class="p">);</span>
+    <span class="o">&lt;</span><span class="sx">% end </span><span class="o">%&gt;</span></code></pre></div>
+
+<p>So in summary, Rails Core Developers wrote jQuery library that converts remote= true
+into data-remote= true, which converts to an ajax request.
+In turn, we told ajax how to respond via html and js</p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/03/20/course3-three-styles-of-bdd/">
+            Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
+            <small>20 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/17/course3-transactions/">
+            Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
+            <small>17 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/15/course3-parameter-naming-conventions/">
+            Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions
+            <small>15 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

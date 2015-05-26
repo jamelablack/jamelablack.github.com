@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications: Precourse, Views to Mockups &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications: Precourse, Views to Mockups</h1>
+  <span class="post-date">15 Dec 2014</span>
+  <h2>The Process of Building Queues from Mockups:</h2>
+
+<h3>Building out the videos page</h3>
+
+<h4>Step 1. Copy layout from the ui videos template</h4>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">article</span><span class="o">.</span><span class="n">video</span>
+  <span class="o">.</span><span class="n">container</span>
+    <span class="o">.</span><span class="n">row</span>
+      <span class="o">.</span><span class="n">video_large_cover</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">7</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="n">offset</span><span class="o">-</span><span class="mi">1</span>
+        <span class="o">%</span><span class="n">img</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s2">&quot;http://dummyimage.com/665x375/000000/00a2ff&quot;</span><span class="p">)</span>
+      <span class="o">.</span><span class="n">video_info</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">3</span>
+        <span class="o">%</span><span class="n">header</span>
+          <span class="o">%</span><span class="n">h3</span> <span class="no">Futurama</span>
+          <span class="o">%</span><span class="n">span</span> <span class="ss">Rating</span><span class="p">:</span> <span class="mi">4</span><span class="o">.</span><span class="mi">5</span><span class="o">/</span><span class="mi">5</span><span class="o">.</span><span class="mi">0</span>
+        <span class="o">%</span><span class="nb">p</span> <span class="no">Pizza</span> <span class="n">boy</span> <span class="no">Philip</span> <span class="n">J</span><span class="o">.</span> <span class="no">Fry</span> <span class="n">awakens</span> <span class="k">in</span> <span class="n">the</span> <span class="mi">31</span><span class="n">st</span> <span class="n">century</span> <span class="n">after</span> <span class="mi">1</span><span class="p">,</span><span class="mo">000</span> <span class="n">years</span> <span class="n">of</span> <span class="n">cryogenic</span> <span class="n">preservation</span> <span class="k">in</span> <span class="n">this</span> <span class="n">animated</span> <span class="n">series</span><span class="o">.</span> <span class="no">After</span> <span class="n">he</span> <span class="nb">gets</span> <span class="n">a</span> <span class="n">job</span> <span class="n">at</span> <span class="n">an</span> <span class="n">interplanetary</span> <span class="n">delivery</span> <span class="n">service</span><span class="p">,</span> <span class="no">Fry</span> <span class="n">embarks</span> <span class="n">on</span> <span class="n">ridiculous</span> <span class="n">escapades</span> <span class="n">to</span> <span class="n">make</span> <span class="n">sense</span> <span class="n">of</span> <span class="n">his</span> <span class="n">predicament</span><span class="o">.</span></code></pre></div>
+
+<h4>Step 2. Change/Remove hardcoded data for future code</h4>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">article</span><span class="o">.</span><span class="n">video</span>
+  <span class="o">.</span><span class="n">container</span>
+    <span class="o">.</span><span class="n">row</span>
+      <span class="o">.</span><span class="n">video_large_cover</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">7</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="n">offset</span><span class="o">-</span><span class="mi">1</span>
+        <span class="o">%</span><span class="n">img</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">#{</span><span class="vi">@video</span><span class="o">.</span><span class="n">large_cover_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+      <span class="o">.</span><span class="n">video_info</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">3</span>
+        <span class="o">%</span><span class="n">header</span>
+          <span class="o">%</span><span class="n">h3</span><span class="o">=</span> <span class="vi">@video</span><span class="o">.</span><span class="n">title</span>
+          <span class="o">%</span><span class="n">span</span> <span class="ss">Rating</span><span class="p">:</span> <span class="mi">4</span><span class="o">.</span><span class="mi">5</span><span class="o">/</span><span class="mi">5</span><span class="o">.</span><span class="mi">0</span>
+        <span class="o">%</span><span class="nb">p</span><span class="o">=</span> <span class="vi">@video</span><span class="o">.</span><span class="n">description</span></code></pre></div>
+
+<h4>Step 3. Build Routes corresponding with future code</h4>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Myflix</span><span class="o">::</span><span class="no">Application</span><span class="o">.</span><span class="n">routes</span><span class="o">.</span><span class="n">draw</span> <span class="k">do</span>
+  <span class="n">resources</span> <span class="ss">:videos</span><span class="p">,</span> <span class="ss">only</span><span class="p">:</span> <span class="o">[</span><span class="ss">:show</span><span class="o">]</span>
+ <span class="k">end</span></code></pre></div>
+
+<h4>Step 4. Begin testing videos controller spec</h4>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/03/20/course3-three-styles-of-bdd/">
+            Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
+            <small>20 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/17/course3-transactions/">
+            Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
+            <small>17 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/15/course3-parameter-naming-conventions/">
+            Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions
+            <small>15 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

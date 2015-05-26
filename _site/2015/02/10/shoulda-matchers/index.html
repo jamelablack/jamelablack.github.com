@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications - Lesson 2: Shoulda Matchers &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 2: Shoulda Matchers</h1>
+  <span class="post-date">10 Feb 2015</span>
+  <p>With rspec, there comes built-in matchers, which can be found: <a href="http://www.relishapp.com/rspec/rspec-expectations/v/2-9/docs/built-in-matchers">shoulda matchers</a></p>
+
+<h3>1. Object Identity:</h3>
+
+<p>You should use &quot;Object Equivalence&quot; instead because you will be testing if the
+two objects are the same when in reality they may equal the same but be different objects</p>
+
+<ul>
+<li>actual.should == expected</li>
+<li>actual.should eq(expected)</li>
+<li>actual.should eql(expected)</li>
+<li>actual.should equal(expected)</li>
+</ul>
+
+<h3>2. Comparison</h3>
+
+<p>actual should.be &gt; expected</p>
+
+<h3>3. Types of Classes</h3>
+
+<p>test whether the actual is an instance of a class</p>
+
+<h3>4. Truthiness and Existentialism</h3>
+
+<p>tests whether the actual is truthy(not nil or false)</p>
+
+<h3>5. Expecting errors</h3>
+
+<h3>6. Expecting Throws</h3>
+
+<p>Expecting methods to throw a symbol
+* Predicate Matchers - passes if method returns a truthy result</p>
+
+<h3>7. Collection Membership</h3>
+
+<p>testing whether an array is a subset of the expected</p>
+
+<h3>8. Ranges (only for Ruby 1.9)</h3>
+
+<p>Also matchers worth mentioning:</p>
+
+<ul>
+<li>Have(n)items matcher</li>
+<li>Operator matchers</li>
+<li>Respond_to matchers - does this object respond to a certain method</li>
+<li>Satisfy matcher - very flexible, you can pass it a block to see if it will evaluate to true</li>
+<li>Specify a<em>kind</em>of matcher</li>
+<li>Yield matchers - allow you to work with blocks</li>
+<li>End<em>with, start</em>with</li>
+<li>Cover Matchers</li>
+</ul>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/03/20/course3-three-styles-of-bdd/">
+            Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
+            <small>20 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/17/course3-transactions/">
+            Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
+            <small>17 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/15/course3-parameter-naming-conventions/">
+            Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions
+            <small>15 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

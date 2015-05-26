@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Rapid Prototyping with Rails: Lesson 3, HTTP &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Rapid Prototyping with Rails: Lesson 3, HTTP</h1>
+  <span class="post-date">30 Oct 2014</span>
+  <h2>HTTP has two parts:</h2>
+
+<h3>1. Request:</h3>
+
+<ul>
+<li>Verb/Method: GET, POST</li>
+<li>URL</li>
+<li>Parameters</li>
+</ul>
+
+<h3>2. Response:</h3>
+
+<ol>
+<li>Status Code
+
+<ul>
+<li>200 Ok</li>
+<li>302 Redirect (issues another request)</li>
+<li>404 File Not Found</li>
+<li>500 Application Error</li>
+</ul></li>
+<li>Payload/Message/Body - which will depend on the request</li>
+</ol>
+
+<p>Modern browsers will block against redirect loops and/or limit redirects.</p>
+
+<p>A request is not connected to another request - meaning its stateless.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">An</span> <span class="ss">example</span><span class="p">:</span>
+<span class="no">GET</span><span class="o">/</span><span class="n">new_game</span>
+  <span class="o">-</span> <span class="nb">display</span> <span class="n">the</span> <span class="n">form</span> <span class="n">to</span> <span class="n">enter</span> <span class="n">your</span> <span class="nb">name</span>
+  <span class="o">-</span> <span class="n">render</span> <span class="n">a</span> <span class="ss">view</span><span class="p">:</span> <span class="mi">200</span> <span class="ow">and</span> <span class="no">HTML</span> <span class="p">(</span><span class="n">complete</span> <span class="n">the</span> <span class="n">response</span><span class="p">)</span>
+
+<span class="no">POST</span><span class="o">/</span><span class="n">new_game</span>
+  <span class="o">-</span> <span class="n">save</span> <span class="n">the</span> <span class="nb">name</span> <span class="n">somewhere</span> <span class="p">(</span><span class="n">persistence</span> <span class="n">layer</span><span class="p">)</span>
+  <span class="o">-</span> <span class="nb">display</span> <span class="n">the</span> <span class="k">next</span> <span class="n">thing</span>
+  <span class="o">-</span> <span class="n">redirect</span> <span class="n">to</span> <span class="n">another</span> <span class="ss">URL</span><span class="p">:</span> <span class="mi">302</span> <span class="ow">and</span> <span class="n">the</span> <span class="k">next</span> <span class="no">URL</span> <span class="n">completes</span> <span class="n">the</span> <span class="n">response</span><span class="o">.</span>
+
+<span class="no">Persistency</span> <span class="no">Layer</span>
+<span class="mi">1</span><span class="o">.</span> <span class="no">Database</span> <span class="p">(</span><span class="n">most</span> <span class="n">common</span><span class="p">)</span>
+<span class="mi">2</span><span class="o">.</span> <span class="no">Session</span> <span class="n">cookies</span> <span class="p">(</span><span class="n">persistency</span> <span class="n">within</span> <span class="n">your</span> <span class="n">browser</span><span class="p">)</span></code></pre></div>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/03/20/course3-three-styles-of-bdd/">
+            Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
+            <small>20 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/17/course3-transactions/">
+            Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
+            <small>17 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/15/course3-parameter-naming-conventions/">
+            Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions
+            <small>15 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

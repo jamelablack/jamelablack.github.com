@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Rapid Prototyping with Rails: Lesson 4, ActiveSupport::Concerns &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Rapid Prototyping with Rails: Lesson 4, ActiveSupport::Concerns</h1>
+  <span class="post-date">18 Nov 2014</span>
+  <h2>DRYing up code with ActiveSupport::Concerns</h2>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="mi">1</span><span class="o">.</span> <span class="no">Extract</span> <span class="n">common</span> <span class="n">code</span> <span class="n">from</span> <span class="no">Post</span><span class="o">/</span><span class="no">Comment</span> <span class="no">Model</span> <span class="n">abd</span> <span class="n">place</span> <span class="n">into</span> <span class="no">Sluggable</span> <span class="k">module</span>
+<span class="nn">module</span> <span class="no">Slugglable</span>
+  <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+
+  <span class="n">included</span> <span class="k">do</span>
+    <span class="n">before_save</span> <span class="ss">:generate_slug!</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">to_param</span>
+    <span class="nb">self</span><span class="o">.</span><span class="n">slug</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">generate_slug!</span>
+    <span class="n">the_slug</span> <span class="o">=</span> <span class="n">to_slug</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+    <span class="n">post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">find_by</span> <span class="ss">slug</span><span class="p">:</span> <span class="n">the_slug</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="k">while</span> <span class="n">post</span> <span class="o">&amp;&amp;</span> <span class="n">post</span> <span class="o">!=</span> <span class="nb">self</span>
+      <span class="n">the_slug</span> <span class="o">=</span> <span class="n">append_suffix</span><span class="p">(</span><span class="n">the_slug</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
+      <span class="n">post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">find_by</span> <span class="ss">slug</span><span class="p">:</span> <span class="n">the_slug</span>
+      <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">end</span>
+    <span class="nb">self</span><span class="o">.</span><span class="n">slug</span> <span class="o">=</span> <span class="n">the_slug</span><span class="o">.</span><span class="n">downcase</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">append_suffix</span><span class="p">(</span><span class="n">str</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">to_i</span> <span class="o">!=</span> <span class="mi">0</span>
+      <span class="k">return</span> <span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="n">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">count</span><span class="o">.</span><span class="n">to_s</span>
+    <span class="k">else</span>
+      <span class="k">return</span> <span class="n">str</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">count</span><span class="o">.</span><span class="n">to_s</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">to_slug</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <span class="n">str</span> <span class="o">=</span> <span class="n">title</span><span class="o">.</span><span class="n">strip</span>
+    <span class="n">str</span><span class="o">.</span><span class="n">gsub!</span> <span class="sr">/\s*[^A-Za-z0-9]\s*/</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span>
+    <span class="n">str</span><span class="o">.</span><span class="n">gsub!</span> <span class="sr">/-+/</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span>
+    <span class="n">str</span><span class="o">.</span><span class="n">downcase</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+
+<span class="mi">2</span><span class="o">.</span> <span class="no">One</span> <span class="n">major</span> <span class="n">problem</span> <span class="n">with</span> <span class="n">this</span> <span class="n">is</span> <span class="n">that</span> <span class="n">the</span> <span class="k">module</span> <span class="nn">has</span> <span class="n">to</span> <span class="n">work</span> <span class="k">for</span> <span class="n">both</span> <span class="n">comments</span> <span class="ow">and</span> <span class="n">posts</span>
+<span class="n">yet</span> <span class="n">the</span> <span class="n">model</span> <span class="ow">and</span> <span class="n">column</span> <span class="n">names</span> <span class="n">are</span> <span class="n">currently</span> <span class="n">hardcoded</span><span class="o">.</span>
+<span class="no">The</span> <span class="n">first</span> <span class="n">fix</span> <span class="n">is</span> <span class="n">changing</span> <span class="n">the</span> <span class="k">class</span> <span class="n">to</span> <span class="n">thed</span> <span class="k">class</span> <span class="n">to</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">generate_slug!</span>
+    <span class="n">the_slug</span> <span class="o">=</span> <span class="n">to_slug</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+    <span class="n">post</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">find_by</span> <span class="ss">slug</span><span class="p">:</span> <span class="n">the_slug</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="k">while</span> <span class="n">post</span> <span class="o">&amp;&amp;</span> <span class="n">post</span> <span class="o">!=</span> <span class="nb">self</span>
+      <span class="n">the_slug</span> <span class="o">=</span> <span class="n">append_suffix</span><span class="p">(</span><span class="n">the_slug</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
+      <span class="n">post</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">find_by</span> <span class="ss">slug</span><span class="p">:</span> <span class="n">the_slug</span>
+      <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">end</span>
+
+<span class="mi">3</span><span class="o">.</span> <span class="no">Now</span> <span class="n">to</span> <span class="n">change</span> <span class="n">the</span> <span class="n">column</span> <span class="n">names</span><span class="p">,</span> <span class="n">you</span> <span class="n">have</span> <span class="n">to</span> <span class="n">create</span> <span class="n">a</span> <span class="k">class</span> <span class="nb">method</span> <span class="n">that</span> <span class="n">we</span> <span class="n">can</span> <span class="n">call</span> <span class="n">to</span>
+ <span class="n">pass</span> <span class="n">the</span> <span class="n">column</span> <span class="nb">name</span><span class="p">:</span>
+
+ <span class="k">module</span> <span class="nn">Slugglable</span>
+   <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+
+   <span class="n">included</span> <span class="k">do</span>
+     <span class="n">before_save</span> <span class="ss">:generate_slug!</span>
+     <span class="ss">class_attribute</span><span class="p">:</span> <span class="ss">:slug_column</span>
+   <span class="k">end</span>
+
+   <span class="k">def</span> <span class="nf">to_param</span>
+     <span class="nb">self</span><span class="o">.</span><span class="n">slug</span>
+   <span class="k">end</span>
+
+   <span class="k">def</span> <span class="nf">generate_slug!</span>
+     <span class="n">the_slug</span> <span class="o">=</span> <span class="n">to_slug</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">slug_column</span><span class="o">.</span><span class="n">to_sym</span><span class="p">))</span>
+     <span class="n">post</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">find_by</span> <span class="ss">slug</span><span class="p">:</span> <span class="n">the_slug</span>
+     <span class="n">count</span> <span class="o">=</span> <span class="mi">2</span>
+     <span class="k">while</span> <span class="n">post</span> <span class="o">&amp;&amp;</span> <span class="n">post</span> <span class="o">!=</span> <span class="nb">self</span>
+       <span class="n">the_slug</span> <span class="o">=</span> <span class="n">append_suffix</span><span class="p">(</span><span class="n">the_slug</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
+       <span class="n">post</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">find_by</span> <span class="ss">slug</span><span class="p">:</span> <span class="n">the_slug</span>
+       <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+     <span class="k">end</span>
+     <span class="nb">self</span><span class="o">.</span><span class="n">slug</span> <span class="o">=</span> <span class="n">the_slug</span><span class="o">.</span><span class="n">downcase</span>
+   <span class="k">end</span>
+
+   <span class="k">def</span> <span class="nf">append_suffix</span><span class="p">(</span><span class="n">str</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
+     <span class="k">if</span> <span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">to_i</span> <span class="o">!=</span> <span class="mi">0</span>
+       <span class="k">return</span> <span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="n">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">count</span><span class="o">.</span><span class="n">to_s</span>
+     <span class="k">else</span>
+       <span class="k">return</span> <span class="n">str</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">count</span><span class="o">.</span><span class="n">to_s</span>
+     <span class="k">end</span>
+   <span class="k">end</span>
+
+   <span class="k">def</span> <span class="nf">to_slug</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+     <span class="n">str</span> <span class="o">=</span> <span class="n">title</span><span class="o">.</span><span class="n">strip</span>
+     <span class="n">str</span><span class="o">.</span><span class="n">gsub!</span> <span class="sr">/\s*[^A-Za-z0-9]\s*/</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span>
+     <span class="n">str</span><span class="o">.</span><span class="n">gsub!</span> <span class="sr">/-+/</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span>
+     <span class="n">str</span><span class="o">.</span><span class="n">downcase</span>
+   <span class="k">end</span>
+
+
+   <span class="k">module</span> <span class="nn">ClassMethods</span>
+     <span class="k">def</span> <span class="nf">sluggable_column</span><span class="p">(</span><span class="n">col_name</span><span class="p">)</span>
+       <span class="nb">self</span><span class="o">.</span><span class="n">slug_column</span> <span class="o">=</span> <span class="n">col_name</span>
+     <span class="k">end</span>
+   <span class="k">end</span>
+
+ <span class="k">end</span>
+
+ <span class="mi">5</span><span class="o">.</span> <span class="no">Replace</span> <span class="n">the</span> <span class="n">local</span> <span class="n">variable</span><span class="p">,</span> <span class="n">post</span>
+ <span class="k">def</span> <span class="nf">generate_slug!</span>
+   <span class="n">the_slug</span> <span class="o">=</span> <span class="n">to_slug</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">slug_column</span><span class="o">.</span><span class="n">to_sym</span><span class="p">))</span>
+   <span class="n">obj</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">find_by</span> <span class="ss">slug</span><span class="p">:</span> <span class="n">the_slug</span>
+   <span class="n">count</span> <span class="o">=</span> <span class="mi">2</span>
+   <span class="k">while</span> <span class="n">obj</span> <span class="o">&amp;&amp;</span> <span class="n">obj</span> <span class="o">!=</span> <span class="nb">self</span>
+     <span class="n">the_slug</span> <span class="o">=</span> <span class="n">append_suffix</span><span class="p">(</span><span class="n">the_slug</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
+     <span class="n">obj</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">find_by</span> <span class="ss">slug</span><span class="p">:</span> <span class="n">the_slug</span>
+     <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+   <span class="k">end</span>
+   <span class="nb">self</span><span class="o">.</span><span class="n">slug</span> <span class="o">=</span> <span class="n">the_slug</span><span class="o">.</span><span class="n">downcase</span>
+ <span class="k">end</span>
+ <span class="mi">6</span><span class="o">.</span> <span class="no">Define</span> <span class="n">sluggable_column</span> <span class="k">in</span> <span class="no">Post</span><span class="p">,</span> <span class="no">User</span><span class="p">,</span> <span class="ow">and</span> <span class="no">Category</span> <span class="no">Models</span>
+
+    <span class="n">sluggable_column</span> <span class="ss">:title</span></code></pre></div>
+
+<h2>Rails Console Commands:</h2>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">cat</span> <span class="o">~</span><span class="sr">/.gem/</span><span class="n">credentials</span></code></pre></div>
+
+<ul>
+<li>Adds your rubygems api so you have to continuouasly log in.</li>
+</ul>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">gem</span> <span class="n">list</span> <span class="o">-</span><span class="n">r</span> <span class="n">voteable_jam</span></code></pre></div>
+
+<ul>
+<li>Lists gems that are remote</li>
+</ul>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/03/20/course3-three-styles-of-bdd/">
+            Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
+            <small>20 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/17/course3-transactions/">
+            Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
+            <small>17 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/15/course3-parameter-naming-conventions/">
+            Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions
+            <small>15 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

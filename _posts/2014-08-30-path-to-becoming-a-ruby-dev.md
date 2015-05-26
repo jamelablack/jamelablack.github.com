@@ -1,10 +1,13 @@
 ---
 layout: post
-title: "My name is Jam, and I am a Rails Developer"
+title: "Welcome to my Dev blog"
 tags: thoughts
 ---
 
-This is my path to becoming a Ruby on Rails Developer. I first was exposed to code back in June 2013, after attending a Rails Girls Workshop in Washington, DC. At that workshop, a very notable leader in the Ruby community, [Sandi Metz](http://www.sandimetz.com/) gave a talk on [grit](http://en.wikipedia org/wiki/Grit_%28personality_trait%29). Up until that point, I thought that being a developer was reserved for those with computer science majors and or mathmeticians. But her talk, gave me some sort of hope that if I worked hard enough, becoming a developer was possible. So with that, I set on my journey of being a self taught developer. One thing that I have learned in this process, learning to code is circular.. not linear. Often times, it may require seeing a concept 3 or 4 times before you can tackle it without googling the concept.. and what I've had to learn is that is okay. I had to let go the idea that I wasn't going to remember everything but with experience.. I could figure it out or at least know resources to leverage to find my answer. This blog is to document concepts that I've learned becasue I am bound to forget.. and that's okay. In case you're reading this... I hope you enjoy.
+My name is Jam. I'm a recovering project manager with a creative knack for design, dance, and creating things. For the longest time, I've wanted a career to be super passionate about. I'd watch some of my favorite reality shows, like Project Runway, Top Chef.. etc. and be so inspired, maye even envious that they had something that they loved to do.. could do it hours on end. Rails Girls made learning to code accessible to me. . I had the pleasure of hearing[Sandi Metz](http://www.sandimetz.com/) gave a talk on [grit](http://en.wikipedia org/wiki/Grit_%28personality_trait%29) - which gave me some hope that I too, if I worked hard enough, that I could approach my life's work with that same passion and creativity.
+
+These are my daily takeways along my journey to becoming a rails dev. Hope you enjoy!
+
 
 
 Tags:  <a href="{{ page.tags }}"> {{ page.tags}} </a>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Rapid Prototyping with Rails: Lesson 4, Comparing Metaprogramming vs. Concerns &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Rapid Prototyping with Rails: Lesson 4, Comparing Metaprogramming vs. Concerns</h1>
+  <span class="post-date">20 Nov 2014</span>
+  <h2>There are two options for Extracting Common code:</h2>
+
+<ul>
+<li>Metaprogramming</li>
+<li>Modules/Concerns</li>
+</ul>
+
+<h2>Closer look at Metaprogramming</h2>
+
+<p>Metaprogamming will allow you to include a module that will allow your Instance/Class methods to run as class/instance methods:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">module</span> <span class="nn">Votetable</span>
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+    <span class="n">base</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="ss">:include</span><span class="p">,</span> <span class="no">InstanceMethods</span><span class="p">)</span>
+    <span class="n">base</span><span class="o">.</span><span class="n">extend</span> <span class="no">ClassMethods</span>
+  <span class="k">end</span></code></pre></div>
+
+<h3>So for class methods:</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">module</span> <span class="nn">Votetable</span>
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+    <span class="n">base</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="ss">:include</span><span class="p">,</span> <span class="no">InstanceMethods</span><span class="p">)</span>
+    <span class="n">base</span><span class="o">.</span><span class="n">extend</span> <span class="no">ClassMethods</span>
+    <span class="n">base</span><span class="o">.</span><span class="n">class_eval</span> <span class="k">do</span>
+      <span class="n">my_class_eval</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">class</span> <span class="nc">InstanceMethods</span>
+    <span class="k">def</span> <span class="nf">total_votes</span>
+      <span class="nb">self</span><span class="o">.</span><span class="n">up_votes</span> <span class="o">-</span> <span class="nb">self</span><span class="o">.</span><span class="n">down_votes</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">up_votes</span>
+      <span class="nb">self</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">vote</span><span class="p">:</span> <span class="kp">true</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">down_votes</span>
+      <span class="nb">self</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">vote</span><span class="p">:</span> <span class="kp">false</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">class</span> <span class="nc">ClassMethods</span>
+    <span class="k">def</span> <span class="nf">my_class_method</span>
+      <span class="nb">puts</span> <span class="s2">&quot;This is class method&quot;</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>One thing to understand is that you can organize the code below into a sub-module to orchestrate how the code is called:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">module</span> <span class="nn">Votetable</span>
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+    <span class="n">base</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="ss">:include</span><span class="p">,</span> <span class="no">InstanceMethods</span><span class="p">)</span>
+    <span class="n">base</span><span class="o">.</span><span class="n">extend</span> <span class="no">ClassMethods</span>
+    <span class="n">base</span><span class="o">.</span><span class="n">class_eval</span> <span class="k">do</span> <span class="c1">#calling the class method each time the Post class is called</span>
+      <span class="n">my_class_eval</span>
+    <span class="k">end</span>
+  <span class="k">end</span></code></pre></div>
+
+<p>So if you went into rails console and called Post =&gt; &quot;This is class method&quot; would load, in addition to the Post object.</p>
+
+<h2>Closer look at ActiveSupport::Concerns (Modules)</h2>
+
+<p>We can also extract our has_many :votes, as: :voteble association, but we can place this in a class method, which will allow it to be fired automatically when the Post class is called
+ just as though its in the model:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">ClassMethods</span>
+     <span class="n">has_many</span> <span class="ss">:votes</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:voteable</span>
+   <span class="k">end</span></code></pre></div>
+
+<h3>Using Concerns</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">module</span> <span class="nn">Voteable</span>
+     <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+
+     <span class="n">included</span> <span class="k">do</span>
+       <span class="n">has_many</span> <span class="ss">:votes</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:voteable</span>
+     <span class="k">end</span>
+
+
+     <span class="k">def</span> <span class="nf">total_votes</span>
+       <span class="nb">self</span><span class="o">.</span><span class="n">up_votes</span> <span class="o">-</span> <span class="nb">self</span><span class="o">.</span><span class="n">down_votes</span>
+     <span class="k">end</span>
+
+     <span class="k">def</span> <span class="nf">up_votes</span>
+       <span class="nb">self</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">vote</span><span class="p">:</span> <span class="kp">true</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
+     <span class="k">end</span>
+
+     <span class="k">def</span> <span class="nf">down_votes</span>
+       <span class="nb">self</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">vote</span><span class="p">:</span> <span class="kp">false</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
+     <span class="k">end</span>
+   <span class="k">end</span></code></pre></div>
+
+<h3>Using Metaprogramming</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">module</span> <span class="nn">Voteable</span>
+     <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+       <span class="n">base</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="ss">:include</span><span class="p">,</span> <span class="no">InstanceMethods</span><span class="p">)</span>
+       <span class="n">base</span><span class="o">.</span><span class="n">extend</span> <span class="no">ClassMethods</span>
+     <span class="k">end</span>
+
+     <span class="k">class</span> <span class="nc">InstanceMethods</span>
+
+       <span class="k">def</span> <span class="nf">total_votes</span>
+         <span class="nb">self</span><span class="o">.</span><span class="n">up_votes</span> <span class="o">-</span> <span class="nb">self</span><span class="o">.</span><span class="n">down_votes</span>
+       <span class="k">end</span>
+
+       <span class="k">def</span> <span class="nf">up_votes</span>
+         <span class="nb">self</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">vote</span><span class="p">:</span> <span class="kp">true</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
+       <span class="k">end</span>
+
+       <span class="k">def</span> <span class="nf">down_votes</span>
+         <span class="nb">self</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">vote</span><span class="p">:</span> <span class="kp">false</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
+       <span class="k">end</span>
+     <span class="k">end</span>
+
+     <span class="k">class</span> <span class="nc">ClassMethods</span>
+       <span class="n">has_many</span> <span class="ss">:votes</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:voteable</span>
+     <span class="k">end</span>
+   <span class="k">end</span></code></pre></div>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/03/20/course3-three-styles-of-bdd/">
+            Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
+            <small>20 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/17/course3-transactions/">
+            Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
+            <small>17 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/15/course3-parameter-naming-conventions/">
+            Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions
+            <small>15 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

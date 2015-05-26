@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      grit| commit &middot; A coding blog by Jam
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="posts">
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/01/23/course3-first-test-in-rspec/">
+        Build Robust & Production Quality Applications - Lesson 1: First test in Rspec
+      </a>
+    </h1>
+
+    <span class="post-date">23 Jan 2015</span>
+
+    <ol>
+<li>Add Rspec to your gemfile, make sure to include in both test and development:</li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">group</span> <span class="ss">:test</span><span class="p">,</span> <span class="ss">:development</span> <span class="k">do</span>
+    <span class="n">gem</span> <span class="s1">&#39;rspec-rails&#39;</span>
+  <span class="k">end</span></code></pre></div>
+
+<ol>
+<li>rails g rspec:install</li>
+</ol>
+
+<p>Generates three items:
+  1. .rspec file - contains &quot;color&quot;.. just means you want your output to be color-coded
+  2. spec folder
+  3. spec helper - where configuration goes</p>
+
+<ol>
+<li><p>Create models folder inside spec folder</p></li>
+<li><p>Create a todo_spec.rb within the models folder (name of model)</p></li>
+<li><p>Within todo_spec.rb you must:</p></li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
+
+  <span class="n">describe</span> <span class="no">Todo</span> <span class="k">do</span>
+    <span class="n">it</span> <span class="s2">&quot;saves itself&quot;</span> <span class="k">do</span>
+      <span class="n">todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook dinner&quot;</span><span class="p">,</span> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;love me some din din&quot;</span><span class="p">)</span>
+      <span class="n">todo</span><span class="o">.</span><span class="n">save</span>
+      <span class="no">Todo</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="s2">&quot;cook dinner&quot;</span>
+    <span class="k">end</span>
+  <span class="k">end</span></code></pre></div>
+
+<p>** &quot;it&quot; is a keyword that begins each test</p>
+
+<p>** &quot;do&quot; implements the test</p>
+
+<p>** .should is another keyword will test to see if we have the desired result.</p>
+
+<p>** == is the matcher</p>
+
+<h2>How to run rspec outside of Rails</h2>
+
+<ol>
+<li>Create a project folder</li>
+<li>Inside the project folder, create a lib folder. Your code that you&#39;re testing will go inside here.</li>
+<li>Create another folder: spec, where your .spec test files will go.</li>
+<li>Make sure to require your code files inside your specs.</li>
+</ol>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/01/20/course3-unit-functional-integration-tests/">
+        Build Robust & Production Quality Applications - Lesson 1: Unit vs. Functional vs. Integration Tests
+      </a>
+    </h1>
+
+    <span class="post-date">20 Jan 2015</span>
+
+    <h3>There are 3 types of tests:</h3>
+
+<ol>
+<li>Unit</li>
+<li>Functional</li>
+<li>Integration</li>
+</ol>
+
+<h3>Ranking according to:</h3>
+
+<h4>Coverage:</h4>
+
+<p>Unit &gt; Functional &gt; Integration</p>
+
+<h4>Speed:</h4>
+
+<p>Unit &gt; Functional &gt; Integration</p>
+
+<h4>Realistic:</h4>
+
+<p>Integration &gt; Functional &gt; Unit</p>
+
+<h3>1) Unit Tests</h3>
+
+<ul>
+<li>testing a component in isolation, focusing on 1 thing and making sure all cases are covered</li>
+<li>isolated components tested: routes, models, views, helpers</li>
+<li>allow you to thoroughly test all components.. as it is the closest to the code.</li>
+<li>is the fastest and gives you the best coverage</li>
+</ul>
+
+<h3>2) Functional Tests</h3>
+
+<ul>
+<li>testing components in collaboration, making sure not only they work but that they play nicely with each other</li>
+<li>components tested: controllers (where everything interacts), typically once request/response cycle</li>
+</ul>
+
+<h3>3) Integration Tests</h3>
+
+<p>Builds upon functional tests in the sense that not only must play nicely together but they must achieve a desired business objective.</p>
+
+<ul>
+<li>Components tested: Goal is to emulate the user, typically occurs in browser and follows the entire business process and
+that the business objective is achieved</li>
+</ul>
+
+<p>There are multiple styles of testing.. it has become very much like an &quot;art&quot; as devs often times develop a taste of styles for what to test, when, etc. In this course, we will primarily write unit and functional tests leaving integration tests for important business workflows.</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/01/17/coures3-technical-debt/">
+        Build Robust & Production Quality Applications - Lesson 1: Technical Debt
+      </a>
+    </h1>
+
+    <span class="post-date">17 Jan 2015</span>
+
+    <p>A typically response to testing is &quot;I don&#39;t have time, I have to meet my deadline&quot;
+As your project size increases, you technical debt increases to the nth degree as time passes.</p>
+
+<p>The problem is that devs don&#39;t remember the code the wrote 3 months ago, so they have to do a &quot;context switch&quot;
+and recall why they wrote the code they did. This often times can have a cascading effect of issues.</p>
+
+<h3>Rescue Projects:</h3>
+
+<p>That is why projects in this case are called rescue projects, bc they have to call in outside help to
+fix their project. One of the first steps an outside company does to save rescue projects is create a test suite.
+This is the pay off for the technical debt.</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/01/15/course3-rationale-for-testing/">
+        Build Robust & Production Quality Applications - Lesson 1: Rational for Testing
+      </a>
+    </h1>
+
+    <span class="post-date">15 Jan 2015</span>
+
+    <h2>Why Do we test our software?</h2>
+
+<p>Here, we are referring to automated testing:
+What would be our alternatives:</p>
+
+<h3>Option 1. No tests at all:</h3>
+
+<p>this doesn&#39;t exist. This means that customers will do the testing for you. All software has bugs, so bugs encountered by your customers will make them aggravated and then you will lose them as customers, support costs will sky rocket</p>
+
+<h3>Option 2. Rely on QA Team - When we have a clear division b/w development</h3>
+
+<p>Typically for larger companies. Code is thrown over the wall to the QA team according feature scope or some other arbitrary milestone, for example.
+ * The QA Team writes design test cases according to code base and file bugs with the dev team.
+ * The code is authorized for release once everything is fixed.</p>
+
+<p>This could create:</p>
+
+<h4>1. Organizational Trust Problems</h4>
+
+<p>communication b/w the teams typically is not very good. Including finger pointing, etc.</p>
+
+<h4>2. QA Team</h4>
+
+<ul>
+<li>nobody likes them and they get blamed for everything. When everything works, devs take the credit
+and when they don&#39;t work, the QA Team is blamed because their purpose is to catch things like that.</li>
+<li>Also, when deadlines, ship dates are missed, the dev team will often blame the QA Team for all the bugs or requirements
+they have to work through. They complain that they don&#39;t have time to work on features bc of this.</li>
+<li>No one really aspires to be good &quot;testers&quot;, typically its junior devs and there is a high-turnover bc no one typically wants to
+stay there... therefore knowledge is lost.</li>
+<li>Release Cycles - typically both teams are competing for the same time bc each wants to a good job. This pushes back the deadlines.</li>
+</ul>
+
+<h3>Impact of having not automated tests</h3>
+
+<ol>
+<li>Code quality - QA Team, developers, stakeholders, customers don&#39;t care as much</li>
+<li>Isolated Knowledge - only the developer can maintain that code, sometimes a form of job security</li>
+<li>How do you know the implemented feature works</li>
+<li>How do you know that things did not break as a result of this new feature - called regression problems</li>
+</ol>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2014/12/25/course3-link_to/">
+        Build Robust & Production Quality Applications: Precourse, Link_to Review
+      </a>
+    </h1>
+
+    <span class="post-date">25 Dec 2014</span>
+
+    <p>This is a quick reivew of how to list all a catgories videos:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">-</span> <span class="vi">@category</span><span class="o">.</span><span class="n">videos</span><span class="o">.</span><span class="n">each</span> <span class="o">|</span><span class="n">video</span><span class="o">|</span> <span class="k">do</span>
+    <span class="n">link_to</span> <span class="n">video</span><span class="p">,</span> <span class="k">do</span>
+      <span class="o">%</span><span class="n">img</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">video</span><span class="o">.</span><span class="n">small_cover_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="o">-</span> <span class="vi">@category</span><span class="o">.</span><span class="n">videos</span><span class="o">.</span><span class="n">each</span> <span class="o">|</span><span class="n">video</span><span class="o">|</span> <span class="k">do</span>
+    <span class="n">link_to</span> <span class="n">video_path</span><span class="p">(</span><span class="n">video</span><span class="p">),</span> <span class="k">do</span>
+      <span class="o">%</span><span class="n">img</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">video</span><span class="o">.</span><span class="n">small_cover_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="o">-</span> <span class="vi">@category</span><span class="o">.</span><span class="n">videos</span><span class="o">.</span><span class="n">each</span> <span class="o">|</span><span class="n">video</span><span class="o">|</span> <span class="k">do</span>
+  <span class="n">link_to</span> <span class="n">image_tag</span><span class="p">(</span><span class="n">video</span><span class="o">.</span><span class="n">small_cover_url</span><span class="p">),</span> <span class="n">video_path</span><span class="p">(</span><span class="n">video</span><span class="p">)</span>
+
+<span class="o">-</span> <span class="vi">@category</span><span class="o">.</span><span class="n">videos</span><span class="o">.</span><span class="n">each</span> <span class="o">|</span><span class="n">video</span><span class="o">|</span> <span class="k">do</span>
+  <span class="n">link_to</span> <span class="n">image_tag</span><span class="p">(</span><span class="n">video</span><span class="o">.</span><span class="n">small_cover_url</span><span class="p">),</span> <span class="n">video</span></code></pre></div>
+
+  </div>
+  
+</div>
+
+<div class="pagination">
+  
+    <a class="pagination-item older" href="/page6">Older</a>
+  
+  
+    
+      <a class="pagination-item newer" href="/page4">Newer</a>
+    
+  
+</div>
+    </div>
+
+  </body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications: Precourse, From Design to Development &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications: Precourse, From Design to Development</h1>
+  <span class="post-date">05 Dec 2014</span>
+  <h2>Items Covered:</h2>
+
+<ol>
+<li>Slicing Mockups</li>
+<li>SASS</li>
+<li>Haml</li>
+</ol>
+
+<h2>How to serve sliced mockups pages</h2>
+
+<h3>Slicing with UI Controllers</h3>
+
+<p>We will use a UI controller that will point to pages that we need, such as &quot;sign in&quot; page, &quot;account page&quot;.
+Currenty the data and images in these layouts/templates are hardcoded with data and images (nothing is actually linked to the database)</p>
+
+<p>Because we don&#39;t want these templates accessible in prod, we have a before filter to ensure that that&#39;s the case:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#ui_controllers.rb</span>
+<span class="k">class</span> <span class="nc">UiController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="n">before_filter</span> <span class="k">do</span>
+    <span class="n">redirect_to</span> <span class="ss">:root</span> <span class="k">if</span> <span class="no">Rails</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">production?</span>
+  <span class="k">end</span>
+
+  <span class="n">layout</span> <span class="s2">&quot;application&quot;</span>
+
+  <span class="k">def</span> <span class="nf">index</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>In the routes:</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#routes.rb</span>
+<span class="no">Myflix</span><span class="o">::</span><span class="no">Application</span><span class="o">.</span><span class="n">routes</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">do</span>
+  <span class="n">get</span> <span class="s1">&#39;ui/:action)&#39;</span> <span class="p">,</span> <span class="ss">controller</span><span class="p">:</span> <span class="s1">&#39;ui&#39;</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>UI Index</h3>
+
+<p>So we want our index action to show all views available with links containing (&#39;html.haml&#39;) unless its index:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">section</span><span class="o">.</span><span class="n">ui</span><span class="o">-</span><span class="n">index</span>
+  <span class="o">%</span><span class="n">ul</span>
+    <span class="o">-</span> <span class="no">Dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;app/views/ui/*.html.haml&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">file</span><span class="o">|</span>
+      <span class="o">-</span> <span class="n">wireframe</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="s1">&#39;.html.haml&#39;</span><span class="p">)</span>
+      <span class="o">-</span>  <span class="k">unless</span> <span class="n">wireframe</span> <span class="o">==</span> <span class="s1">&#39;index&#39;</span> <span class="o">||</span> <span class="n">wireframe</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sr">/^_/</span><span class="p">)</span>
+        <span class="o">%</span><span class="n">li</span><span class="o">=</span> <span class="n">link_to</span> <span class="n">wireframe</span><span class="o">.</span><span class="n">titleize</span><span class="p">,</span> <span class="ss">action</span><span class="p">:</span> <span class="n">wireframe</span> <span class="k">unless</span> <span class="n">wireframe</span> <span class="o">==</span> <span class="s1">&#39;index&#39;</span></code></pre></div>
+
+<ul>
+<li>To read more about UI Controllers, checkout this blog post from hashrocket:</li>
+</ul>
+
+<h2>Stylesheets</h2>
+
+<h3>SASS</h3>
+
+<p>In this project, we will use application.css (manifest file) that will pull in all of our required files (asset pipline). You had several options - some devs like to use 1 sass/css stylesheet for their entire app, in this case, we broke it out according to the page (user sign in, billing, etc.)</p>
+
+<p>There are two options when using sass, sass and scss. Scss is more verobse but desgined to be compatible with vanilla css. In this case, we are using sass because its less verobse.</p>
+
+<ul>
+<li>To read more about Sass:<a href="http://sass-lang.com/guide">Sass Documentation</a></li>
+</ul>
+
+<h2>Views</h2>
+
+<h3>HAML</h3>
+
+<p>We are also using Haml instead of ERB. Haml appears to be more succint because it uses indentation instead of closing tags</p>
+
+<ul>
+<li><p>To read more about Haml: <a href="http://haml.info/docs.html">Haml Documentation</a></p></li>
+<li><p>To read more about the asset pipeline: <a href="http://guides.rubyonrails.org/asset_pipeline.html#coding-links-to-assets">Rails Asset Pipeline</a></p></li>
+</ul>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/03/20/course3-three-styles-of-bdd/">
+            Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
+            <small>20 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/17/course3-transactions/">
+            Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
+            <small>17 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/15/course3-parameter-naming-conventions/">
+            Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions
+            <small>15 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Rapid Prototyping with Rails: Lesson 2, part 1 &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Rapid Prototyping with Rails: Lesson 2, part 1</h1>
+  <span class="post-date">05 Oct 2014</span>
+  <p>Items covered:
+1. Rails Forms
+2. Strong Parameters</p>
+
+<h2>Rails Forms</h2>
+
+<p>There are 3 ways to create a form
+  1. Pure HTML
+  2. Rails Forms Helpers
+  3. Rails model-backed Forms Helpers</p>
+
+<ol>
+<li>PURE HTML</li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">h5</span><span class="o">&gt;</span> <span class="no">Pure</span> <span class="no">HTML</span> <span class="no">Form</span> <span class="o">&lt;</span><span class="sr">/h5&gt;</span>
+<span class="sr">  &lt;form action=&#39;/</span><span class="n">posts</span><span class="s1">&#39; method=&#39;</span><span class="no">POST</span><span class="s1">&#39;&gt;</span>
+<span class="s1">    Title &lt;input type=&#39;</span><span class="n">text</span><span class="s1">&#39; name=&#39;</span><span class="n">my_title</span><span class="s1">&#39;&gt;</span>
+
+<span class="s1">    &lt;br/&gt;</span>
+
+<span class="s1">    &lt;input type=&#39;</span><span class="n">submit</span><span class="s1">&#39; class=&#39;</span><span class="n">btn</span> <span class="n">btn</span><span class="o">-</span><span class="n">primary</span><span class="err">&#39;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="sr">/form&gt;</span></code></pre></div>
+
+<p><em>Rails has something called CSFP - cross site forgery protection built into it.
+It tries to prevent fake forms from submitting to your website.. without token.</em>
+This can be disabled in your application_controller.rb</p>
+
+<p>In the above section, where it says</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Title</span> <span class="o">&lt;</span><span class="n">input</span> <span class="n">type</span><span class="o">=</span><span class="s1">&#39;text name=&#39;</span><span class="n">my_title</span><span class="err">&#39;</span><span class="o">&gt;</span></code></pre></div>
+
+<p>Giving the title attribute a name called &quot;my_title&quot; gives you the ability refer to it as a hash. So params typed into pry would give you:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="p">{</span><span class="s2">&quot;my_title&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;some title&quot;</span><span class="p">}</span></code></pre></div>
+
+<p>or</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">params</span><span class="o">[</span><span class="ss">:my_title</span><span class="o">]</span> <span class="n">would</span> <span class="n">give</span> <span class="n">you</span> <span class="s2">&quot;some title&quot;</span> <span class="n">returned</span></code></pre></div>
+
+<p>*Hash with indifferent access - means although the key is a string, I can refer to it as a :symbol&quot;
+So therefore, in your console, you could type:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Post</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">title</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:my_title</span><span class="o">]</span><span class="p">)</span> <span class="o">**</span><span class="no">This</span> <span class="n">is</span> <span class="n">called</span> <span class="n">mass</span> <span class="n">assignment</span><span class="o">**</span></code></pre></div>
+
+<ol>
+<li>RAILS FORMS HELPERS
+When creating pure html forms, use form helpers.</li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">h4</span><span class="o">&gt;</span> <span class="no">Rails</span> <span class="no">Forms</span> <span class="no">Helpers</span> <span class="o">&lt;</span><span class="sr">/h4&gt;</span>
+<span class="sr">&lt;%= form_tag &#39;/</span><span class="n">posts</span><span class="s1">&#39; do %&gt;</span>
+<span class="s1">  &lt;%= label_tag :title, &quot;Input a title&quot; %&gt;</span>
+<span class="s1">  &lt;%= text_field_tag :title %&gt;</span>
+<span class="s1">  &lt;br/&gt;</span>
+<span class="s1">  &lt;%= submit_tag &quot;Create Post&quot;, class: &#39;</span><span class="n">btn</span> <span class="n">btn</span><span class="o">-</span><span class="n">primary</span><span class="err">&#39;</span> <span class="sx">%&gt;</span>
+<span class="sx">&lt;% end %&gt;</span></code></pre></div>
+
+<h2>Form helpers, do several things:</h2>
+
+<ol>
+<li>Automatically determines the method=&#39;POST&#39;
+B/c it is a form</li>
+<li>Security
+Provides an UTF 8 &amp; authenticity token in a hidden div that helps allows us to submit under cross site forgery protection</li>
+<li><p>Using the label_tag (helper)
+Gives more guidance to the blind. Label elements correalate with input elements and is read
+by screenreaders for the hearing impaired. <Where is says "Input a title"></p>
+
+<ol>
+<li>RAILS MODEL-BACKED FORMS</li>
+</ol></li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">h4</span><span class="o">&gt;</span> <span class="no">Rails</span> <span class="n">model</span><span class="o">-</span><span class="n">backed</span> <span class="n">form</span> <span class="n">helpers</span> <span class="o">&lt;</span><span class="sr">/h4&gt;</span>
+<span class="sr">  &lt;%= form_for @post do |f| %&gt;</span>
+<span class="sr">  &lt;%= f.label :title %&gt;</span>
+<span class="sr">  &lt;%= f.text_field :title %&gt;</span>
+
+<span class="sr">  &lt;%= f.label :url %&gt;</span>
+<span class="sr">  &lt;% f.text_field :title %&gt;</span>
+<span class="sr">  &lt;br/</span><span class="o">&gt;</span>
+  <span class="o">&lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">submit</span> <span class="s2">&quot;Create Post&quot;</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;btn btn-primary&#39;</span> <span class="sx">%&gt;</span>
+<span class="sx">&lt;% end %&gt;</span></code></pre></div>
+
+<p>You can mix and match forms and tags (from 2 and 3), if needed.</p>
+
+<h3>What is happening here:</h3>
+
+<p>The form_for is taking an object (@post). We must define @post in our controller:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">new</span>
+      <span class="vi">@post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">new</span>
+    <span class="k">end</span></code></pre></div>
+
+<h3>This gives us a few liberties:</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Post</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:post</span><span class="o">]</span><span class="p">)</span> <span class="ow">or</span> <span class="no">Post</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:post</span><span class="o">]</span><span class="p">)</span> <span class="n">is</span> <span class="n">effectively</span> <span class="n">doing</span> <span class="n">mass</span> <span class="n">assignment</span><span class="p">,</span>
+<span class="n">using</span> <span class="n">the</span> <span class="nb">hash</span> <span class="n">assigned</span> <span class="n">to</span> <span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:post</span><span class="o">]</span><span class="p">)</span></code></pre></div>
+
+<h2>Associations</h2>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">has_many</span> <span class="ss">:comments</span>
+<span class="n">has_many</span> <span class="ss">:posts</span></code></pre></div>
+
+<p>These become getters and setter bc they are virtual attributes as opposed to the
+actual column names which are actual attributes</p>
+
+<p>When you have a model-backed form, you must use fields that are virtual or actual attributes
+because your input will attempt roll up and mass assign. This will not work if the actual
+attribute does not exist.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:whatever</span> <span class="p">(</span><span class="n">yes</span><span class="p">)</span>
+  <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:whatever</span> <span class="p">(</span><span class="n">no</span><span class="p">)</span></code></pre></div>
+
+<p>However, the above can be accomplished with Rails Forms Helpers (#2) or Pure HTML,
+you can do what you want and just parse it out on the back-end.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">URL</span>
+      <span class="nb">name</span> <span class="o">=</span> <span class="p">(</span><span class="n">post</span><span class="o">[</span><span class="ss">:url</span><span class="o">]</span><span class="p">)</span> <span class="n">is</span> <span class="n">how</span> <span class="n">rails</span> <span class="n">magic</span><span class="p">,</span> <span class="n">mass</span> <span class="n">assignment</span> <span class="n">occurs</span>
+      <span class="no">In</span> <span class="n">console</span> <span class="ow">or</span> <span class="n">during</span> <span class="nb">binding</span><span class="o">.</span><span class="n">pry</span><span class="p">,</span> <span class="n">typing</span> <span class="n">params</span> <span class="n">will</span> <span class="n">list</span>
+      <span class="no">UTf8</span>
+      <span class="no">Authenticity</span> <span class="no">Token</span>
+      <span class="no">Post</span> <span class="n">attributes</span> <span class="k">in</span> <span class="nb">hash</span> <span class="n">form</span>
+      <span class="no">Commit</span>
+      <span class="no">Action</span>
+      <span class="no">Controller</span></code></pre></div>
+
+<p>Typing params[:post] is the same as post.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Strong</span> <span class="no">Parameters</span>
+<span class="k">def</span> <span class="nf">create</span>
+  <span class="n">post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:post</span><span class="o">]</span><span class="p">)</span>
+<span class="k">end</span></code></pre></div>
+
+<p>Will through an error in Rails 4 bc you don&#39;t have strong_parameters.
+They realized that the concern regarding strong parameters and security really
+didn&#39;t occur at the model layer but rather in the action based on user access,
+roles, etc.</p>
+
+<p>So no-longer a white list of attributes available for mass<em>assignment,
+attr</em>accessible :name :sex :location</p>
+
+<p>So the Rails 4 version is:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">create</span>
+  <span class="vi">@post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">post_params</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="kp">private</span>
+<span class="k">def</span> <span class="nf">post_params</span> <span class="c1">#because we want to reuse this, so lets create a post_params method</span>
+  <span class="n">params</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="ss">:post</span><span class="p">)</span><span class="o">.</span><span class="n">permit</span><span class="p">(</span><span class="ss">:title</span><span class="p">,</span> <span class="ss">:url</span><span class="p">)</span>
+<span class="k">end</span></code></pre></div>
+
+<p>OR you can assign strong parameters based roles</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">post_params</span>
+  <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">admin?</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="ss">:post</span><span class="p">)</span><span class="o">.</span><span class="n">permit!</span> <span class="c1">#permit everything</span>
+
+  <span class="k">else</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="ss">:post</span><span class="p">)</span><span class="o">.</span><span class="n">permit</span><span class="p">(</span><span class="ss">:title</span><span class="p">,</span> <span class="ss">:url</span><span class="p">)</span> <span class="c1">#only permit title and url</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>If in the future, you add other input fields but do not update your strong params, it will just wipe away
+your entry attempt, it will not throw an error as to let hackers know what ways to pass the security restriction</p>
+
+<p>So Rails 3 is attr<em>accessible :title (whitelist) and Rails 4 is strong</em>params in controller action.</p>
+
+<p>Now that you have understood post params, next memorize the following:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">create</span>
+
+  <span class="vi">@post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">post_params</span><span class="p">)</span>
+
+  <span class="k">if</span> <span class="vi">@post</span><span class="o">.</span><span class="n">save</span>
+    <span class="n">flash</span><span class="o">[</span><span class="ss">:notice</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Your post was created.&quot;</span>
+    <span class="n">redirect_to</span> <span class="n">posts_path</span>
+  <span class="k">else</span>
+    <span class="n">render</span> <span class="s1">&#39;new&#39;</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/03/20/course3-three-styles-of-bdd/">
+            Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
+            <small>20 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/17/course3-transactions/">
+            Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
+            <small>17 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/15/course3-parameter-naming-conventions/">
+            Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions
+            <small>15 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

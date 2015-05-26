@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications - Lesson 3: Part 1 &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 3: Part 1</h1>
+  <span class="post-date">02 Mar 2015</span>
+  <h2>Items Covered:</h2>
+
+<ol>
+<li>Growing Complexity</li>
+<li>Interactive Debugging for Solution Delivery</li>
+<li>Transactions</li>
+</ol>
+
+<h2>Growing Complexity Guided By Tests</h2>
+
+<p>Tags.all.map(&amp;:name) == Tags.all.map{|tag| tag.name}</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">create</span>
+  <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:todo</span><span class="o">]</span><span class="p">)</span>
+  <span class="k">if</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">save</span>
+    <span class="n">location_string</span> <span class="o">=</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;at&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">strip</span>
+    <span class="vi">@todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;location#(location_string)&quot;</span><span class="p">)</span>
+    <span class="n">redrect_to</span> <span class="n">root_path</span>
+  <span class="k">else</span>
+  <span class="n">render</span> <span class="ss">:new</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>strip method removes all spaces.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">create</span>
+  <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:todo</span><span class="o">]</span><span class="p">)</span>
+  <span class="k">if</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">save</span>
+    <span class="n">location_string</span> <span class="o">=</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;at&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">strip</span>
+    <span class="n">locations</span> <span class="o">=</span> <span class="n">location_string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;and&#39;</span><span class="p">)</span>
+    <span class="n">locations</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">location</span><span class="o">|</span>
+    <span class="vi">@todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;location:#(location)&quot;</span><span class="p">)</span>
+    <span class="n">redrect_to</span> <span class="n">root_path</span>
+  <span class="k">else</span>
+  <span class="n">render</span> <span class="ss">:new</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>When to use each vs map</h3>
+
+<p>each is used for when you want to iterate through a an collection of data, an
+array for example but you dont want to manipulate the result.
+map is ideal for when iterating over a collection and then you need to alter of manipulate those returned values for input into another problem.</p>
+
+<h3>When to use split vs regex</h3>
+
+<p>Use split when searching for one element
+And regex when searching for more than one.</p>
+
+<h2>Interactive Debugging for Solution Discovery</h2>
+
+<p>After writing and implementing your test cases, you should run sanity checks within your browser.
+If bugs are identified, you should run write tests to isolate it the bug.</p>
+
+<p>Use Binding.pry to in your controller being tested, after the problematic line.
+Binding.pry is really just irb so you now have a means to experiment with your code
+until you find the right solution.</p>
+
+<p>For a good regex tutorial:
+<a href="www.regular-expressions.info">Regex Tutorial</a>
+<a href="www.rubular.com">Rubular</a></p>
+
+<p>.split method cannot run on nil so Ruby 1.9 introduced .try(:split),
+which will run .split if not nil.</p>
+
+<h2>Transactions</h2>
+
+<p>Wrapping batch operations into transactions:</p>
+
+<p>To update the queue in MyFlix, the position entered must be an integer.
+If not, the entire page will fail to update. This is unlike normal transactions
+where we can include a validation error.
+This is where the concept of transactions come in. If all actions in the transaction
+do not save, it will rollback.</p>
+
+<p>Transactions are protective blocks where SQL statements are only permanent if
+they can all succeed as one atomic action. The classic example is a transfer between
+two accounts where you can only have a deposit if the withdrawal succeeded and vice versa.
+Transactions enforce the integrity of the database and guard the data against program errors or database break-downs.
+So basically you should use transaction blocks whenever you have a number of statements that must be executed together
+or not at all.</p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/03/20/course3-three-styles-of-bdd/">
+            Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
+            <small>20 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/17/course3-transactions/">
+            Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
+            <small>17 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/15/course3-parameter-naming-conventions/">
+            Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions
+            <small>15 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>
