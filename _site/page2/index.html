@@ -125,6 +125,384 @@
   
   <div class="post">
     <h1 class="post-title">
+      <a href="/2015/03/15/course3-parameter-naming-conventions/">
+        Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions
+      </a>
+    </h1>
+
+    <span class="post-date">15 Mar 2015</span>
+
+    <h2>Parameter Naming Conventions</h2>
+
+<p>Visit Rails Guides&#39; <a href="http://guides.rubyonrails.org/form_helpers.html#understanding-parameter-naming-conventions.">Parameter Naming Conventions</a>
+Use that as the starting point to construct the params that hit the server.</p>
+
+<p>As you&#39;ve seen in the previous sections, values from forms can be at the top level of
+the params hash or nested in another hash. For example, in a standard create action for a
+Person model, params[:person] would usually be a hash of all the attributes for the person to create.
+The params hash can also contain arrays, arrays of hashes and so on.</p>
+
+<p>Fundamentally HTML forms don&#39;t know about any sort of structured data, all they generate
+is name-value pairs, where pairs are just plain strings. The arrays and hashes you see
+in your application are the result of some parameter naming conventions that Rails uses.</p>
+
+<h3>Basic Structures</h3>
+
+<p>The two basic structures are arrays and hashes. Hashes mirror the syntax used for accessing the value in params. For example, if a form contains:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">input</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;person_name&quot;</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;person[name]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;Henry&quot;</span><span class="o">/&gt;</span></code></pre></div>
+
+<p>the params hash will contain</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="p">{</span><span class="s1">&#39;person&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Henry&#39;</span><span class="p">}}</span></code></pre></div>
+
+<p>and params[:person][:name] will retrieve the submitted value in the controller.</p>
+
+<p>Hashes can be nested as many levels as required, for example:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">input</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;person_address_city&quot;</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;person[address][city]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;New York&quot;</span><span class="o">/&gt;</span></code></pre></div>
+
+<p>will result in the params hash being</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="p">{</span><span class="s1">&#39;person&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="s1">&#39;address&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="s1">&#39;city&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;New York&#39;</span><span class="p">}}}</span></code></pre></div>
+
+<p>Normally Rails ignores duplicate parameter names. If the parameter name contains
+an empty set of square brackets [] then they will be accumulated in an array.
+If you wanted users to be able to input multiple phone numbers, you
+could place this in the form:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">input</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;person[phone_number][]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">input</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;person[phone_number][]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">input</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;person[phone_number][]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="o">/&gt;</span></code></pre></div>
+
+<p>This would result in params[:person][:phone_number] being an array containing the inputted phone numbers.</p>
+
+<h3>Combining Them</h3>
+
+<p>We can mix and match these two concepts. One element of a hash might be an array as in the previous example,
+or you can have an array of hashes. For example, a form might let you create any number of addresses by repeating the following form fragment</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">input</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;addresses[][line1]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">input</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;addresses[][line2]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">input</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;addresses[][city]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="o">/&gt;</span></code></pre></div>
+
+<p>This would result in params[:addresses] being an array of hashes with keys line1, line2 and city.
+Rails decides to start accumulating values in a new hash whenever it encounters an input name that
+already exists in the current hash.</p>
+
+<p>There&#39;s a restriction, however, while hashes can be nested arbitrarily, only one level of &quot;arrayness&quot; is allowed. Arrays can usually be replaced by hashes; for example, instead of having an array of model objects, one can have a hash of model objects keyed by their id, an array index or some other parameter.</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/03/10/course3-update-review-in-queue/">
+        Build Robust & Production Quality Applications - Lesson 4: Update Review in Queue
+      </a>
+    </h1>
+
+    <span class="post-date">10 Mar 2015</span>
+
+    <p>In Myflix, we want to be able to allow the user to update video rating in the video_play queue.</p>
+
+<p>Goal: To change video rating from the queue<em>item index.
+To do so, we have to create the virtual attribute on the queue</em>item model, as though it is a column on the queue_item model (table). Since it is not in the model, we have to define the getter and setter.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#queue_item.rb</span>
+<span class="k">def</span> <span class="nf">rating</span>
+
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">rating</span><span class="o">=</span><span class="p">(</span><span class="n">new_rating</span><span class="p">)</span>
+ <span class="o">-</span><span class="n">this</span> <span class="n">is</span> <span class="n">where</span> <span class="n">you</span> <span class="k">begin</span> <span class="n">to</span> <span class="n">write</span> <span class="n">your</span> <span class="n">tests</span>
+<span class="k">end</span></code></pre></div>
+
+<h2>Update Column vs Update Attribute</h2>
+
+<p>update<em>attributes will go through validation error unlike the update</em>column method,which will bypass validation.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">rating</span><span class="o">=</span><span class="p">(</span><span class="n">new_rating</span><span class="p">)</span>
+  <span class="n">review</span> <span class="o">=</span> <span class="no">Review</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">user_id</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="ss">video_id</span><span class="p">:</span> <span class="n">video</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
+  <span class="n">review</span><span class="o">.</span><span class="n">update_column</span><span class="p">(</span><span class="ss">:rating</span><span class="p">,</span> <span class="n">new_rating</span><span class="p">)</span>
+<span class="k">end</span></code></pre></div>
+
+<h2>Memoization</h2>
+
+<p>Memoization means the first time the record is called, it will hit the database only once and store that info
+into the instance variable and will not database again when record is called.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">review</span>
+  <span class="vi">@review</span> <span class="o">||=</span> <span class="no">Review</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">user_id</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="ss">video_id</span><span class="p">:</span> <span class="n">video</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
+<span class="k">end</span></code></pre></div>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/03/07/course3-lesson3/">
+        Build Robust & Production Quality Applications - Lesson 3: Part 3
+      </a>
+    </h1>
+
+    <span class="post-date">07 Mar 2015</span>
+
+    <h2>Items Covered:</h2>
+
+<ol>
+<li>Feature Specs</li>
+<li>Capybara</li>
+<li>Request Specs</li>
+</ol>
+
+<h3>Types of Testing We&#39;ve Covered:</h3>
+
+<ul>
+<li>Models (Model Specs)</li>
+<li>Controllers (Controller Specs)</li>
+<li>Views, Routes, Helpers, Mailers (Feature Specs)</li>
+</ul>
+
+<h2>Feature Specs</h2>
+
+<p>Feature Specs cover all the above in integration, although there are also specs
+for every item listed above, however mailers, routes, views, and helpers do not need to be tested in isolation.</p>
+
+<p>With feature specs, you mimic the user&#39;s experience originating with the browser.
+This is the first example of vertical integration.
+Specs are typically broken into features.</p>
+
+<p>There is something called &quot;request specs&quot; which focuses more horizontal integration. This is when you want to test multiple requests and responses across various controllers, making sure that things flow in a sequence.</p>
+
+<p>In this course, we will NOT use request<em>specs, becasue typically request</em>specs are used to capture
+business processes from end to end. However any business process worth measuring must be
+centered around the customer expereince...</p>
+
+<h2>Capybara</h2>
+
+<p>The Capybara gem is the way you can simulate user interaction with the browser.
+Load RSpec 2.x support by adding the following line (typically to your spec_helper.rb file):</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;capybara/rspec&#39;</span></code></pre></div>
+
+<p>If you are using Rails, put your Capybara specs in spec/features.</p>
+
+<p>If you are not using Rails, tag all the example groups in which you want to use Capybara with :type =&gt; :feature.</p>
+
+<p>You can now write your specs like so:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;the signin process&quot;</span><span class="p">,</span> <span class="ss">:type</span> <span class="o">=&gt;</span> <span class="ss">:feature</span> <span class="k">do</span>
+  <span class="n">before</span> <span class="ss">:each</span> <span class="k">do</span>
+    <span class="no">User</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="ss">:email</span> <span class="o">=&gt;</span> <span class="s1">&#39;user@example.com&#39;</span><span class="p">,</span> <span class="ss">:password</span> <span class="o">=&gt;</span> <span class="s1">&#39;password&#39;</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="n">it</span> <span class="s2">&quot;signs me in&quot;</span> <span class="k">do</span>
+    <span class="n">visit</span> <span class="s1">&#39;/sessions/new&#39;</span>
+    <span class="n">within</span><span class="p">(</span><span class="s2">&quot;#session&quot;</span><span class="p">)</span> <span class="k">do</span>
+      <span class="n">fill_in</span> <span class="s1">&#39;Email&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="s1">&#39;user@example.com&#39;</span>
+      <span class="n">fill_in</span> <span class="s1">&#39;Password&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="s1">&#39;password&#39;</span>
+    <span class="k">end</span>
+    <span class="n">click_button</span> <span class="s1">&#39;Sign in&#39;</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_content</span> <span class="s1">&#39;Success&#39;</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>Use :js =&gt; true to switch to the Capybara.javascript_driver (:selenium by default), or provide a :driver option to switch to one specific driver. For example:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s1">&#39;some stuff which requires js&#39;</span><span class="p">,</span> <span class="ss">:js</span> <span class="o">=&gt;</span> <span class="kp">true</span> <span class="k">do</span>
+  <span class="n">it</span> <span class="s1">&#39;will use the default js driver&#39;</span>
+  <span class="n">it</span> <span class="s1">&#39;will switch to one specific driver&#39;</span><span class="p">,</span> <span class="ss">:driver</span> <span class="o">=&gt;</span> <span class="ss">:webkit</span>
+<span class="k">end</span></code></pre></div>
+
+<p>**Capybara Built in DSL (reads more like UAT - User Accpetance tests) - reads more higher level
+- feature is in fact just an alias for describe ...,
+- :type =&gt; :feature,
+- background is an alias for before, scenario for it,
+- and given/given! aliases for let/let!, respectively.</p>
+
+<p>Finally, Capybara also comes with a built in DSL for creating descriptive acceptance tests:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">feature</span> <span class="s2">&quot;Signing in&quot;</span> <span class="k">do</span>
+  <span class="n">background</span> <span class="k">do</span>
+    <span class="no">User</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="ss">:email</span> <span class="o">=&gt;</span> <span class="s1">&#39;user@example.com&#39;</span><span class="p">,</span> <span class="ss">:password</span> <span class="o">=&gt;</span> <span class="s1">&#39;caplin&#39;</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="n">scenario</span> <span class="s2">&quot;Signing in with correct credentials&quot;</span> <span class="k">do</span>
+    <span class="n">visit</span> <span class="s1">&#39;/sessions/new&#39;</span>
+    <span class="n">within</span><span class="p">(</span><span class="s2">&quot;#session&quot;</span><span class="p">)</span> <span class="k">do</span>
+      <span class="n">fill_in</span> <span class="s1">&#39;Email&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="s1">&#39;user@example.com&#39;</span>
+      <span class="n">fill_in</span> <span class="s1">&#39;Password&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="s1">&#39;caplin&#39;</span>
+    <span class="k">end</span>
+    <span class="n">click_button</span> <span class="s1">&#39;Sign in&#39;</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_content</span> <span class="s1">&#39;Success&#39;</span>
+  <span class="k">end</span>
+
+  <span class="n">given</span><span class="p">(</span><span class="ss">:other_user</span><span class="p">)</span> <span class="p">{</span> <span class="no">User</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="ss">:email</span> <span class="o">=&gt;</span> <span class="s1">&#39;other@example.com&#39;</span><span class="p">,</span> <span class="ss">:password</span> <span class="o">=&gt;</span> <span class="s1">&#39;rous&#39;</span><span class="p">)</span> <span class="p">}</span>
+
+  <span class="n">scenario</span> <span class="s2">&quot;Signing in as another user&quot;</span> <span class="k">do</span>
+    <span class="n">visit</span> <span class="s1">&#39;/sessions/new&#39;</span>
+    <span class="n">within</span><span class="p">(</span><span class="s2">&quot;#session&quot;</span><span class="p">)</span> <span class="k">do</span>
+      <span class="n">fill_in</span> <span class="s1">&#39;Email&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="n">other_user</span><span class="o">.</span><span class="n">email</span>
+      <span class="n">fill_in</span> <span class="s1">&#39;Password&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="n">other_user</span><span class="o">.</span><span class="n">password</span>
+    <span class="k">end</span>
+    <span class="n">click_button</span> <span class="s1">&#39;Sign in&#39;</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_content</span> <span class="s1">&#39;Invalid email or password&#39;</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>Capybara Drivers</h3>
+
+<ol>
+<li><p>RackTest is really fast, and does not really fire-up the browser. It&#39;s a headless driver
+therefore doesn&#39;t really simulate the browser experience. RackTest does not support Js.</p></li>
+<li><p>Selenuim is a popular driver that does handle Js and fire-ups Firefox.
+But this option is very slow.</p></li>
+<li><p>Capybara Webkit is another headless driver that can execute Js well.
+It&#39;s much faster than selenium but slower than RackTest.</p></li>
+</ol>
+
+<h3>First feature spec</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;spec/helper&#39;</span>
+<span class="n">feature</span> <span class="s1">&#39;User signs in&#39;</span> <span class="k">do</span>
+  <span class="n">background</span> <span class="k">do</span>
+    <span class="no">User</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">username</span><span class="p">:</span> <span class="s2">&quot;john&quot;</span><span class="p">,</span> <span class="ss">full_name</span><span class="p">:</span> <span class="s2">&quot;John Doe&quot;</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="n">scenario</span> <span class="s2">&quot;with existing username&quot;</span> <span class="k">do</span>
+    <span class="n">visit</span> <span class="n">root_path</span>
+    <span class="n">fill_in</span> <span class="s2">&quot;Username&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s2">&quot;john&quot;</span>
+    <span class="n">click_button</span> <span class="s2">&quot;Sign in&quot;</span>
+    <span class="n">page</span><span class="o">.</span><span class="n">should</span> <span class="n">have_content</span> <span class="s2">&quot;John Doe&quot;</span>
+    <span class="k">end</span>
+  <span class="k">end</span></code></pre></div>
+
+<p>The &#39;fill_ in &quot;Username&quot;, &#39; is referring to the label<em>tag :username, &quot;Username&quot;
+  - you can also refer to fill</em> in the label tag, the name, or the input_ id,
+  although its best practice to use the label tag because it easier to read.</p>
+
+<h3>Request Specs</h3>
+
+<p>Watch RailsCast video on <a href="http://railscasts.com/episodes/257-request-specs-and-capybara">Capybara &amp; Request Specs</a></p>
+
+<ul>
+<li>Request Specs are alternatives to the Rails Builtin Integration Testing
+(Refer to RailsCast video 187)</li>
+</ul>
+
+<p>In terminal, run:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="mi">1</span><span class="o">.</span> <span class="n">rails</span> <span class="n">g</span> <span class="ss">rspec</span><span class="p">:</span><span class="n">install</span>
+
+<span class="mi">2</span><span class="o">.</span> <span class="n">rails</span> <span class="n">g</span> <span class="n">intergration_test</span> <span class="n">task</span>
+
+<span class="mi">3</span><span class="o">.</span> <span class="no">Open</span> <span class="n">up</span> <span class="n">task_spec</span><span class="p">,</span> <span class="n">code</span> <span class="n">should</span> <span class="n">be</span> <span class="n">fine</span> <span class="n">as</span> <span class="n">is</span><span class="p">,</span> <span class="n">but</span> <span class="n">you</span> <span class="n">would</span>
+<span class="n">change</span> <span class="n">the</span> <span class="n">request</span> <span class="n">verb</span> <span class="ow">and</span> <span class="n">the</span> <span class="n">assertion</span>
+
+<span class="mi">4</span><span class="o">.</span> <span class="n">rake</span> <span class="ss">spec</span><span class="p">:</span><span class="n">requests</span></code></pre></div>
+
+<p>Example:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;Tasks&quot;</span> <span class="k">do</span>
+  <span class="n">describe</span> <span class="s2">&quot;GET /tasks&quot;</span> <span class="k">do</span>
+    <span class="n">it</span>  <span class="s2">&quot;displays tasks&quot;</span> <span class="k">do</span>
+      <span class="no">Task</span><span class="o">.</span><span class="n">create!</span><span class="p">(</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s2">&quot;paint fence&quot;</span><span class="p">)</span>
+      <span class="n">get</span> <span class="n">tasks_path</span>
+      <span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">should</span> <span class="kp">include</span><span class="p">(</span><span class="s2">&quot;paint fence&quot;</span><span class="p">)</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+<span class="n">describe</span> <span class="s2">&quot;POST /tasks&quot;</span> <span class="k">do</span>
+    <span class="n">it</span> <span class="s2">&quot;create task&quot;</span> <span class="k">do</span>
+      <span class="n">post_via_redirect</span> <span class="n">tasks_path</span><span class="p">,</span> <span class="ss">tasks</span><span class="p">:</span> <span class="p">{</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;mow lawn&quot;</span><span class="p">}</span>
+      <span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">should</span> <span class="kp">include</span><span class="p">(</span><span class="s2">&quot;mow lawn&quot;</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>One issue with request specs this that they dont mimic the user&#39;s experience
+becasue you&#39;e submitting the request directly, rather than going through the form
+like the user would - that is why we use Capybara (rather than webrat) &amp; Launchy</p>
+
+<p>Installing Capybara, allows us to change our existing tests:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;Tasks&quot;</span> <span class="k">do</span>
+  <span class="n">describe</span> <span class="s2">&quot;GET /tasks&quot;</span> <span class="k">do</span>
+    <span class="n">it</span>  <span class="s2">&quot;displays tasks&quot;</span> <span class="k">do</span>
+      <span class="no">Task</span><span class="o">.</span><span class="n">create!</span><span class="p">(</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s2">&quot;paint fence&quot;</span><span class="p">)</span>
+      <span class="n">visit</span> <span class="n">tasks_path</span>
+      <span class="n">page</span><span class="o">.</span><span class="n">should</span> <span class="kp">include</span><span class="p">(</span><span class="s2">&quot;paint fence&quot;</span><span class="p">)</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+<span class="n">describe</span> <span class="s2">&quot;POST /tasks&quot;</span> <span class="k">do</span>
+    <span class="n">it</span> <span class="s2">&quot;create task&quot;</span> <span class="k">do</span>
+      <span class="n">visit</span> <span class="n">tasks_path</span>
+      <span class="n">fill_in</span> <span class="s2">&quot;New Task&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s2">&quot;mow lawn&quot;</span>
+      <span class="n">click_button</span> <span class="s2">&quot;Add&quot;</span>
+      <span class="n">page</span><span class="o">.</span><span class="n">should</span> <span class="n">have_content</span><span class="p">(</span><span class="s2">&quot;successfully added task&quot;</span><span class="p">)</span>
+      <span class="n">page</span><span class="o">.</span><span class="n">should</span> <span class="n">have_content</span><span class="p">(</span><span class="s2">&quot;mow lawn&quot;</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>*What if the test fails and you don&#39;t know why?
+Thats where the gem &quot;Launchy&quot; comes in:
+ -anywhere in the test, you can write:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">save_and_open_page</span></code></pre></div>
+
+<p>Capybara does not test Javascript with out Selenium:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">it</span> <span class="s2">&quot;supports js&quot;</span><span class="p">,</span> <span class="ss">js</span><span class="p">:</span> <span class="kp">true</span> <span class="k">do</span>
+   <span class="n">visit</span> <span class="n">tasks_path</span>
+   <span class="n">click_link</span> <span class="s2">&quot;test js&quot;</span>
+   <span class="n">page</span><span class="o">.</span><span class="n">should</span> <span class="n">have_content</span><span class="p">(</span><span class="s2">&quot;js works&quot;</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<hr>
+
+<p>Let&#39;s try adding Js to our first test and see if it is supported by
+Selenium.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;Tasks&quot;</span> <span class="k">do</span>
+<span class="n">describe</span> <span class="s2">&quot;GET /tasks&quot;</span> <span class="k">do</span><span class="p">,</span> <span class="ss">js</span><span class="p">:</span> <span class="kp">true</span> <span class="k">do</span>
+  <span class="n">it</span>  <span class="s2">&quot;displays tasks&quot;</span> <span class="k">do</span>
+    <span class="no">Task</span><span class="o">.</span><span class="n">create!</span><span class="p">(</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s2">&quot;paint fence&quot;</span><span class="p">)</span>
+    <span class="n">visit</span> <span class="n">tasks_path</span>
+    <span class="n">page</span><span class="o">.</span><span class="n">should</span> <span class="kp">include</span><span class="p">(</span><span class="s2">&quot;paint fence&quot;</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>The test will fail because Selenium does not support database transactions</p>
+
+<h3>In #spec_helper.rb:</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Change</span> <span class="n">config</span><span class="o">.</span><span class="n">use_transactional_</span> <span class="n">fixtures</span> <span class="o">=</span> <span class="kp">true</span><span class="p">,</span> <span class="n">to</span> <span class="kp">false</span><span class="o">.</span></code></pre></div>
+
+<p>Selenium does not support database transactions.</p>
+
+<p>But this will mean our database transactions will carryover in between
+tests and we dont want that. So the answer is the database cleaner
+gem that will run in between tests. You must add the config code
+from the documentation into the spec_helper, removing transactions since the
+arent supported by Selenuim.</p>
+
+<hr>
+
+<p>To run pry in a spec, you must use:
+require &#39;pry&#39;; binding.pry before the error/after the action
+During pry. you can use</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Launchy</span> <span class="s2">&quot;save_and_open_page&quot;</span></code></pre></div>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
       <a href="/2015/03/05/course3-lesson3/">
         Build Robust & Production Quality Applications - Lesson 3: Part 2
       </a>
@@ -365,137 +743,6 @@ two accounts where you can only have a deposit if the withdrawal succeeded and v
 Transactions enforce the integrity of the database and guard the data against program errors or database break-downs.
 So basically you should use transaction blocks whenever you have a number of statements that must be executed together
 or not at all.</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/02/28/course3-faker/">
-        Build Robust & Production Quality Applications - Lesson 2: Generate Fake Data with Faker
-      </a>
-    </h1>
-
-    <span class="post-date">28 Feb 2015</span>
-
-    <h2>Use Faker to Generate Fake Data</h2>
-
-<p>Creating fake data when your model has uniqueness validations will throw errors
-if your data is not unique.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="k">do</span>
-  <span class="nb">name</span> <span class="p">{</span> <span class="s2">&quot;cooking&quot;</span> <span class="p">}</span>
-  <span class="n">user</span>
-<span class="k">end</span></code></pre></div>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span> <span class="k">do</span>
-  <span class="n">email</span> <span class="p">{</span> <span class="s2">&quot;joe@example.com&quot;</span><span class="p">}</span> <span class="c1">#This will throw an error eventually if email record already exists.</span>
-<span class="k">end</span></code></pre></div>
-
-<h3>Examples</h3>
-
-<p>Creating a category:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:category</span><span class="p">)</span> <span class="k">do</span>
-  <span class="nb">name</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Name</span><span class="o">.</span><span class="n">name</span> <span class="p">}</span>
-<span class="k">end</span></code></pre></div>
-
-<p>Creating a video:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:video</span><span class="p">)</span> <span class="k">do</span>
-  <span class="n">title</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Lorem</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="p">}</span>
-  <span class="n">description</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Lorem</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="p">}</span>
-<span class="k">end</span></code></pre></div>
-
-<p>Creating an invitation:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">)</span> <span class="k">do</span>
-  <span class="n">recipient_name</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Name</span><span class="o">.</span><span class="n">name</span> <span class="p">}</span>
-  <span class="n">recipient_email</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Internet</span><span class="o">.</span><span class="n">email</span> <span class="p">}</span>
-  <span class="n">message</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Lorem</span><span class="o">.</span><span class="n">paragraphs</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="p">}</span>
-<span class="k">end</span></code></pre></div>
-
-<p>Read more: <a href="https://github.com/stympy/faker">Faker Docs</a></p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/02/26/course3-fabricators/">
-        Build Robust & Production Quality Applications - Lesson 2: Object Generation with Fabricators
-      </a>
-    </h1>
-
-    <span class="post-date">26 Feb 2015</span>
-
-    <p>It&#39;s typical to create many objects during testing and the more attributes you have
-the more cumbersome it could be to maintain, moreover, if an attribute changes, it then becomes very difficult
-to update all those tests.</p>
-
-<p>To make this better, we can use an object generator framework called Fabrication.</p>
-
-<h3>Steps:</h3>
-
-<h4>1. Create a folder under specs called &quot;Fabricators&quot;</h4>
-
-<h4>2. create fabricator_todo.rb</h4>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="k">do</span>
-    <span class="nb">name</span> <span class="p">{</span> <span class="s2">&quot;cooking&quot;</span> <span class="p">}</span>
-  <span class="k">end</span></code></pre></div>
-
-<h4>3. You can also create a user each time a todo is created:</h4>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="k">do</span>
-  <span class="nb">name</span> <span class="p">{</span> <span class="s2">&quot;cooking&quot;</span> <span class="p">}</span>
-  <span class="n">user</span> <span class="p">{</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span> <span class="p">}</span>
-<span class="k">end</span></code></pre></div>
-
-<p>or</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="k">do</span>
-  <span class="nb">name</span> <span class="p">{</span> <span class="s2">&quot;cooking&quot;</span> <span class="p">}</span>
-  <span class="n">user</span>
-<span class="k">end</span></code></pre></div>
-
-<h3>In your test suite:</h3>
-
-<p>If you want to create an object in your database:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;#display_text&quot;</span> <span class="k">do</span>
-  <span class="n">let</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="p">{</span> <span class="n">fabricate</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="p">}</span>
-  <span class="n">subject</span> <span class="p">{</span> <span class="n">todo</span><span class="o">.</span><span class="n">display_text</span> <span class="p">}</span></code></pre></div>
-
-<p>If you would rather create an object in memory, you could:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;#display_text&quot;</span> <span class="k">do</span>
-  <span class="n">let</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="p">{</span> <span class="n">fabricate</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="p">}</span>
-  <span class="n">subject</span> <span class="p">{</span> <span class="n">todo</span><span class="o">.</span><span class="n">display_text</span> <span class="p">}</span></code></pre></div>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/02/23/course3-single-assertion-principle/">
-        Build Robust & Production Quality Applications - Lesson 2: Single Assertion Principle
-      </a>
-    </h1>
-
-    <span class="post-date">23 Feb 2015</span>
-
-    <h2>Single Assertion principle states:</h2>
-
-<p>A test suite should only have one assertion, so that if there is a failure
-they fail separately. If you find yourself using &quot;and&quot; then you are probably
-testing too much at once:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">get</span> <span class="ss">:index</span>
-  <span class="n">assigns</span><span class="p">(</span><span class="ss">:todos</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="p">(</span><span class="n">cook</span><span class="p">,</span> <span class="nb">sleep</span><span class="p">)</span></code></pre></div>
-
-<p>There is an exception to this rule - when the assertions are very related concerning the same object:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">get</span> <span class="ss">:new</span>
-  <span class="n">assigns</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="n">be_new_record</span>
-  <span class="n">assigns</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="n">be</span> <span class="n">instance_of</span><span class="p">(</span><span class="no">Todo</span><span class="p">)</span></code></pre></div>
 
   </div>
   

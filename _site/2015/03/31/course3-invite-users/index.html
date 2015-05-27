@@ -11,7 +11,7 @@
 
   <title>
     
-      grit| commit &middot; A coding blog by Jam
+      Build Robust & Production Quality Applications - Lesson 6: Inviting Users &middot; grit| commit
     
   </title>
 
@@ -44,7 +44,7 @@
     </div>
 
     <nav class="sidebar-nav">
-      <a class="sidebar-nav-item active" href="/">Home</a>
+      <a class="sidebar-nav-item" href="/">Home</a>
 
       
 
@@ -121,41 +121,10 @@
 
 
     <div class="content container">
-      <div class="posts">
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/04/03/course3-invite-users/">
-        Build Robust & Production Quality Applications - Lesson 6: Inviting Users- Part 2
-      </a>
-    </h1>
-
-    <span class="post-date">03 Apr 2015</span>
-
-    <p>2nd part of Workflow:
-1. User gets email and selects the &quot;Accept this invitation&quot; link
-- URL will contain special token
-2. Registation form has email prefilled
-3. Upon sign up, user automatically follows recommender and vice versa</p>
-
-<p>Another issue with the current form is when the invitee signs up, we lose the
- lose inviter&#39;s info and they are not not following the inviter
- - to fix this, we need a hidden field on the invitee registration form.
- - this hidden field is a field tag, rather than model backed becasue we don&#39;t want this
- token to be stored under the user&#39;s token.</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/03/31/course3-invite-users/">
-        Build Robust & Production Quality Applications - Lesson 6: Inviting Users
-      </a>
-    </h1>
-
-    <span class="post-date">31 Mar 2015</span>
-
-    <p>Let&#39;s write add functionality to allow users to invite their friends:</p>
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 6: Inviting Users</h1>
+  <span class="post-date">31 Mar 2015</span>
+  <p>Let&#39;s write add functionality to allow users to invite their friends:</p>
 
 <h3>Workflow:</h3>
 
@@ -374,166 +343,42 @@
 <p>clear the ActionMailer deliveries in the valid input context so they don&#39;t interfer with
 the invalid inputs. - we want that number to be 0</p>
 
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/03/25/course3-writing-feature-tests-for-emails/">
-        Build Robust & Production Quality Applications - Lesson 6: Writing Feature Tests for Emails
-      </a>
-    </h1>
-
-    <span class="post-date">25 Mar 2015</span>
-
-    <h2>Interact with Emails in Feature Tests:</h2>
-
-<p>Sometimes applications may require you to complete a form and an email is
-is generated.
-To test this feature, Capybara-email is a great way to test this functionality and provides a nice interface that allows you to write specs on the level of user interaction. This is better than as creating a feature test for ActionMailer and its deliveries because it will require too much low level detail.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">gem</span> <span class="s1">&#39;capybara-email&#39;</span>
- <span class="ss">documentation</span><span class="p">:</span> <span class="n">github</span><span class="o">//</span><span class="n">dockyard</span><span class="o">/</span><span class="n">capybara</span><span class="o">-</span><span class="n">email</span></code></pre></div>
-
-<p>Example spec for inviting a user:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#suser_resets_password_spec.rb</span>
-<span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
-<span class="n">feature</span> <span class="s1">&#39;User resets password&#39;</span> <span class="k">do</span>
-  <span class="n">scenario</span> <span class="s1">&#39;user successfully resets the password&#39;</span> <span class="k">do</span>
-    <span class="n">alice</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">,</span> <span class="ss">password</span><span class="p">:</span> <span class="s1">&#39;old_password&#39;</span><span class="p">)</span>
-    <span class="n">visit</span> <span class="n">sign_in_path</span>
-    <span class="n">click_link</span> <span class="s2">&quot;Forgot Password&quot;</span>
-    <span class="n">fill_in</span> <span class="s2">&quot;Email Address&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="n">alice</span><span class="o">.</span><span class="n">email</span>
-    <span class="n">click_button</span> <span class="s2">&quot;Send Email&quot;</span>
-
-    <span class="n">open_email</span><span class="p">(</span><span class="n">alice</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
-    <span class="n">current_email</span><span class="o">.</span><span class="n">click_link</span><span class="p">(</span><span class="s2">&quot;Reset My Password&quot;</span><span class="p">)</span>
-
-    <span class="n">fill_in</span> <span class="s2">&quot;New Password&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s2">&quot;new_password&quot;</span>
-    <span class="n">click_button</span> <span class="s2">&quot;Reset Password&quot;</span>
-
-    <span class="n">fill_in</span> <span class="s2">&quot;Email Address&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="n">alice</span><span class="o">.</span><span class="n">email</span>
-    <span class="n">fill_in</span> <span class="s2">&quot;Password&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s2">&quot;new_password&quot;</span>
-    <span class="n">click_button</span> <span class="s2">&quot;Sign in&quot;</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">)</span><span class="o">.</span> <span class="n">to</span> <span class="n">have_content</span><span class="p">(</span><span class="s2">&quot;Welcome, </span><span class="si">#{</span><span class="n">alice</span><span class="o">.</span><span class="n">full_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="n">clear_email</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/03/20/course3-three-styles-of-bdd/">
-        Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
-      </a>
-    </h1>
-
-    <span class="post-date">20 Mar 2015</span>
-
-    <h2>Testing Styles in Rails: Three Styles of Behavior Driven Development</h2>
-
-<p>Traditionally we have followed the following flow:</p>
-
-<h3>Meet in the Middle Technique</h3>
-
-<ol>
-<li>Turn mock ups into view templates:
-copy the mockups and replace the placeholder data</li>
-<li>Controller Tests (inner layer)- the controller tests will drive the model layer
-tests, routes, db migrations, etc.</li>
-<li>Model Level Tests(inner layer) - if we need active record based and non-active record based
-model - logic, we will need to drop down to model layer to test their</li>
-<li>Feature Specs/Integration - (Outer most layer) Tests will allow us to test everything including the view templates</li>
-</ol>
-
-<ul>
-<li>Here you will end up with less feature/integration specs than outside in because they are typically written after multiple specs.</li>
-</ul>
-
-<h3>Inside out Approach</h3>
-
-<ol>
-<li>Start from the models and migrations that are required for that feature and then
-right specs to test that model</li>
-<li>Controller Level</li>
-<li>View/Intergation Specs</li>
-</ol>
-
-<ul>
-<li>easier to start .. allows you to work with something small</li>
-<li>But you sometimes don&#39;t know where you&#39;re going and you may end up
-adding alot of code that is not needed.</li>
-<li>This is used primarily in productized shops where its easier to add a model to a more mature product.</li>
-</ul>
-
-<h3>Outside in Approach</h3>
-
-<p>Start at the Integration Level - This integration level does not mean in the
-same way that we reference the Integration Tests in the &quot;Meet in the Middle&quot; technique where where we test multiple features (horizontal) but rather vertical -integration means where we test for models, controllers and views for one feature
-- written in a very business level decision level - you have to think &#39;what is the business value we are looking to provide?&#39;</p>
-
-<ul>
-<li>route, controller, models</li>
-<li>also called BDD or ABDD (A is for Acceptance)</li>
-<li>often used in consultancys, clients provide the feature</li>
-<li>often follows more a natural flow</li>
-<li>requires you to know rails really well and how things work together</li>
-<li>people often use cucumber or rspec feature tests for this.</li>
-</ul>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/03/17/course3-transactions/">
-        Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
-      </a>
-    </h1>
-
-    <span class="post-date">17 Mar 2015</span>
-
-    <p>The[ previous example reegarding updating video review while in queue does not follow typical Rails convention:
-- We are using in the update<em>queue method.
-- we have to use parameter naming conventions to parse out the queue</em>item id and
-position id in the form.
-- We have to specify the order of queue_items using in the user model according to position.</p>
-
-<h3>Using Transactions &amp; Exception Rescues when the value does not save.</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">update_queue</span>
-  <span class="k">begin</span>
-    <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">transaction</span> <span class="k">do</span>
-      <span class="n">params</span><span class="o">[</span><span class="ss">:queue_items</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">queue_item_data</span><span class="o">|</span>
-        <span class="n">queue_item</span> <span class="o">=</span> <span class="no">QueueItem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">queue_item_data</span><span class="o">[</span><span class="s2">&quot;id&quot;</span><span class="o">]</span><span class="p">)</span>
-        <span class="n">queue_item</span><span class="o">.</span><span class="n">update_attributes!</span><span class="p">(</span><span class="ss">position</span><span class="p">:</span> <span class="n">queue_item_data</span><span class="o">[</span><span class="s2">&quot;position&quot;</span><span class="o">]</span><span class="p">)</span>
-      <span class="k">end</span>
-    <span class="k">end</span>
-  <span class="k">rescue</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">RecordInvalid</span>
-    <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;You must use whole numbers for play position.&quot;</span>
-    <span class="n">redirect_to</span> <span class="n">my_queue_path</span>
-    <span class="k">return</span>
-  <span class="k">end</span>
-
-  <span class="n">current_user</span><span class="o">.</span><span class="n">queue_items</span><span class="o">.</span><span class="n">each_with_index</span> <span class="k">do</span> <span class="o">|</span><span class="n">queue_item</span><span class="p">,</span> <span class="n">index</span><span class="o">|</span>
-    <span class="n">queue_item</span><span class="o">.</span><span class="n">update_attributes</span><span class="p">(</span><span class="ss">position</span><span class="p">:</span> <span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-  <span class="k">end</span>
-  <span class="n">redirect_to</span> <span class="n">my_queue_path</span>
-<span class="k">end</span></code></pre></div>
-
-  </div>
-  
 </div>
 
-<div class="pagination">
-  
-    <a class="pagination-item older" href="/page2">Older</a>
-  
-  
-    <span class="pagination-item newer">Newer</span>
-  
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/04/03/course3-invite-users/">
+            Build Robust & Production Quality Applications - Lesson 6: Inviting Users- Part 2
+            <small>03 Apr 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/25/course3-writing-feature-tests-for-emails/">
+            Build Robust & Production Quality Applications - Lesson 6: Writing Feature Tests for Emails
+            <small>25 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/20/course3-three-styles-of-bdd/">
+            Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
+            <small>20 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
 </div>
+
     </div>
 
   </body>

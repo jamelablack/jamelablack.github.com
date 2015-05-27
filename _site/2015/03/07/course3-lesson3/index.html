@@ -254,8 +254,8 @@ It&#39;s much faster than selenium but slower than RackTest.</p></li>
     <span class="k">end</span>
   <span class="k">end</span></code></pre></div>
 
-<p>The &#39;fill<em>in &quot;Username&quot;, &#39; is referring to the label</em>tag :username, &quot;Username&quot;
-  - you can also refer to fill<em>in the label tag, the name, or the input</em>id,
+<p>The &#39;fill_ in &quot;Username&quot;, &#39; is referring to the label<em>tag :username, &quot;Username&quot;
+  - you can also refer to fill</em> in the label tag, the name, or the input_ id,
   although its best practice to use the label tag because it easier to read.</p>
 
 <h3>Request Specs</h3>
@@ -359,8 +359,9 @@ Selenium.</p>
 
 <h3>In #spec_helper.rb:</h3>
 
-<p>Change config.use<em>transactional</em>fixtures = true, to false.
-Selenium does not support database transactions.</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Change</span> <span class="n">config</span><span class="o">.</span><span class="n">use_transactional_</span> <span class="n">fixtures</span> <span class="o">=</span> <span class="kp">true</span><span class="p">,</span> <span class="n">to</span> <span class="kp">false</span><span class="o">.</span></code></pre></div>
+
+<p>Selenium does not support database transactions.</p>
 
 <p>But this will mean our database transactions will carryover in between
 tests and we dont want that. So the answer is the database cleaner
@@ -372,7 +373,9 @@ arent supported by Selenuim.</p>
 
 <p>To run pry in a spec, you must use:
 require &#39;pry&#39;; binding.pry before the error/after the action
-During pry. you can use Launchy &quot;save<em>and</em>open_page&quot;</p>
+During pry. you can use</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Launchy</span> <span class="s2">&quot;save_and_open_page&quot;</span></code></pre></div>
 
 </div>
 
@@ -382,27 +385,27 @@ During pry. you can use Launchy &quot;save<em>and</em>open_page&quot;</p>
     
       <li>
         <h3>
-          <a href="/2015/03/20/course3-three-styles-of-bdd/">
-            Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
-            <small>20 Mar 2015</small>
+          <a href="/2015/04/03/course3-invite-users/">
+            Build Robust & Production Quality Applications - Lesson 6: Inviting Users- Part 2
+            <small>03 Apr 2015</small>
           </a>
         </h3>
       </li>
     
       <li>
         <h3>
-          <a href="/2015/03/17/course3-transactions/">
-            Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
-            <small>17 Mar 2015</small>
+          <a href="/2015/03/31/course3-invite-users/">
+            Build Robust & Production Quality Applications - Lesson 6: Inviting Users
+            <small>31 Mar 2015</small>
           </a>
         </h3>
       </li>
     
       <li>
         <h3>
-          <a href="/2015/03/15/course3-parameter-naming-conventions/">
-            Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions
-            <small>15 Mar 2015</small>
+          <a href="/2015/03/25/course3-writing-feature-tests-for-emails/">
+            Build Robust & Production Quality Applications - Lesson 6: Writing Feature Tests for Emails
+            <small>25 Mar 2015</small>
           </a>
         </h3>
       </li>

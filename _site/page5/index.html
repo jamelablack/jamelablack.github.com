@@ -125,6 +125,116 @@
   
   <div class="post">
     <h1 class="post-title">
+      <a href="/2015/02/01/course3-red-green-refactor/">
+        Course3 Red Green Refactor
+      </a>
+    </h1>
+
+    <span class="post-date">01 Feb 2015</span>
+
+    <p>Generalization or Trianglization:
+Writing general code</p>
+
+<h2>Red-Green Refactor</h2>
+
+<ul>
+<li><p>Writing Tests to Fail and then refactor your code to pass.</p></li>
+<li><p>Each time - only write enough code to get an different error message.</p></li>
+</ul>
+
+<p>TDD is a discipline for writing code, writing developer (unit) tests, and doing design work in an integrated approach. A useful mnemonic for remembering the basic TDD cycle is &quot;red &gt; green &gt; refactor.&quot; Here is a short summary of each of the steps.</p>
+
+<h3>RED</h3>
+
+<p>Start by thinking of a behavior you want the software to have which could be implemented by a few lines of code (fewer than five is a good target). Then write a test (also only a few lines of code) that will fail unless that behavior is present.</p>
+
+<h3>GREEN</h3>
+
+<p>Write just enough code to get the test to pass. Focus on: Getting something to work. Simplest possible implementation, rather than the most elegant solution (even hard-coded values are okay).</p>
+
+<h3>REFACTOR</h3>
+
+<p>Now that the code does what you want, use refactoring to make the design right. Making the code readable and eliminating duplication.</p>
+
+<p>The cycle then repeats with each new behavior you want to have. The entire cycle should take between 5-10 minutes.</p>
+
+<p>A couple of last points to emphasize:</p>
+
+<p>Tests are checked in with the rest of the code (they are essentially living documentation of the code)
+Tests are run with every build</p>
+
+<p>Good Article by Kent Beck: <a href="http://gmarik.info/notes/programming/test-driven-development-kent-beck">Test Driven Development</a></p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/01/28/course3-from-test-later-to-test-driven/">
+        Build Robust & Production Quality Applications - Lesson 1: From Test Later to Test Driven
+      </a>
+    </h1>
+
+    <span class="post-date">28 Jan 2015</span>
+
+    <h2>There are several ways to integrate testing into your workflow:</h2>
+
+<h4>1. Code First, Test Later</h4>
+
+<p>Benefit: Guard against regression</p>
+
+<h4>2. Code a Little, Test a Little</h4>
+
+<p>Benefit: Feedback loop is shorter</p>
+
+<h4>3. Test First Development</h4>
+
+<p>Where you write the test first, run it and make sure it fails then after which you write the code to
+make it pass. It challenges to think about your expected result upfront and you&#39;re able to lock in your behavior
+while working towards that</p>
+
+<h4>4. Test Driven Development (TDD)</h4>
+
+<p>Test, not only to test with an expected result in mind but you write test to interactively build up (drive out) your
+implementation code.
+Benefit: people normally gravitate towards TDD, when they have an end goal that is complex in nature so they start
+with the simple and build up on complexity gradually.</p>
+
+<h4>5. Test Driven Design (TDDe)</h4>
+
+<p>Similar to Test Driven Development, except TDD is more logic and locally focused. while TDDe is more
+expanding to the system level, more focused on the architecture (the interaction or collaboration b/w components in
+your system - describing the interactions b/w various objects)</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/01/26/course3-git-flow/">
+        Build Robust & Production Quality Applications - Lesson 1: Git Flow
+      </a>
+    </h1>
+
+    <span class="post-date">26 Jan 2015</span>
+
+    <p>How to create a branch and checkout at the same time:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">git</span> <span class="n">checkout</span> <span class="o">-</span><span class="n">b</span> <span class="n">mod3</span></code></pre></div>
+
+<ol>
+<li>Anything in the master branch is deployable</li>
+<li>To work on something new, create a descriptively named branch off of master (ie: new-oauth2-scopes)</li>
+<li>Commit to that branch locally and regularly push your work to the same named branch on the server</li>
+<li>When you need feedback or help, or you think the branch is ready for merging, open a pull request</li>
+<li>After someone else has reviewed and signed off on the feature, you can merge it into master</li>
+<li>Once it is merged and pushed to ‘master’, you can and should deploy immediately</li>
+</ol>
+
+<p>Read more: <a href="http://nvie.com/posts/a-successful-git-branching-model/">A successful Git branching model</a></p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
       <a href="/2015/01/23/course3-first-test-in-rspec/">
         Build Robust & Production Quality Applications - Lesson 1: First test in Rspec
       </a>
@@ -241,109 +351,6 @@ that the business objective is achieved</li>
 </ul>
 
 <p>There are multiple styles of testing.. it has become very much like an &quot;art&quot; as devs often times develop a taste of styles for what to test, when, etc. In this course, we will primarily write unit and functional tests leaving integration tests for important business workflows.</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/01/17/coures3-technical-debt/">
-        Build Robust & Production Quality Applications - Lesson 1: Technical Debt
-      </a>
-    </h1>
-
-    <span class="post-date">17 Jan 2015</span>
-
-    <p>A typically response to testing is &quot;I don&#39;t have time, I have to meet my deadline&quot;
-As your project size increases, you technical debt increases to the nth degree as time passes.</p>
-
-<p>The problem is that devs don&#39;t remember the code the wrote 3 months ago, so they have to do a &quot;context switch&quot;
-and recall why they wrote the code they did. This often times can have a cascading effect of issues.</p>
-
-<h3>Rescue Projects:</h3>
-
-<p>That is why projects in this case are called rescue projects, bc they have to call in outside help to
-fix their project. One of the first steps an outside company does to save rescue projects is create a test suite.
-This is the pay off for the technical debt.</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/01/15/course3-rationale-for-testing/">
-        Build Robust & Production Quality Applications - Lesson 1: Rational for Testing
-      </a>
-    </h1>
-
-    <span class="post-date">15 Jan 2015</span>
-
-    <h2>Why Do we test our software?</h2>
-
-<p>Here, we are referring to automated testing:
-What would be our alternatives:</p>
-
-<h3>Option 1. No tests at all:</h3>
-
-<p>this doesn&#39;t exist. This means that customers will do the testing for you. All software has bugs, so bugs encountered by your customers will make them aggravated and then you will lose them as customers, support costs will sky rocket</p>
-
-<h3>Option 2. Rely on QA Team - When we have a clear division b/w development</h3>
-
-<p>Typically for larger companies. Code is thrown over the wall to the QA team according feature scope or some other arbitrary milestone, for example.
- * The QA Team writes design test cases according to code base and file bugs with the dev team.
- * The code is authorized for release once everything is fixed.</p>
-
-<p>This could create:</p>
-
-<h4>1. Organizational Trust Problems</h4>
-
-<p>communication b/w the teams typically is not very good. Including finger pointing, etc.</p>
-
-<h4>2. QA Team</h4>
-
-<ul>
-<li>nobody likes them and they get blamed for everything. When everything works, devs take the credit
-and when they don&#39;t work, the QA Team is blamed because their purpose is to catch things like that.</li>
-<li>Also, when deadlines, ship dates are missed, the dev team will often blame the QA Team for all the bugs or requirements
-they have to work through. They complain that they don&#39;t have time to work on features bc of this.</li>
-<li>No one really aspires to be good &quot;testers&quot;, typically its junior devs and there is a high-turnover bc no one typically wants to
-stay there... therefore knowledge is lost.</li>
-<li>Release Cycles - typically both teams are competing for the same time bc each wants to a good job. This pushes back the deadlines.</li>
-</ul>
-
-<h3>Impact of having not automated tests</h3>
-
-<ol>
-<li>Code quality - QA Team, developers, stakeholders, customers don&#39;t care as much</li>
-<li>Isolated Knowledge - only the developer can maintain that code, sometimes a form of job security</li>
-<li>How do you know the implemented feature works</li>
-<li>How do you know that things did not break as a result of this new feature - called regression problems</li>
-</ol>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/12/25/course3-link_to/">
-        Build Robust & Production Quality Applications: Precourse, Link_to Review
-      </a>
-    </h1>
-
-    <span class="post-date">25 Dec 2014</span>
-
-    <p>This is a quick reivew of how to list all a catgories videos:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">-</span> <span class="vi">@category</span><span class="o">.</span><span class="n">videos</span><span class="o">.</span><span class="n">each</span> <span class="o">|</span><span class="n">video</span><span class="o">|</span> <span class="k">do</span>
-    <span class="n">link_to</span> <span class="n">video</span><span class="p">,</span> <span class="k">do</span>
-      <span class="o">%</span><span class="n">img</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">video</span><span class="o">.</span><span class="n">small_cover_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-<span class="o">-</span> <span class="vi">@category</span><span class="o">.</span><span class="n">videos</span><span class="o">.</span><span class="n">each</span> <span class="o">|</span><span class="n">video</span><span class="o">|</span> <span class="k">do</span>
-    <span class="n">link_to</span> <span class="n">video_path</span><span class="p">(</span><span class="n">video</span><span class="p">),</span> <span class="k">do</span>
-      <span class="o">%</span><span class="n">img</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">video</span><span class="o">.</span><span class="n">small_cover_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-<span class="o">-</span> <span class="vi">@category</span><span class="o">.</span><span class="n">videos</span><span class="o">.</span><span class="n">each</span> <span class="o">|</span><span class="n">video</span><span class="o">|</span> <span class="k">do</span>
-  <span class="n">link_to</span> <span class="n">image_tag</span><span class="p">(</span><span class="n">video</span><span class="o">.</span><span class="n">small_cover_url</span><span class="p">),</span> <span class="n">video_path</span><span class="p">(</span><span class="n">video</span><span class="p">)</span>
-
-<span class="o">-</span> <span class="vi">@category</span><span class="o">.</span><span class="n">videos</span><span class="o">.</span><span class="n">each</span> <span class="o">|</span><span class="n">video</span><span class="o">|</span> <span class="k">do</span>
-  <span class="n">link_to</span> <span class="n">image_tag</span><span class="p">(</span><span class="n">video</span><span class="o">.</span><span class="n">small_cover_url</span><span class="p">),</span> <span class="n">video</span></code></pre></div>
 
   </div>
   

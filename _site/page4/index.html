@@ -125,6 +125,235 @@
   
   <div class="post">
     <h1 class="post-title">
+      <a href="/2015/02/16/course3-refactor-in-TDD/">
+        Build Robust & Production Quality Applications - Lesson 2: Refactor in TDD
+      </a>
+    </h1>
+
+    <span class="post-date">16 Feb 2015</span>
+
+    <h3>Add feature in the Red and refactor in the green.</h3>
+
+<ol>
+<li>Pull out anything complex into a separate method and give it a name</li>
+<li>Clean up public facing methods.. pulling complex code into private methods</li>
+</ol>
+
+<p>Example:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Todo</span> <span class="o">&lt;</span> <span class="ss">ActiveRecord</span><span class="p">:;</span><span class="no">Base</span>
+  <span class="n">has_many</span> <span class="ss">:taggings</span>
+  <span class="n">has_many</span> <span class="ss">:tags</span><span class="p">,</span> <span class="ss">through</span><span class="p">:</span> <span class="ss">:taggings</span>
+  <span class="n">validates_presence_of</span> <span class="ss">:name</span>
+
+
+  <span class="k">def</span> <span class="nf">name_only?</span>
+    <span class="n">description</span><span class="o">.</span><span class="n">blank?</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">display_text</span>
+    <span class="nb">name</span> <span class="o">+</span> <span class="n">tag_text</span>
+  <span class="k">end</span>
+
+
+  <span class="kp">private</span>
+
+  <span class="k">def</span> <span class="nf">tag_text</span>
+    <span class="k">if</span> <span class="n">tags</span><span class="o">.</span><span class="n">any?</span>
+      <span class="s2">&quot; (</span><span class="si">#{</span><span class="n">tags</span><span class="o">.</span><span class="n">one?</span> <span class="p">?</span> <span class="s1">&#39;tag&#39;</span> <span class="p">:</span> <span class="s1">&#39;tags&#39;</span> <span class="si">}</span><span class="s2"> : </span><span class="si">#{</span><span class="n">tags</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:name</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">)</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">      </span><span class="si">#{</span><span class="s1">&#39;, more...&#39;</span> <span class="k">if</span> <span class="n">tags</span><span class="o">.</span><span class="n">count</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="si">}</span><span class="s2">)&quot;</span>
+    <span class="k">else</span>
+      <span class="s2">&quot;&quot;</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/02/13/course3-write-controller-tests/">
+        Build Robust & Production Quality Applications - Lesson 2: Writing Controller Tests
+      </a>
+    </h1>
+
+    <span class="post-date">13 Feb 2015</span>
+
+    <h3>With any test, there are typically 3 actions:</h3>
+
+<ol>
+<li>Set up the data required for the action</li>
+<li>Perform the action</li>
+<li>Verify the the expected result</li>
+</ol>
+
+<h3>Controller Tests</h3>
+
+<ul>
+<li>are typically considered more functional bc you&#39;re pulling together
+multiple components</li>
+</ul>
+
+<p>You typically never have to tests the render or redirect views portion of an action
+because that is testing the functionality of rails rather than the code we write. The goal
+of testing is to test the code we write only.</p>
+
+<p>You do, however want to test redirect_to for unauthorized users.</p>
+
+<p>Also if you dont wan&#39;t to rerun all the tests in your suite and just run one in particular
+you can specify &quot;line:27&quot; and it will run the test on that line.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">rspec</span> <span class="n">spec</span><span class="o">/</span><span class="n">controllers</span><span class="o">/</span><span class="n">todos_controller_spec</span><span class="o">.</span><span class="n">rb</span> <span class="mi">27</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">TodoController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+
+  <span class="k">def</span> <span class="nf">index</span>
+    <span class="vi">@todos</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">new</span>
+    <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">create</span>
+    <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:todo</span><span class="o">]</span><span class="p">)</span>
+    <span class="k">if</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">save</span>
+      <span class="n">redirect_to</span> <span class="n">root_path</span>
+    <span class="k">else</span>
+    <span class="n">render</span> <span class="ss">:new</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>Steps:</h3>
+
+<ol>
+<li>Create directory: controllers</li>
+<li>Create spec: todos<em>conroller</em>spec.rb</li>
+<li>Controller typically have two goals... render and redirect</li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
+
+<span class="n">describe</span> <span class="no">TodoController</span> <span class="k">do</span>
+
+  <span class="n">describe</span> <span class="s2">&quot;GET index&quot;</span> <span class="k">do</span>
+  <span class="n">it</span> <span class="s2">&quot;set the @todos variable&quot;</span> <span class="k">do</span>
+    <span class="n">cook</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook&quot;</span><span class="p">)</span>
+    <span class="nb">sleep</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;sleep&quot;</span><span class="p">)</span>
+
+    <span class="n">get</span> <span class="ss">:index</span>
+    <span class="n">assigns</span><span class="p">(</span><span class="ss">:todos</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="p">(</span><span class="n">cook</span><span class="p">,</span> <span class="nb">sleep</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="n">it</span> <span class="s2">&quot;render the index template&quot;</span> <span class="k">do</span>
+    <span class="n">get</span> <span class="ss">:index</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">should</span> <span class="n">render_template</span> <span class="ss">:index</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="n">describe</span> <span class="s1">&#39;GET new&#39;</span> <span class="k">do</span>
+    <span class="n">it</span> <span class="s2">&quot;sets  the @todo variable&quot;</span> <span class="k">do</span>
+      <span class="n">get</span> <span class="ss">:new</span>
+      <span class="n">assigns</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="n">be_new_record</span>
+      <span class="n">assigns</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="n">be_instance_of</span><span class="p">(</span><span class="no">Todo</span><span class="p">)</span>
+    <span class="k">end</span>
+    <span class="n">it</span> <span class="s2">&quot;renders the new template&quot;</span> <span class="k">do</span>
+      <span class="n">get</span> <span class="ss">:new</span>
+      <span class="n">response</span><span class="o">.</span><span class="n">should</span> <span class="n">render_template</span> <span class="ss">:new</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="n">describe</span> <span class="s2">&quot;POST create&quot;</span> <span class="k">do</span>
+    <span class="n">it</span> <span class="s2">&quot;creates the todo record when the input is valid&quot;</span> <span class="k">do</span>
+      <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">todo</span><span class="p">:</span> <span class="p">{</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook&quot;</span><span class="p">,</span> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;I like to cook&quot;</span><span class="p">}</span>
+      <span class="no">Todo</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="s2">&quot;cook&quot;</span>
+      <span class="no">Todo</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="s2">&quot;I like cooking&quot;</span>
+    <span class="k">end</span>
+
+    <span class="n">it</span> <span class="s2">&quot;redirects to the root path when the input is valid&quot;</span> <span class="k">do</span>
+        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">todo</span><span class="p">:</span> <span class="p">{</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook&quot;</span><span class="p">,</span> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;I like cooking&quot;</span><span class="p">}</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">should</span> <span class="n">redirect_to</span> <span class="n">root_path</span>
+    <span class="k">end</span>
+
+    <span class="n">it</span> <span class="s2">&quot;does not create a todo when the input is invalid&quot;</span> <span class="k">do</span>
+        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">todo</span><span class="p">:</span> <span class="p">{</span><span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;I like cooking&quot;</span><span class="p">}</span>
+        <span class="no">Todo</span><span class="o">.</span><span class="n">count</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="k">end</span>
+
+    <span class="n">it</span> <span class="s2">&quot;renders the new template when the input is invalid&quot;</span> <span class="k">do</span>
+      <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">todo</span><span class="p">:</span> <span class="p">{</span><span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;I like cooking&quot;</span><span class="p">}</span>
+      <span class="n">response</span><span class="o">.</span><span class="n">should</span> <span class="n">render_template</span> <span class="ss">:new</span>
+    <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/02/10/shoulda-matchers/">
+        Build Robust & Production Quality Applications - Lesson 2: Shoulda Matchers
+      </a>
+    </h1>
+
+    <span class="post-date">10 Feb 2015</span>
+
+    <p>With rspec, there comes built-in matchers, which can be found: <a href="http://www.relishapp.com/rspec/rspec-expectations/v/2-9/docs/built-in-matchers">shoulda matchers</a></p>
+
+<h3>1. Object Identity:</h3>
+
+<p>You should use &quot;Object Equivalence&quot; instead because you will be testing if the
+two objects are the same when in reality they may equal the same but be different objects</p>
+
+<ul>
+<li>actual.should == expected</li>
+<li>actual.should eq(expected)</li>
+<li>actual.should eql(expected)</li>
+<li>actual.should equal(expected)</li>
+</ul>
+
+<h3>2. Comparison</h3>
+
+<p>actual should.be &gt; expected</p>
+
+<h3>3. Types of Classes</h3>
+
+<p>test whether the actual is an instance of a class</p>
+
+<h3>4. Truthiness and Existentialism</h3>
+
+<p>tests whether the actual is truthy(not nil or false)</p>
+
+<h3>5. Expecting errors</h3>
+
+<h3>6. Expecting Throws</h3>
+
+<p>Expecting methods to throw a symbol
+* Predicate Matchers - passes if method returns a truthy result</p>
+
+<h3>7. Collection Membership</h3>
+
+<p>testing whether an array is a subset of the expected</p>
+
+<h3>8. Ranges (only for Ruby 1.9)</h3>
+
+<p>Also matchers worth mentioning:</p>
+
+<ul>
+<li>Have(n)items matcher</li>
+<li>Operator matchers</li>
+<li>Respond_to matchers - does this object respond to a certain method</li>
+<li>Satisfy matcher - very flexible, you can pass it a block to see if it will evaluate to true</li>
+<li>Specify a<em>kind</em>of matcher</li>
+<li>Yield matchers - allow you to work with blocks</li>
+<li>End<em>with, start</em>with</li>
+<li>Cover Matchers</li>
+</ul>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
       <a href="/2015/02/07/course3-frontpage/">
         Build Robust & Production Quality Applications - Lesson 1: Front Page
       </a>
@@ -256,116 +485,6 @@ errors on the Todos object.</p>
 <li>minimal dsl</li>
 <li>similar flow/syntax to Rails</li>
 </ul>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/02/01/course3-red-green-refactor/">
-        Course3 Red Green Refactor
-      </a>
-    </h1>
-
-    <span class="post-date">01 Feb 2015</span>
-
-    <p>Generalization or Trianglization:
-Writing general code</p>
-
-<h2>Red-Green Refactor</h2>
-
-<ul>
-<li><p>Writing Tests to Fail and then refactor your code to pass.</p></li>
-<li><p>Each time - only write enough code to get an different error message.</p></li>
-</ul>
-
-<p>TDD is a discipline for writing code, writing developer (unit) tests, and doing design work in an integrated approach. A useful mnemonic for remembering the basic TDD cycle is &quot;red &gt; green &gt; refactor.&quot; Here is a short summary of each of the steps.</p>
-
-<h3>RED</h3>
-
-<p>Start by thinking of a behavior you want the software to have which could be implemented by a few lines of code (fewer than five is a good target). Then write a test (also only a few lines of code) that will fail unless that behavior is present.</p>
-
-<h3>GREEN</h3>
-
-<p>Write just enough code to get the test to pass. Focus on: Getting something to work. Simplest possible implementation, rather than the most elegant solution (even hard-coded values are okay).</p>
-
-<h3>REFACTOR</h3>
-
-<p>Now that the code does what you want, use refactoring to make the design right. Making the code readable and eliminating duplication.</p>
-
-<p>The cycle then repeats with each new behavior you want to have. The entire cycle should take between 5-10 minutes.</p>
-
-<p>A couple of last points to emphasize:</p>
-
-<p>Tests are checked in with the rest of the code (they are essentially living documentation of the code)
-Tests are run with every build</p>
-
-<p>Good Article by Kent Beck: <a href="http://gmarik.info/notes/programming/test-driven-development-kent-beck">Test Driven Development</a></p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/01/28/course3-from-test-later-to-test-driven/">
-        Build Robust & Production Quality Applications - Lesson 1: From Test Later to Test Driven
-      </a>
-    </h1>
-
-    <span class="post-date">28 Jan 2015</span>
-
-    <h2>There are several ways to integrate testing into your workflow:</h2>
-
-<h4>1. Code First, Test Later</h4>
-
-<p>Benefit: Guard against regression</p>
-
-<h4>2. Code a Little, Test a Little</h4>
-
-<p>Benefit: Feedback loop is shorter</p>
-
-<h4>3. Test First Development</h4>
-
-<p>Where you write the test first, run it and make sure it fails then after which you write the code to
-make it pass. It challenges to think about your expected result upfront and you&#39;re able to lock in your behavior
-while working towards that</p>
-
-<h4>4. Test Driven Development (TDD)</h4>
-
-<p>Test, not only to test with an expected result in mind but you write test to interactively build up (drive out) your
-implementation code.
-Benefit: people normally gravitate towards TDD, when they have an end goal that is complex in nature so they start
-with the simple and build up on complexity gradually.</p>
-
-<h4>5. Test Driven Design (TDDe)</h4>
-
-<p>Similar to Test Driven Development, except TDD is more logic and locally focused. while TDDe is more
-expanding to the system level, more focused on the architecture (the interaction or collaboration b/w components in
-your system - describing the interactions b/w various objects)</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/01/26/course3-git-flow/">
-        Build Robust & Production Quality Applications - Lesson 1: Git Flow
-      </a>
-    </h1>
-
-    <span class="post-date">26 Jan 2015</span>
-
-    <p>How to create a branch and checkout at the same time:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">git</span> <span class="n">checkout</span> <span class="o">-</span><span class="n">b</span> <span class="n">mod3</span></code></pre></div>
-
-<ol>
-<li>Anything in the master branch is deployable</li>
-<li>To work on something new, create a descriptively named branch off of master (ie: new-oauth2-scopes)</li>
-<li>Commit to that branch locally and regularly push your work to the same named branch on the server</li>
-<li>When you need feedback or help, or you think the branch is ready for merging, open a pull request</li>
-<li>After someone else has reviewed and signed off on the feature, you can merge it into master</li>
-<li>Once it is merged and pushed to ‘master’, you can and should deploy immediately</li>
-</ol>
-
-<p>Read more: <a href="http://nvie.com/posts/a-successful-git-branching-model/">A successful Git branching model</a></p>
 
   </div>
   

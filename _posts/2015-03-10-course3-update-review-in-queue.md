@@ -3,7 +3,7 @@ layout: post
 title: "Build Robust & Production Quality Applications - Lesson 4: Update Review in Queue"
 tags: tealeaf
 ---
-In Myfix, we want to be able to allow the user to update video rating in the video_play queue.
+In Myflix, we want to be able to allow the user to update video rating in the video_play queue.
 
 Goal: To change video rating from the queue_item index.
 To do so, we have to create the virtual attribute on the queue_item model, as though it is a column on the queue_item model (table). Since it is not in the model, we have to define the getter and setter.

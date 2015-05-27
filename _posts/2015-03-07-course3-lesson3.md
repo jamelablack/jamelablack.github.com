@@ -137,8 +137,8 @@ feature 'User signs in' do
   end
 {%endhighlight%}
 
-  The 'fill_in "Username", ' is referring to the label_tag :username, "Username"
-  - you can also refer to fill_in the label tag, the name, or the input_id,
+  The 'fill_ in "Username", ' is referring to the label_tag :username, "Username"
+  - you can also refer to fill_ in the label tag, the name, or the input_ id,
   although its best practice to use the label tag because it easier to read.
 
 ###Request Specs
@@ -248,7 +248,9 @@ end
 The test will fail because Selenium does not support database transactions
 
 ###In #spec_helper.rb:
-Change config.use_transactional_fixtures = true, to false.
+{%highlight ruby%}
+Change config.use_transactional_ fixtures = true, to false.
+{%endhighlight%}
 Selenium does not support database transactions.
 
 But this will mean our database transactions will carryover in between
@@ -261,4 +263,7 @@ _______
 
 To run pry in a spec, you must use:
 require 'pry'; binding.pry before the error/after the action
-During pry. you can use Launchy "save_and_open_page"
+During pry. you can use
+{%highlight ruby%}
+Launchy "save_and_open_page"
+{%endhighlight%}

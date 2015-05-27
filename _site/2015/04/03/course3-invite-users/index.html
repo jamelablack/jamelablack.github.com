@@ -11,7 +11,7 @@
 
   <title>
     
-      Build Robust & Production Quality Applications - Lesson 1: Rational for Testing &middot; grit| commit
+      Build Robust & Production Quality Applications - Lesson 6: Inviting Users- Part 2 &middot; grit| commit
     
   </title>
 
@@ -122,64 +122,25 @@
 
     <div class="content container">
       <div class="post">
-  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 1: Rational for Testing</h1>
-  <span class="post-date">15 Jan 2015</span>
-  <h2>Why Do we test our software?</h2>
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 6: Inviting Users- Part 2</h1>
+  <span class="post-date">03 Apr 2015</span>
+  <p>2nd part of Workflow:
+1. User gets email and selects the &quot;Accept this invitation&quot; link
+- URL will contain special token
+2. Registation form has email prefilled
+3. Upon sign up, user automatically follows recommender and vice versa</p>
 
-<p>Here, we are referring to automated testing:
-What would be our alternatives:</p>
-
-<h3>Option 1. No tests at all:</h3>
-
-<p>this doesn&#39;t exist. This means that customers will do the testing for you. All software has bugs, so bugs encountered by your customers will make them aggravated and then you will lose them as customers, support costs will sky rocket</p>
-
-<h3>Option 2. Rely on QA Team - When we have a clear division b/w development</h3>
-
-<p>Typically for larger companies. Code is thrown over the wall to the QA team according feature scope or some other arbitrary milestone, for example.
- * The QA Team writes design test cases according to code base and file bugs with the dev team.
- * The code is authorized for release once everything is fixed.</p>
-
-<p>This could create:</p>
-
-<h4>1. Organizational Trust Problems</h4>
-
-<p>communication b/w the teams typically is not very good. Including finger pointing, etc.</p>
-
-<h4>2. QA Team</h4>
-
-<ul>
-<li>nobody likes them and they get blamed for everything. When everything works, devs take the credit
-and when they don&#39;t work, the QA Team is blamed because their purpose is to catch things like that.</li>
-<li>Also, when deadlines, ship dates are missed, the dev team will often blame the QA Team for all the bugs or requirements
-they have to work through. They complain that they don&#39;t have time to work on features bc of this.</li>
-<li>No one really aspires to be good &quot;testers&quot;, typically its junior devs and there is a high-turnover bc no one typically wants to
-stay there... therefore knowledge is lost.</li>
-<li>Release Cycles - typically both teams are competing for the same time bc each wants to a good job. This pushes back the deadlines.</li>
-</ul>
-
-<h3>Impact of having not automated tests</h3>
-
-<ol>
-<li>Code quality - QA Team, developers, stakeholders, customers don&#39;t care as much</li>
-<li>Isolated Knowledge - only the developer can maintain that code, sometimes a form of job security</li>
-<li>How do you know the implemented feature works</li>
-<li>How do you know that things did not break as a result of this new feature - called regression problems</li>
-</ol>
+<p>Another issue with the current form is when the invitee signs up, we lose the
+ lose inviter&#39;s info and they are not not following the inviter
+ - to fix this, we need a hidden field on the invitee registration form.
+ - this hidden field is a field tag, rather than model backed becasue we don&#39;t want this
+ token to be stored under the user&#39;s token.</p>
 
 </div>
 
 <div class="related">
   <h2>Related Posts</h2>
   <ul class="related-posts">
-    
-      <li>
-        <h3>
-          <a href="/2015/04/03/course3-invite-users/">
-            Build Robust & Production Quality Applications - Lesson 6: Inviting Users- Part 2
-            <small>03 Apr 2015</small>
-          </a>
-        </h3>
-      </li>
     
       <li>
         <h3>
@@ -195,6 +156,15 @@ stay there... therefore knowledge is lost.</li>
           <a href="/2015/03/25/course3-writing-feature-tests-for-emails/">
             Build Robust & Production Quality Applications - Lesson 6: Writing Feature Tests for Emails
             <small>25 Mar 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/03/20/course3-three-styles-of-bdd/">
+            Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
+            <small>20 Mar 2015</small>
           </a>
         </h3>
       </li>
