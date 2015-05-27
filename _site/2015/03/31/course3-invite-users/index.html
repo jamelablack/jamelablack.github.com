@@ -114,6 +114,10 @@
           
         
       
+        
+          
+        
+      
 
     <p>&copy; 2015. All rights reserved.</p>
   </div>
@@ -138,9 +142,7 @@
 
 <h3>Steps:</h3>
 
-<ol>
-<li>Copy ui controller into views/invitations/new.html.haml</li>
-</ol>
+<h5>1. Copy ui controller into views/invitations/new.html.haml</h5>
 
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">section</span><span class="o">.</span><span class="n">invite</span><span class="o">.</span><span class="n">container</span>
   <span class="o">.</span><span class="n">row</span>
@@ -167,9 +169,7 @@
         <span class="o">%</span><span class="n">fieldset</span><span class="o">.</span><span class="n">form</span><span class="o">-</span><span class="n">group</span><span class="o">.</span><span class="n">action</span>
           <span class="o">%</span><span class="n">input</span><span class="p">(</span><span class="n">type</span><span class="o">=</span><span class="s2">&quot;submit&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;Send Invitation&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;btn btn-default&quot;</span><span class="p">)</span></code></pre></div>
 
-<ol>
-<li>Edit template to create need attributes: recipient name, email, message</li>
-</ol>
+<h4>2. Edit template to create need attributes: recipient name, email, message</h4>
 
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">section</span><span class="o">.</span><span class="n">invite</span><span class="o">.</span><span class="n">container</span>
   <span class="o">.</span><span class="n">row</span>
@@ -185,25 +185,22 @@
         <span class="o">%</span><span class="n">fieldset</span><span class="o">.</span><span class="n">form</span><span class="o">-</span><span class="n">group</span><span class="o">.</span><span class="n">action</span>
           <span class="o">%</span><span class="n">input</span><span class="p">(</span><span class="n">type</span><span class="o">=</span><span class="s2">&quot;submit&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;Send Invitation&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;btn btn-default&quot;</span><span class="p">)</span></code></pre></div>
 
-<ol>
-<li>Create new and create routes for invitations</li>
-</ol>
+<h4>3. Create new and create routes for invitations</h4>
 
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">resources</span> <span class="ss">:invitations</span><span class="p">,</span> <span class="ss">only</span><span class="p">:</span> <span class="o">[</span><span class="ss">:new</span><span class="p">,</span> <span class="ss">:create</span><span class="o">]</span></code></pre></div>
 
-<ol>
-<li>Create InvitationsController</li>
-<li>Begin with InvitationsController spec</li>
-<li>Create context: for valid inputs and invalid inputs</li>
-</ol>
+<h4>4. Create InvitationsController</h4>
+
+<h4>5. Begin with InvitationsController spec</h4>
+
+<h4>6. Create context: for valid inputs and invalid inputs</h4>
 
 <h3>GET new</h3>
 
-<h1>invitation<em>controller</em>spec.rb</h1>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#invitation_controller_spec.rb</span>
+<span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
 
-<p>require &#39;spec_helper&#39;</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="no">InvitationsController</span> <span class="k">do</span>
+<span class="n">describe</span> <span class="no">InvitationsController</span> <span class="k">do</span>
   <span class="n">describe</span> <span class="s2">&quot;GET new&quot;</span> <span class="k">do</span>
     <span class="n">it</span> <span class="s2">&quot;sets @invitation to a new invitation&quot;</span> <span class="k">do</span>
       <span class="n">set_current_user</span>
@@ -222,18 +219,34 @@
     <span class="vi">@invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">new</span>
   <span class="k">end</span></code></pre></div>
 
+<h3>Generate Migration</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">CreateInvitations</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span>
+  <span class="k">def</span> <span class="nf">change</span>
+    <span class="n">create_table</span> <span class="ss">:invitations</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
+      <span class="n">t</span><span class="o">.</span><span class="n">integer</span> <span class="ss">:inviter_id</span>
+      <span class="n">t</span><span class="o">.</span><span class="n">string</span> <span class="ss">:recipient_name</span><span class="p">,</span> <span class="ss">:recipient_email</span>
+      <span class="n">t</span><span class="o">.</span><span class="n">text</span> <span class="ss">:message</span>
+      <span class="n">t</span><span class="o">.</span><span class="n">timestamps</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
 <h3>Create Invitation Model/Model Spec</h3>
 
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#invitation.rb</span>
 <span class="k">class</span> <span class="nc">Invitation</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
-  <span class="kp">include</span> <span class="no">Tokenable</span>
+<span class="n">before_create</span> <span class="ss">:generate_token</span>
   <span class="n">belongs_to</span> <span class="ss">:inviter</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span>
   <span class="n">validates_presence_of</span> <span class="ss">:recipient_name</span><span class="p">,</span> <span class="ss">:recipient_email</span><span class="p">,</span> <span class="ss">:message</span>
-<span class="k">end</span></code></pre></div>
 
-<h1>invitation<em>model</em>spec.rb</h1>
+  <span class="k">def</span> <span class="nf">generate_token</span>
+    <span class="nb">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="no">SecureRandom</span><span class="o">.</span><span class="n">urlsafe_base64</span>
+    <span class="k">end</span>
+  <span class="k">end</span></code></pre></div>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#invitation_model_spec.rb</span>
+<span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
 
 <span class="n">describe</span> <span class="no">Invitation</span> <span class="k">do</span>
   <span class="n">it</span> <span class="p">{</span> <span class="n">should</span> <span class="n">validate_presence_of</span><span class="p">(</span><span class="ss">:recipient_name</span><span class="p">)</span> <span class="p">}</span>
@@ -242,7 +255,7 @@
 
 <h3>POST create</h3>
 
-<h4>Valid Inputs</h4>
+<h4>Context: with valid Inputs</h4>
 
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#invitations_controller_spec.rb</span>
   <span class="n">describe</span> <span class="s2">&quot;POST create&quot;</span> <span class="k">do</span>
@@ -274,7 +287,7 @@
       <span class="k">end</span>
     <span class="k">end</span></code></pre></div>
 
-<h4>With invalid inputs</h4>
+<h4>Context: With invalid inputs</h4>
 
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#invitations_controller_spec.rb</span>
     <span class="n">context</span> <span class="s2">&quot;with invalid input&quot;</span> <span class="k">do</span>
@@ -351,27 +364,27 @@ the invalid inputs. - we want that number to be 0</p>
     
       <li>
         <h3>
-          <a href="/2015/04/03/course3-invite-users/">
-            Build Robust & Production Quality Applications - Lesson 6: Inviting Users- Part 2
-            <small>03 Apr 2015</small>
+          <a href="/2015/04/16/course3-mailgun/">
+            Build Robust & Production Quality Applications - Lesson 6: Mailgun
+            <small>16 Apr 2015</small>
           </a>
         </h3>
       </li>
     
       <li>
         <h3>
-          <a href="/2015/03/25/course3-writing-feature-tests-for-emails/">
-            Build Robust & Production Quality Applications - Lesson 6: Writing Feature Tests for Emails
-            <small>25 Mar 2015</small>
+          <a href="/2015/04/13/course3-email-service-providers/">
+            Build Robust & Production Quality Applications - Lesson 6: Email Service Providers
+            <small>13 Apr 2015</small>
           </a>
         </h3>
       </li>
     
       <li>
         <h3>
-          <a href="/2015/03/20/course3-three-styles-of-bdd/">
-            Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
-            <small>20 Mar 2015</small>
+          <a href="/2015/04/07/couse3-concerns/">
+            Build Robust & Production Quality Applications - Lesson 6: ActiveSupport::Concerns
+            <small>07 Apr 2015</small>
           </a>
         </h3>
       </li>

@@ -114,6 +114,10 @@
           
         
       
+        
+          
+        
+      
 
     <p>&copy; 2015. All rights reserved.</p>
   </div>
@@ -122,6 +126,262 @@
 
     <div class="content container">
       <div class="posts">
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/01/15/course3-rationale-for-testing/">
+        Build Robust & Production Quality Applications - Lesson 1: Rational for Testing
+      </a>
+    </h1>
+
+    <span class="post-date">15 Jan 2015</span>
+
+    <h2>Why Do we test our software?</h2>
+
+<p>Here, we are referring to automated testing:
+What would be our alternatives:</p>
+
+<h3>Option 1. No tests at all:</h3>
+
+<p>this doesn&#39;t exist. This means that customers will do the testing for you. All software has bugs, so bugs encountered by your customers will make them aggravated and then you will lose them as customers, support costs will sky rocket</p>
+
+<h3>Option 2. Rely on QA Team - When we have a clear division b/w development</h3>
+
+<p>Typically for larger companies. Code is thrown over the wall to the QA team according feature scope or some other arbitrary milestone, for example.
+ * The QA Team writes design test cases according to code base and file bugs with the dev team.
+ * The code is authorized for release once everything is fixed.</p>
+
+<p>This could create:</p>
+
+<h4>1. Organizational Trust Problems</h4>
+
+<p>communication b/w the teams typically is not very good. Including finger pointing, etc.</p>
+
+<h4>2. QA Team</h4>
+
+<ul>
+<li>nobody likes them and they get blamed for everything. When everything works, devs take the credit
+and when they don&#39;t work, the QA Team is blamed because their purpose is to catch things like that.</li>
+<li>Also, when deadlines, ship dates are missed, the dev team will often blame the QA Team for all the bugs or requirements
+they have to work through. They complain that they don&#39;t have time to work on features bc of this.</li>
+<li>No one really aspires to be good &quot;testers&quot;, typically its junior devs and there is a high-turnover bc no one typically wants to
+stay there... therefore knowledge is lost.</li>
+<li>Release Cycles - typically both teams are competing for the same time bc each wants to a good job. This pushes back the deadlines.</li>
+</ul>
+
+<h3>Impact of having not automated tests</h3>
+
+<ol>
+<li>Code quality - QA Team, developers, stakeholders, customers don&#39;t care as much</li>
+<li>Isolated Knowledge - only the developer can maintain that code, sometimes a form of job security</li>
+<li>How do you know the implemented feature works</li>
+<li>How do you know that things did not break as a result of this new feature - called regression problems</li>
+</ol>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2014/12/25/course3-link_to/">
+        Build Robust & Production Quality Applications: Precourse, Link_to Review
+      </a>
+    </h1>
+
+    <span class="post-date">25 Dec 2014</span>
+
+    <p>This is a quick reivew of how to list all a catgories videos:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">-</span> <span class="vi">@category</span><span class="o">.</span><span class="n">videos</span><span class="o">.</span><span class="n">each</span> <span class="o">|</span><span class="n">video</span><span class="o">|</span> <span class="k">do</span>
+    <span class="n">link_to</span> <span class="n">video</span><span class="p">,</span> <span class="k">do</span>
+      <span class="o">%</span><span class="n">img</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">video</span><span class="o">.</span><span class="n">small_cover_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="o">-</span> <span class="vi">@category</span><span class="o">.</span><span class="n">videos</span><span class="o">.</span><span class="n">each</span> <span class="o">|</span><span class="n">video</span><span class="o">|</span> <span class="k">do</span>
+    <span class="n">link_to</span> <span class="n">video_path</span><span class="p">(</span><span class="n">video</span><span class="p">),</span> <span class="k">do</span>
+      <span class="o">%</span><span class="n">img</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">video</span><span class="o">.</span><span class="n">small_cover_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="o">-</span> <span class="vi">@category</span><span class="o">.</span><span class="n">videos</span><span class="o">.</span><span class="n">each</span> <span class="o">|</span><span class="n">video</span><span class="o">|</span> <span class="k">do</span>
+  <span class="n">link_to</span> <span class="n">image_tag</span><span class="p">(</span><span class="n">video</span><span class="o">.</span><span class="n">small_cover_url</span><span class="p">),</span> <span class="n">video_path</span><span class="p">(</span><span class="n">video</span><span class="p">)</span>
+
+<span class="o">-</span> <span class="vi">@category</span><span class="o">.</span><span class="n">videos</span><span class="o">.</span><span class="n">each</span> <span class="o">|</span><span class="n">video</span><span class="o">|</span> <span class="k">do</span>
+  <span class="n">link_to</span> <span class="n">image_tag</span><span class="p">(</span><span class="n">video</span><span class="o">.</span><span class="n">small_cover_url</span><span class="p">),</span> <span class="n">video</span></code></pre></div>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2014/12/20/course3-haml/">
+        Build Robust & Production Quality Applications: Precourse, Haml
+      </a>
+    </h1>
+
+    <span class="post-date">20 Dec 2014</span>
+
+    <p>Writing Basic Haml
+1. No closing tags
+2. Nesting controlled via strict white-spacing and indenting
+3. Nesting tags must be indented on a new line
+4. Use spaces or tabs to nest tags within other tags
+5. Tabs must be consistent</p>
+
+<p>Examples:</p>
+
+<h3>Haml:</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">h2</span>
+<span class="o">%</span><span class="n">ul</span>
+  <span class="o">%</span><span class="n">li</span>
+  <span class="o">%</span><span class="n">li</span>
+  <span class="o">%</span><span class="n">li</span></code></pre></div>
+
+<h3>Links:</h3>
+
+<p>Haml:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">a</span><span class="p">{</span><span class="ss">href</span><span class="p">:</span> <span class="s1">&#39;/courses&#39;</span><span class="p">,</span> <span class="ss">title</span><span class="p">:</span> <span class="s1">&#39;Courses&#39;</span><span class="p">}</span> <span class="no">Courses</span></code></pre></div>
+
+<p>or</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">a</span><span class="p">(</span><span class="n">href</span><span class="o">=</span><span class="s2">&quot;/courses&quot;</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Courses&quot;</span><span class="p">)</span> <span class="no">Courses</span></code></pre></div>
+
+<p>HTML:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;courses&#39;</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Courses&#39;</span><span class="o">&gt;</span><span class="no">Courses</span><span class="o">&lt;</span><span class="sr">/a&gt;</span></code></pre></div>
+
+<h3>Divs:</h3>
+
+<p>Haml:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">section</span><span class="c1">#content.container</span>
+  <span class="o">%</span><span class="n">div</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">container</span></code></pre></div>
+
+<p>HTML:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">section</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;content&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;container&quot;</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;stats container&quot;</span><span class="o">&gt;&lt;</span><span class="sr">/div&gt;</span>
+<span class="sr">    &lt;/se</span><span class="n">ction</span><span class="o">&gt;</span></code></pre></div>
+
+<h3>Haml will insert a div if no HTML tag is explicitly defined:</h3>
+
+<p>Haml:</p>
+
+<h4>Note: stats.container is the same as %div.stats.container</h4>
+
+<p>HTML</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;stats container&quot;</span><span class="o">&gt;&lt;</span><span class="sr">/div&gt;</span></code></pre></div>
+
+<h2>Adding Ruby:</h2>
+
+<ul>
+<li>Lines to evaluated begin with a hyphen (-) instead of erb (&lt;%  %&gt;)</li>
+<li>Lines to be output begin with an equals sign (=) instead of erb (&lt;%=  %&gt;)</li>
+</ul>
+
+<p>Haml:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">-</span> <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Rails for Zombies&#39;</span>
+<span class="o">%</span><span class="n">h1</span><span class="o">=</span> <span class="n">title</span></code></pre></div>
+
+<p>Erb:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="sx">% title </span><span class="o">=</span> <span class="s1">&#39;Rails for Zombies&#39;</span> <span class="sx">%&gt;</span>
+<span class="sx">&lt;h1&gt;</span><span class="o">&lt;%=</span> <span class="n">title</span><span class="sx">%&gt;&lt;/h1&gt;</span></code></pre></div>
+
+<p>HTML output:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span> <span class="no">Rails</span> <span class="k">for</span> <span class="no">Zombies</span> <span class="o">&lt;</span><span class="sr">/h1&gt;</span></code></pre></div>
+
+<h3>Loops:</h3>
+
+<p>Haml:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">-</span> <span class="n">zombies</span> <span class="o">=</span> <span class="sx">%w{Ash Bob Jim}</span>
+<span class="o">%</span><span class="n">section</span><span class="c1">#zombies</span>
+  <span class="o">%</span><span class="n">ul</span>
+    <span class="o">-</span> <span class="n">zombies</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">zombie</span><span class="o">|</span>
+    <span class="o">%</span><span class="n">li</span><span class="o">=</span> <span class="n">zombie</span></code></pre></div>
+
+<p>HTML:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">section</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;zombies&quot;</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">ul</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;</span><span class="no">Ash</span><span class="o">&lt;</span><span class="sr">/li&gt;</span>
+<span class="sr">   &lt;li&gt;Bob&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;</span><span class="no">Jim</span><span class="o">&lt;</span><span class="sr">/li&gt;</span>
+<span class="sr">  &lt;/se</span><span class="n">ction</span><span class="o">&gt;</span></code></pre></div>
+
+<h4>You can use the same view helpers as before:</h4>
+
+<p>Haml:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">=</span><span class="n">link_to</span> <span class="s2">&quot;Check us out on twitter&quot;</span><span class="p">,</span> <span class="s2">&quot;http://twitter.com/codeschool&quot;</span></code></pre></div>
+
+<p>HTML:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;http://&quot;</span><span class="n">twitter</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">codeschool</span><span class="s2">&quot;&gt;&lt;Check us out on twitter&lt;/a&gt;</span></code></pre></div>
+
+<h2>Interpolation:</h2>
+
+<h3>You can also use #{} interpolation to insert Ruby expressions</h3>
+
+<p>Haml:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="nb">p</span> <span class="no">Hi</span><span class="p">,</span> <span class="no">My</span> <span class="nb">name</span> <span class="n">is</span> <span class="c1">#{@user.name}</span></code></pre></div>
+
+<p>HTML:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span> <span class="no">Hi</span><span class="p">,</span> <span class="no">My</span> <span class="nb">name</span> <span class="n">is</span> <span class="no">Casey</span><span class="o">&lt;</span><span class="sr">/p&gt;</span></code></pre></div>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2014/12/15/course3-from-views-to-mockups/">
+        Build Robust & Production Quality Applications: Precourse, Views to Mockups
+      </a>
+    </h1>
+
+    <span class="post-date">15 Dec 2014</span>
+
+    <h2>The Process of Building Queues from Mockups:</h2>
+
+<h3>Building out the videos page</h3>
+
+<h4>Step 1. Copy layout from the ui videos template</h4>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">article</span><span class="o">.</span><span class="n">video</span>
+  <span class="o">.</span><span class="n">container</span>
+    <span class="o">.</span><span class="n">row</span>
+      <span class="o">.</span><span class="n">video_large_cover</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">7</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="n">offset</span><span class="o">-</span><span class="mi">1</span>
+        <span class="o">%</span><span class="n">img</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s2">&quot;http://dummyimage.com/665x375/000000/00a2ff&quot;</span><span class="p">)</span>
+      <span class="o">.</span><span class="n">video_info</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">3</span>
+        <span class="o">%</span><span class="n">header</span>
+          <span class="o">%</span><span class="n">h3</span> <span class="no">Futurama</span>
+          <span class="o">%</span><span class="n">span</span> <span class="ss">Rating</span><span class="p">:</span> <span class="mi">4</span><span class="o">.</span><span class="mi">5</span><span class="o">/</span><span class="mi">5</span><span class="o">.</span><span class="mi">0</span>
+        <span class="o">%</span><span class="nb">p</span> <span class="no">Pizza</span> <span class="n">boy</span> <span class="no">Philip</span> <span class="n">J</span><span class="o">.</span> <span class="no">Fry</span> <span class="n">awakens</span> <span class="k">in</span> <span class="n">the</span> <span class="mi">31</span><span class="n">st</span> <span class="n">century</span> <span class="n">after</span> <span class="mi">1</span><span class="p">,</span><span class="mo">000</span> <span class="n">years</span> <span class="n">of</span> <span class="n">cryogenic</span> <span class="n">preservation</span> <span class="k">in</span> <span class="n">this</span> <span class="n">animated</span> <span class="n">series</span><span class="o">.</span> <span class="no">After</span> <span class="n">he</span> <span class="nb">gets</span> <span class="n">a</span> <span class="n">job</span> <span class="n">at</span> <span class="n">an</span> <span class="n">interplanetary</span> <span class="n">delivery</span> <span class="n">service</span><span class="p">,</span> <span class="no">Fry</span> <span class="n">embarks</span> <span class="n">on</span> <span class="n">ridiculous</span> <span class="n">escapades</span> <span class="n">to</span> <span class="n">make</span> <span class="n">sense</span> <span class="n">of</span> <span class="n">his</span> <span class="n">predicament</span><span class="o">.</span></code></pre></div>
+
+<h4>Step 2. Change/Remove hardcoded data for future code</h4>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">article</span><span class="o">.</span><span class="n">video</span>
+  <span class="o">.</span><span class="n">container</span>
+    <span class="o">.</span><span class="n">row</span>
+      <span class="o">.</span><span class="n">video_large_cover</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">7</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="n">offset</span><span class="o">-</span><span class="mi">1</span>
+        <span class="o">%</span><span class="n">img</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">#{</span><span class="vi">@video</span><span class="o">.</span><span class="n">large_cover_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+      <span class="o">.</span><span class="n">video_info</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">3</span>
+        <span class="o">%</span><span class="n">header</span>
+          <span class="o">%</span><span class="n">h3</span><span class="o">=</span> <span class="vi">@video</span><span class="o">.</span><span class="n">title</span>
+          <span class="o">%</span><span class="n">span</span> <span class="ss">Rating</span><span class="p">:</span> <span class="mi">4</span><span class="o">.</span><span class="mi">5</span><span class="o">/</span><span class="mi">5</span><span class="o">.</span><span class="mi">0</span>
+        <span class="o">%</span><span class="nb">p</span><span class="o">=</span> <span class="vi">@video</span><span class="o">.</span><span class="n">description</span></code></pre></div>
+
+<h4>Step 3. Build Routes corresponding with future code</h4>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Myflix</span><span class="o">::</span><span class="no">Application</span><span class="o">.</span><span class="n">routes</span><span class="o">.</span><span class="n">draw</span> <span class="k">do</span>
+  <span class="n">resources</span> <span class="ss">:videos</span><span class="p">,</span> <span class="ss">only</span><span class="p">:</span> <span class="o">[</span><span class="ss">:show</span><span class="o">]</span>
+ <span class="k">end</span></code></pre></div>
+
+<h4>Step 4. Begin testing videos controller spec</h4>
+
+  </div>
   
   <div class="post">
     <h1 class="post-title">
@@ -204,611 +464,6 @@ Currenty the data and images in these layouts/templates are hardcoded with data 
 <ul>
 <li><p>To read more about Haml: <a href="http://haml.info/docs.html">Haml Documentation</a></p></li>
 <li><p>To read more about the asset pipeline: <a href="http://guides.rubyonrails.org/asset_pipeline.html#coding-links-to-assets">Rails Asset Pipeline</a></p></li>
-</ul>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/11/27/course3-ideas-to-products/">
-        Build Robust & Production Quality Applications: Precourse, From Ideas to Products
-      </a>
-    </h1>
-
-    <span class="post-date">27 Nov 2014</span>
-
-    <h2>The Process of Going from Ideas to Products</h2>
-
-<h3>Prototype process for web applications</h3>
-
-<h2>Step 1. You have an idea</h2>
-
-<h2>Step 2. Build wireframes</h2>
-
-<ul>
-<li>balsamiq mockups</li>
-<li>moqups.com</li>
-</ul>
-
-<h3>Purpose:</h3>
-
-<ol>
-<li>Communication: not for design but merely for commuincation (to yourself, designers, devs, and the client)</li>
-<li>Workflow</li>
-<li>Scoping</li>
-</ol>
-
-<h3>Points for wireframing:</h3>
-
-<ol>
-<li>Don&#39;t over design, this is to quickly put together a concept</li>
-<li>When you wireframe - you want to do several versions and iterate from there. This will free your from the attachment to your idea.</li>
-</ol>
-
-<h2>Step 3. Design</h2>
-
-<p>Provides:
-* Layout
-* Colors
-* Typogaphy
-* Look &amp; Feel
-** Tools: Typically Photoshop, producing a .psd file</p>
-
-<p>Step 4. Slicing
-Taking the .psd file and turning it into mockups. At this point, you want your .psds to as pixel perfect as possible because this is where we turn the psd into html/css</p>
-
-<p>Step 5. Development</p>
-
-<p>The advantage of this process is that it isolates the each step into layers, allowing you to explore many alternatives at each step.</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/11/22/course3-twillio/">
-        Rapid Prototyping with Rails: Lesson 4, Twilio: Two-factor Auth
-      </a>
-    </h1>
-
-    <span class="post-date">22 Nov 2014</span>
-
-    <h2>Two factor authentication upon login:</h2>
-
-<h3>Pseudo code:</h3>
-
-<ol>
-<li>We need a phone number and pin columns</li>
-<li>Change login logic:</li>
-</ol>
-
-<ul>
-<li>If phone number not present, normal login</li>
-<li>If phone number present
-
-<ul>
-<li>generate pin to save to db, not show user</li>
-<li>send pin to Twilio to sms user&#39;s phone</li>
-<li>show a form to enter the pin (generate new route myapp.com/pin)</li>
-<li>must ensure its secure, can only be seen after user has logged in</li>
-</ul></li>
-</ul>
-
-<hr>
-
-<h4>1. Add column phone and pin column to users:</h4>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">-</span> <span class="n">rails</span> <span class="n">g</span> <span class="n">migration</span> <span class="n">add_phone_and_pin_to_users</span></code></pre></div>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">-</span> <span class="k">class</span> <span class="nc">AddPhoneAndPinToUsers</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span>
-  <span class="k">def</span> <span class="nf">change</span>
-    <span class="n">add_column</span> <span class="ss">:users</span><span class="p">,</span> <span class="ss">:phone</span><span class="p">,</span> <span class="ss">:string</span>
-    <span class="n">add_column</span> <span class="ss">:users</span><span class="p">,</span> <span class="ss">:pin</span><span class="p">,</span> <span class="ss">:string</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<h4>2. Add phone input field to your users/new.html.erb</h4>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s1">&#39;control-group&#39;</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="sx">%= f.label :phone, &quot;Phone Number &lt;small&gt;(numbers only)&lt;/small&gt;&quot;.html_safe %&gt;</span>
-<span class="sx">  &lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:phone</span><span class="p">,</span> <span class="ss">maxlength</span><span class="p">:</span> <span class="mi">9</span> <span class="sx">%&gt;</span>
-<span class="sx">  &lt;%= link_to &#39;#&#39;, id: &#39;two_factor_phone&#39; do %&gt;</span>
-    <span class="o">&lt;</span><span class="n">i</span> <span class="n">class</span><span class="o">=</span><span class="s1">&#39;icon-question-sign&#39;</span><span class="o">&gt;&lt;</span><span class="sr">/i&gt;</span>
-<span class="sr">  &lt;% end %&gt;</span>
-<span class="sr">&lt;/</span><span class="n">div</span><span class="o">&gt;</span></code></pre></div>
-
-<h4>3. Also, we need to add :phone to strong_parameters</h4>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">user_params</span>
-  <span class="n">params</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span><span class="o">.</span><span class="n">permit</span><span class="p">(</span><span class="ss">:username</span><span class="p">,</span> <span class="ss">:password</span><span class="p">,</span> <span class="ss">:time_zone</span><span class="p">,</span> <span class="ss">:phone</span><span class="p">)</span>
-<span class="k">end</span></code></pre></div>
-
-<h4>4. So after the phone number is entered by the user, we want to prevent them from</h4>
-
-<p>logging in directly and prompt them for their pin and connect with Twilio.
-The login occurs in the sessions controller:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">create</span>
-  <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">username</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:username</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
-  <span class="k">if</span> <span class="n">user</span> <span class="o">&amp;&amp;</span> <span class="n">user</span><span class="o">.</span><span class="n">authenticate</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:password</span><span class="o">]</span><span class="p">)</span>
-    <span class="o">****</span><span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">two_factor_auth?</span> <span class="c1">#must create this method</span>
-
-    <span class="k">else</span>
-      <span class="n">session</span><span class="o">[</span><span class="ss">:user_id</span><span class="o">]</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span>
-      <span class="n">flash</span><span class="o">[</span><span class="ss">:notice</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Welcome, you&#39;ve logged in.&quot;</span>
-      <span class="n">redirect_to</span> <span class="n">root_path</span>
-    <span class="k">end</span>
-  <span class="k">else</span>
-    <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;There is something with your username &amp; password.&quot;</span>
-    <span class="n">redirect_to</span> <span class="n">login_path</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<h4>5. Create two<em>factor</em>auth? method in your user model:</h4>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">two_factor_auth?</span>
-    <span class="o">!</span><span class="nb">self</span><span class="o">.</span><span class="n">phone</span><span class="o">.</span><span class="n">blank?</span>
-  <span class="k">end</span></code></pre></div>
-
-<h4>6. We have to now breakdown what else we need</h4>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">create</span>
-  <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">username</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:username</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
-  <span class="k">if</span> <span class="n">user</span> <span class="o">&amp;&amp;</span> <span class="n">user</span><span class="o">.</span><span class="n">authenticate</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:password</span><span class="o">]</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">two_factor_auth?</span>
-      <span class="c1">#generate a pin</span>
-      <span class="n">user</span><span class="o">.</span><span class="n">generate_pin!</span>
-      <span class="c1">#send pin to twilio, sms user&#39;s phone</span>
-      <span class="c1">#show pin form for user input after sms</span>
-    <span class="k">else</span>
-      <span class="n">session</span><span class="o">[</span><span class="ss">:user_id</span><span class="o">]</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span>
-      <span class="n">flash</span><span class="o">[</span><span class="ss">:notice</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Welcome, you&#39;ve logged in.&quot;</span>
-      <span class="n">redirect_to</span> <span class="n">root_path</span>
-    <span class="k">end</span>
-  <span class="k">else</span>
-    <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;There is something with your username &amp; password.&quot;</span>
-    <span class="n">redirect_to</span> <span class="n">login_path</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<h4>7. Create generate_pin! method:</h4>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">generate_pin!</span>
-    <span class="nb">self</span><span class="o">.</span><span class="n">update_column</span><span class="p">(</span><span class="ss">:pin</span><span class="p">,</span> <span class="nb">rand</span><span class="p">(</span><span class="mi">10</span> <span class="o">**</span><span class="mi">6</span><span class="p">))</span> <span class="c1">#generate a random six digit number</span>
-  <span class="k">end</span></code></pre></div>
-
-<h4>8. Skip the send pin to twilio part for now</h4>
-
-<h4>9. Show pin form for the user input:</h4>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#routes.rb:</span>
-<span class="n">get</span> <span class="s1">&#39;/pin&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;sessions#pin&#39;</span>
-<span class="n">post</span> <span class="s1">&#39;/pin&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;sessions#pin&#39;</span></code></pre></div>
-
-<h4>10. Adding the above routes, gives us the pin_path route which we can redirect to:</h4>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">create</span>
-  <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">username</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:username</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
-  <span class="k">if</span> <span class="n">user</span> <span class="o">&amp;&amp;</span> <span class="n">user</span><span class="o">.</span><span class="n">authenticate</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:password</span><span class="o">]</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">two_factor_auth?</span>
-      <span class="c1">#generate a pin</span>
-      <span class="n">user</span><span class="o">.</span><span class="n">generate_pin!</span>
-      <span class="c1">#send pin to twilio, sms user&#39;s phone</span>
-
-      <span class="c1">#show pin form for user input after sms</span>
-      <span class="n">redirect_to</span> <span class="n">pin_path</span>
-
-    <span class="k">else</span>
-      <span class="n">session</span><span class="o">[</span><span class="ss">:user_id</span><span class="o">]</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span>
-      <span class="n">flash</span><span class="o">[</span><span class="ss">:notice</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Welcome, you&#39;ve logged in.&quot;</span>
-      <span class="n">redirect_to</span> <span class="n">root_path</span>
-    <span class="k">end</span>
-  <span class="k">else</span>
-    <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;There is something with your username &amp; password.&quot;</span>
-    <span class="n">redirect_to</span> <span class="n">login_path</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<h4>11. Now create a pin.html.erb file under views</h4>
-
-<h4>12. Now when attempting to go to the get &#39;/pin&#39; upon being redirected to the pin_path,</h4>
-
-<p>notice that the get method work without even creating the action. ** When there is a link,
-the default is to render. This will not work when the method post is called bc you are inputing
-parameters:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#sessions_controller.rb</span>
-<span class="k">def</span> <span class="nf">pin</span>
-  <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">post?</span>
-    <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">find_by</span><span class="p">(</span><span class="ss">pin</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:pin</span><span class="o">]</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">user</span>
-      <span class="c1">#remove pin</span>
-      <span class="n">user</span><span class="o">.</span><span class="n">remove_pin!</span>
-      <span class="c1">#normal login success route</span>
-      <span class="n">login_user!</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
-    <span class="k">else</span>
-      <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Sorry, something is wrong with the pin you&#39;ve entered.&quot;</span>
-      <span class="n">redirect_to</span> <span class="n">pin_path</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-
-<span class="kp">private</span>
-
-<span class="k">def</span> <span class="nf">login_user!</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
-  <span class="n">session</span><span class="o">[</span><span class="ss">:user_id</span><span class="o">]</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span>
-  <span class="n">flash</span><span class="o">[</span><span class="ss">:notice</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Welcome, you&#39;ve logged in.&quot;</span>
-  <span class="n">redirect_to</span> <span class="n">root_path</span>
-<span class="k">end</span></code></pre></div>
-
-<h4>13. Now we must set prevent users from going to the &#39;/pin&#39; url by entering it</h4>
-
-<p>in their browser:
-We can do so by setting a session hash to true/false after login attempt/sucessful login
-in the sessions_controller:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#sessions_controller.rb</span>
-
-<span class="c1">#login attempt</span>
-  <span class="k">def</span> <span class="nf">create</span>
-    <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">username</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:username</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
-    <span class="k">if</span> <span class="n">user</span> <span class="o">&amp;&amp;</span> <span class="n">user</span><span class="o">.</span><span class="n">authenticate</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:password</span><span class="o">]</span><span class="p">)</span>
-      <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">two_factor_auth?</span>
-        <span class="n">session</span><span class="o">[</span><span class="ss">:two_factor</span><span class="o">]</span> <span class="o">=</span> <span class="kp">true</span>
-<span class="c1">#successful login</span>
-<span class="k">def</span> <span class="nf">pin</span>
-  <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">post?</span>
-    <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">find_by</span><span class="p">(</span><span class="ss">pin</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:pin</span><span class="o">]</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">user</span>
-      <span class="n">session</span><span class="o">[</span><span class="ss">:two_factor</span><span class="o">]</span> <span class="o">=</span> <span class="kp">nil</span>
-      <span class="c1">#remove pin</span>
-      <span class="o">.</span>
-      <span class="o">.</span>
-      <span class="o">.</span></code></pre></div>
-
-<h4>14. Now we can lock down the url using our access_denied method we previously created:</h4>
-
-<p>We can put this in the session#pin bc it impacts both the get and post</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#sessions_controller.rb</span>
-
-<span class="k">def</span> <span class="nf">pin</span>
-  <span class="n">access_denied</span> <span class="k">if</span> <span class="n">session</span><span class="o">[</span><span class="ss">:two_factor</span><span class="o">].</span><span class="n">nil?</span>
-  <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">post?</span>
-    <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">find_by</span><span class="p">(</span><span class="ss">pin</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:pin</span><span class="o">]</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">user</span>
-      <span class="n">session</span><span class="o">[</span><span class="ss">:two_factor</span><span class="o">]</span> <span class="o">=</span> <span class="kp">nil</span>
-      <span class="c1">#remove pin</span>
-      <span class="n">user</span><span class="o">.</span><span class="n">remove_pin!</span>
-      <span class="c1">#normal login success route</span>
-      <span class="n">login_user!</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
-    <span class="k">else</span>
-      <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Sorry, something is wrong with the pin you&#39;ve entered.&quot;</span>
-      <span class="n">redirect_to</span> <span class="n">pin_path</span>
-    <span class="k">end</span></code></pre></div>
-
-<h4>15. remove.pin! method</h4>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#user.rb</span>
-<span class="k">def</span> <span class="nf">remove_pin!</span>
-  <span class="nb">self</span><span class="o">.</span><span class="n">update_column</span><span class="p">(</span><span class="ss">:pin</span><span class="p">,</span> <span class="kp">nil</span><span class="p">)</span>
-<span class="k">end</span></code></pre></div>
-
-<h4>16. Now its time to intergrate Twilio</h4>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">-</span> <span class="n">install</span> <span class="n">the</span> <span class="no">Twilio</span><span class="o">-</span><span class="no">Ruby</span> <span class="n">gem</span></code></pre></div>
-
-<h4>17. Create a method to send to text to user using Twilio api</h4>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#sessions_controller.rb</span>
-<span class="k">def</span> <span class="nf">create</span>
-  <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">username</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:username</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
-  <span class="k">if</span> <span class="n">user</span> <span class="o">&amp;&amp;</span> <span class="n">user</span><span class="o">.</span><span class="n">authenticate</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:password</span><span class="o">]</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">two_factor_auth?</span>
-      <span class="n">session</span><span class="o">[</span><span class="ss">:two_factor</span><span class="o">]</span> <span class="o">=</span> <span class="kp">true</span>
-      <span class="c1">#generate a pin</span>
-      <span class="n">user</span><span class="o">.</span><span class="n">generate_pin!</span>
-      <span class="c1">#send pin to twilio, sms user&#39;s phone</span>
-      <span class="n">user</span><span class="o">.</span><span class="n">send_pin_to_twilio</span>
-      <span class="c1">#show pin form for user input after sms</span>
-      <span class="n">redirect_to</span> <span class="n">pin_path</span></code></pre></div>
-
-<h4>18. Create send<em>pin</em>to_twilio method in user.rb (using Twilio two factor authentication)</h4>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">send_pin_to_twilio</span>
-  <span class="n">account_sid</span> <span class="o">=</span><span class="s1">&#39;AC47bdb7f569ae31aa59309f81981aaf37&#39;</span>
-  <span class="n">auth_token</span> <span class="o">=</span> <span class="s1">&#39;f3d9c378bba9272d3ed9fec659e353b0&#39;</span>
-
-  <span class="c1"># set up a client to talk to the Twilio REST API</span>
-  <span class="n">client</span> <span class="o">=</span> <span class="no">Twilio</span><span class="o">::</span><span class="no">REST</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span> <span class="n">account_sid</span><span class="p">,</span> <span class="n">auth_token</span>
-  <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Hello, Please enter this pin to continue login: </span><span class="si">#{</span><span class="nb">self</span><span class="o">.</span><span class="n">pin</span><span class="si">}</span><span class="s2">.&quot;</span>
-  <span class="n">account</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">account</span>
-  <span class="n">message</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">sms</span><span class="o">.</span><span class="n">messages</span><span class="o">.</span><span class="n">create</span><span class="p">({</span>
-    <span class="ss">:from</span> <span class="o">=&gt;</span> <span class="s1">&#39;123-456-789&#39;</span><span class="p">,</span>
-    <span class="ss">:to</span> <span class="o">=&gt;</span> <span class="s1">&#39;123-456-789&#39;</span><span class="p">,</span>
-    <span class="ss">:body</span> <span class="o">=&gt;</span> <span class="n">msg</span><span class="p">,</span>
-    <span class="p">})</span>
-  <span class="k">end</span></code></pre></div>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/11/20/course2-metapro-concerns/">
-        Rapid Prototyping with Rails: Lesson 4, Comparing Metaprogramming vs. Concerns
-      </a>
-    </h1>
-
-    <span class="post-date">20 Nov 2014</span>
-
-    <h2>There are two options for Extracting Common code:</h2>
-
-<ul>
-<li>Metaprogramming</li>
-<li>Modules/Concerns</li>
-</ul>
-
-<h2>Closer look at Metaprogramming</h2>
-
-<p>Metaprogamming will allow you to include a module that will allow your Instance/Class methods to run as class/instance methods:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">module</span> <span class="nn">Votetable</span>
-  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
-    <span class="n">base</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="ss">:include</span><span class="p">,</span> <span class="no">InstanceMethods</span><span class="p">)</span>
-    <span class="n">base</span><span class="o">.</span><span class="n">extend</span> <span class="no">ClassMethods</span>
-  <span class="k">end</span></code></pre></div>
-
-<h3>So for class methods:</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">module</span> <span class="nn">Votetable</span>
-  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
-    <span class="n">base</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="ss">:include</span><span class="p">,</span> <span class="no">InstanceMethods</span><span class="p">)</span>
-    <span class="n">base</span><span class="o">.</span><span class="n">extend</span> <span class="no">ClassMethods</span>
-    <span class="n">base</span><span class="o">.</span><span class="n">class_eval</span> <span class="k">do</span>
-      <span class="n">my_class_eval</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-
-  <span class="k">class</span> <span class="nc">InstanceMethods</span>
-    <span class="k">def</span> <span class="nf">total_votes</span>
-      <span class="nb">self</span><span class="o">.</span><span class="n">up_votes</span> <span class="o">-</span> <span class="nb">self</span><span class="o">.</span><span class="n">down_votes</span>
-    <span class="k">end</span>
-
-    <span class="k">def</span> <span class="nf">up_votes</span>
-      <span class="nb">self</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">vote</span><span class="p">:</span> <span class="kp">true</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
-    <span class="k">end</span>
-
-    <span class="k">def</span> <span class="nf">down_votes</span>
-      <span class="nb">self</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">vote</span><span class="p">:</span> <span class="kp">false</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-
-  <span class="k">class</span> <span class="nc">ClassMethods</span>
-    <span class="k">def</span> <span class="nf">my_class_method</span>
-      <span class="nb">puts</span> <span class="s2">&quot;This is class method&quot;</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<p>One thing to understand is that you can organize the code below into a sub-module to orchestrate how the code is called:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">module</span> <span class="nn">Votetable</span>
-  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
-    <span class="n">base</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="ss">:include</span><span class="p">,</span> <span class="no">InstanceMethods</span><span class="p">)</span>
-    <span class="n">base</span><span class="o">.</span><span class="n">extend</span> <span class="no">ClassMethods</span>
-    <span class="n">base</span><span class="o">.</span><span class="n">class_eval</span> <span class="k">do</span> <span class="c1">#calling the class method each time the Post class is called</span>
-      <span class="n">my_class_eval</span>
-    <span class="k">end</span>
-  <span class="k">end</span></code></pre></div>
-
-<p>So if you went into rails console and called Post =&gt; &quot;This is class method&quot; would load, in addition to the Post object.</p>
-
-<h2>Closer look at ActiveSupport::Concerns (Modules)</h2>
-
-<p>We can also extract our has_many :votes, as: :voteble association, but we can place this in a class method, which will allow it to be fired automatically when the Post class is called
- just as though its in the model:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">ClassMethods</span>
-     <span class="n">has_many</span> <span class="ss">:votes</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:voteable</span>
-   <span class="k">end</span></code></pre></div>
-
-<h3>Using Concerns</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">module</span> <span class="nn">Voteable</span>
-     <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
-
-     <span class="n">included</span> <span class="k">do</span>
-       <span class="n">has_many</span> <span class="ss">:votes</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:voteable</span>
-     <span class="k">end</span>
-
-
-     <span class="k">def</span> <span class="nf">total_votes</span>
-       <span class="nb">self</span><span class="o">.</span><span class="n">up_votes</span> <span class="o">-</span> <span class="nb">self</span><span class="o">.</span><span class="n">down_votes</span>
-     <span class="k">end</span>
-
-     <span class="k">def</span> <span class="nf">up_votes</span>
-       <span class="nb">self</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">vote</span><span class="p">:</span> <span class="kp">true</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
-     <span class="k">end</span>
-
-     <span class="k">def</span> <span class="nf">down_votes</span>
-       <span class="nb">self</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">vote</span><span class="p">:</span> <span class="kp">false</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
-     <span class="k">end</span>
-   <span class="k">end</span></code></pre></div>
-
-<h3>Using Metaprogramming</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">module</span> <span class="nn">Voteable</span>
-     <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
-       <span class="n">base</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="ss">:include</span><span class="p">,</span> <span class="no">InstanceMethods</span><span class="p">)</span>
-       <span class="n">base</span><span class="o">.</span><span class="n">extend</span> <span class="no">ClassMethods</span>
-     <span class="k">end</span>
-
-     <span class="k">class</span> <span class="nc">InstanceMethods</span>
-
-       <span class="k">def</span> <span class="nf">total_votes</span>
-         <span class="nb">self</span><span class="o">.</span><span class="n">up_votes</span> <span class="o">-</span> <span class="nb">self</span><span class="o">.</span><span class="n">down_votes</span>
-       <span class="k">end</span>
-
-       <span class="k">def</span> <span class="nf">up_votes</span>
-         <span class="nb">self</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">vote</span><span class="p">:</span> <span class="kp">true</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
-       <span class="k">end</span>
-
-       <span class="k">def</span> <span class="nf">down_votes</span>
-         <span class="nb">self</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">vote</span><span class="p">:</span> <span class="kp">false</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
-       <span class="k">end</span>
-     <span class="k">end</span>
-
-     <span class="k">class</span> <span class="nc">ClassMethods</span>
-       <span class="n">has_many</span> <span class="ss">:votes</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:voteable</span>
-     <span class="k">end</span>
-   <span class="k">end</span></code></pre></div>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/11/18/course2-ActiveSupportConcerns/">
-        Rapid Prototyping with Rails: Lesson 4, ActiveSupport::Concerns
-      </a>
-    </h1>
-
-    <span class="post-date">18 Nov 2014</span>
-
-    <h2>DRYing up code with ActiveSupport::Concerns</h2>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="mi">1</span><span class="o">.</span> <span class="no">Extract</span> <span class="n">common</span> <span class="n">code</span> <span class="n">from</span> <span class="no">Post</span><span class="o">/</span><span class="no">Comment</span> <span class="no">Model</span> <span class="n">abd</span> <span class="n">place</span> <span class="n">into</span> <span class="no">Sluggable</span> <span class="k">module</span>
-<span class="nn">module</span> <span class="no">Slugglable</span>
-  <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
-
-  <span class="n">included</span> <span class="k">do</span>
-    <span class="n">before_save</span> <span class="ss">:generate_slug!</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">to_param</span>
-    <span class="nb">self</span><span class="o">.</span><span class="n">slug</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">generate_slug!</span>
-    <span class="n">the_slug</span> <span class="o">=</span> <span class="n">to_slug</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
-    <span class="n">post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">find_by</span> <span class="ss">slug</span><span class="p">:</span> <span class="n">the_slug</span>
-    <span class="n">count</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="k">while</span> <span class="n">post</span> <span class="o">&amp;&amp;</span> <span class="n">post</span> <span class="o">!=</span> <span class="nb">self</span>
-      <span class="n">the_slug</span> <span class="o">=</span> <span class="n">append_suffix</span><span class="p">(</span><span class="n">the_slug</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
-      <span class="n">post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">find_by</span> <span class="ss">slug</span><span class="p">:</span> <span class="n">the_slug</span>
-      <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
-    <span class="k">end</span>
-    <span class="nb">self</span><span class="o">.</span><span class="n">slug</span> <span class="o">=</span> <span class="n">the_slug</span><span class="o">.</span><span class="n">downcase</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">append_suffix</span><span class="p">(</span><span class="n">str</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">to_i</span> <span class="o">!=</span> <span class="mi">0</span>
-      <span class="k">return</span> <span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="n">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">count</span><span class="o">.</span><span class="n">to_s</span>
-    <span class="k">else</span>
-      <span class="k">return</span> <span class="n">str</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">count</span><span class="o">.</span><span class="n">to_s</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">to_slug</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
-    <span class="n">str</span> <span class="o">=</span> <span class="n">title</span><span class="o">.</span><span class="n">strip</span>
-    <span class="n">str</span><span class="o">.</span><span class="n">gsub!</span> <span class="sr">/\s*[^A-Za-z0-9]\s*/</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span>
-    <span class="n">str</span><span class="o">.</span><span class="n">gsub!</span> <span class="sr">/-+/</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span>
-    <span class="n">str</span><span class="o">.</span><span class="n">downcase</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-
-
-<span class="mi">2</span><span class="o">.</span> <span class="no">One</span> <span class="n">major</span> <span class="n">problem</span> <span class="n">with</span> <span class="n">this</span> <span class="n">is</span> <span class="n">that</span> <span class="n">the</span> <span class="k">module</span> <span class="nn">has</span> <span class="n">to</span> <span class="n">work</span> <span class="k">for</span> <span class="n">both</span> <span class="n">comments</span> <span class="ow">and</span> <span class="n">posts</span>
-<span class="n">yet</span> <span class="n">the</span> <span class="n">model</span> <span class="ow">and</span> <span class="n">column</span> <span class="n">names</span> <span class="n">are</span> <span class="n">currently</span> <span class="n">hardcoded</span><span class="o">.</span>
-<span class="no">The</span> <span class="n">first</span> <span class="n">fix</span> <span class="n">is</span> <span class="n">changing</span> <span class="n">the</span> <span class="k">class</span> <span class="n">to</span> <span class="n">thed</span> <span class="k">class</span> <span class="n">to</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="p">:</span>
-
-    <span class="k">def</span> <span class="nf">generate_slug!</span>
-    <span class="n">the_slug</span> <span class="o">=</span> <span class="n">to_slug</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
-    <span class="n">post</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">find_by</span> <span class="ss">slug</span><span class="p">:</span> <span class="n">the_slug</span>
-    <span class="n">count</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="k">while</span> <span class="n">post</span> <span class="o">&amp;&amp;</span> <span class="n">post</span> <span class="o">!=</span> <span class="nb">self</span>
-      <span class="n">the_slug</span> <span class="o">=</span> <span class="n">append_suffix</span><span class="p">(</span><span class="n">the_slug</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
-      <span class="n">post</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">find_by</span> <span class="ss">slug</span><span class="p">:</span> <span class="n">the_slug</span>
-      <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
-    <span class="k">end</span>
-
-<span class="mi">3</span><span class="o">.</span> <span class="no">Now</span> <span class="n">to</span> <span class="n">change</span> <span class="n">the</span> <span class="n">column</span> <span class="n">names</span><span class="p">,</span> <span class="n">you</span> <span class="n">have</span> <span class="n">to</span> <span class="n">create</span> <span class="n">a</span> <span class="k">class</span> <span class="nb">method</span> <span class="n">that</span> <span class="n">we</span> <span class="n">can</span> <span class="n">call</span> <span class="n">to</span>
- <span class="n">pass</span> <span class="n">the</span> <span class="n">column</span> <span class="nb">name</span><span class="p">:</span>
-
- <span class="k">module</span> <span class="nn">Slugglable</span>
-   <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
-
-   <span class="n">included</span> <span class="k">do</span>
-     <span class="n">before_save</span> <span class="ss">:generate_slug!</span>
-     <span class="ss">class_attribute</span><span class="p">:</span> <span class="ss">:slug_column</span>
-   <span class="k">end</span>
-
-   <span class="k">def</span> <span class="nf">to_param</span>
-     <span class="nb">self</span><span class="o">.</span><span class="n">slug</span>
-   <span class="k">end</span>
-
-   <span class="k">def</span> <span class="nf">generate_slug!</span>
-     <span class="n">the_slug</span> <span class="o">=</span> <span class="n">to_slug</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">slug_column</span><span class="o">.</span><span class="n">to_sym</span><span class="p">))</span>
-     <span class="n">post</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">find_by</span> <span class="ss">slug</span><span class="p">:</span> <span class="n">the_slug</span>
-     <span class="n">count</span> <span class="o">=</span> <span class="mi">2</span>
-     <span class="k">while</span> <span class="n">post</span> <span class="o">&amp;&amp;</span> <span class="n">post</span> <span class="o">!=</span> <span class="nb">self</span>
-       <span class="n">the_slug</span> <span class="o">=</span> <span class="n">append_suffix</span><span class="p">(</span><span class="n">the_slug</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
-       <span class="n">post</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">find_by</span> <span class="ss">slug</span><span class="p">:</span> <span class="n">the_slug</span>
-       <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
-     <span class="k">end</span>
-     <span class="nb">self</span><span class="o">.</span><span class="n">slug</span> <span class="o">=</span> <span class="n">the_slug</span><span class="o">.</span><span class="n">downcase</span>
-   <span class="k">end</span>
-
-   <span class="k">def</span> <span class="nf">append_suffix</span><span class="p">(</span><span class="n">str</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
-     <span class="k">if</span> <span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">to_i</span> <span class="o">!=</span> <span class="mi">0</span>
-       <span class="k">return</span> <span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="n">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">count</span><span class="o">.</span><span class="n">to_s</span>
-     <span class="k">else</span>
-       <span class="k">return</span> <span class="n">str</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">count</span><span class="o">.</span><span class="n">to_s</span>
-     <span class="k">end</span>
-   <span class="k">end</span>
-
-   <span class="k">def</span> <span class="nf">to_slug</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
-     <span class="n">str</span> <span class="o">=</span> <span class="n">title</span><span class="o">.</span><span class="n">strip</span>
-     <span class="n">str</span><span class="o">.</span><span class="n">gsub!</span> <span class="sr">/\s*[^A-Za-z0-9]\s*/</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span>
-     <span class="n">str</span><span class="o">.</span><span class="n">gsub!</span> <span class="sr">/-+/</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span>
-     <span class="n">str</span><span class="o">.</span><span class="n">downcase</span>
-   <span class="k">end</span>
-
-
-   <span class="k">module</span> <span class="nn">ClassMethods</span>
-     <span class="k">def</span> <span class="nf">sluggable_column</span><span class="p">(</span><span class="n">col_name</span><span class="p">)</span>
-       <span class="nb">self</span><span class="o">.</span><span class="n">slug_column</span> <span class="o">=</span> <span class="n">col_name</span>
-     <span class="k">end</span>
-   <span class="k">end</span>
-
- <span class="k">end</span>
-
- <span class="mi">5</span><span class="o">.</span> <span class="no">Replace</span> <span class="n">the</span> <span class="n">local</span> <span class="n">variable</span><span class="p">,</span> <span class="n">post</span>
- <span class="k">def</span> <span class="nf">generate_slug!</span>
-   <span class="n">the_slug</span> <span class="o">=</span> <span class="n">to_slug</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">slug_column</span><span class="o">.</span><span class="n">to_sym</span><span class="p">))</span>
-   <span class="n">obj</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">find_by</span> <span class="ss">slug</span><span class="p">:</span> <span class="n">the_slug</span>
-   <span class="n">count</span> <span class="o">=</span> <span class="mi">2</span>
-   <span class="k">while</span> <span class="n">obj</span> <span class="o">&amp;&amp;</span> <span class="n">obj</span> <span class="o">!=</span> <span class="nb">self</span>
-     <span class="n">the_slug</span> <span class="o">=</span> <span class="n">append_suffix</span><span class="p">(</span><span class="n">the_slug</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
-     <span class="n">obj</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">find_by</span> <span class="ss">slug</span><span class="p">:</span> <span class="n">the_slug</span>
-     <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
-   <span class="k">end</span>
-   <span class="nb">self</span><span class="o">.</span><span class="n">slug</span> <span class="o">=</span> <span class="n">the_slug</span><span class="o">.</span><span class="n">downcase</span>
- <span class="k">end</span>
- <span class="mi">6</span><span class="o">.</span> <span class="no">Define</span> <span class="n">sluggable_column</span> <span class="k">in</span> <span class="no">Post</span><span class="p">,</span> <span class="no">User</span><span class="p">,</span> <span class="ow">and</span> <span class="no">Category</span> <span class="no">Models</span>
-
-    <span class="n">sluggable_column</span> <span class="ss">:title</span></code></pre></div>
-
-<h2>Rails Console Commands:</h2>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">cat</span> <span class="o">~</span><span class="sr">/.gem/</span><span class="n">credentials</span></code></pre></div>
-
-<ul>
-<li>Adds your rubygems api so you have to continuouasly log in.</li>
-</ul>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">gem</span> <span class="n">list</span> <span class="o">-</span><span class="n">r</span> <span class="n">voteable_jam</span></code></pre></div>
-
-<ul>
-<li>Lists gems that are remote</li>
 </ul>
 
   </div>

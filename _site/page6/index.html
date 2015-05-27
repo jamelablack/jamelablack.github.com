@@ -114,6 +114,10 @@
           
         
       
+        
+          
+        
+      
 
     <p>&copy; 2015. All rights reserved.</p>
   </div>
@@ -122,6 +126,193 @@
 
     <div class="content container">
       <div class="posts">
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/01/28/course3-from-test-later-to-test-driven/">
+        Build Robust & Production Quality Applications - Lesson 1: From Test Later to Test Driven
+      </a>
+    </h1>
+
+    <span class="post-date">28 Jan 2015</span>
+
+    <h2>There are several ways to integrate testing into your workflow:</h2>
+
+<h4>1. Code First, Test Later</h4>
+
+<p>Benefit: Guard against regression</p>
+
+<h4>2. Code a Little, Test a Little</h4>
+
+<p>Benefit: Feedback loop is shorter</p>
+
+<h4>3. Test First Development</h4>
+
+<p>Where you write the test first, run it and make sure it fails then after which you write the code to
+make it pass. It challenges to think about your expected result upfront and you&#39;re able to lock in your behavior
+while working towards that</p>
+
+<h4>4. Test Driven Development (TDD)</h4>
+
+<p>Test, not only to test with an expected result in mind but you write test to interactively build up (drive out) your
+implementation code.
+Benefit: people normally gravitate towards TDD, when they have an end goal that is complex in nature so they start
+with the simple and build up on complexity gradually.</p>
+
+<h4>5. Test Driven Design (TDDe)</h4>
+
+<p>Similar to Test Driven Development, except TDD is more logic and locally focused. while TDDe is more
+expanding to the system level, more focused on the architecture (the interaction or collaboration b/w components in
+your system - describing the interactions b/w various objects)</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/01/26/course3-git-flow/">
+        Build Robust & Production Quality Applications - Lesson 1: Git Flow
+      </a>
+    </h1>
+
+    <span class="post-date">26 Jan 2015</span>
+
+    <p>How to create a branch and checkout at the same time:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">git</span> <span class="n">checkout</span> <span class="o">-</span><span class="n">b</span> <span class="n">mod3</span></code></pre></div>
+
+<ol>
+<li>Anything in the master branch is deployable</li>
+<li>To work on something new, create a descriptively named branch off of master (ie: new-oauth2-scopes)</li>
+<li>Commit to that branch locally and regularly push your work to the same named branch on the server</li>
+<li>When you need feedback or help, or you think the branch is ready for merging, open a pull request</li>
+<li>After someone else has reviewed and signed off on the feature, you can merge it into master</li>
+<li>Once it is merged and pushed to ‘master’, you can and should deploy immediately</li>
+</ol>
+
+<p>Read more: <a href="http://nvie.com/posts/a-successful-git-branching-model/">A successful Git branching model</a></p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/01/23/course3-first-test-in-rspec/">
+        Build Robust & Production Quality Applications - Lesson 1: First test in Rspec
+      </a>
+    </h1>
+
+    <span class="post-date">23 Jan 2015</span>
+
+    <ol>
+<li>Add Rspec to your gemfile, make sure to include in both test and development:</li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">group</span> <span class="ss">:test</span><span class="p">,</span> <span class="ss">:development</span> <span class="k">do</span>
+    <span class="n">gem</span> <span class="s1">&#39;rspec-rails&#39;</span>
+  <span class="k">end</span></code></pre></div>
+
+<ol>
+<li>rails g rspec:install</li>
+</ol>
+
+<p>Generates three items:
+  1. .rspec file - contains &quot;color&quot;.. just means you want your output to be color-coded
+  2. spec folder
+  3. spec helper - where configuration goes</p>
+
+<ol>
+<li><p>Create models folder inside spec folder</p></li>
+<li><p>Create a todo_spec.rb within the models folder (name of model)</p></li>
+<li><p>Within todo_spec.rb you must:</p></li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
+
+  <span class="n">describe</span> <span class="no">Todo</span> <span class="k">do</span>
+    <span class="n">it</span> <span class="s2">&quot;saves itself&quot;</span> <span class="k">do</span>
+      <span class="n">todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook dinner&quot;</span><span class="p">,</span> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;love me some din din&quot;</span><span class="p">)</span>
+      <span class="n">todo</span><span class="o">.</span><span class="n">save</span>
+      <span class="no">Todo</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="s2">&quot;cook dinner&quot;</span>
+    <span class="k">end</span>
+  <span class="k">end</span></code></pre></div>
+
+<p>** &quot;it&quot; is a keyword that begins each test</p>
+
+<p>** &quot;do&quot; implements the test</p>
+
+<p>** .should is another keyword will test to see if we have the desired result.</p>
+
+<p>** == is the matcher</p>
+
+<h2>How to run rspec outside of Rails</h2>
+
+<ol>
+<li>Create a project folder</li>
+<li>Inside the project folder, create a lib folder. Your code that you&#39;re testing will go inside here.</li>
+<li>Create another folder: spec, where your .spec test files will go.</li>
+<li>Make sure to require your code files inside your specs.</li>
+</ol>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/01/20/course3-unit-functional-integration-tests/">
+        Build Robust & Production Quality Applications - Lesson 1: Unit vs. Functional vs. Integration Tests
+      </a>
+    </h1>
+
+    <span class="post-date">20 Jan 2015</span>
+
+    <h3>There are 3 types of tests:</h3>
+
+<ol>
+<li>Unit</li>
+<li>Functional</li>
+<li>Integration</li>
+</ol>
+
+<h3>Ranking according to:</h3>
+
+<h4>Coverage:</h4>
+
+<p>Unit &gt; Functional &gt; Integration</p>
+
+<h4>Speed:</h4>
+
+<p>Unit &gt; Functional &gt; Integration</p>
+
+<h4>Realistic:</h4>
+
+<p>Integration &gt; Functional &gt; Unit</p>
+
+<h3>1) Unit Tests</h3>
+
+<ul>
+<li>testing a component in isolation, focusing on 1 thing and making sure all cases are covered</li>
+<li>isolated components tested: routes, models, views, helpers</li>
+<li>allow you to thoroughly test all components.. as it is the closest to the code.</li>
+<li>is the fastest and gives you the best coverage</li>
+</ul>
+
+<h3>2) Functional Tests</h3>
+
+<ul>
+<li>testing components in collaboration, making sure not only they work but that they play nicely with each other</li>
+<li>components tested: controllers (where everything interacts), typically once request/response cycle</li>
+</ul>
+
+<h3>3) Integration Tests</h3>
+
+<p>Builds upon functional tests in the sense that not only must play nicely together but they must achieve a desired business objective.</p>
+
+<ul>
+<li>Components tested: Goal is to emulate the user, typically occurs in browser and follows the entire business process and
+that the business objective is achieved</li>
+</ul>
+
+<p>There are multiple styles of testing.. it has become very much like an &quot;art&quot; as devs often times develop a taste of styles for what to test, when, etc. In this course, we will primarily write unit and functional tests leaving integration tests for important business workflows.</p>
+
+  </div>
   
   <div class="post">
     <h1 class="post-title">
@@ -143,262 +334,6 @@ and recall why they wrote the code they did. This often times can have a cascadi
 <p>That is why projects in this case are called rescue projects, bc they have to call in outside help to
 fix their project. One of the first steps an outside company does to save rescue projects is create a test suite.
 This is the pay off for the technical debt.</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/01/15/course3-rationale-for-testing/">
-        Build Robust & Production Quality Applications - Lesson 1: Rational for Testing
-      </a>
-    </h1>
-
-    <span class="post-date">15 Jan 2015</span>
-
-    <h2>Why Do we test our software?</h2>
-
-<p>Here, we are referring to automated testing:
-What would be our alternatives:</p>
-
-<h3>Option 1. No tests at all:</h3>
-
-<p>this doesn&#39;t exist. This means that customers will do the testing for you. All software has bugs, so bugs encountered by your customers will make them aggravated and then you will lose them as customers, support costs will sky rocket</p>
-
-<h3>Option 2. Rely on QA Team - When we have a clear division b/w development</h3>
-
-<p>Typically for larger companies. Code is thrown over the wall to the QA team according feature scope or some other arbitrary milestone, for example.
- * The QA Team writes design test cases according to code base and file bugs with the dev team.
- * The code is authorized for release once everything is fixed.</p>
-
-<p>This could create:</p>
-
-<h4>1. Organizational Trust Problems</h4>
-
-<p>communication b/w the teams typically is not very good. Including finger pointing, etc.</p>
-
-<h4>2. QA Team</h4>
-
-<ul>
-<li>nobody likes them and they get blamed for everything. When everything works, devs take the credit
-and when they don&#39;t work, the QA Team is blamed because their purpose is to catch things like that.</li>
-<li>Also, when deadlines, ship dates are missed, the dev team will often blame the QA Team for all the bugs or requirements
-they have to work through. They complain that they don&#39;t have time to work on features bc of this.</li>
-<li>No one really aspires to be good &quot;testers&quot;, typically its junior devs and there is a high-turnover bc no one typically wants to
-stay there... therefore knowledge is lost.</li>
-<li>Release Cycles - typically both teams are competing for the same time bc each wants to a good job. This pushes back the deadlines.</li>
-</ul>
-
-<h3>Impact of having not automated tests</h3>
-
-<ol>
-<li>Code quality - QA Team, developers, stakeholders, customers don&#39;t care as much</li>
-<li>Isolated Knowledge - only the developer can maintain that code, sometimes a form of job security</li>
-<li>How do you know the implemented feature works</li>
-<li>How do you know that things did not break as a result of this new feature - called regression problems</li>
-</ol>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/12/25/course3-link_to/">
-        Build Robust & Production Quality Applications: Precourse, Link_to Review
-      </a>
-    </h1>
-
-    <span class="post-date">25 Dec 2014</span>
-
-    <p>This is a quick reivew of how to list all a catgories videos:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">-</span> <span class="vi">@category</span><span class="o">.</span><span class="n">videos</span><span class="o">.</span><span class="n">each</span> <span class="o">|</span><span class="n">video</span><span class="o">|</span> <span class="k">do</span>
-    <span class="n">link_to</span> <span class="n">video</span><span class="p">,</span> <span class="k">do</span>
-      <span class="o">%</span><span class="n">img</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">video</span><span class="o">.</span><span class="n">small_cover_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-<span class="o">-</span> <span class="vi">@category</span><span class="o">.</span><span class="n">videos</span><span class="o">.</span><span class="n">each</span> <span class="o">|</span><span class="n">video</span><span class="o">|</span> <span class="k">do</span>
-    <span class="n">link_to</span> <span class="n">video_path</span><span class="p">(</span><span class="n">video</span><span class="p">),</span> <span class="k">do</span>
-      <span class="o">%</span><span class="n">img</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">video</span><span class="o">.</span><span class="n">small_cover_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-<span class="o">-</span> <span class="vi">@category</span><span class="o">.</span><span class="n">videos</span><span class="o">.</span><span class="n">each</span> <span class="o">|</span><span class="n">video</span><span class="o">|</span> <span class="k">do</span>
-  <span class="n">link_to</span> <span class="n">image_tag</span><span class="p">(</span><span class="n">video</span><span class="o">.</span><span class="n">small_cover_url</span><span class="p">),</span> <span class="n">video_path</span><span class="p">(</span><span class="n">video</span><span class="p">)</span>
-
-<span class="o">-</span> <span class="vi">@category</span><span class="o">.</span><span class="n">videos</span><span class="o">.</span><span class="n">each</span> <span class="o">|</span><span class="n">video</span><span class="o">|</span> <span class="k">do</span>
-  <span class="n">link_to</span> <span class="n">image_tag</span><span class="p">(</span><span class="n">video</span><span class="o">.</span><span class="n">small_cover_url</span><span class="p">),</span> <span class="n">video</span></code></pre></div>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/12/20/course3-haml/">
-        Build Robust & Production Quality Applications: Precourse, Haml
-      </a>
-    </h1>
-
-    <span class="post-date">20 Dec 2014</span>
-
-    <p>Writing Basic Haml
-1. No closing tags
-2. Nesting controlled via strict white-spacing and indenting
-3. Nesting tags must be indented on a new line
-4. Use spaces or tabs to nest tags within other tags
-5. Tabs must be consistent</p>
-
-<p>Examples:</p>
-
-<h3>Haml:</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">h2</span>
-<span class="o">%</span><span class="n">ul</span>
-  <span class="o">%</span><span class="n">li</span>
-  <span class="o">%</span><span class="n">li</span>
-  <span class="o">%</span><span class="n">li</span></code></pre></div>
-
-<h3>Links:</h3>
-
-<p>Haml:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">a</span><span class="p">{</span><span class="ss">href</span><span class="p">:</span> <span class="s1">&#39;/courses&#39;</span><span class="p">,</span> <span class="ss">title</span><span class="p">:</span> <span class="s1">&#39;Courses&#39;</span><span class="p">}</span> <span class="no">Courses</span></code></pre></div>
-
-<p>or</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">a</span><span class="p">(</span><span class="n">href</span><span class="o">=</span><span class="s2">&quot;/courses&quot;</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Courses&quot;</span><span class="p">)</span> <span class="no">Courses</span></code></pre></div>
-
-<p>HTML:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;courses&#39;</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Courses&#39;</span><span class="o">&gt;</span><span class="no">Courses</span><span class="o">&lt;</span><span class="sr">/a&gt;</span></code></pre></div>
-
-<h3>Divs:</h3>
-
-<p>Haml:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">section</span><span class="c1">#content.container</span>
-  <span class="o">%</span><span class="n">div</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">container</span></code></pre></div>
-
-<p>HTML:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">section</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;content&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;container&quot;</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;stats container&quot;</span><span class="o">&gt;&lt;</span><span class="sr">/div&gt;</span>
-<span class="sr">    &lt;/se</span><span class="n">ction</span><span class="o">&gt;</span></code></pre></div>
-
-<h3>Haml will insert a div if no HTML tag is explicitly defined:</h3>
-
-<p>Haml:</p>
-
-<h4>Note: stats.container is the same as %div.stats.container</h4>
-
-<p>HTML</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;stats container&quot;</span><span class="o">&gt;&lt;</span><span class="sr">/div&gt;</span></code></pre></div>
-
-<h2>Adding Ruby:</h2>
-
-<ul>
-<li>Lines to evaluated begin with a hyphen (-) instead of erb (&lt;%  %&gt;)</li>
-<li>Lines to be output begin with an equals sign (=) instead of erb (&lt;%=  %&gt;)</li>
-</ul>
-
-<p>Haml:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">-</span> <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Rails for Zombies&#39;</span>
-<span class="o">%</span><span class="n">h1</span><span class="o">=</span> <span class="n">title</span></code></pre></div>
-
-<p>Erb:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="sx">% title </span><span class="o">=</span> <span class="s1">&#39;Rails for Zombies&#39;</span> <span class="sx">%&gt;</span>
-<span class="sx">&lt;h1&gt;</span><span class="o">&lt;%=</span> <span class="n">title</span><span class="sx">%&gt;&lt;/h1&gt;</span></code></pre></div>
-
-<p>HTML output:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span> <span class="no">Rails</span> <span class="k">for</span> <span class="no">Zombies</span> <span class="o">&lt;</span><span class="sr">/h1&gt;</span></code></pre></div>
-
-<h3>Loops:</h3>
-
-<p>Haml:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">-</span> <span class="n">zombies</span> <span class="o">=</span> <span class="sx">%w{Ash Bob Jim}</span>
-<span class="o">%</span><span class="n">section</span><span class="c1">#zombies</span>
-  <span class="o">%</span><span class="n">ul</span>
-    <span class="o">-</span> <span class="n">zombies</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">zombie</span><span class="o">|</span>
-    <span class="o">%</span><span class="n">li</span><span class="o">=</span> <span class="n">zombie</span></code></pre></div>
-
-<p>HTML:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">section</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;zombies&quot;</span><span class="o">&gt;</span>
-   <span class="o">&lt;</span><span class="n">ul</span><span class="o">&gt;</span>
-   <span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;</span><span class="no">Ash</span><span class="o">&lt;</span><span class="sr">/li&gt;</span>
-<span class="sr">   &lt;li&gt;Bob&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
-   <span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;</span><span class="no">Jim</span><span class="o">&lt;</span><span class="sr">/li&gt;</span>
-<span class="sr">  &lt;/se</span><span class="n">ction</span><span class="o">&gt;</span></code></pre></div>
-
-<h4>You can use the same view helpers as before:</h4>
-
-<p>Haml:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">=</span><span class="n">link_to</span> <span class="s2">&quot;Check us out on twitter&quot;</span><span class="p">,</span> <span class="s2">&quot;http://twitter.com/codeschool&quot;</span></code></pre></div>
-
-<p>HTML:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;http://&quot;</span><span class="n">twitter</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">codeschool</span><span class="s2">&quot;&gt;&lt;Check us out on twitter&lt;/a&gt;</span></code></pre></div>
-
-<h2>Interpolation:</h2>
-
-<h3>You can also use #{} interpolation to insert Ruby expressions</h3>
-
-<p>Haml:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="nb">p</span> <span class="no">Hi</span><span class="p">,</span> <span class="no">My</span> <span class="nb">name</span> <span class="n">is</span> <span class="c1">#{@user.name}</span></code></pre></div>
-
-<p>HTML:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span> <span class="no">Hi</span><span class="p">,</span> <span class="no">My</span> <span class="nb">name</span> <span class="n">is</span> <span class="no">Casey</span><span class="o">&lt;</span><span class="sr">/p&gt;</span></code></pre></div>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/12/15/course3-from-views-to-mockups/">
-        Build Robust & Production Quality Applications: Precourse, Views to Mockups
-      </a>
-    </h1>
-
-    <span class="post-date">15 Dec 2014</span>
-
-    <h2>The Process of Building Queues from Mockups:</h2>
-
-<h3>Building out the videos page</h3>
-
-<h4>Step 1. Copy layout from the ui videos template</h4>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">article</span><span class="o">.</span><span class="n">video</span>
-  <span class="o">.</span><span class="n">container</span>
-    <span class="o">.</span><span class="n">row</span>
-      <span class="o">.</span><span class="n">video_large_cover</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">7</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="n">offset</span><span class="o">-</span><span class="mi">1</span>
-        <span class="o">%</span><span class="n">img</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s2">&quot;http://dummyimage.com/665x375/000000/00a2ff&quot;</span><span class="p">)</span>
-      <span class="o">.</span><span class="n">video_info</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">3</span>
-        <span class="o">%</span><span class="n">header</span>
-          <span class="o">%</span><span class="n">h3</span> <span class="no">Futurama</span>
-          <span class="o">%</span><span class="n">span</span> <span class="ss">Rating</span><span class="p">:</span> <span class="mi">4</span><span class="o">.</span><span class="mi">5</span><span class="o">/</span><span class="mi">5</span><span class="o">.</span><span class="mi">0</span>
-        <span class="o">%</span><span class="nb">p</span> <span class="no">Pizza</span> <span class="n">boy</span> <span class="no">Philip</span> <span class="n">J</span><span class="o">.</span> <span class="no">Fry</span> <span class="n">awakens</span> <span class="k">in</span> <span class="n">the</span> <span class="mi">31</span><span class="n">st</span> <span class="n">century</span> <span class="n">after</span> <span class="mi">1</span><span class="p">,</span><span class="mo">000</span> <span class="n">years</span> <span class="n">of</span> <span class="n">cryogenic</span> <span class="n">preservation</span> <span class="k">in</span> <span class="n">this</span> <span class="n">animated</span> <span class="n">series</span><span class="o">.</span> <span class="no">After</span> <span class="n">he</span> <span class="nb">gets</span> <span class="n">a</span> <span class="n">job</span> <span class="n">at</span> <span class="n">an</span> <span class="n">interplanetary</span> <span class="n">delivery</span> <span class="n">service</span><span class="p">,</span> <span class="no">Fry</span> <span class="n">embarks</span> <span class="n">on</span> <span class="n">ridiculous</span> <span class="n">escapades</span> <span class="n">to</span> <span class="n">make</span> <span class="n">sense</span> <span class="n">of</span> <span class="n">his</span> <span class="n">predicament</span><span class="o">.</span></code></pre></div>
-
-<h4>Step 2. Change/Remove hardcoded data for future code</h4>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">article</span><span class="o">.</span><span class="n">video</span>
-  <span class="o">.</span><span class="n">container</span>
-    <span class="o">.</span><span class="n">row</span>
-      <span class="o">.</span><span class="n">video_large_cover</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">7</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="n">offset</span><span class="o">-</span><span class="mi">1</span>
-        <span class="o">%</span><span class="n">img</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">#{</span><span class="vi">@video</span><span class="o">.</span><span class="n">large_cover_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-      <span class="o">.</span><span class="n">video_info</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">3</span>
-        <span class="o">%</span><span class="n">header</span>
-          <span class="o">%</span><span class="n">h3</span><span class="o">=</span> <span class="vi">@video</span><span class="o">.</span><span class="n">title</span>
-          <span class="o">%</span><span class="n">span</span> <span class="ss">Rating</span><span class="p">:</span> <span class="mi">4</span><span class="o">.</span><span class="mi">5</span><span class="o">/</span><span class="mi">5</span><span class="o">.</span><span class="mi">0</span>
-        <span class="o">%</span><span class="nb">p</span><span class="o">=</span> <span class="vi">@video</span><span class="o">.</span><span class="n">description</span></code></pre></div>
-
-<h4>Step 3. Build Routes corresponding with future code</h4>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Myflix</span><span class="o">::</span><span class="no">Application</span><span class="o">.</span><span class="n">routes</span><span class="o">.</span><span class="n">draw</span> <span class="k">do</span>
-  <span class="n">resources</span> <span class="ss">:videos</span><span class="p">,</span> <span class="ss">only</span><span class="p">:</span> <span class="o">[</span><span class="ss">:show</span><span class="o">]</span>
- <span class="k">end</span></code></pre></div>
-
-<h4>Step 4. Begin testing videos controller spec</h4>
 
   </div>
   

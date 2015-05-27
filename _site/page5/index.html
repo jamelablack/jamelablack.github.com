@@ -114,6 +114,10 @@
           
         
       
+        
+          
+        
+      
 
     <p>&copy; 2015. All rights reserved.</p>
   </div>
@@ -122,6 +126,324 @@
 
     <div class="content container">
       <div class="posts">
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/02/13/course3-write-controller-tests/">
+        Build Robust & Production Quality Applications - Lesson 2: Writing Controller Tests
+      </a>
+    </h1>
+
+    <span class="post-date">13 Feb 2015</span>
+
+    <h3>With any test, there are typically 3 actions:</h3>
+
+<ol>
+<li>Set up the data required for the action</li>
+<li>Perform the action</li>
+<li>Verify the the expected result</li>
+</ol>
+
+<h3>Controller Tests</h3>
+
+<ul>
+<li>are typically considered more functional bc you&#39;re pulling together
+multiple components</li>
+</ul>
+
+<p>You typically never have to tests the render or redirect views portion of an action
+because that is testing the functionality of rails rather than the code we write. The goal
+of testing is to test the code we write only.</p>
+
+<p>You do, however want to test redirect_to for unauthorized users.</p>
+
+<p>Also if you dont wan&#39;t to rerun all the tests in your suite and just run one in particular
+you can specify &quot;line:27&quot; and it will run the test on that line.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">rspec</span> <span class="n">spec</span><span class="o">/</span><span class="n">controllers</span><span class="o">/</span><span class="n">todos_controller_spec</span><span class="o">.</span><span class="n">rb</span> <span class="mi">27</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">TodoController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+
+  <span class="k">def</span> <span class="nf">index</span>
+    <span class="vi">@todos</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">new</span>
+    <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">create</span>
+    <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:todo</span><span class="o">]</span><span class="p">)</span>
+    <span class="k">if</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">save</span>
+      <span class="n">redirect_to</span> <span class="n">root_path</span>
+    <span class="k">else</span>
+    <span class="n">render</span> <span class="ss">:new</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>Steps:</h3>
+
+<ol>
+<li>Create directory: controllers</li>
+<li>Create spec: todos<em>conroller</em>spec.rb</li>
+<li>Controller typically have two goals... render and redirect</li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
+
+<span class="n">describe</span> <span class="no">TodoController</span> <span class="k">do</span>
+
+  <span class="n">describe</span> <span class="s2">&quot;GET index&quot;</span> <span class="k">do</span>
+  <span class="n">it</span> <span class="s2">&quot;set the @todos variable&quot;</span> <span class="k">do</span>
+    <span class="n">cook</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook&quot;</span><span class="p">)</span>
+    <span class="nb">sleep</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;sleep&quot;</span><span class="p">)</span>
+
+    <span class="n">get</span> <span class="ss">:index</span>
+    <span class="n">assigns</span><span class="p">(</span><span class="ss">:todos</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="p">(</span><span class="n">cook</span><span class="p">,</span> <span class="nb">sleep</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="n">it</span> <span class="s2">&quot;render the index template&quot;</span> <span class="k">do</span>
+    <span class="n">get</span> <span class="ss">:index</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">should</span> <span class="n">render_template</span> <span class="ss">:index</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="n">describe</span> <span class="s1">&#39;GET new&#39;</span> <span class="k">do</span>
+    <span class="n">it</span> <span class="s2">&quot;sets  the @todo variable&quot;</span> <span class="k">do</span>
+      <span class="n">get</span> <span class="ss">:new</span>
+      <span class="n">assigns</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="n">be_new_record</span>
+      <span class="n">assigns</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="n">be_instance_of</span><span class="p">(</span><span class="no">Todo</span><span class="p">)</span>
+    <span class="k">end</span>
+    <span class="n">it</span> <span class="s2">&quot;renders the new template&quot;</span> <span class="k">do</span>
+      <span class="n">get</span> <span class="ss">:new</span>
+      <span class="n">response</span><span class="o">.</span><span class="n">should</span> <span class="n">render_template</span> <span class="ss">:new</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="n">describe</span> <span class="s2">&quot;POST create&quot;</span> <span class="k">do</span>
+    <span class="n">it</span> <span class="s2">&quot;creates the todo record when the input is valid&quot;</span> <span class="k">do</span>
+      <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">todo</span><span class="p">:</span> <span class="p">{</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook&quot;</span><span class="p">,</span> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;I like to cook&quot;</span><span class="p">}</span>
+      <span class="no">Todo</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="s2">&quot;cook&quot;</span>
+      <span class="no">Todo</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="s2">&quot;I like cooking&quot;</span>
+    <span class="k">end</span>
+
+    <span class="n">it</span> <span class="s2">&quot;redirects to the root path when the input is valid&quot;</span> <span class="k">do</span>
+        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">todo</span><span class="p">:</span> <span class="p">{</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook&quot;</span><span class="p">,</span> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;I like cooking&quot;</span><span class="p">}</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">should</span> <span class="n">redirect_to</span> <span class="n">root_path</span>
+    <span class="k">end</span>
+
+    <span class="n">it</span> <span class="s2">&quot;does not create a todo when the input is invalid&quot;</span> <span class="k">do</span>
+        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">todo</span><span class="p">:</span> <span class="p">{</span><span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;I like cooking&quot;</span><span class="p">}</span>
+        <span class="no">Todo</span><span class="o">.</span><span class="n">count</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="k">end</span>
+
+    <span class="n">it</span> <span class="s2">&quot;renders the new template when the input is invalid&quot;</span> <span class="k">do</span>
+      <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">todo</span><span class="p">:</span> <span class="p">{</span><span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;I like cooking&quot;</span><span class="p">}</span>
+      <span class="n">response</span><span class="o">.</span><span class="n">should</span> <span class="n">render_template</span> <span class="ss">:new</span>
+    <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/02/10/shoulda-matchers/">
+        Build Robust & Production Quality Applications - Lesson 2: Shoulda Matchers
+      </a>
+    </h1>
+
+    <span class="post-date">10 Feb 2015</span>
+
+    <p>With rspec, there comes built-in matchers, which can be found: <a href="http://www.relishapp.com/rspec/rspec-expectations/v/2-9/docs/built-in-matchers">shoulda matchers</a></p>
+
+<h3>1. Object Identity:</h3>
+
+<p>You should use &quot;Object Equivalence&quot; instead because you will be testing if the
+two objects are the same when in reality they may equal the same but be different objects</p>
+
+<ul>
+<li>actual.should == expected</li>
+<li>actual.should eq(expected)</li>
+<li>actual.should eql(expected)</li>
+<li>actual.should equal(expected)</li>
+</ul>
+
+<h3>2. Comparison</h3>
+
+<p>actual should.be &gt; expected</p>
+
+<h3>3. Types of Classes</h3>
+
+<p>test whether the actual is an instance of a class</p>
+
+<h3>4. Truthiness and Existentialism</h3>
+
+<p>tests whether the actual is truthy(not nil or false)</p>
+
+<h3>5. Expecting errors</h3>
+
+<h3>6. Expecting Throws</h3>
+
+<p>Expecting methods to throw a symbol
+* Predicate Matchers - passes if method returns a truthy result</p>
+
+<h3>7. Collection Membership</h3>
+
+<p>testing whether an array is a subset of the expected</p>
+
+<h3>8. Ranges (only for Ruby 1.9)</h3>
+
+<p>Also matchers worth mentioning:</p>
+
+<ul>
+<li>Have(n)items matcher</li>
+<li>Operator matchers</li>
+<li>Respond_to matchers - does this object respond to a certain method</li>
+<li>Satisfy matcher - very flexible, you can pass it a block to see if it will evaluate to true</li>
+<li>Specify a<em>kind</em>of matcher</li>
+<li>Yield matchers - allow you to work with blocks</li>
+<li>End<em>with, start</em>with</li>
+<li>Cover Matchers</li>
+</ul>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/02/07/course3-frontpage/">
+        Build Robust & Production Quality Applications - Lesson 1: Front Page
+      </a>
+    </h1>
+
+    <span class="post-date">07 Feb 2015</span>
+
+    <h2>Front Page</h2>
+
+<p>Front Pages or Root/home pages are typically static images. Those
+are rendered using the pages#controller. In this case however, we do not need the
+pages#front action defined in the controller bc it doesnt do anything.
+For now, we can just have the empty controller bc due rails conventions, Rails will just render
+the view of the same name if the action is not present in the controller.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#pages_controller.rb</span>
+<span class="k">class</span> <span class="nc">PagesController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="k">def</span> <span class="nf">front</span>
+    <span class="n">redirect_to</span> <span class="n">home_path</span> <span class="k">if</span> <span class="n">current_user</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/02/05/course3-custom-form-builder/">
+        Build Robust & Production Quality Applications - Lesson 1: Custom Form Builders
+      </a>
+    </h1>
+
+    <span class="post-date">05 Feb 2015</span>
+
+    <p>Let&#39;s say we have a Todo&#39;s app, where we allow our users to create a new todo. We also want to show errors when validation errors occur:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#new.html.haml</span>
+<span class="o">%</span><span class="n">section</span><span class="o">.</span><span class="n">new_todo</span>
+  <span class="o">%</span><span class="n">h3</span> <span class="no">Add</span> <span class="n">a</span> <span class="kp">new</span> <span class="n">todo</span>
+  <span class="o">=</span> <span class="n">form_for</span> <span class="vi">@todo</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:name</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:name</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:description</span><span class="p">,</span> <span class="ss">rows</span><span class="p">:</span> <span class="mi">6</span>
+    <span class="o">%</span><span class="n">br</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">submit</span> <span class="s2">&quot;Add This Todo&quot;</span></code></pre></div>
+
+<p>The issue with this code above is that it is not pulling in the
+errors on the Todos object.</p>
+
+<p>We could:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#new.html.haml</span>
+<span class="o">%</span><span class="n">section</span><span class="o">.</span><span class="n">new_todo</span>
+  <span class="o">%</span><span class="n">h3</span> <span class="no">Add</span> <span class="n">a</span> <span class="kp">new</span> <span class="n">todo</span>
+  <span class="o">=</span> <span class="n">form_for</span> <span class="vi">@todo</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+  <span class="k">if</span><span class="vi">@todos</span><span class="o">.</span><span class="n">errors?</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:name</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:name</span></code></pre></div>
+
+<p>...but this is cumbersome to do for each form.</p>
+
+<p>Lets create a helper called MyFormBuilder that will customize the label:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">MyFormBuilder</span> <span class="o">&lt;</span> <span class="no">ActionView</span><span class="o">::</span><span class="no">Helpers</span><span class="o">::</span><span class="no">FormBuilder</span>
+  <span class="k">def</span> <span class="nf">label</span><span class="p">(</span><span class="nb">method</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">,</span> <span class="n">options</span> <span class="o">=</span> <span class="p">{},</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="n">object</span><span class="o">.</span><span class="n">errors</span><span class="o">[</span><span class="nb">method</span><span class="o">.</span><span class="n">to_sym</span><span class="o">]</span>
+    <span class="k">if</span> <span class="n">errors</span>
+      <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot; &lt;span class =</span><span class="se">\&quot;</span><span class="s2">error&quot;</span><span class="o">&gt;</span><span class="c1">#{errors.first}&lt;/span&gt;&quot; #pull the first error from the errors object (an array)</span>
+    <span class="k">end</span>
+    <span class="k">super</span><span class="p">(</span><span class="nb">method</span><span class="p">,</span> <span class="n">text</span><span class="o">.</span><span class="n">html_safe</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span> <span class="c1">#delegates control back to the custom form builder</span>
+    <span class="k">end</span>
+  <span class="k">end</span></code></pre></div>
+
+<p>Update new.html.haml, make sure you add &quot;MyFormBuilder&quot; to your form_for block:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">section</span><span class="o">.</span><span class="n">new_todo</span>
+  <span class="o">%</span><span class="n">h3</span> <span class="no">Add</span> <span class="n">a</span> <span class="kp">new</span> <span class="n">todo</span>
+  <span class="o">=</span> <span class="n">form_for</span> <span class="vi">@todo</span><span class="p">,</span> <span class="ss">builder</span><span class="p">:</span> <span class="no">MyFormBuilder</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:name</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:name</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:description</span><span class="p">,</span> <span class="ss">rows</span><span class="p">:</span> <span class="mi">6</span>
+    <span class="o">%</span><span class="n">br</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">submit</span> <span class="s2">&quot;Add This Todo&quot;</span></code></pre></div>
+
+<hr>
+
+<h3>Alternate Option: my_ form_ for helper</h3>
+
+<p>This is still somewhat repetitive. Let&#39;s create a my_ form_ for helper. We can manually merge in the my<em>form</em>for rather passing in the MyFormBuilder:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">app</span><span class="o">/</span><span class="n">helpers</span><span class="o">/</span><span class="n">my_form_builder</span><span class="o">.</span><span class="n">rb</span>
+<span class="k">module</span> <span class="nn">ApplicationHelper</span>
+  <span class="k">def</span> <span class="nf">my_form_for</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">options</span> <span class="o">=</span> <span class="p">{},</span> <span class="o">&amp;</span><span class="nb">proc</span><span class="p">)</span> <span class="c1">#takes 3 arguements</span>
+    <span class="n">form_for</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">merge!</span><span class="p">({</span><span class="ss">builder</span><span class="p">:</span> <span class="no">MyFormBuidler</span><span class="p">}),</span> <span class="o">&amp;</span><span class="nb">proc</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<h4>Update the new.html.haml</h4>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">section</span><span class="o">.</span><span class="n">new_todo</span>
+  <span class="o">%</span><span class="n">h3</span> <span class="no">Add</span> <span class="n">a</span> <span class="kp">new</span> <span class="n">todo</span>
+  <span class="o">=</span> <span class="n">my_form_for</span> <span class="vi">@todo</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:name</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:name</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:description</span><span class="p">,</span> <span class="ss">rows</span><span class="p">:</span> <span class="mi">6</span>
+    <span class="o">%</span><span class="n">br</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">submit</span> <span class="s2">&quot;Add This Todo&quot;</span></code></pre></div>
+
+<hr>
+
+<h2>Custom Form Builders in The Wild!</h2>
+
+<h3>1. Formtastic</h3>
+
+<ul>
+<li>You can use semantic form_ for</li>
+</ul>
+
+<h3>2. Simple_form (creators of devise)</h3>
+
+<ul>
+<li>allows integration with Twitter Bootstrap &amp; Zurb Foundation 3</li>
+<li>is not best for those with alot of customization</li>
+<li>has default mapping - which is not the best for complex forms</li>
+</ul>
+
+<h3>3. BootstapForm</h3>
+
+<ul>
+<li>minimal dsl</li>
+<li>similar flow/syntax to Rails</li>
+</ul>
+
+  </div>
   
   <div class="post">
     <h1 class="post-title">
@@ -164,193 +486,6 @@ Writing general code</p>
 Tests are run with every build</p>
 
 <p>Good Article by Kent Beck: <a href="http://gmarik.info/notes/programming/test-driven-development-kent-beck">Test Driven Development</a></p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/01/28/course3-from-test-later-to-test-driven/">
-        Build Robust & Production Quality Applications - Lesson 1: From Test Later to Test Driven
-      </a>
-    </h1>
-
-    <span class="post-date">28 Jan 2015</span>
-
-    <h2>There are several ways to integrate testing into your workflow:</h2>
-
-<h4>1. Code First, Test Later</h4>
-
-<p>Benefit: Guard against regression</p>
-
-<h4>2. Code a Little, Test a Little</h4>
-
-<p>Benefit: Feedback loop is shorter</p>
-
-<h4>3. Test First Development</h4>
-
-<p>Where you write the test first, run it and make sure it fails then after which you write the code to
-make it pass. It challenges to think about your expected result upfront and you&#39;re able to lock in your behavior
-while working towards that</p>
-
-<h4>4. Test Driven Development (TDD)</h4>
-
-<p>Test, not only to test with an expected result in mind but you write test to interactively build up (drive out) your
-implementation code.
-Benefit: people normally gravitate towards TDD, when they have an end goal that is complex in nature so they start
-with the simple and build up on complexity gradually.</p>
-
-<h4>5. Test Driven Design (TDDe)</h4>
-
-<p>Similar to Test Driven Development, except TDD is more logic and locally focused. while TDDe is more
-expanding to the system level, more focused on the architecture (the interaction or collaboration b/w components in
-your system - describing the interactions b/w various objects)</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/01/26/course3-git-flow/">
-        Build Robust & Production Quality Applications - Lesson 1: Git Flow
-      </a>
-    </h1>
-
-    <span class="post-date">26 Jan 2015</span>
-
-    <p>How to create a branch and checkout at the same time:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">git</span> <span class="n">checkout</span> <span class="o">-</span><span class="n">b</span> <span class="n">mod3</span></code></pre></div>
-
-<ol>
-<li>Anything in the master branch is deployable</li>
-<li>To work on something new, create a descriptively named branch off of master (ie: new-oauth2-scopes)</li>
-<li>Commit to that branch locally and regularly push your work to the same named branch on the server</li>
-<li>When you need feedback or help, or you think the branch is ready for merging, open a pull request</li>
-<li>After someone else has reviewed and signed off on the feature, you can merge it into master</li>
-<li>Once it is merged and pushed to ‘master’, you can and should deploy immediately</li>
-</ol>
-
-<p>Read more: <a href="http://nvie.com/posts/a-successful-git-branching-model/">A successful Git branching model</a></p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/01/23/course3-first-test-in-rspec/">
-        Build Robust & Production Quality Applications - Lesson 1: First test in Rspec
-      </a>
-    </h1>
-
-    <span class="post-date">23 Jan 2015</span>
-
-    <ol>
-<li>Add Rspec to your gemfile, make sure to include in both test and development:</li>
-</ol>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">group</span> <span class="ss">:test</span><span class="p">,</span> <span class="ss">:development</span> <span class="k">do</span>
-    <span class="n">gem</span> <span class="s1">&#39;rspec-rails&#39;</span>
-  <span class="k">end</span></code></pre></div>
-
-<ol>
-<li>rails g rspec:install</li>
-</ol>
-
-<p>Generates three items:
-  1. .rspec file - contains &quot;color&quot;.. just means you want your output to be color-coded
-  2. spec folder
-  3. spec helper - where configuration goes</p>
-
-<ol>
-<li><p>Create models folder inside spec folder</p></li>
-<li><p>Create a todo_spec.rb within the models folder (name of model)</p></li>
-<li><p>Within todo_spec.rb you must:</p></li>
-</ol>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
-
-  <span class="n">describe</span> <span class="no">Todo</span> <span class="k">do</span>
-    <span class="n">it</span> <span class="s2">&quot;saves itself&quot;</span> <span class="k">do</span>
-      <span class="n">todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook dinner&quot;</span><span class="p">,</span> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;love me some din din&quot;</span><span class="p">)</span>
-      <span class="n">todo</span><span class="o">.</span><span class="n">save</span>
-      <span class="no">Todo</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="s2">&quot;cook dinner&quot;</span>
-    <span class="k">end</span>
-  <span class="k">end</span></code></pre></div>
-
-<p>** &quot;it&quot; is a keyword that begins each test</p>
-
-<p>** &quot;do&quot; implements the test</p>
-
-<p>** .should is another keyword will test to see if we have the desired result.</p>
-
-<p>** == is the matcher</p>
-
-<h2>How to run rspec outside of Rails</h2>
-
-<ol>
-<li>Create a project folder</li>
-<li>Inside the project folder, create a lib folder. Your code that you&#39;re testing will go inside here.</li>
-<li>Create another folder: spec, where your .spec test files will go.</li>
-<li>Make sure to require your code files inside your specs.</li>
-</ol>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/01/20/course3-unit-functional-integration-tests/">
-        Build Robust & Production Quality Applications - Lesson 1: Unit vs. Functional vs. Integration Tests
-      </a>
-    </h1>
-
-    <span class="post-date">20 Jan 2015</span>
-
-    <h3>There are 3 types of tests:</h3>
-
-<ol>
-<li>Unit</li>
-<li>Functional</li>
-<li>Integration</li>
-</ol>
-
-<h3>Ranking according to:</h3>
-
-<h4>Coverage:</h4>
-
-<p>Unit &gt; Functional &gt; Integration</p>
-
-<h4>Speed:</h4>
-
-<p>Unit &gt; Functional &gt; Integration</p>
-
-<h4>Realistic:</h4>
-
-<p>Integration &gt; Functional &gt; Unit</p>
-
-<h3>1) Unit Tests</h3>
-
-<ul>
-<li>testing a component in isolation, focusing on 1 thing and making sure all cases are covered</li>
-<li>isolated components tested: routes, models, views, helpers</li>
-<li>allow you to thoroughly test all components.. as it is the closest to the code.</li>
-<li>is the fastest and gives you the best coverage</li>
-</ul>
-
-<h3>2) Functional Tests</h3>
-
-<ul>
-<li>testing components in collaboration, making sure not only they work but that they play nicely with each other</li>
-<li>components tested: controllers (where everything interacts), typically once request/response cycle</li>
-</ul>
-
-<h3>3) Integration Tests</h3>
-
-<p>Builds upon functional tests in the sense that not only must play nicely together but they must achieve a desired business objective.</p>
-
-<ul>
-<li>Components tested: Goal is to emulate the user, typically occurs in browser and follows the entire business process and
-that the business objective is achieved</li>
-</ul>
-
-<p>There are multiple styles of testing.. it has become very much like an &quot;art&quot; as devs often times develop a taste of styles for what to test, when, etc. In this course, we will primarily write unit and functional tests leaving integration tests for important business workflows.</p>
 
   </div>
   

@@ -12,7 +12,7 @@ Let's write add functionality to allow users to invite their friends:
 5. Upon sign up, user automatically follows recommender and vice versa
 
 ###Steps:
-1. Copy ui controller into views/invitations/new.html.haml
+#####1. Copy ui controller into views/invitations/new.html.haml
 {%highlight ruby%}
 %section.invite.container
   .row
@@ -40,7 +40,7 @@ Let's write add functionality to allow users to invite their friends:
           %input(type="submit" value="Send Invitation" class="btn btn-default")
 {%endhighlight%}
 
-2. Edit template to create need attributes: recipient name, email, message
+####2. Edit template to create need attributes: recipient name, email, message
 {%highlight ruby%}
 section.invite.container
   .row
@@ -57,19 +57,20 @@ section.invite.container
           %input(type="submit" value="Send Invitation" class="btn btn-default")
 {%endhighlight%}
 
-3. Create new and create routes for invitations
+####3. Create new and create routes for invitations
 {%highlight ruby%}
  resources :invitations, only: [:new, :create]
  {%endhighlight%}
 
-4. Create InvitationsController
-5. Begin with InvitationsController spec
-6. Create context: for valid inputs and invalid inputs
+####4. Create InvitationsController
+####5. Begin with InvitationsController spec
+####6. Create context: for valid inputs and invalid inputs
 
 ### GET new
+{%highlight ruby%}
 #invitation_controller_spec.rb
 require 'spec_helper'
-{%highlight ruby%}
+
 describe InvitationsController do
   describe "GET new" do
     it "sets @invitation to a new invitation" do
@@ -92,18 +93,38 @@ class InvitationsController < ApplicationController
   end
 {%endhighlight%}
 
+###Generate Migration
+{%highlight ruby%}
+class CreateInvitations < ActiveRecord::Migration
+  def change
+    create_table :invitations do |t|
+      t.integer :inviter_id
+      t.string :recipient_name, :recipient_email
+      t.text :message
+      t.timestamps
+    end
+  end
+end
+{%endhighlight%}
+
+
 ###Create Invitation Model/Model Spec
 {%highlight ruby%}
 #invitation.rb
 class Invitation < ActiveRecord::Base
-  include Tokenable
+before_create :generate_token
   belongs_to :inviter, class_name: "User"
   validates_presence_of :recipient_name, :recipient_email, :message
-end
+
+  def generate_token
+    self.token = SecureRandom.urlsafe_base64
+    end
+  end
+
 {%endhighlight%}
 
-#invitation_model_spec.rb
 {%highlight ruby%}
+#invitation_model_spec.rb
 require 'spec_helper'
 
 describe Invitation do
@@ -114,7 +135,7 @@ describe Invitation do
 
 
 ###POST create
-#### Valid Inputs
+#### Context: with valid Inputs
 {%highlight ruby%}
 #invitations_controller_spec.rb
   describe "POST create" do
@@ -147,7 +168,7 @@ describe Invitation do
     end
 {%endhighlight%}
 
-#### With invalid inputs
+#### Context: With invalid inputs
 {%highlight ruby%}
 #invitations_controller_spec.rb
     context "with invalid input" do

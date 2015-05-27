@@ -114,6 +114,10 @@
           
         
       
+        
+          
+        
+      
 
     <p>&copy; 2015. All rights reserved.</p>
   </div>
@@ -122,6 +126,393 @@
 
     <div class="content container">
       <div class="posts">
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/03/31/course3-invite-users/">
+        Build Robust & Production Quality Applications - Lesson 6: Inviting Users
+      </a>
+    </h1>
+
+    <span class="post-date">31 Mar 2015</span>
+
+    <p>Let&#39;s write add functionality to allow users to invite their friends:</p>
+
+<h3>Workflow:</h3>
+
+<ol>
+<li>User can input friends name and email, click invite friend link</li>
+<li>An email is sent to friend</li>
+<li>Friend open email, clicks link and then is directed to Registration Form</li>
+<li>Email address is pre-filled</li>
+<li>Upon sign up, user automatically follows recommender and vice versa</li>
+</ol>
+
+<h3>Steps:</h3>
+
+<h5>1. Copy ui controller into views/invitations/new.html.haml</h5>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">section</span><span class="o">.</span><span class="n">invite</span><span class="o">.</span><span class="n">container</span>
+  <span class="o">.</span><span class="n">row</span>
+    <span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">10</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="n">offset</span><span class="o">-</span><span class="mi">1</span>
+      <span class="o">%</span><span class="n">form</span><span class="o">.</span><span class="n">invite</span>
+        <span class="o">%</span><span class="n">header</span>
+          <span class="o">%</span><span class="n">h1</span> <span class="no">Invite</span> <span class="n">a</span> <span class="n">friend</span> <span class="n">to</span> <span class="n">join</span> <span class="no">MyFlix</span><span class="o">!</span>
+        <span class="o">%</span><span class="n">fieldset</span>
+          <span class="o">.</span><span class="n">form</span><span class="o">-</span><span class="n">group</span>
+            <span class="o">%</span><span class="n">label</span> <span class="no">Friend</span><span class="s1">&#39;s Name</span>
+<span class="s1">            .row</span>
+<span class="s1">              .col-sm-4</span>
+<span class="s1">                %input.form-control(type=&quot;text&quot;)</span>
+<span class="s1">          .form-group</span>
+<span class="s1">            %label Friend&#39;</span><span class="n">s</span> <span class="no">Email</span> <span class="no">Address</span>
+            <span class="o">.</span><span class="n">row</span>
+              <span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">4</span>
+                <span class="o">%</span><span class="n">input</span><span class="o">.</span><span class="n">form</span><span class="o">-</span><span class="n">control</span><span class="p">(</span><span class="n">type</span><span class="o">=</span><span class="s2">&quot;email&quot;</span><span class="p">)</span>
+          <span class="o">.</span><span class="n">form</span><span class="o">-</span><span class="n">group</span>
+            <span class="o">%</span><span class="n">label</span> <span class="no">Invitation</span> <span class="no">Message</span>
+            <span class="o">.</span><span class="n">row</span>
+              <span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">6</span>
+                <span class="o">%</span><span class="n">textarea</span><span class="o">.</span><span class="n">form</span><span class="o">-</span><span class="n">control</span><span class="p">(</span><span class="n">rows</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span> <span class="no">Please</span> <span class="n">join</span> <span class="n">this</span> <span class="n">really</span> <span class="n">cool</span> <span class="n">site!</span>
+        <span class="o">%</span><span class="n">fieldset</span><span class="o">.</span><span class="n">form</span><span class="o">-</span><span class="n">group</span><span class="o">.</span><span class="n">action</span>
+          <span class="o">%</span><span class="n">input</span><span class="p">(</span><span class="n">type</span><span class="o">=</span><span class="s2">&quot;submit&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;Send Invitation&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;btn btn-default&quot;</span><span class="p">)</span></code></pre></div>
+
+<h4>2. Edit template to create need attributes: recipient name, email, message</h4>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">section</span><span class="o">.</span><span class="n">invite</span><span class="o">.</span><span class="n">container</span>
+  <span class="o">.</span><span class="n">row</span>
+    <span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">10</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="n">offset</span><span class="o">-</span><span class="mi">1</span>
+      <span class="o">%</span><span class="n">form</span><span class="o">.</span><span class="n">invite</span>
+      <span class="o">=</span> <span class="n">bootstrap_form_for</span> <span class="vi">@invitation</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s2">&quot;invite&quot;</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+        <span class="o">%</span><span class="n">header</span>
+          <span class="o">%</span><span class="n">h1</span> <span class="no">Invite</span> <span class="n">a</span> <span class="n">friend</span> <span class="n">to</span> <span class="n">join</span> <span class="no">MyFlix</span><span class="o">!</span>
+        <span class="o">%</span><span class="n">fieldset</span>
+          <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:recipient_name</span><span class="p">,</span> <span class="ss">label</span><span class="p">:</span> <span class="s2">&quot;Friend&#39;s Name&quot;</span>
+          <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:recipient_email</span><span class="p">,</span> <span class="ss">label</span><span class="p">:</span> <span class="s2">&quot;Friend&#39;s Email Address&quot;</span>
+          <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_area</span> <span class="ss">:message</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s2">&quot;span4&quot;</span><span class="p">,</span> <span class="ss">rows</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="ss">placeholder</span><span class="p">:</span>  <span class="s2">&quot;Please join this really cool site!&quot;</span><span class="p">,</span> <span class="ss">label</span><span class="p">:</span> <span class="s2">&quot;Message&quot;</span>
+        <span class="o">%</span><span class="n">fieldset</span><span class="o">.</span><span class="n">form</span><span class="o">-</span><span class="n">group</span><span class="o">.</span><span class="n">action</span>
+          <span class="o">%</span><span class="n">input</span><span class="p">(</span><span class="n">type</span><span class="o">=</span><span class="s2">&quot;submit&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;Send Invitation&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;btn btn-default&quot;</span><span class="p">)</span></code></pre></div>
+
+<h4>3. Create new and create routes for invitations</h4>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">resources</span> <span class="ss">:invitations</span><span class="p">,</span> <span class="ss">only</span><span class="p">:</span> <span class="o">[</span><span class="ss">:new</span><span class="p">,</span> <span class="ss">:create</span><span class="o">]</span></code></pre></div>
+
+<h4>4. Create InvitationsController</h4>
+
+<h4>5. Begin with InvitationsController spec</h4>
+
+<h4>6. Create context: for valid inputs and invalid inputs</h4>
+
+<h3>GET new</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#invitation_controller_spec.rb</span>
+<span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
+
+<span class="n">describe</span> <span class="no">InvitationsController</span> <span class="k">do</span>
+  <span class="n">describe</span> <span class="s2">&quot;GET new&quot;</span> <span class="k">do</span>
+    <span class="n">it</span> <span class="s2">&quot;sets @invitation to a new invitation&quot;</span> <span class="k">do</span>
+      <span class="n">set_current_user</span>
+      <span class="n">get</span> <span class="ss">:new</span>
+      <span class="n">expect</span><span class="p">(</span><span class="n">assigns</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">))</span><span class="o">.</span><span class="n">to</span> <span class="n">be_new_record</span>
+      <span class="n">expect</span><span class="p">(</span><span class="n">assigns</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">))</span><span class="o">.</span><span class="n">to</span> <span class="n">be_instance_of</span> <span class="no">Invitation</span>
+    <span class="k">end</span>
+    <span class="n">it_behaves_like</span> <span class="s2">&quot;requires sign in&quot;</span> <span class="k">do</span>
+      <span class="n">let</span><span class="p">(</span><span class="ss">:action</span><span class="p">)</span> <span class="p">{</span> <span class="n">get</span> <span class="ss">:new</span> <span class="p">}</span>
+    <span class="k">end</span>
+  <span class="k">end</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">InvitationsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="n">before_filter</span> <span class="ss">:require_user</span>
+  <span class="k">def</span> <span class="nf">new</span>
+    <span class="vi">@invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">new</span>
+  <span class="k">end</span></code></pre></div>
+
+<h3>Generate Migration</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">CreateInvitations</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span>
+  <span class="k">def</span> <span class="nf">change</span>
+    <span class="n">create_table</span> <span class="ss">:invitations</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
+      <span class="n">t</span><span class="o">.</span><span class="n">integer</span> <span class="ss">:inviter_id</span>
+      <span class="n">t</span><span class="o">.</span><span class="n">string</span> <span class="ss">:recipient_name</span><span class="p">,</span> <span class="ss">:recipient_email</span>
+      <span class="n">t</span><span class="o">.</span><span class="n">text</span> <span class="ss">:message</span>
+      <span class="n">t</span><span class="o">.</span><span class="n">timestamps</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>Create Invitation Model/Model Spec</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#invitation.rb</span>
+<span class="k">class</span> <span class="nc">Invitation</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+<span class="n">before_create</span> <span class="ss">:generate_token</span>
+  <span class="n">belongs_to</span> <span class="ss">:inviter</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span>
+  <span class="n">validates_presence_of</span> <span class="ss">:recipient_name</span><span class="p">,</span> <span class="ss">:recipient_email</span><span class="p">,</span> <span class="ss">:message</span>
+
+  <span class="k">def</span> <span class="nf">generate_token</span>
+    <span class="nb">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="no">SecureRandom</span><span class="o">.</span><span class="n">urlsafe_base64</span>
+    <span class="k">end</span>
+  <span class="k">end</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#invitation_model_spec.rb</span>
+<span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
+
+<span class="n">describe</span> <span class="no">Invitation</span> <span class="k">do</span>
+  <span class="n">it</span> <span class="p">{</span> <span class="n">should</span> <span class="n">validate_presence_of</span><span class="p">(</span><span class="ss">:recipient_name</span><span class="p">)</span> <span class="p">}</span>
+  <span class="n">it</span> <span class="p">{</span> <span class="n">should</span> <span class="n">validate_presence_of</span><span class="p">(</span><span class="ss">:recipient_email</span><span class="p">)</span> <span class="p">}</span>
+  <span class="n">it</span> <span class="p">{</span> <span class="n">should</span> <span class="n">validate_presence_of</span><span class="p">(</span><span class="ss">:message</span><span class="p">)</span> <span class="p">}</span></code></pre></div>
+
+<h3>POST create</h3>
+
+<h4>Context: with valid Inputs</h4>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#invitations_controller_spec.rb</span>
+  <span class="n">describe</span> <span class="s2">&quot;POST create&quot;</span> <span class="k">do</span>
+    <span class="n">it_behaves_like</span> <span class="s2">&quot;requires sign in&quot;</span> <span class="k">do</span>
+      <span class="n">let</span><span class="p">(</span><span class="ss">:action</span><span class="p">)</span> <span class="p">{</span> <span class="n">post</span> <span class="ss">:create</span> <span class="p">}</span>
+    <span class="k">end</span>
+    <span class="n">context</span> <span class="s2">&quot;with valid input&quot;</span> <span class="k">do</span>
+      <span class="n">it</span> <span class="s2">&quot;redirects to ithe invitation new page&quot;</span> <span class="k">do</span>
+        <span class="n">set_current_user</span>
+        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_name</span><span class="p">:</span> <span class="s2">&quot;Jam Black&quot;</span><span class="p">,</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
+        <span class="n">expect</span><span class="p">(</span><span class="n">response</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">redirect_to</span> <span class="n">new_invitation_path</span>
+      <span class="k">end</span>
+
+      <span class="n">it</span> <span class="s2">&quot;creates the invitation&quot;</span> <span class="k">do</span>
+        <span class="n">set_current_user</span>
+        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_name</span><span class="p">:</span> <span class="s2">&quot;Jam Black&quot;</span><span class="p">,</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
+        <span class="n">expect</span><span class="p">(</span><span class="no">Invitation</span><span class="o">.</span><span class="n">count</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">eq</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+      <span class="k">end</span>
+      <span class="n">it</span> <span class="s2">&quot;sends an email to the recipient&quot;</span> <span class="k">do</span>
+        <span class="n">set_current_user</span>
+        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_name</span><span class="p">:</span> <span class="s2">&quot;Jam Black&quot;</span><span class="p">,</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
+        <span class="n">expect</span><span class="p">(</span><span class="no">ActionMailer</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">deliveries</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">to</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">eq</span><span class="p">(</span><span class="o">[</span><span class="s1">&#39;jam@jamblack.com&#39;</span><span class="o">]</span><span class="p">)</span>
+      <span class="k">end</span>
+
+      <span class="n">it</span> <span class="s2">&quot;sets the flash success message&quot;</span> <span class="k">do</span>
+        <span class="n">set_current_user</span>
+        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_name</span><span class="p">:</span> <span class="s2">&quot;Jam Black&quot;</span><span class="p">,</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
+        <span class="n">expect</span><span class="p">(</span><span class="n">flash</span><span class="o">[</span><span class="ss">:success</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">be_present</span>
+      <span class="k">end</span>
+    <span class="k">end</span></code></pre></div>
+
+<h4>Context: With invalid inputs</h4>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#invitations_controller_spec.rb</span>
+    <span class="n">context</span> <span class="s2">&quot;with invalid input&quot;</span> <span class="k">do</span>
+      <span class="n">after</span> <span class="p">{</span> <span class="no">ActionMailer</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">deliveries</span><span class="o">.</span><span class="n">clear</span> <span class="p">}</span>
+      <span class="n">it</span> <span class="s2">&quot;renders the :new template&quot;</span> <span class="k">do</span>
+        <span class="n">set_current_user</span>
+        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
+        <span class="n">expect</span><span class="p">(</span><span class="n">response</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">render_template</span> <span class="ss">:new</span>
+      <span class="k">end</span>
+
+      <span class="n">it</span> <span class="s2">&quot;does not create an invitation&quot;</span> <span class="k">do</span>
+        <span class="n">set_current_user</span>
+        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
+        <span class="n">expect</span><span class="p">(</span><span class="no">Invitation</span><span class="o">.</span><span class="n">count</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">eq</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+      <span class="k">end</span>
+      <span class="n">it</span> <span class="s2">&quot;does not send out an email&quot;</span> <span class="k">do</span>
+        <span class="n">set_current_user</span>
+        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
+        <span class="n">expect</span><span class="p">(</span><span class="no">ActionMailer</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">deliveries</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">be_empty</span>
+      <span class="k">end</span>
+
+      <span class="n">it</span> <span class="s2">&quot;sets the flash error message&quot;</span> <span class="k">do</span>
+        <span class="n">set_current_user</span>
+        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
+        <span class="n">expect</span><span class="p">(</span><span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span><span class="p">)</span><span class="o">.</span> <span class="n">to</span> <span class="n">be_present</span>
+      <span class="k">end</span>
+
+      <span class="n">it</span> <span class="s2">&quot;sets </span><span class="si">#@invitation</span><span class="s2">&quot;</span> <span class="k">do</span>
+        <span class="n">set_current_user</span>
+        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
+        <span class="n">expect</span><span class="p">(</span><span class="n">assigns</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">))</span><span class="o">.</span><span class="n">to</span> <span class="n">be_present</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#invitations_controller.rb</span>
+  <span class="k">def</span> <span class="nf">create</span>
+    <span class="vi">@invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">invitation_params</span><span class="o">.</span><span class="n">merge!</span><span class="p">(</span><span class="ss">inviter_id</span><span class="p">:</span> <span class="n">current_user</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="vi">@invitation</span><span class="o">.</span><span class="n">save</span>
+      <span class="no">AppMailer</span><span class="o">.</span><span class="n">send_invitation_email</span><span class="p">(</span><span class="vi">@invitation</span><span class="p">)</span><span class="o">.</span><span class="n">deliver</span>
+      <span class="n">flash</span><span class="o">[</span><span class="ss">:success</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;You&#39;ve successfully invited </span><span class="si">#{</span><span class="vi">@invitation</span><span class="o">.</span><span class="n">recipient_name</span><span class="si">}</span><span class="s2">.&quot;</span>
+      <span class="n">redirect_to</span> <span class="n">new_invitation_path</span>
+    <span class="k">else</span>
+      <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Please fill in all inputs.&quot;</span>
+      <span class="n">render</span> <span class="ss">:new</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="kp">private</span>
+  <span class="k">def</span> <span class="nf">invitation_params</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">)</span><span class="o">.</span><span class="n">permit</span><span class="p">(</span><span class="ss">:recipient_name</span><span class="p">,</span> <span class="ss">:recipient_email</span><span class="p">,</span> <span class="ss">:message</span><span class="p">,</span> <span class="ss">:inviter_id</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">AppMailer</span> <span class="o">&lt;</span> <span class="no">ActionMailer</span><span class="o">::</span><span class="no">Base</span>
+  <span class="k">def</span> <span class="nf">send_invitation_email</span><span class="p">(</span><span class="n">invitation</span><span class="p">)</span>
+    <span class="vi">@invitation</span> <span class="o">=</span> <span class="n">invitation</span>
+    <span class="n">mail</span> <span class="ss">to</span><span class="p">:</span> <span class="n">invitation</span><span class="o">.</span><span class="n">recipient_email</span><span class="p">,</span> <span class="ss">from</span><span class="p">:</span> <span class="s2">&quot;info@myflix.com&quot;</span><span class="p">,</span> <span class="ss">subject</span><span class="p">:</span> <span class="s2">&quot;Invitation to join Myflix&quot;</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>Remember to:</h3>
+
+<p>clear the ActionMailer deliveries in the valid input context so they don&#39;t interfer with
+the invalid inputs. - we want that number to be 0</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/03/25/course3-writing-feature-tests-for-emails/">
+        Build Robust & Production Quality Applications - Lesson 6: Writing Feature Tests for Emails
+      </a>
+    </h1>
+
+    <span class="post-date">25 Mar 2015</span>
+
+    <h2>Interact with Emails in Feature Tests:</h2>
+
+<p>Sometimes applications may require you to complete a form and an email is
+is generated.
+To test this feature, Capybara-email is a great way to test this functionality and provides a nice interface that allows you to write specs on the level of user interaction. This is better than as creating a feature test for ActionMailer and its deliveries because it will require too much low level detail.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">gem</span> <span class="s1">&#39;capybara-email&#39;</span>
+ <span class="ss">documentation</span><span class="p">:</span> <span class="n">github</span><span class="o">//</span><span class="n">dockyard</span><span class="o">/</span><span class="n">capybara</span><span class="o">-</span><span class="n">email</span></code></pre></div>
+
+<p>Example spec for inviting a user:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#suser_resets_password_spec.rb</span>
+<span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
+<span class="n">feature</span> <span class="s1">&#39;User resets password&#39;</span> <span class="k">do</span>
+  <span class="n">scenario</span> <span class="s1">&#39;user successfully resets the password&#39;</span> <span class="k">do</span>
+    <span class="n">alice</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">,</span> <span class="ss">password</span><span class="p">:</span> <span class="s1">&#39;old_password&#39;</span><span class="p">)</span>
+    <span class="n">visit</span> <span class="n">sign_in_path</span>
+    <span class="n">click_link</span> <span class="s2">&quot;Forgot Password&quot;</span>
+    <span class="n">fill_in</span> <span class="s2">&quot;Email Address&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="n">alice</span><span class="o">.</span><span class="n">email</span>
+    <span class="n">click_button</span> <span class="s2">&quot;Send Email&quot;</span>
+
+    <span class="n">open_email</span><span class="p">(</span><span class="n">alice</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
+    <span class="n">current_email</span><span class="o">.</span><span class="n">click_link</span><span class="p">(</span><span class="s2">&quot;Reset My Password&quot;</span><span class="p">)</span>
+
+    <span class="n">fill_in</span> <span class="s2">&quot;New Password&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s2">&quot;new_password&quot;</span>
+    <span class="n">click_button</span> <span class="s2">&quot;Reset Password&quot;</span>
+
+    <span class="n">fill_in</span> <span class="s2">&quot;Email Address&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="n">alice</span><span class="o">.</span><span class="n">email</span>
+    <span class="n">fill_in</span> <span class="s2">&quot;Password&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s2">&quot;new_password&quot;</span>
+    <span class="n">click_button</span> <span class="s2">&quot;Sign in&quot;</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">)</span><span class="o">.</span> <span class="n">to</span> <span class="n">have_content</span><span class="p">(</span><span class="s2">&quot;Welcome, </span><span class="si">#{</span><span class="n">alice</span><span class="o">.</span><span class="n">full_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">clear_email</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/03/20/course3-three-styles-of-bdd/">
+        Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
+      </a>
+    </h1>
+
+    <span class="post-date">20 Mar 2015</span>
+
+    <h2>Testing Styles in Rails: Three Styles of Behavior Driven Development</h2>
+
+<p>Traditionally we have followed the following flow:</p>
+
+<h3>Meet in the Middle Technique</h3>
+
+<ol>
+<li>Turn mock ups into view templates:
+copy the mockups and replace the placeholder data</li>
+<li>Controller Tests (inner layer)- the controller tests will drive the model layer
+tests, routes, db migrations, etc.</li>
+<li>Model Level Tests(inner layer) - if we need active record based and non-active record based
+model - logic, we will need to drop down to model layer to test their</li>
+<li>Feature Specs/Integration - (Outer most layer) Tests will allow us to test everything including the view templates</li>
+</ol>
+
+<ul>
+<li>Here you will end up with less feature/integration specs than outside in because they are typically written after multiple specs.</li>
+</ul>
+
+<h3>Inside out Approach</h3>
+
+<ol>
+<li>Start from the models and migrations that are required for that feature and then
+right specs to test that model</li>
+<li>Controller Level</li>
+<li>View/Intergation Specs</li>
+</ol>
+
+<ul>
+<li>easier to start .. allows you to work with something small</li>
+<li>But you sometimes don&#39;t know where you&#39;re going and you may end up
+adding alot of code that is not needed.</li>
+<li>This is used primarily in productized shops where its easier to add a model to a more mature product.</li>
+</ul>
+
+<h3>Outside in Approach</h3>
+
+<p>Start at the Integration Level - This integration level does not mean in the
+same way that we reference the Integration Tests in the &quot;Meet in the Middle&quot; technique where where we test multiple features (horizontal) but rather vertical -integration means where we test for models, controllers and views for one feature
+- written in a very business level decision level - you have to think &#39;what is the business value we are looking to provide?&#39;</p>
+
+<ul>
+<li>route, controller, models</li>
+<li>also called BDD or ABDD (A is for Acceptance)</li>
+<li>often used in consultancys, clients provide the feature</li>
+<li>often follows more a natural flow</li>
+<li>requires you to know rails really well and how things work together</li>
+<li>people often use cucumber or rspec feature tests for this.</li>
+</ul>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/03/17/course3-transactions/">
+        Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
+      </a>
+    </h1>
+
+    <span class="post-date">17 Mar 2015</span>
+
+    <p>The[ previous example reegarding updating video review while in queue does not follow typical Rails convention:
+- We are using in the update<em>queue method.
+- we have to use parameter naming conventions to parse out the queue</em>item id and
+position id in the form.
+- We have to specify the order of queue_items using in the user model according to position.</p>
+
+<h3>Using Transactions &amp; Exception Rescues when the value does not save.</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">update_queue</span>
+  <span class="k">begin</span>
+    <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">transaction</span> <span class="k">do</span>
+      <span class="n">params</span><span class="o">[</span><span class="ss">:queue_items</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">queue_item_data</span><span class="o">|</span>
+        <span class="n">queue_item</span> <span class="o">=</span> <span class="no">QueueItem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">queue_item_data</span><span class="o">[</span><span class="s2">&quot;id&quot;</span><span class="o">]</span><span class="p">)</span>
+        <span class="n">queue_item</span><span class="o">.</span><span class="n">update_attributes!</span><span class="p">(</span><span class="ss">position</span><span class="p">:</span> <span class="n">queue_item_data</span><span class="o">[</span><span class="s2">&quot;position&quot;</span><span class="o">]</span><span class="p">)</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">rescue</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">RecordInvalid</span>
+    <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;You must use whole numbers for play position.&quot;</span>
+    <span class="n">redirect_to</span> <span class="n">my_queue_path</span>
+    <span class="k">return</span>
+  <span class="k">end</span>
+
+  <span class="n">current_user</span><span class="o">.</span><span class="n">queue_items</span><span class="o">.</span><span class="n">each_with_index</span> <span class="k">do</span> <span class="o">|</span><span class="n">queue_item</span><span class="p">,</span> <span class="n">index</span><span class="o">|</span>
+    <span class="n">queue_item</span><span class="o">.</span><span class="n">update_attributes</span><span class="p">(</span><span class="ss">position</span><span class="p">:</span> <span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+  <span class="k">end</span>
+  <span class="n">redirect_to</span> <span class="n">my_queue_path</span>
+<span class="k">end</span></code></pre></div>
+
+  </div>
   
   <div class="post">
     <h1 class="post-title">
@@ -191,558 +582,6 @@ Rails decides to start accumulating values in a new hash whenever it encounters 
 already exists in the current hash.</p>
 
 <p>There&#39;s a restriction, however, while hashes can be nested arbitrarily, only one level of &quot;arrayness&quot; is allowed. Arrays can usually be replaced by hashes; for example, instead of having an array of model objects, one can have a hash of model objects keyed by their id, an array index or some other parameter.</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/03/10/course3-update-review-in-queue/">
-        Build Robust & Production Quality Applications - Lesson 4: Update Review in Queue
-      </a>
-    </h1>
-
-    <span class="post-date">10 Mar 2015</span>
-
-    <p>In Myflix, we want to be able to allow the user to update video rating in the video_play queue.</p>
-
-<p>Goal: To change video rating from the queue<em>item index.
-To do so, we have to create the virtual attribute on the queue</em>item model, as though it is a column on the queue_item model (table). Since it is not in the model, we have to define the getter and setter.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#queue_item.rb</span>
-<span class="k">def</span> <span class="nf">rating</span>
-
-<span class="k">end</span>
-
-<span class="k">def</span> <span class="nf">rating</span><span class="o">=</span><span class="p">(</span><span class="n">new_rating</span><span class="p">)</span>
- <span class="o">-</span><span class="n">this</span> <span class="n">is</span> <span class="n">where</span> <span class="n">you</span> <span class="k">begin</span> <span class="n">to</span> <span class="n">write</span> <span class="n">your</span> <span class="n">tests</span>
-<span class="k">end</span></code></pre></div>
-
-<h2>Update Column vs Update Attribute</h2>
-
-<p>update<em>attributes will go through validation error unlike the update</em>column method,which will bypass validation.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">rating</span><span class="o">=</span><span class="p">(</span><span class="n">new_rating</span><span class="p">)</span>
-  <span class="n">review</span> <span class="o">=</span> <span class="no">Review</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">user_id</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="ss">video_id</span><span class="p">:</span> <span class="n">video</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
-  <span class="n">review</span><span class="o">.</span><span class="n">update_column</span><span class="p">(</span><span class="ss">:rating</span><span class="p">,</span> <span class="n">new_rating</span><span class="p">)</span>
-<span class="k">end</span></code></pre></div>
-
-<h2>Memoization</h2>
-
-<p>Memoization means the first time the record is called, it will hit the database only once and store that info
-into the instance variable and will not database again when record is called.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">review</span>
-  <span class="vi">@review</span> <span class="o">||=</span> <span class="no">Review</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">user_id</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="ss">video_id</span><span class="p">:</span> <span class="n">video</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
-<span class="k">end</span></code></pre></div>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/03/07/course3-lesson3/">
-        Build Robust & Production Quality Applications - Lesson 3: Part 3
-      </a>
-    </h1>
-
-    <span class="post-date">07 Mar 2015</span>
-
-    <h2>Items Covered:</h2>
-
-<ol>
-<li>Feature Specs</li>
-<li>Capybara</li>
-<li>Request Specs</li>
-</ol>
-
-<h3>Types of Testing We&#39;ve Covered:</h3>
-
-<ul>
-<li>Models (Model Specs)</li>
-<li>Controllers (Controller Specs)</li>
-<li>Views, Routes, Helpers, Mailers (Feature Specs)</li>
-</ul>
-
-<h2>Feature Specs</h2>
-
-<p>Feature Specs cover all the above in integration, although there are also specs
-for every item listed above, however mailers, routes, views, and helpers do not need to be tested in isolation.</p>
-
-<p>With feature specs, you mimic the user&#39;s experience originating with the browser.
-This is the first example of vertical integration.
-Specs are typically broken into features.</p>
-
-<p>There is something called &quot;request specs&quot; which focuses more horizontal integration. This is when you want to test multiple requests and responses across various controllers, making sure that things flow in a sequence.</p>
-
-<p>In this course, we will NOT use request<em>specs, becasue typically request</em>specs are used to capture
-business processes from end to end. However any business process worth measuring must be
-centered around the customer expereince...</p>
-
-<h2>Capybara</h2>
-
-<p>The Capybara gem is the way you can simulate user interaction with the browser.
-Load RSpec 2.x support by adding the following line (typically to your spec_helper.rb file):</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;capybara/rspec&#39;</span></code></pre></div>
-
-<p>If you are using Rails, put your Capybara specs in spec/features.</p>
-
-<p>If you are not using Rails, tag all the example groups in which you want to use Capybara with :type =&gt; :feature.</p>
-
-<p>You can now write your specs like so:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;the signin process&quot;</span><span class="p">,</span> <span class="ss">:type</span> <span class="o">=&gt;</span> <span class="ss">:feature</span> <span class="k">do</span>
-  <span class="n">before</span> <span class="ss">:each</span> <span class="k">do</span>
-    <span class="no">User</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="ss">:email</span> <span class="o">=&gt;</span> <span class="s1">&#39;user@example.com&#39;</span><span class="p">,</span> <span class="ss">:password</span> <span class="o">=&gt;</span> <span class="s1">&#39;password&#39;</span><span class="p">)</span>
-  <span class="k">end</span>
-
-  <span class="n">it</span> <span class="s2">&quot;signs me in&quot;</span> <span class="k">do</span>
-    <span class="n">visit</span> <span class="s1">&#39;/sessions/new&#39;</span>
-    <span class="n">within</span><span class="p">(</span><span class="s2">&quot;#session&quot;</span><span class="p">)</span> <span class="k">do</span>
-      <span class="n">fill_in</span> <span class="s1">&#39;Email&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="s1">&#39;user@example.com&#39;</span>
-      <span class="n">fill_in</span> <span class="s1">&#39;Password&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="s1">&#39;password&#39;</span>
-    <span class="k">end</span>
-    <span class="n">click_button</span> <span class="s1">&#39;Sign in&#39;</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_content</span> <span class="s1">&#39;Success&#39;</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<p>Use :js =&gt; true to switch to the Capybara.javascript_driver (:selenium by default), or provide a :driver option to switch to one specific driver. For example:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s1">&#39;some stuff which requires js&#39;</span><span class="p">,</span> <span class="ss">:js</span> <span class="o">=&gt;</span> <span class="kp">true</span> <span class="k">do</span>
-  <span class="n">it</span> <span class="s1">&#39;will use the default js driver&#39;</span>
-  <span class="n">it</span> <span class="s1">&#39;will switch to one specific driver&#39;</span><span class="p">,</span> <span class="ss">:driver</span> <span class="o">=&gt;</span> <span class="ss">:webkit</span>
-<span class="k">end</span></code></pre></div>
-
-<p>**Capybara Built in DSL (reads more like UAT - User Accpetance tests) - reads more higher level
-- feature is in fact just an alias for describe ...,
-- :type =&gt; :feature,
-- background is an alias for before, scenario for it,
-- and given/given! aliases for let/let!, respectively.</p>
-
-<p>Finally, Capybara also comes with a built in DSL for creating descriptive acceptance tests:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">feature</span> <span class="s2">&quot;Signing in&quot;</span> <span class="k">do</span>
-  <span class="n">background</span> <span class="k">do</span>
-    <span class="no">User</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="ss">:email</span> <span class="o">=&gt;</span> <span class="s1">&#39;user@example.com&#39;</span><span class="p">,</span> <span class="ss">:password</span> <span class="o">=&gt;</span> <span class="s1">&#39;caplin&#39;</span><span class="p">)</span>
-  <span class="k">end</span>
-
-  <span class="n">scenario</span> <span class="s2">&quot;Signing in with correct credentials&quot;</span> <span class="k">do</span>
-    <span class="n">visit</span> <span class="s1">&#39;/sessions/new&#39;</span>
-    <span class="n">within</span><span class="p">(</span><span class="s2">&quot;#session&quot;</span><span class="p">)</span> <span class="k">do</span>
-      <span class="n">fill_in</span> <span class="s1">&#39;Email&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="s1">&#39;user@example.com&#39;</span>
-      <span class="n">fill_in</span> <span class="s1">&#39;Password&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="s1">&#39;caplin&#39;</span>
-    <span class="k">end</span>
-    <span class="n">click_button</span> <span class="s1">&#39;Sign in&#39;</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_content</span> <span class="s1">&#39;Success&#39;</span>
-  <span class="k">end</span>
-
-  <span class="n">given</span><span class="p">(</span><span class="ss">:other_user</span><span class="p">)</span> <span class="p">{</span> <span class="no">User</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="ss">:email</span> <span class="o">=&gt;</span> <span class="s1">&#39;other@example.com&#39;</span><span class="p">,</span> <span class="ss">:password</span> <span class="o">=&gt;</span> <span class="s1">&#39;rous&#39;</span><span class="p">)</span> <span class="p">}</span>
-
-  <span class="n">scenario</span> <span class="s2">&quot;Signing in as another user&quot;</span> <span class="k">do</span>
-    <span class="n">visit</span> <span class="s1">&#39;/sessions/new&#39;</span>
-    <span class="n">within</span><span class="p">(</span><span class="s2">&quot;#session&quot;</span><span class="p">)</span> <span class="k">do</span>
-      <span class="n">fill_in</span> <span class="s1">&#39;Email&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="n">other_user</span><span class="o">.</span><span class="n">email</span>
-      <span class="n">fill_in</span> <span class="s1">&#39;Password&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="n">other_user</span><span class="o">.</span><span class="n">password</span>
-    <span class="k">end</span>
-    <span class="n">click_button</span> <span class="s1">&#39;Sign in&#39;</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_content</span> <span class="s1">&#39;Invalid email or password&#39;</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<h3>Capybara Drivers</h3>
-
-<ol>
-<li><p>RackTest is really fast, and does not really fire-up the browser. It&#39;s a headless driver
-therefore doesn&#39;t really simulate the browser experience. RackTest does not support Js.</p></li>
-<li><p>Selenuim is a popular driver that does handle Js and fire-ups Firefox.
-But this option is very slow.</p></li>
-<li><p>Capybara Webkit is another headless driver that can execute Js well.
-It&#39;s much faster than selenium but slower than RackTest.</p></li>
-</ol>
-
-<h3>First feature spec</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;spec/helper&#39;</span>
-<span class="n">feature</span> <span class="s1">&#39;User signs in&#39;</span> <span class="k">do</span>
-  <span class="n">background</span> <span class="k">do</span>
-    <span class="no">User</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">username</span><span class="p">:</span> <span class="s2">&quot;john&quot;</span><span class="p">,</span> <span class="ss">full_name</span><span class="p">:</span> <span class="s2">&quot;John Doe&quot;</span><span class="p">)</span>
-  <span class="k">end</span>
-
-  <span class="n">scenario</span> <span class="s2">&quot;with existing username&quot;</span> <span class="k">do</span>
-    <span class="n">visit</span> <span class="n">root_path</span>
-    <span class="n">fill_in</span> <span class="s2">&quot;Username&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s2">&quot;john&quot;</span>
-    <span class="n">click_button</span> <span class="s2">&quot;Sign in&quot;</span>
-    <span class="n">page</span><span class="o">.</span><span class="n">should</span> <span class="n">have_content</span> <span class="s2">&quot;John Doe&quot;</span>
-    <span class="k">end</span>
-  <span class="k">end</span></code></pre></div>
-
-<p>The &#39;fill_ in &quot;Username&quot;, &#39; is referring to the label<em>tag :username, &quot;Username&quot;
-  - you can also refer to fill</em> in the label tag, the name, or the input_ id,
-  although its best practice to use the label tag because it easier to read.</p>
-
-<h3>Request Specs</h3>
-
-<p>Watch RailsCast video on <a href="http://railscasts.com/episodes/257-request-specs-and-capybara">Capybara &amp; Request Specs</a></p>
-
-<ul>
-<li>Request Specs are alternatives to the Rails Builtin Integration Testing
-(Refer to RailsCast video 187)</li>
-</ul>
-
-<p>In terminal, run:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="mi">1</span><span class="o">.</span> <span class="n">rails</span> <span class="n">g</span> <span class="ss">rspec</span><span class="p">:</span><span class="n">install</span>
-
-<span class="mi">2</span><span class="o">.</span> <span class="n">rails</span> <span class="n">g</span> <span class="n">intergration_test</span> <span class="n">task</span>
-
-<span class="mi">3</span><span class="o">.</span> <span class="no">Open</span> <span class="n">up</span> <span class="n">task_spec</span><span class="p">,</span> <span class="n">code</span> <span class="n">should</span> <span class="n">be</span> <span class="n">fine</span> <span class="n">as</span> <span class="n">is</span><span class="p">,</span> <span class="n">but</span> <span class="n">you</span> <span class="n">would</span>
-<span class="n">change</span> <span class="n">the</span> <span class="n">request</span> <span class="n">verb</span> <span class="ow">and</span> <span class="n">the</span> <span class="n">assertion</span>
-
-<span class="mi">4</span><span class="o">.</span> <span class="n">rake</span> <span class="ss">spec</span><span class="p">:</span><span class="n">requests</span></code></pre></div>
-
-<p>Example:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;Tasks&quot;</span> <span class="k">do</span>
-  <span class="n">describe</span> <span class="s2">&quot;GET /tasks&quot;</span> <span class="k">do</span>
-    <span class="n">it</span>  <span class="s2">&quot;displays tasks&quot;</span> <span class="k">do</span>
-      <span class="no">Task</span><span class="o">.</span><span class="n">create!</span><span class="p">(</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s2">&quot;paint fence&quot;</span><span class="p">)</span>
-      <span class="n">get</span> <span class="n">tasks_path</span>
-      <span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">should</span> <span class="kp">include</span><span class="p">(</span><span class="s2">&quot;paint fence&quot;</span><span class="p">)</span>
-      <span class="k">end</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-
-<span class="n">describe</span> <span class="s2">&quot;POST /tasks&quot;</span> <span class="k">do</span>
-    <span class="n">it</span> <span class="s2">&quot;create task&quot;</span> <span class="k">do</span>
-      <span class="n">post_via_redirect</span> <span class="n">tasks_path</span><span class="p">,</span> <span class="ss">tasks</span><span class="p">:</span> <span class="p">{</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;mow lawn&quot;</span><span class="p">}</span>
-      <span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">should</span> <span class="kp">include</span><span class="p">(</span><span class="s2">&quot;mow lawn&quot;</span><span class="p">)</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<p>One issue with request specs this that they dont mimic the user&#39;s experience
-becasue you&#39;e submitting the request directly, rather than going through the form
-like the user would - that is why we use Capybara (rather than webrat) &amp; Launchy</p>
-
-<p>Installing Capybara, allows us to change our existing tests:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;Tasks&quot;</span> <span class="k">do</span>
-  <span class="n">describe</span> <span class="s2">&quot;GET /tasks&quot;</span> <span class="k">do</span>
-    <span class="n">it</span>  <span class="s2">&quot;displays tasks&quot;</span> <span class="k">do</span>
-      <span class="no">Task</span><span class="o">.</span><span class="n">create!</span><span class="p">(</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s2">&quot;paint fence&quot;</span><span class="p">)</span>
-      <span class="n">visit</span> <span class="n">tasks_path</span>
-      <span class="n">page</span><span class="o">.</span><span class="n">should</span> <span class="kp">include</span><span class="p">(</span><span class="s2">&quot;paint fence&quot;</span><span class="p">)</span>
-      <span class="k">end</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-
-<span class="n">describe</span> <span class="s2">&quot;POST /tasks&quot;</span> <span class="k">do</span>
-    <span class="n">it</span> <span class="s2">&quot;create task&quot;</span> <span class="k">do</span>
-      <span class="n">visit</span> <span class="n">tasks_path</span>
-      <span class="n">fill_in</span> <span class="s2">&quot;New Task&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s2">&quot;mow lawn&quot;</span>
-      <span class="n">click_button</span> <span class="s2">&quot;Add&quot;</span>
-      <span class="n">page</span><span class="o">.</span><span class="n">should</span> <span class="n">have_content</span><span class="p">(</span><span class="s2">&quot;successfully added task&quot;</span><span class="p">)</span>
-      <span class="n">page</span><span class="o">.</span><span class="n">should</span> <span class="n">have_content</span><span class="p">(</span><span class="s2">&quot;mow lawn&quot;</span><span class="p">)</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<p>*What if the test fails and you don&#39;t know why?
-Thats where the gem &quot;Launchy&quot; comes in:
- -anywhere in the test, you can write:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">save_and_open_page</span></code></pre></div>
-
-<p>Capybara does not test Javascript with out Selenium:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">it</span> <span class="s2">&quot;supports js&quot;</span><span class="p">,</span> <span class="ss">js</span><span class="p">:</span> <span class="kp">true</span> <span class="k">do</span>
-   <span class="n">visit</span> <span class="n">tasks_path</span>
-   <span class="n">click_link</span> <span class="s2">&quot;test js&quot;</span>
-   <span class="n">page</span><span class="o">.</span><span class="n">should</span> <span class="n">have_content</span><span class="p">(</span><span class="s2">&quot;js works&quot;</span><span class="p">)</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<hr>
-
-<p>Let&#39;s try adding Js to our first test and see if it is supported by
-Selenium.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;Tasks&quot;</span> <span class="k">do</span>
-<span class="n">describe</span> <span class="s2">&quot;GET /tasks&quot;</span> <span class="k">do</span><span class="p">,</span> <span class="ss">js</span><span class="p">:</span> <span class="kp">true</span> <span class="k">do</span>
-  <span class="n">it</span>  <span class="s2">&quot;displays tasks&quot;</span> <span class="k">do</span>
-    <span class="no">Task</span><span class="o">.</span><span class="n">create!</span><span class="p">(</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s2">&quot;paint fence&quot;</span><span class="p">)</span>
-    <span class="n">visit</span> <span class="n">tasks_path</span>
-    <span class="n">page</span><span class="o">.</span><span class="n">should</span> <span class="kp">include</span><span class="p">(</span><span class="s2">&quot;paint fence&quot;</span><span class="p">)</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<p>The test will fail because Selenium does not support database transactions</p>
-
-<h3>In #spec_helper.rb:</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Change</span> <span class="n">config</span><span class="o">.</span><span class="n">use_transactional_</span> <span class="n">fixtures</span> <span class="o">=</span> <span class="kp">true</span><span class="p">,</span> <span class="n">to</span> <span class="kp">false</span><span class="o">.</span></code></pre></div>
-
-<p>Selenium does not support database transactions.</p>
-
-<p>But this will mean our database transactions will carryover in between
-tests and we dont want that. So the answer is the database cleaner
-gem that will run in between tests. You must add the config code
-from the documentation into the spec_helper, removing transactions since the
-arent supported by Selenuim.</p>
-
-<hr>
-
-<p>To run pry in a spec, you must use:
-require &#39;pry&#39;; binding.pry before the error/after the action
-During pry. you can use</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Launchy</span> <span class="s2">&quot;save_and_open_page&quot;</span></code></pre></div>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/03/05/course3-lesson3/">
-        Build Robust & Production Quality Applications - Lesson 3: Part 2
-      </a>
-    </h1>
-
-    <span class="post-date">05 Mar 2015</span>
-
-    <h2>Items Covered:</h2>
-
-<ol>
-<li>Structural Refactor</li>
-<li>Skinny Controller, Fat Models</li>
-<li>Rspec Macros</li>
-<li>Rspec Shared Examples</li>
-</ol>
-
-<h2>Structural Refactor</h2>
-
-<p>Controllers are more of traffic control and methods containing logic should refarctored to the model level</p>
-
-<ul>
-<li>For simple refactors such as moving methods from controllers to methods,
-since your test suite is already comprehensive enough to cover the current model, you dont have to create additional tests at the model level, only if you decide to add additional functionality.</li>
-</ul>
-
-<p>Typically you shouldn&#39;t have more than one conditional or return from a method within a method. You should refactor by moving a piece of the code to private method.</p>
-
-<h2>Skinny Controller, Fat Models</h2>
-
-<p>One of the most common refactors in Rails and one of the most well-known architectural principals in rails.</p>
-
-<p>Fat Models, means the models assume the most responsibilty.
-Good blog post to read: <a href="http://weblog.jamisbuck.org/2006/10/18/skinny-controller-fat-model">Skinny Models, Fat Controllers</a>
-Here - James talks about moving responsibilty from the view, to the controller, and then to the model.</p>
-
-<p>Examples of Opensource Project Management Tools that have need to go on a Fat Controller Diet:
-<a href="https://github.com/chiliproject/chiliproject">ChilliProject</a>
-<a href="https://github.com/edavis10/redmine">Redmine</a></p>
-
-<h3>Refactoring to fat models in MyFlix</h3>
-
-<p>Tip: When refactoring your controllers to fat models, do not move methods that take parameters in a form
-because that is the purpose of the controller - to talk to the views and models.
-Look for those that iterate through the model.</p>
-
-<h2>Rspec Macros</h2>
-
-<p>Allows you to extract logic that can be used by multiple rspec controllers.</p>
-
-<p>So rather than the following at the begining of each controller test:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">before</span> <span class="k">do</span>
-  <span class="n">frank</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
-  <span class="n">session</span><span class="o">[</span><span class="ss">:user_id</span><span class="o">]</span> <span class="o">=</span> <span class="n">frank</span><span class="o">.</span><span class="n">id</span>
-<span class="k">end</span></code></pre></div>
-
-<p>We could create a macro, spec/support/macros.rb and include the above code:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">set_current_user</span>
-  <span class="n">frank</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
-    <span class="n">session</span><span class="o">[</span><span class="ss">:user_id</span><span class="o">]</span> <span class="o">=</span> <span class="n">frank</span><span class="o">.</span><span class="n">id</span>
-  <span class="k">end</span>
-
-<span class="k">def</span> <span class="nf">current_user</span>
-  <span class="no">User</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">session</span><span class="o">[</span><span class="n">user_id</span><span class="o">]</span><span class="p">)</span>
-<span class="k">end</span></code></pre></div>
-
-<p>AND in your test:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">before</span> <span class="p">{</span><span class="n">set_current_user</span><span class="p">}</span></code></pre></div>
-
-<p>Now, if I want to clear the current user to test the path of an unauthorized user
-create another macro called clear<em>current</em>user, make it the first line in your test.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">clear_current_user</span>
-  <span class="n">session</span><span class="o">[</span><span class="n">user_id</span><span class="o">]</span> <span class="o">=</span> <span class="kp">nil</span>
-<span class="k">end</span></code></pre></div>
-
-<h2>Shared Examples</h2>
-
-<p>What bout you want to test the redirect for unauthenticated users for not just index but index and new</p>
-
-<p>Create a Shared Example:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#spec/support/shares_examples.rb</span>
-<span class="n">shared_examples</span> <span class="s2">&quot;require_sign_in&quot;</span> <span class="k">do</span>
-  <span class="n">it</span> <span class="s2">&quot;redirects to the front page&quot;</span> <span class="k">do</span>
-    <span class="n">response</span><span class="o">.</span><span class="n">should</span> <span class="n">redirect_to</span> <span class="n">root_path</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<p>In your test: you can&#39;t just write:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">it</span> <span class="n">behaves_like</span> <span class="s2">&quot;require_sign_in&quot;</span></code></pre></div>
-
-<p>because you have to clear the current user and hit the action first:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">context</span> <span class="s2">&quot;user not signed in&quot;</span> <span class="k">do</span>
-  <span class="n">before</span> <span class="k">do</span>
-    <span class="n">clear_current_user</span>
-    <span class="n">get</span> <span class="ss">:index</span>
-  <span class="k">end</span>
-  <span class="n">it</span> <span class="n">behaves_like</span> <span class="s2">&quot;require_sign_in&quot;</span>
-<span class="k">end</span></code></pre></div>
-
-<p>But this is frustrating becasue although we DRY&#39;d up our code a little,
-we still have to add a before block for the clear<em>current</em>user and the index.</p>
-
-<p>It would be great if there&#39;s a way to pass the action to the shared example, and there is:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">shared_examples</span> <span class="s2">&quot;require_sign_in&quot;</span> <span class="k">do</span>
-  <span class="n">it</span> <span class="s2">&quot;redirects to the front page&quot;</span> <span class="k">do</span>
-    <span class="n">clear_current_user</span>
-    <span class="n">action</span>
-    <span class="n">response</span><span class="o">.</span><span class="n">should</span> <span class="n">redirect_to</span> <span class="n">root_path</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<p>AND in your test:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">context</span> <span class="s2">&quot;not_signed_in&quot;</span> <span class="k">do</span>
-    <span class="n">it_behaves_like</span> <span class="s2">&quot;require_sign_in&quot;</span> <span class="k">do</span>
-    <span class="n">let</span><span class="p">(</span><span class="ss">:action</span><span class="p">)</span> <span class="p">{</span> <span class="n">get</span> <span class="ss">:index</span> <span class="p">}</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<p>AND you actually don&#39;t need the context anymore:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">index</span><span class="o">&gt;</span>
-<span class="n">it_behaves_like</span> <span class="s2">&quot;require_sign_in&quot;</span> <span class="k">do</span>
-  <span class="n">let</span><span class="p">(</span><span class="ss">:action</span><span class="p">)</span> <span class="p">{</span> <span class="n">get</span> <span class="ss">:index</span> <span class="p">}</span>
-<span class="k">end</span>
-
-<span class="o">&lt;</span><span class="kp">new</span><span class="o">&gt;</span>
-<span class="n">it_behaves_like</span> <span class="s2">&quot;require_sign_in&quot;</span> <span class="k">do</span>
-  <span class="n">let</span><span class="p">(</span><span class="ss">:action</span><span class="p">)</span> <span class="p">{</span> <span class="n">get</span> <span class="ss">:new</span> <span class="p">}</span>
-<span class="k">end</span>
-
-<span class="o">&lt;</span><span class="n">create</span><span class="o">&gt;</span>
-<span class="n">it_behaves_like</span> <span class="s2">&quot;require_sign_in&quot;</span> <span class="k">do</span>
-  <span class="n">let</span><span class="p">(</span><span class="ss">:action</span><span class="p">)</span> <span class="p">{</span> <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">todo</span><span class="p">:</span> <span class="p">{</span><span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;something&#39;</span><span class="p">}</span> <span class="p">}</span>
-<span class="k">end</span></code></pre></div>
-
-<p>Shared examples can be used on both controller and model levels
-For more info:</p>
-
-<p><a href="https://www.relishapp.com/rspec/rspec-core/docs/example-groups/shared-examples">Shared Examples Docs</a></p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/03/02/course3-lesson3/">
-        Build Robust & Production Quality Applications - Lesson 3: Part 1
-      </a>
-    </h1>
-
-    <span class="post-date">02 Mar 2015</span>
-
-    <h2>Items Covered:</h2>
-
-<ol>
-<li>Growing Complexity</li>
-<li>Interactive Debugging for Solution Delivery</li>
-<li>Transactions</li>
-</ol>
-
-<h2>Growing Complexity Guided By Tests</h2>
-
-<p>Tags.all.map(&amp;:name) == Tags.all.map{|tag| tag.name}</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">create</span>
-  <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:todo</span><span class="o">]</span><span class="p">)</span>
-  <span class="k">if</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">save</span>
-    <span class="n">location_string</span> <span class="o">=</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;at&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">strip</span>
-    <span class="vi">@todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;location#(location_string)&quot;</span><span class="p">)</span>
-    <span class="n">redrect_to</span> <span class="n">root_path</span>
-  <span class="k">else</span>
-  <span class="n">render</span> <span class="ss">:new</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<p>strip method removes all spaces.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">create</span>
-  <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:todo</span><span class="o">]</span><span class="p">)</span>
-  <span class="k">if</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">save</span>
-    <span class="n">location_string</span> <span class="o">=</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;at&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">strip</span>
-    <span class="n">locations</span> <span class="o">=</span> <span class="n">location_string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;and&#39;</span><span class="p">)</span>
-    <span class="n">locations</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">location</span><span class="o">|</span>
-    <span class="vi">@todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;location:#(location)&quot;</span><span class="p">)</span>
-    <span class="n">redrect_to</span> <span class="n">root_path</span>
-  <span class="k">else</span>
-  <span class="n">render</span> <span class="ss">:new</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<h3>When to use each vs map</h3>
-
-<p>each is used for when you want to iterate through a an collection of data, an
-array for example but you dont want to manipulate the result.
-map is ideal for when iterating over a collection and then you need to alter of manipulate those returned values for input into another problem.</p>
-
-<h3>When to use split vs regex</h3>
-
-<p>Use split when searching for one element
-And regex when searching for more than one.</p>
-
-<h2>Interactive Debugging for Solution Discovery</h2>
-
-<p>After writing and implementing your test cases, you should run sanity checks within your browser.
-If bugs are identified, you should run write tests to isolate it the bug.</p>
-
-<p>Use Binding.pry to in your controller being tested, after the problematic line.
-Binding.pry is really just irb so you now have a means to experiment with your code
-until you find the right solution.</p>
-
-<p>For a good regex tutorial:
-<a href="www.regular-expressions.info">Regex Tutorial</a>
-<a href="www.rubular.com">Rubular</a></p>
-
-<p>.split method cannot run on nil so Ruby 1.9 introduced .try(:split),
-which will run .split if not nil.</p>
-
-<h2>Transactions</h2>
-
-<p>Wrapping batch operations into transactions:</p>
-
-<p>To update the queue in MyFlix, the position entered must be an integer.
-If not, the entire page will fail to update. This is unlike normal transactions
-where we can include a validation error.
-This is where the concept of transactions come in. If all actions in the transaction
-do not save, it will rollback.</p>
-
-<p>Transactions are protective blocks where SQL statements are only permanent if
-they can all succeed as one atomic action. The classic example is a transfer between
-two accounts where you can only have a deposit if the withdrawal succeeded and vice versa.
-Transactions enforce the integrity of the database and guard the data against program errors or database break-downs.
-So basically you should use transaction blocks whenever you have a number of statements that must be executed together
-or not at all.</p>
 
   </div>
   

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      grit| commit &middot; A coding blog by Jam
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="posts">
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2014/09/07/course1-lesson2/">
+        Intro to Ruby & Web Dev: Lesson 2
+      </a>
+    </h1>
+
+    <span class="post-date">07 Sep 2014</span>
+
+    <h1>Items covered:</h1>
+
+<ol>
+<li>Classes, Instances, &amp; Objects</li>
+<li>Modules</li>
+<li>Inheritance</li>
+<li>Method Lookup Chain</li>
+<li>Procedural vs OOP</li>
+</ol>
+
+<h2>Classes &amp; Objects</h2>
+
+<ul>
+<li>Objects are instantized through classes and contant states and behaviors</li>
+<li>Classes are the cookie cutters</li>
+<li>Instance methods encapsulate behaviors and are defined in classes.</li>
+<li>Instance variables = state</li>
+<li>Instance methods = behaviors
+Interesting syntax when using equals, setter:</li>
+</ul>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">set_name</span><span class="o">=</span><span class="p">(</span><span class="n">new_name</span><span class="p">)</span>
+  <span class="vi">@name</span> <span class="o">=</span> <span class="nb">name</span>
+<span class="k">end</span>
+
+<span class="n">jamela</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">new</span>
+
+<span class="n">jamela</span><span class="o">.</span><span class="n">set_name</span> <span class="o">=</span> <span class="s2">&quot;Jam&quot;</span></code></pre></div>
+
+<p>or</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">set_name</span><span class="p">(</span><span class="n">new_name</span><span class="p">)</span>
+  <span class="vi">@name</span> <span class="o">=</span> <span class="nb">name</span>
+<span class="k">end</span>
+
+<span class="n">jamela</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="s2">&quot;Jam&quot;</span><span class="p">)</span></code></pre></div>
+
+<p>Setters:</p>
+
+<p>You have to use .self when using the setter method within an instance method of the same class.
+Instance methods are like raw data and you can access them but in general, you always want to use the getters and setters when available for encapsulation and santization.</p>
+
+<h3>Class Variables:</h3>
+
+<p>Track states that are common across all instances within a class.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#To keep track of number of objects</span>
+<span class="vc">@@class</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+  <span class="vi">@name</span> <span class="o">=</span> <span class="n">n</span>
+  <span class="vi">@height</span> <span class="o">=</span> <span class="n">h</span>
+  <span class="vi">@weight</span> <span class="o">=</span> <span class="n">w</span>
+  <span class="vc">@@count</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="k">end</span>
+
+<span class="vc">@@class_variable</span> <span class="o">+=</span><span class="mi">1</span></code></pre></div>
+
+<h3>Class Methods:</h3>
+
+<p>Performs behaviors at the class level</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">total_count</span>
+<span class="s2">&quot;The total number of dogs is </span><span class="si">#{</span><span class="vc">@@count</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="k">end</span>
+
+<span class="nb">puts</span> <span class="no">Dog</span><span class="o">.</span><span class="n">total_count</span></code></pre></div>
+
+<h2>Inheritance</h2>
+
+<p>SubClass &lt; SuperClass</p>
+
+<p>object.ancestors shows you the method look-up chain</p>
+
+<h2>Namespace</h2>
+
+<p>class User &lt; ActiveRecord::Base
+refers to the inheritance of the Base class inside the ActiveRecord module
+Just like with Cms::User - refers to the User class in the CMS module.</p>
+
+<h2>Modules</h2>
+
+<p>Allows you to mixin in behavior. The difference between modules and classes are that modules cannot be instantiated.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">module</span> <span class="nn">Swimmable</span>
+  <span class="k">def</span> <span class="nf">swim</span>
+  <span class="nb">puts</span> <span class="s2">&quot;I&#39;m swimming!&quot;</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>In method, you can mixin in the module by typing &quot;include Swimmable&quot;.
+When creating modules you simply add &quot;-able&quot; to the end of your method name and then type &quot;include swimmable&quot; in the method you want to add that behavior.</p>
+
+<p>-In method lookups, a module that is mixin will superecede (be listed first) super classes. This means that if a module and a superclass has the same method, the module method will have precedence. When mixin two modules, the method lookup chain will be effected based on reverse inclusion, meanging the last module included will be looked at first.</p>
+
+<p>The point of modules is extract code that is non-specific to a class... and make it reusable.</p>
+
+<p>Some modules can require methods or behaviors:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">module</span> <span class="nn">Fetchable</span>
+  <span class="k">def</span> <span class="nf">fetch</span>
+  <span class="c1">#{name} is fetching!</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>The above module requires the name getter method look up chain</p>
+
+<h2>OOP vs Procedural</h2>
+
+<p>Procedural thinks about &quot;what happens next...&quot; and small changes can have big impacts throughout your code.</p>
+
+<p>OOP thinks in terms of objects and how they behave Generally consider classes to be nouns and verbs to be methods. Start by first writing out requirements in pseudo-code.</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2014/09/01/course1-lesson1/">
+        Intro to Ruby & Web Dev: Lesson 1
+      </a>
+    </h1>
+
+    <span class="post-date">01 Sep 2014</span>
+
+    <h1>Items covered:</h1>
+
+<ol>
+<li>Hashes vs. Arrays</li>
+<li>Debugging</li>
+<li>Pass by Reference vs. Pass by Value</li>
+<li>Enumerables</li>
+</ol>
+
+<h2>Hashes vs. Arrays</h2>
+
+<h2>Debugging</h2>
+
+<p>How to debug?
+ - Tips on how to work through bugs in your code or large problems where you don&#39;t know where to start.</p>
+
+<ol>
+<li>Google - copy and paste error into Google. Someone has had your issue before.</li>
+<li>Write out pseudocode - write what you are attempting to do in code in plain engish</li>
+<li>Break problems into small, numerical steps - start with what looks familiar ( or you know how to do)</li>
+<li>Ask questions in the forum (Tealeaf)</li>
+<li>Use binding.pry</li>
+<li>Paste Errors or problems in Gist - take issue to IRC chat</li>
+<li>Rubberduck debugging.
+When you come across a problem - explain how to came to that problem to your (fictitious) coworker - Ms. Rubberduck. Even better, explain the problem to someone who has no programming experience at all.</li>
+<li>Step away from the problem.</li>
+</ol>
+
+<h2>Pass by Value va. Pass by Reference</h2>
+
+<p>Some methods mutuate the caller, while others do not. To better understand this fact, let&#39;s look at:
+Pass by Value vs Pass by Reference:
+  Pass by Value - when a method is called on an object, the variable is just representation of the value and not the actual object (the reference), itself. When called, the method can never change the object itself. To effect change to the object, you must reassign the variable.</p>
+
+<p>In this case below, outter_str remains unchanged as a result of the method being called.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">some_method</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
+  <span class="n">str</span><span class="o">.</span><span class="n">changeit</span>
+<span class="k">end</span>
+
+<span class="n">outter_str</span> <span class="o">=</span> <span class="s2">&quot;hi&quot;</span>
+<span class="n">some_method</span><span class="p">(</span><span class="n">outter_str</span><span class="p">)</span></code></pre></div>
+
+<hr>
+
+<p>Pass by Reference - When a method is called, the object acts a pointer and a modification is actually made to an actual space in memory.</p>
+
+<p>In the case below, outter_str is just a reference (pointer) to str, therefore any mutations to str will be reflected in the value of str</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">some_method</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
+  <span class="n">str</span><span class="o">.</span><span class="n">changeit</span>
+<span class="k">end</span>
+
+<span class="n">outter_str</span> <span class="o">=</span> <span class="s2">&quot;hi&quot;</span>
+<span class="n">some_method</span><span class="p">(</span><span class="n">outter_str</span><span class="p">)</span></code></pre></div>
+
+<p>Ruby is Passing by the Reference of the Caller: Whether or not the method creates a pass by reference or pass by reference scenario depends on whether the method mutates the caller or not</p>
+
+<h2>Enumerables</h2>
+
+<p>Tags:  <a href="tealeaf"> tealeaf </a></p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2014/08/30/path-to-becoming-a-ruby-dev/">
+        Welcome to my Dev blog
+      </a>
+    </h1>
+
+    <span class="post-date">30 Aug 2014</span>
+
+    <p>My name is Jam. I&#39;m a recovering project manager with a creative knack for design, dance, and creating things. For the longest time, I&#39;ve wanted a career to be super passionate about. I&#39;d watch some of my favorite reality shows, like Project Runway, Top Chef.. etc. and be so inspired, maye even envious that they had something that they loved to do.. could do it hours on end. Rails Girls made learning to code accessible to me. . I had the pleasure of hearing<a href="http://www.sandimetz.com/">Sandi Metz</a> gave a talk on <a href="http://en.wikipedia%20org/wiki/Grit_%28personality_trait%29">grit</a> - which gave me some hope that I too, if I worked hard enough, that I could approach my life&#39;s work with that same passion and creativity.</p>
+
+<p>These are my daily takeways along my journey to becoming a rails dev. Hope you enjoy!</p>
+
+<p>Tags:  <a href="thoughts"> thoughts </a></p>
+
+  </div>
+  
+</div>
+
+<div class="pagination">
+  
+    <span class="pagination-item older">Older</span>
+  
+  
+    
+      <a class="pagination-item newer" href="/page13">Newer</a>
+    
+  
+</div>
+    </div>
+
+  </body>
+</html>

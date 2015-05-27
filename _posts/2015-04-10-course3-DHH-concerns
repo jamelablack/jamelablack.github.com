@@ -1,0 +1,16 @@
+---
+layout: post
+title: "Build Robust & Production Quality Applications - Lesson 6: DHH's Blog Post on Concerns"
+tags: tealeaf
+---
+##Chubby Model Diet: Concerns
+
+Notes from DHHs' Blog Post: [Put chubby models on a diet with concerns](https://signalvnoise.com/posts/3372-put-chubby-models-on-a-diet-with-concerns)
+
+Concerns are also a helpful way of extracting a slice of model that doesn’t seem part of its essence (what is and isn’t in the essence of a model is a fuzzy line and a longer discussion) without going full-bore Single Responsibility Principle and running the risk of ballooning your object inventory.
+
+But I find that concerns are often just the right amount of abstraction and that they often result in a friendlier API.
+
+It’s true that this will lead to a proliferation of methods on some objects, but that has never bothered me. I care about how I interact with my code base through the source. That concerns happen to mix it all together into a big model under the hood is irrelevant to the understanding of the domain model.
+
+In Rails 4, we’re going to invite programmers to use concerns with the default app/models/concerns and app/controllers/concerns directories that are automatically part of the load path.
