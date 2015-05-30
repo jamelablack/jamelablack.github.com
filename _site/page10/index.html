@@ -129,6 +129,33 @@
   
   <div class="post">
     <h1 class="post-title">
+      <a href="/2014/11/01/course2-features/">
+        Rapid Prototyping with Rails: Lesson 3, Feature Building
+      </a>
+    </h1>
+
+    <span class="post-date">01 Nov 2014</span>
+
+    <h2>Review of Building Out a Feature</h2>
+
+<ol>
+<li>Bulid out html link in parital or html.erb</li>
+<li>Build necessary routes
+
+<ul>
+<li>run grep routes to determine which routes are needed</li>
+</ul></li>
+<li>Write code for action in controller
+
+<ul>
+<li>run binding pry to see what parameters are being submitted</li>
+</ul></li>
+</ol>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
       <a href="/2014/10/30/course2-http/">
         Rapid Prototyping with Rails: Lesson 3, HTTP
       </a>
@@ -710,149 +737,6 @@ continously hitting the database.</p>
 <p>Remember - when you want to lock down a peice of functionality, you have to
 1. Remove it from the user interface (links)
 2. Set up a before_action</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/10/22/course2-lesson3/">
-        Rapid Prototyping with Rails: Lesson 3, part 1
-      </a>
-    </h1>
-
-    <span class="post-date">22 Oct 2014</span>
-
-    <h2>Items Covered:</h2>
-
-<ol>
-<li>Quiz Lesson 2 Review</li>
-<li>Asset Pipeline</li>
-<li>Authentication from scratch</li>
-</ol>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">**</span> <span class="n">has_secured_password</span>
-<span class="o">**</span> <span class="n">password_digest</span>
-<span class="o">**</span> <span class="n">bcrypt</span>
-<span class="o">**</span> <span class="n">validations</span>
-<span class="o">**</span> <span class="n">helper</span> <span class="nb">methods</span>
-<span class="o">**</span> <span class="n">before_action</span></code></pre></div>
-
-<h2>Quiz Review</h2>
-
-<ul>
-<li>Remember that the show, update, and delete actions routes require an object and not an (:id).</li>
-</ul>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">post_path</span><span class="p">(</span><span class="n">post</span><span class="p">)</span></code></pre></div>
-
-<ul>
-<li>REST is url convention pattern means that url endpoints are exposed using the resources keyword.</li>
-</ul>
-
-<p>These urls correlate with the CRUD actions on the controller side.</p>
-
-<ul>
-<li>Difference b/w model and non-model backed helpers is that</li>
-</ul>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">-</span> <span class="no">Model</span> <span class="n">backed</span> <span class="n">helpers</span> <span class="n">are</span> <span class="n">tied</span> <span class="n">to</span> <span class="n">an</span> <span class="n">object</span>
-  <span class="o">-</span> <span class="no">There</span> <span class="n">is</span> <span class="n">slight</span> <span class="n">syntactical</span> <span class="ss">difference</span><span class="p">:</span>
-        <span class="o">-</span> <span class="n">non</span><span class="o">-</span><span class="ss">model</span><span class="p">:</span> <span class="n">text_field_tag</span> <span class="ss">:title</span>
-        <span class="o">-</span> <span class="ss">model</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:title</span></code></pre></div>
-
-<p>There is no additional functionality with non-model backed forms.</p>
-
-<p>Non-model forms are used for elements that are not models... such as passwords but model-backed forms are used for CRUD actions for models.</p>
-
-<h2>Asset Pipeline:</h2>
-
-<p>obfuscates your js code to make it unreadable in production (to prevent unallowable use) and then allows for better response time bc
-many browsers can only allow for 10 items to load at a time. Thats why we have to use an asset library that caches</p>
-
-<h3>jammit</h3>
-
-<p>is a good open source obfuscator, and sprockets
-  Functions:
-  1. Obfusgation
-  2. File compression
-  3. Timestamp (Cache Buster)</p>
-
-<p>Can be found under the production application -&gt; public/assets folder
-Goal is to take all the js files, obfusgate, jam it into one file under the public/assets file</p>
-
-<h3>Cache buster</h3>
-
-<p>is the string tied to the asset level or DNS level
-  -different browsers have diff means of caching and thats why Google chrome is considered to be
-  faster... it&#39;s because Chrome caches agressively. The cachebuster gives a reference number in which the browser and
-  application can manage/track caches to allow refresh of new information or changes.</p>
-
-<p>Application.js is a manifesto file where the obfuscated js code resides (using Sprockets as the asset manager). Same goes for Application.scss
-So how/does Sprockets compile your files under assets and places them under public/assests folder in production:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">rake</span> <span class="ss">assets</span><span class="p">:</span><span class="n">precompile</span></code></pre></div>
-
-<h3>There are two asset management approaches:</h3>
-
-<ol>
-<li>As a development team,every time a change is made, run rake assets:precompile
-to make changes to static assests, commit changes and move those files to our production</li>
-<li>We want to delete all files under public and when we deploy, we will run rake assets:precompile at deployment only and then that will
-take our code and turn into static assets.</li>
-</ol>
-
-<p>###Which is better:
- Option 2 is better but your deployment could take longer (maybe 5 mins)
- We will be following Option 2 and waiting to precompile bc Heroku does it for us.
- We should delete the public/assets folder. If we don&#39;t, Heroku will delete the rake assets:precompile command
- and when changes are made, they will not be reflected in your production code.</p>
-
-<p>Another common problem is when running locally, Js files will be picked in both the application.js file
- and the assets folder therefore in our case.. when we use js to build our voting functionality, you will have to vote twice
- This is all solved if you remove your public/assets directory</p>
-
-<h2>How password authentication works!</h2>
-
-<p>Passwords should never be saved in your application, in fact, your application should never know your password
-and shouldn&#39;t be able to send you your &#39;forgotten password&#39; via email.</p>
-
-<p>How passwords are saved is through a one-way hash. We hash the string (password) into some one-way
-indecipherable hash token. When you attempt to enter in your set password, the string will also be converted
-into a one-way indecipherable has and its determined if they match.</p>
-
-<p>This password method is vulnerable to dictionary attacks/rainbow attacks, that&#39;s why they say pick a password with a capital letter
-and a special character.</p>
-
-<ol>
-<li>So we need a column added to the user table to store the hash token and we will call that, password_digest:</li>
-</ol>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">-</span> <span class="no">In</span> <span class="n">terminal</span> <span class="o">-</span> <span class="n">rails</span> <span class="n">g</span> <span class="n">migration</span> <span class="n">add_password_to_users</span>
-  <span class="n">_</span> <span class="no">Open</span> <span class="n">migration</span> <span class="ss">file</span><span class="p">:</span>
-      <span class="o">-</span> <span class="k">def</span> <span class="nf">change</span>
-        <span class="n">add_column</span> <span class="ss">:users</span><span class="p">,</span> <span class="ss">:password_digest</span><span class="p">,</span> <span class="ss">:string</span>
-  <span class="o">-</span> <span class="n">rake</span> <span class="ss">db</span><span class="p">:</span><span class="n">migrate</span>
-<span class="mi">2</span><span class="o">.</span> <span class="no">Go</span> <span class="n">to</span> <span class="no">User</span> <span class="n">model</span> <span class="ow">and</span> <span class="n">add</span> <span class="n">has_secure_password</span>
-<span class="mi">3</span><span class="o">.</span> <span class="no">Add</span> <span class="s1">&#39;bcrypt-ruby&#39;</span> <span class="n">to</span> <span class="n">your</span> <span class="n">gemfile</span> <span class="o">-</span> <span class="n">contains</span> <span class="n">the</span> <span class="n">complex</span> <span class="n">algorithms</span> <span class="n">to</span> <span class="n">create</span> <span class="n">our</span> <span class="n">one</span><span class="o">-</span><span class="n">way</span> <span class="nb">hash</span>
-    <span class="no">Use</span> <span class="s1">&#39;bcrypt-ruby&#39;</span><span class="p">,</span> <span class="o">=</span><span class="mi">3</span><span class="o">.</span><span class="mi">0</span><span class="o">.</span><span class="mi">1</span> <span class="k">if</span> <span class="n">you</span> <span class="n">have</span> <span class="n">installation</span> <span class="n">problems</span> <span class="n">during</span> <span class="n">bundle</span> <span class="n">intall</span>
-
-<span class="n">has_secure_password</span>
-<span class="mi">4</span><span class="o">.</span> <span class="n">has_secure_password</span> <span class="n">has</span> <span class="n">validations</span> <span class="n">functionality</span> <span class="n">where</span> <span class="n">password</span> <span class="n">cannot</span> <span class="n">be</span> <span class="n">blank</span><span class="p">,</span> <span class="n">so</span> <span class="n">add</span> <span class="ss">validations</span><span class="p">:</span> <span class="kp">false</span>
-        <span class="n">has_secure_password</span> <span class="ss">validations</span><span class="p">:</span> <span class="kp">false</span>
-
-<span class="ss">Tip</span><span class="p">:</span> <span class="no">Use</span> <span class="n">gems</span> <span class="n">that</span> <span class="k">do</span> <span class="n">one</span> <span class="n">thing</span> <span class="n">really</span> <span class="n">well</span> <span class="ow">not</span> <span class="n">multiple</span> <span class="n">things</span><span class="o">.</span>
-
-<span class="mi">5</span><span class="o">.</span> <span class="n">has_secure_password</span> <span class="n">gives</span> <span class="n">us</span> <span class="n">multiple</span> <span class="nb">methods</span> <span class="n">we</span> <span class="n">can</span> <span class="n">now</span> <span class="ss">use</span><span class="p">:</span>
-      <span class="mi">1</span><span class="o">.</span> <span class="n">password</span> <span class="ss">setter</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="s2">&quot;apple&quot;</span><span class="p">,</span> <span class="k">when</span> <span class="n">run</span> <span class="n">u</span><span class="o">.</span><span class="n">save</span><span class="p">,</span> <span class="n">you</span> <span class="n">will</span> <span class="n">see</span> <span class="n">that</span> <span class="n">password</span> <span class="n">is</span> <span class="n">just</span> <span class="n">a</span>
-      <span class="n">virtual</span> <span class="n">attribute</span><span class="p">,</span> <span class="ow">and</span> <span class="s2">&quot;apple&quot;</span> <span class="n">was</span> <span class="n">saved</span> <span class="n">to</span> <span class="n">the</span> <span class="n">password_digest</span> <span class="n">column</span> <span class="ow">and</span> <span class="n">encrypted</span> <span class="n">using</span> <span class="n">bcrypt</span><span class="o">.</span>
-      <span class="mi">2</span><span class="o">.</span> <span class="no">There</span> <span class="n">is</span> <span class="no">NO</span> <span class="n">getter</span><span class="p">,</span> <span class="n">so</span> <span class="n">you</span> <span class="n">can</span><span class="s1">&#39;t run u.password and expect to get the value.</span>
-<span class="s1">      3. But there is method called u.authenticate(&#39;</span><span class="n">password</span><span class="err">&#39;</span><span class="p">),</span> <span class="n">where</span> <span class="n">you</span> <span class="n">pass</span> <span class="k">in</span> <span class="n">a</span> <span class="n">password</span> <span class="n">that</span> <span class="n">you</span> <span class="n">are</span> <span class="n">trying</span> <span class="n">to</span> <span class="n">check</span> <span class="n">against</span>
-      <span class="k">in</span> <span class="n">the</span> <span class="n">database</span><span class="o">.</span>
-       <span class="o">-</span> <span class="no">If</span> <span class="n">the</span> <span class="n">password</span> <span class="n">is</span> <span class="ow">not</span> <span class="n">correct</span><span class="p">,</span> <span class="kp">false</span> <span class="n">will</span> <span class="n">be</span> <span class="n">returned</span><span class="o">.</span>
-       <span class="o">-</span> <span class="no">If</span> <span class="n">correct</span><span class="p">,</span> <span class="n">the</span> <span class="n">user</span> <span class="n">will</span> <span class="n">be</span> <span class="n">returned</span><span class="o">.</span>
-       <span class="no">Authenticate</span> <span class="n">is</span> <span class="n">an</span> <span class="n">instance</span> <span class="nb">method</span> <span class="n">being</span> <span class="n">called</span> <span class="n">on</span> <span class="n">the</span> <span class="no">User</span> <span class="k">class</span></code></pre></div>
-
-<p>-</p>
 
   </div>
   

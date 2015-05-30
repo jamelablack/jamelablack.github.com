@@ -129,6 +129,115 @@
   
   <div class="post">
     <h1 class="post-title">
+      <a href="/2014/09/21/course1-lesson4/">
+        Intro to Ruby & Web Dev: Lesson 3
+      </a>
+    </h1>
+
+    <span class="post-date">21 Sep 2014</span>
+
+    <h1>Items covered:</h1>
+
+<ol>
+<li>Ajax</li>
+<li>Un-obstrusive Javascript</li>
+<li>Jquery</li>
+<li>Deployment Options</li>
+</ol>
+
+<h2>Ajax</h2>
+
+<p>is used in a scernario when elements on the page are changing but you only want thos elements
+to change rather reload (reconstituting the state of your application) each time.
+Pages can be computationally expensive and create a bad user interface.
+Ajax will issue the request behind the scences and the when the response comes back, your Javascript code must handle that data.
+This is using unobstrusive Javascript. For example, if you have likes on your Facebook page, we will want
+to see an increment in the number of likes and the like button go from &quot;like&quot; to &quot;unlike&quot;.
+However, for our use case, only the URL won&#39;t change.</p>
+
+<h2>Un-obsturive Javascript</h2>
+
+<p>Back in the day, Js used to be added directly to the HTML but now a js file is created just like
+the stylesheet.css file added to the layout.erb
+JQuery is now the defacto Js Library.</p>
+
+<div class="highlight"><pre><code class="language-html" data-lang="html">You must add the <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;/application.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span> to the layout.erb
+Google hosts Jquery for you!
+1.x snippet: <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span></code></pre></div>
+
+<ul>
+<li># is an anchor tag
+##JQuery
+.class - same style
+#id - unique element on your DOM</li>
+</ul>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="nx">funtion</span><span class="p">(){</span>
+    <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;element&quot;</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="nx">funtion</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">$</span><span class="p">(</span><span class="err">#</span><span class="nx">player</span><span class="p">)</span><span class="nx">_area</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="s1">&#39;background-color&#39;</span><span class="p">,</span> <span class="s1">&#39;yellow&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="p">;</span><span class="o">===&gt;</span> <span class="k">do</span> <span class="nx">not</span> <span class="nx">re</span><span class="o">-</span><span class="nx">execute</span>
+      <span class="p">});</span>
+  <span class="p">});</span></code></pre></div>
+
+<p>un-obstrusive Js allows you to hijack the webpage.
+You shouldn&#39;t create elaborate pages with a bunch of event-listeners.
+Using JQuery in this manner can be hard to manage. So if you&#39;re looking to create an enriched
+user-experience, you should use Angular, Backbone, and/or Ember.
+So more like dashes and sprinkles of Jquery rather than overload of JQuery</p>
+
+<p>Hijacking (Adding JQuery to) the &quot;hit-button&quot;</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#hit_form input&#39;</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;hit button clicked!&#39;</span><span class="p">);</span>
+    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">});</span>
+  <span class="p">});</span></code></pre></div>
+
+<p>use console.log (to inspect/debug in Firefox)</p>
+
+<p>Using Ajax</p>
+
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="err">#</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#hit_form input&#39;</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="err">#</span><span class="nx">must</span> <span class="nx">be</span> <span class="nx">rebind</span> <span class="kd">with</span> <span class="nx">the</span> <span class="nx">input</span> <span class="nx">again</span> <span class="nx">after</span> <span class="nx">indcating</span> <span class="nx">layout</span> <span class="kc">false</span>
+    <span class="nx">$document</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="nx">click</span><span class="p">,</span> <span class="s1">&#39;#hit_form input&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">())</span> <span class="p">{</span>
+
+    <span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span> <span class="err">#</span><span class="k">this</span> <span class="nx">is</span> <span class="nx">a</span> <span class="nx">hash</span><span class="p">,</span> <span class="nx">much</span> <span class="nx">include</span> <span class="nx">comma</span> <span class="nx">after</span> <span class="nx">entry</span>
+      <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+      <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/game/player/hit&#39;</span>
+      <span class="err">#</span><span class="nx">data</span><span class="o">:</span> <span class="err">#</span><span class="nx">also</span> <span class="nx">known</span> <span class="nx">as</span> <span class="nx">parameters</span>
+      <span class="p">)}.</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span> <span class="p">{</span>
+        <span class="err">#</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#game&#39;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span> <span class="err">#</span><span class="nx">create</span> <span class="nx">div</span> <span class="k">for</span> <span class="nx">game</span><span class="p">.</span> <span class="nx">Can</span><span class="s1">&#39;t use HTML b/c its creating a duplicate game div id</span>
+<span class="s1">        $(&#39;</span><span class="err">#</span><span class="nx">game</span><span class="err">&#39;</span><span class="p">).</span><span class="nx">replaceWith</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
+        <span class="p">});</span>
+      <span class="p">});</span>
+
+    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">});</span>
+  <span class="p">});</span></code></pre></div>
+
+<h2>Deployment Options</h2>
+
+<ol>
+<li>Self-managed</li>
+<li>Shared host (no longer popular)</li>
+<li>VPS (most popular)
+
+<ul>
+<li>AWS, Rackspace, Linode, Digital Ocean</li>
+<li>must have sys admin knowledge</li>
+</ul></li>
+<li><p>Dedicated Server (hardware) - most expensive</p></li>
+<li><p>Managed - no sys admin needs, no access to file system</p></li>
+<li><p>Heroku</p></li>
+<li><p>Google App Engine</p></li>
+<li><p>Ninefold</p></li>
+</ol>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
       <a href="/2014/09/14/course1-lesson3/">
         Intro to Ruby & Web Dev: Lesson 3
       </a>
@@ -574,75 +683,6 @@ Check for winner</li>
 <span class="k">else</span>
   <span class="nb">puts</span> <span class="s2">&quot;It&#39;s a tie!&quot;</span>
 <span class="k">end</span></code></pre></div>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/09/10/the-object-model/">
-        Intro to Ruby & Web Dev: The Object Model
-      </a>
-    </h1>
-
-    <span class="post-date">10 Sep 2014</span>
-
-    <h2>What is OOP?</h2>
-
-<p>A way for progammers to deal with large, complex systems.
-One small change could be catastrophic in terms of the impact it could have on relevant parts within the system.
-Prorgrammers needed to create containers for code that could be changed without impacting the entire program. To section off code that performs certain procedures so that it became an interation of many small parts as opposed to one massive blob of code dependenies.</p>
-
-<h2>Encapsulation</h2>
-
-<p>is hiding peices of functionality and making it unavailable to the rest of the code base. It is form of data protection so that the data cannot change or be manipulated without intention. This allows your code to achieve new levels of complexity creating objects and exposin interfaces (i.e. methods) that allow these methods to interact.</p>
-
-<h2>Polymorphism</h2>
-
-<p>ability for data to be represented as many different types.
-Allows pre-written code to be used for different purposes.</p>
-
-<h2>Inheritance</h2>
-
-<p>class inherits the behavior of another class -- referred to as the superclass.
-This gives Ruby Programmers the ability to define large usabilty and smaller Subclass, with more defined, detailed behavior.</p>
-
-<h2>Modules</h2>
-
-<p>Modules are similar to classes in the they contain shared behavior, however you cannot create an object with a module. A module, must be mixed in with a class using the reserved word: include. This is called a &quot;mixin&quot; and after used in a module, the behanviors declared in the module are available to the class and its objects.</p>
-
-<h2>What are objects?</h2>
-
-<p>In Ruby, everything is an object.
-Objects are created from classes.</p>
-
-<h3>Class</h3>
-
-<p>Ruby defines attributes and behaviors of its objects in classes</p>
-
-<h3>Instantation</h3>
-
-<p>creating an object/instance of a class</p>
-
-<h3>Module</h3>
-
-<p>A collection of behaviors that useable by other classes, called mixins using the word &quot;include&quot;</p>
-
-<p>Example:
-Create a class, create an object, use a mixin.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">module</span> <span class="nn">Speak</span>
-  <span class="k">def</span> <span class="nf">speak</span><span class="p">(</span><span class="n">sound</span><span class="p">)</span>
-    <span class="nb">puts</span> <span class="c1">#{sound}</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-
-<span class="k">class</span> <span class="nc">HumanBeing</span>
-  <span class="kp">include</span> <span class="no">Speak</span>
-<span class="k">end</span>
-
-<span class="n">jamela</span> <span class="o">=</span> <span class="no">Humanbeing</span><span class="o">.</span><span class="n">new</span>
-
-<span class="n">jamela</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s1">&#39;Hello!&#39;</span><span class="p">)</span></code></pre></div>
 
   </div>
   

@@ -129,6 +129,29 @@
   
   <div class="post">
     <h1 class="post-title">
+      <a href="/2015/01/17/coures3-technical-debt/">
+        Build Robust & Production Quality Applications - Lesson 1: Technical Debt
+      </a>
+    </h1>
+
+    <span class="post-date">17 Jan 2015</span>
+
+    <p>A typically response to testing is &quot;I don&#39;t have time, I have to meet my deadline&quot;
+As your project size increases, you technical debt increases to the nth degree as time passes.</p>
+
+<p>The problem is that devs don&#39;t remember the code the wrote 3 months ago, so they have to do a &quot;context switch&quot;
+and recall why they wrote the code they did. This often times can have a cascading effect of issues.</p>
+
+<h3>Rescue Projects:</h3>
+
+<p>That is why projects in this case are called rescue projects, bc they have to call in outside help to
+fix their project. One of the first steps an outside company does to save rescue projects is create a test suite.
+This is the pay off for the technical debt.</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
       <a href="/2015/01/15/course3-rationale-for-testing/">
         Build Robust & Production Quality Applications - Lesson 1: Rational for Testing
       </a>
@@ -380,91 +403,6 @@ stay there... therefore knowledge is lost.</li>
  <span class="k">end</span></code></pre></div>
 
 <h4>Step 4. Begin testing videos controller spec</h4>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/12/05/course3-from-design-to-dev/">
-        Build Robust & Production Quality Applications: Precourse, From Design to Development
-      </a>
-    </h1>
-
-    <span class="post-date">05 Dec 2014</span>
-
-    <h2>Items Covered:</h2>
-
-<ol>
-<li>Slicing Mockups</li>
-<li>SASS</li>
-<li>Haml</li>
-</ol>
-
-<h2>How to serve sliced mockups pages</h2>
-
-<h3>Slicing with UI Controllers</h3>
-
-<p>We will use a UI controller that will point to pages that we need, such as &quot;sign in&quot; page, &quot;account page&quot;.
-Currenty the data and images in these layouts/templates are hardcoded with data and images (nothing is actually linked to the database)</p>
-
-<p>Because we don&#39;t want these templates accessible in prod, we have a before filter to ensure that that&#39;s the case:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#ui_controllers.rb</span>
-<span class="k">class</span> <span class="nc">UiController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
-  <span class="n">before_filter</span> <span class="k">do</span>
-    <span class="n">redirect_to</span> <span class="ss">:root</span> <span class="k">if</span> <span class="no">Rails</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">production?</span>
-  <span class="k">end</span>
-
-  <span class="n">layout</span> <span class="s2">&quot;application&quot;</span>
-
-  <span class="k">def</span> <span class="nf">index</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<h3>In the routes:</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#routes.rb</span>
-<span class="no">Myflix</span><span class="o">::</span><span class="no">Application</span><span class="o">.</span><span class="n">routes</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">do</span>
-  <span class="n">get</span> <span class="s1">&#39;ui/:action)&#39;</span> <span class="p">,</span> <span class="ss">controller</span><span class="p">:</span> <span class="s1">&#39;ui&#39;</span>
-<span class="k">end</span></code></pre></div>
-
-<h3>UI Index</h3>
-
-<p>So we want our index action to show all views available with links containing (&#39;html.haml&#39;) unless its index:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">section</span><span class="o">.</span><span class="n">ui</span><span class="o">-</span><span class="n">index</span>
-  <span class="o">%</span><span class="n">ul</span>
-    <span class="o">-</span> <span class="no">Dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;app/views/ui/*.html.haml&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">file</span><span class="o">|</span>
-      <span class="o">-</span> <span class="n">wireframe</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="s1">&#39;.html.haml&#39;</span><span class="p">)</span>
-      <span class="o">-</span>  <span class="k">unless</span> <span class="n">wireframe</span> <span class="o">==</span> <span class="s1">&#39;index&#39;</span> <span class="o">||</span> <span class="n">wireframe</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sr">/^_/</span><span class="p">)</span>
-        <span class="o">%</span><span class="n">li</span><span class="o">=</span> <span class="n">link_to</span> <span class="n">wireframe</span><span class="o">.</span><span class="n">titleize</span><span class="p">,</span> <span class="ss">action</span><span class="p">:</span> <span class="n">wireframe</span> <span class="k">unless</span> <span class="n">wireframe</span> <span class="o">==</span> <span class="s1">&#39;index&#39;</span></code></pre></div>
-
-<ul>
-<li>To read more about UI Controllers, checkout this blog post from hashrocket:</li>
-</ul>
-
-<h2>Stylesheets</h2>
-
-<h3>SASS</h3>
-
-<p>In this project, we will use application.css (manifest file) that will pull in all of our required files (asset pipline). You had several options - some devs like to use 1 sass/css stylesheet for their entire app, in this case, we broke it out according to the page (user sign in, billing, etc.)</p>
-
-<p>There are two options when using sass, sass and scss. Scss is more verobse but desgined to be compatible with vanilla css. In this case, we are using sass because its less verobse.</p>
-
-<ul>
-<li>To read more about Sass:<a href="http://sass-lang.com/guide">Sass Documentation</a></li>
-</ul>
-
-<h2>Views</h2>
-
-<h3>HAML</h3>
-
-<p>We are also using Haml instead of ERB. Haml appears to be more succint because it uses indentation instead of closing tags</p>
-
-<ul>
-<li><p>To read more about Haml: <a href="http://haml.info/docs.html">Haml Documentation</a></p></li>
-<li><p>To read more about the asset pipeline: <a href="http://guides.rubyonrails.org/asset_pipeline.html#coding-links-to-assets">Rails Asset Pipeline</a></p></li>
-</ul>
 
   </div>
   

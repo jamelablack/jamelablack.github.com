@@ -4,13 +4,94 @@
  <title>grit| commit</title>
  <link href="http://jamelablack.github.io/atom.xml" rel="self"/>
  <link href="http://jamelablack.github.io/"/>
- <updated>2015-05-27T12:01:22-04:00</updated>
+ <updated>2015-05-29T23:48:30-04:00</updated>
  <id>http://jamelablack.github.io</id>
  <author>
    <name>Jam Black</name>
    <email></email>
  </author>
 
+ 
+ <entry>
+   <title>POODR - Ch1: Object Oriented Design</title>
+   <link href="http://jamelablack.github.io/2015/04/20/course3-POODR-ch1/"/>
+   <updated>2015-04-20T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/04/20/course3-POODR-ch1</id>
+   <content type="html">&lt;p&gt;Object Oriented Design requires that you shift from thinking about the world as a collection of predefined procedures to modeling th world as a series of messages that are past between objects.&lt;/p&gt;
+
+&lt;h2&gt;In Praise of Design&lt;/h2&gt;
+
+&lt;p&gt;Desgin really doesn&amp;#39;t become a concern if nothing ever changes (requirements). But something always changes and it is the need for change that makes desugn matter.&lt;/p&gt;
+
+&lt;h3&gt;Why is Change Hard?&lt;/h3&gt;
+
+&lt;p&gt;Object oriented applications are made of partst that interact to produce the behavior of the whole. The parts are objects, interactions are emobodied in the messages that pass between them.&lt;/p&gt;
+
+&lt;p&gt;OOD is about managing dependencies. It&amp;#39;s a set of coding techniques that arrange dependencies such that objects can tolerate change. Changing one object forces change upon its collabortors.&lt;/p&gt;
+
+&lt;p&gt;However when objects know too much, they have expectations about the world in which they reside. And these expectations contstrain them.&lt;/p&gt;
+
+&lt;h2&gt;A Practical Definition of Design&lt;/h2&gt;
+
+&lt;p&gt;Design is an art of arranging code. Design has two components:
+You must not only write code for the feature you plan to deliver today, you must also create code that is amendable to being changed later.&lt;/p&gt;
+
+&lt;p&gt;Design that is that anticipates specific future requirements almost always ends badly. It shouldn&amp;#39;t guess hte future, but rather perserves options for accomodating the future, leaving you romm to move.&lt;/p&gt;
+
+&lt;p&gt;Primary goal is to allow you to desiglm later, and its primary goal is reduce the cost of change.&lt;/p&gt;
+
+&lt;h3&gt;Design Principles&lt;/h3&gt;
+
+&lt;p&gt;SOLID stands for Single Responsibilty, Open-Closed, Liskov Substitution, Interface Segregation, &amp;amp; Dependancy Inversion&lt;/p&gt;
+
+&lt;p&gt;DRY - Don&amp;#39;t Repeat Yourself&lt;/p&gt;
+
+&lt;p&gt;LoD - Law of Demeter&lt;/p&gt;
+
+&lt;h3&gt;Design Patterns&lt;/h3&gt;
+
+&lt;p&gt;give us the power to name common problems and solve those problems in common ways, allowing us to big fuzzy things into focus.&lt;/p&gt;
+
+&lt;h3&gt;The Act of Design&lt;/h3&gt;
+
+&lt;p&gt;How design fails:
+1. Lack of it - programmers typically now little about design
+2. Under-designed - lack of knowledge of design principles
+3. Over-design - seasoned devs may disgn relentlessly
+4. Object Oriented Desgin fails when the act of design is seperated from the act of programming. The feedback loop should be timely and incremental; the iterative techniques of the Agile Development are perfect for well-designd OO applications.&lt;/p&gt;
+
+&lt;h3&gt;When to Design&lt;/h3&gt;
+
+&lt;p&gt;Agile believes that the mot cost-effective way to produce what customers&amp;#39;s really want is to collaborate with the, building software one bit at atime such that each deivered bit has the opprotunity to alter ideas about the next.&lt;/p&gt;
+
+&lt;p&gt;There is no need to do BUFD (Big Upfront Design)&lt;/p&gt;
+
+&lt;p&gt;The Agile Process gaurantees change and yu ability to do so depneds on your design (sinple, flexibe, and malleable code).&lt;/p&gt;
+
+&lt;h3&gt;Judging Design&lt;/h3&gt;
+
+&lt;p&gt;Back in the day, design was jusged by the number of lines of code (sometimes referred to as SLOC). The ultimate software metric would be cost per feature over the time interval the matters.&lt;/p&gt;
+
+&lt;p&gt;Failure to design increases your technical debt.&lt;/p&gt;
+
+&lt;p&gt;Your decision about design depends on two things.:
+your skills and your timeframe.&lt;/p&gt;
+
+&lt;h2&gt;A brief introduction to Object Oriented Programming:&lt;/h2&gt;
+
+&lt;p&gt;OO applications are made of objects and messages that pass between them.&lt;/p&gt;
+
+&lt;h3&gt;Procedural Langauges&lt;/h3&gt;
+
+&lt;p&gt;is a non-object oriented progamming technique. Every possible data type and po]eration already exists, you can&amp;#39;t make up wholly new operations or brand new data types.&lt;/p&gt;
+
+&lt;h2&gt;Object Oriented Programming&lt;/h2&gt;
+
+&lt;p&gt;Ruby has a string object instead of a string data type. Because Ruby string objects supply their own operations, Ruby doesn&amp;#39;t have to know anything in particular about the string data type but rather it only need to know how to send object messages.&lt;/p&gt;
+
+&lt;p&gt;Ruby allows to you to provide classes tha essentially blueprints for the consturction of similar objects. A class defines methods (definitions of behavior) and attributes(definitons of variables), while also allowing you to instantiate new objects with same operations or behavior.&lt;/p&gt;
+</content>
+ </entry>
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 6: Mailgun</title>

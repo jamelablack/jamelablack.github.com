@@ -129,6 +129,77 @@
   
   <div class="post">
     <h1 class="post-title">
+      <a href="/2015/03/15/course3-parameter-naming-conventions/">
+        Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions
+      </a>
+    </h1>
+
+    <span class="post-date">15 Mar 2015</span>
+
+    <h2>Parameter Naming Conventions</h2>
+
+<p>Visit Rails Guides&#39; <a href="http://guides.rubyonrails.org/form_helpers.html#understanding-parameter-naming-conventions.">Parameter Naming Conventions</a>
+Use that as the starting point to construct the params that hit the server.</p>
+
+<p>As you&#39;ve seen in the previous sections, values from forms can be at the top level of
+the params hash or nested in another hash. For example, in a standard create action for a
+Person model, params[:person] would usually be a hash of all the attributes for the person to create.
+The params hash can also contain arrays, arrays of hashes and so on.</p>
+
+<p>Fundamentally HTML forms don&#39;t know about any sort of structured data, all they generate
+is name-value pairs, where pairs are just plain strings. The arrays and hashes you see
+in your application are the result of some parameter naming conventions that Rails uses.</p>
+
+<h3>Basic Structures</h3>
+
+<p>The two basic structures are arrays and hashes. Hashes mirror the syntax used for accessing the value in params. For example, if a form contains:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">input</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;person_name&quot;</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;person[name]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;Henry&quot;</span><span class="o">/&gt;</span></code></pre></div>
+
+<p>the params hash will contain</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="p">{</span><span class="s1">&#39;person&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Henry&#39;</span><span class="p">}}</span></code></pre></div>
+
+<p>and params[:person][:name] will retrieve the submitted value in the controller.</p>
+
+<p>Hashes can be nested as many levels as required, for example:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">input</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;person_address_city&quot;</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;person[address][city]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;New York&quot;</span><span class="o">/&gt;</span></code></pre></div>
+
+<p>will result in the params hash being</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="p">{</span><span class="s1">&#39;person&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="s1">&#39;address&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="s1">&#39;city&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;New York&#39;</span><span class="p">}}}</span></code></pre></div>
+
+<p>Normally Rails ignores duplicate parameter names. If the parameter name contains
+an empty set of square brackets [] then they will be accumulated in an array.
+If you wanted users to be able to input multiple phone numbers, you
+could place this in the form:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">input</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;person[phone_number][]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">input</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;person[phone_number][]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">input</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;person[phone_number][]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="o">/&gt;</span></code></pre></div>
+
+<p>This would result in params[:person][:phone_number] being an array containing the inputted phone numbers.</p>
+
+<h3>Combining Them</h3>
+
+<p>We can mix and match these two concepts. One element of a hash might be an array as in the previous example,
+or you can have an array of hashes. For example, a form might let you create any number of addresses by repeating the following form fragment</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">input</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;addresses[][line1]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">input</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;addresses[][line2]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="n">input</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;addresses[][city]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="o">/&gt;</span></code></pre></div>
+
+<p>This would result in params[:addresses] being an array of hashes with keys line1, line2 and city.
+Rails decides to start accumulating values in a new hash whenever it encounters an input name that
+already exists in the current hash.</p>
+
+<p>There&#39;s a restriction, however, while hashes can be nested arbitrarily, only one level of &quot;arrayness&quot; is allowed. Arrays can usually be replaced by hashes; for example, instead of having an array of model objects, one can have a hash of model objects keyed by their id, an array index or some other parameter.</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
       <a href="/2015/03/10/course3-update-review-in-queue/">
         Build Robust & Production Quality Applications - Lesson 4: Update Review in Queue
       </a>
@@ -676,56 +747,6 @@ two accounts where you can only have a deposit if the withdrawal succeeded and v
 Transactions enforce the integrity of the database and guard the data against program errors or database break-downs.
 So basically you should use transaction blocks whenever you have a number of statements that must be executed together
 or not at all.</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/02/28/course3-faker/">
-        Build Robust & Production Quality Applications - Lesson 2: Generate Fake Data with Faker
-      </a>
-    </h1>
-
-    <span class="post-date">28 Feb 2015</span>
-
-    <h2>Use Faker to Generate Fake Data</h2>
-
-<p>Creating fake data when your model has uniqueness validations will throw errors
-if your data is not unique.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="k">do</span>
-  <span class="nb">name</span> <span class="p">{</span> <span class="s2">&quot;cooking&quot;</span> <span class="p">}</span>
-  <span class="n">user</span>
-<span class="k">end</span></code></pre></div>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span> <span class="k">do</span>
-  <span class="n">email</span> <span class="p">{</span> <span class="s2">&quot;joe@example.com&quot;</span><span class="p">}</span> <span class="c1">#This will throw an error eventually if email record already exists.</span>
-<span class="k">end</span></code></pre></div>
-
-<h3>Examples</h3>
-
-<p>Creating a category:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:category</span><span class="p">)</span> <span class="k">do</span>
-  <span class="nb">name</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Name</span><span class="o">.</span><span class="n">name</span> <span class="p">}</span>
-<span class="k">end</span></code></pre></div>
-
-<p>Creating a video:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:video</span><span class="p">)</span> <span class="k">do</span>
-  <span class="n">title</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Lorem</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="p">}</span>
-  <span class="n">description</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Lorem</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="p">}</span>
-<span class="k">end</span></code></pre></div>
-
-<p>Creating an invitation:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">)</span> <span class="k">do</span>
-  <span class="n">recipient_name</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Name</span><span class="o">.</span><span class="n">name</span> <span class="p">}</span>
-  <span class="n">recipient_email</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Internet</span><span class="o">.</span><span class="n">email</span> <span class="p">}</span>
-  <span class="n">message</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Lorem</span><span class="o">.</span><span class="n">paragraphs</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="p">}</span>
-<span class="k">end</span></code></pre></div>
-
-<p>Read more: <a href="https://github.com/stympy/faker">Faker Docs</a></p>
 
   </div>
   

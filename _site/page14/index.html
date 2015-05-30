@@ -129,6 +129,75 @@
   
   <div class="post">
     <h1 class="post-title">
+      <a href="/2014/09/10/the-object-model/">
+        Intro to Ruby & Web Dev: The Object Model
+      </a>
+    </h1>
+
+    <span class="post-date">10 Sep 2014</span>
+
+    <h2>What is OOP?</h2>
+
+<p>A way for progammers to deal with large, complex systems.
+One small change could be catastrophic in terms of the impact it could have on relevant parts within the system.
+Prorgrammers needed to create containers for code that could be changed without impacting the entire program. To section off code that performs certain procedures so that it became an interation of many small parts as opposed to one massive blob of code dependenies.</p>
+
+<h2>Encapsulation</h2>
+
+<p>is hiding peices of functionality and making it unavailable to the rest of the code base. It is form of data protection so that the data cannot change or be manipulated without intention. This allows your code to achieve new levels of complexity creating objects and exposin interfaces (i.e. methods) that allow these methods to interact.</p>
+
+<h2>Polymorphism</h2>
+
+<p>ability for data to be represented as many different types.
+Allows pre-written code to be used for different purposes.</p>
+
+<h2>Inheritance</h2>
+
+<p>class inherits the behavior of another class -- referred to as the superclass.
+This gives Ruby Programmers the ability to define large usabilty and smaller Subclass, with more defined, detailed behavior.</p>
+
+<h2>Modules</h2>
+
+<p>Modules are similar to classes in the they contain shared behavior, however you cannot create an object with a module. A module, must be mixed in with a class using the reserved word: include. This is called a &quot;mixin&quot; and after used in a module, the behanviors declared in the module are available to the class and its objects.</p>
+
+<h2>What are objects?</h2>
+
+<p>In Ruby, everything is an object.
+Objects are created from classes.</p>
+
+<h3>Class</h3>
+
+<p>Ruby defines attributes and behaviors of its objects in classes</p>
+
+<h3>Instantation</h3>
+
+<p>creating an object/instance of a class</p>
+
+<h3>Module</h3>
+
+<p>A collection of behaviors that useable by other classes, called mixins using the word &quot;include&quot;</p>
+
+<p>Example:
+Create a class, create an object, use a mixin.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">module</span> <span class="nn">Speak</span>
+  <span class="k">def</span> <span class="nf">speak</span><span class="p">(</span><span class="n">sound</span><span class="p">)</span>
+    <span class="nb">puts</span> <span class="c1">#{sound}</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">HumanBeing</span>
+  <span class="kp">include</span> <span class="no">Speak</span>
+<span class="k">end</span>
+
+<span class="n">jamela</span> <span class="o">=</span> <span class="no">Humanbeing</span><span class="o">.</span><span class="n">new</span>
+
+<span class="n">jamela</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s1">&#39;Hello!&#39;</span><span class="p">)</span></code></pre></div>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
       <a href="/2014/09/07/course1-lesson2/">
         Intro to Ruby & Web Dev: Lesson 2
       </a>

@@ -129,6 +129,255 @@
   
   <div class="post">
     <h1 class="post-title">
+      <a href="/2014/11/15/course2-lesson4/">
+        Rapid Prototyping with Rails: Lesson 4, part 3
+      </a>
+    </h1>
+
+    <span class="post-date">15 Nov 2014</span>
+
+    <h2>Items Covered:</h2>
+
+<ol>
+<li>voteable validations (ajax and regular flows)</li>
+<li>exposing APIs</li>
+<li>extracting common logic from models</li>
+<li>creating/publishing gem</li>
+</ol>
+
+<h2>Voteable Validation:</h2>
+
+<p>We want to prevent users from voting on the same post or comment twice, but at the
+same time, allow them to vote on multiple posts, comments, etc.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Post</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="n">validates_uniqueness_of</span> <span class="ss">:creator</span><span class="p">,</span> <span class="ss">scope</span><span class="p">:</span> <span class="ss">:voteable</span>
+<span class="k">end</span></code></pre></div>
+
+<h2>Showing Js Errors when voting</h2>
+
+<p>You have two options:
+1. Alterting out (currently implemented)
+2. Traverse the DOM</p>
+
+<p>Just like with using <span id> to change the number of votes, we can also create
+a div.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#posts/_post.html.erb</span>
+  <span class="o">&lt;</span><span class="n">div</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;post_vote_error_&lt;%= post.to_param %&gt;&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;alert alert-error&quot;</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;display: none&quot;</span><span class="o">&gt;</span>
+    <span class="no">You</span> <span class="n">can</span> <span class="n">only</span> <span class="n">vote</span> <span class="n">once</span><span class="o">.</span>
+  <span class="o">&lt;</span><span class="sr">/div&gt;</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#posts/vote.js.erb</span>
+  <span class="k">if</span> <span class="vi">@vote</span><span class="o">.</span><span class="n">valid?</span> <span class="sx">%&gt;</span>
+<span class="sx">    (&#39;#post_&lt;%= @post.to_param %&gt;</span><span class="n">_votes</span><span class="s1">&#39;).html(&#39;</span><span class="o">&lt;</span><span class="sx">%= @post.total_votes %&gt;&#39;);</span>
+<span class="sx">  else %&gt;</span>
+<span class="sx">    (&#39;#post_vote_error_&lt;%=</span> <span class="vi">@post</span><span class="o">.</span><span class="n">to_param</span> <span class="sx">%&gt;&#39;).show().html(&#39;&lt;%= @vote.errors.full_messages.join&#39;(&#39;&#39;) %&gt;</span><span class="p">);</span>
+  <span class="k">end</span></code></pre></div>
+
+<hr>
+
+<h2>APIs</h2>
+
+<p>APIs are how applications talk to each other. API versioning is a big deal - you have to have a versioning strategy, typically done by the date.</p>
+
+<hr>
+
+<h2>Extracting common logic from models</h2>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">When</span> <span class="n">you</span> <span class="n">have</span> <span class="n">common</span> <span class="n">code</span> <span class="k">in</span> <span class="n">your</span> <span class="n">models</span><span class="p">,</span> <span class="n">you</span> <span class="n">really</span> <span class="n">have</span> <span class="n">tow</span> <span class="n">options</span> <span class="n">to</span> <span class="no">DRY</span> <span class="n">your</span> <span class="ss">code</span><span class="p">:</span>
+<span class="mi">1</span><span class="o">.</span> <span class="n">place</span> <span class="n">code</span> <span class="k">in</span> <span class="n">your</span> <span class="n">superclass</span><span class="o">.</span>
+<span class="mi">2</span><span class="o">.</span> <span class="no">Extract</span> <span class="n">code</span> <span class="n">into</span> <span class="n">a</span> <span class="k">module</span>
+
+<span class="nn">Extracting</span> <span class="no">Common</span> <span class="no">Logic</span> <span class="n">from</span> <span class="no">Models</span>
+<span class="o">-</span><span class="no">One</span> <span class="n">way</span> <span class="n">to</span> <span class="k">do</span> <span class="n">so</span> <span class="n">is</span> <span class="n">through</span> <span class="k">module</span> <span class="nn">which</span> <span class="n">is</span> <span class="n">the</span> <span class="k">next</span> <span class="n">is</span> <span class="no">Post</span><span class="o">.</span><span class="n">ancestors</span> <span class="n">lookup</span> <span class="n">chain</span><span class="o">.</span>
+<span class="mi">1</span><span class="o">.</span> <span class="no">Go</span> <span class="n">into</span> <span class="n">your</span> <span class="n">application</span><span class="o">.</span><span class="n">rb</span> <span class="n">file</span>
+
+  <span class="n">config</span><span class="o">.</span><span class="n">autoload_paths</span> <span class="o">+=</span> <span class="sx">%W(</span><span class="si">#{</span><span class="n">config</span><span class="o">.</span><span class="n">root</span><span class="si">}</span><span class="sx">/lib)</span>
+
+<span class="no">So</span> <span class="n">what</span> <span class="n">this</span> <span class="n">line</span> <span class="n">of</span> <span class="n">code</span> <span class="n">does</span><span class="p">,</span> <span class="n">is</span> <span class="n">it</span> <span class="n">directs</span> <span class="n">your</span> <span class="n">rails</span> <span class="n">application</span> <span class="n">to</span> <span class="nb">load</span> <span class="n">t</span>
+<span class="n">his</span> <span class="n">path</span> <span class="ow">and</span> <span class="n">files</span> <span class="k">in</span> <span class="n">it</span> <span class="n">everytime</span> <span class="n">your</span> <span class="n">application</span> <span class="n">starts</span> <span class="n">up</span><span class="p">,</span> <span class="n">including</span> <span class="n">the</span>
+<span class="n">voteable</span><span class="o">.</span><span class="n">rb</span> <span class="n">file</span> <span class="n">found</span>
+
+<span class="mi">2</span><span class="o">.</span> <span class="no">So</span> <span class="n">just</span> <span class="n">like</span> <span class="n">with</span> <span class="n">modules</span> <span class="n">how</span> <span class="n">we</span> <span class="n">add</span> <span class="s1">&#39;-able&#39;</span> <span class="n">on</span> <span class="n">the</span> <span class="k">end</span> <span class="n">of</span> <span class="n">our</span> <span class="k">module</span> <span class="nn">name</span><span class="p">,</span>
+ <span class="n">we</span> <span class="n">create</span> <span class="n">a</span> <span class="n">file</span> <span class="n">called</span> <span class="no">Voteable</span><span class="o">.</span><span class="n">rb</span> <span class="n">under</span> <span class="n">the</span> <span class="n">lib</span> <span class="ss">folder</span><span class="p">:</span>
+ <span class="c1">#lib/voteable.rb</span>
+
+  <span class="k">module</span> <span class="nn">Voteable</span>
+
+    <span class="k">class</span> <span class="nc">InstanceMethods</span>
+
+    <span class="k">end</span>
+
+
+    <span class="k">class</span> <span class="nc">ClassMethods</span>
+
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+<span class="mi">3</span><span class="o">.</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+<span class="no">ActiveSupport</span> <span class="n">is</span> <span class="n">a</span> <span class="n">gem</span><span class="o">.</span>
+<span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span> <span class="p">(</span><span class="n">comes</span> <span class="n">with</span> <span class="no">Rails</span> <span class="mi">4</span><span class="p">)</span> <span class="n">says</span> <span class="n">that</span> <span class="n">all</span> <span class="n">the</span> <span class="n">instance</span> <span class="nb">methods</span>
+<span class="n">listed</span> <span class="n">within</span> <span class="n">it</span> <span class="n">are</span> <span class="n">going</span> <span class="n">to</span> <span class="n">be</span> <span class="n">instance</span> <span class="nb">methods</span> <span class="k">when</span> <span class="n">you</span> <span class="n">mixin</span> <span class="n">the</span> <span class="n">module</span><span class="o">.</span>
+
+<span class="mi">4</span><span class="o">.</span> <span class="no">To</span> <span class="kp">include</span> <span class="k">class</span> <span class="nb">methods</span> <span class="n">within</span> <span class="n">the</span> <span class="ss">module</span><span class="p">:</span>
+
+<span class="k">module</span> <span class="nn">Votable</span>
+  <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+
+  <span class="k">def</span> <span class="nf">total_votes</span>
+
+
+  <span class="k">end</span>
+
+
+  <span class="k">module</span> <span class="nn">ClassMethods</span>
+    <span class="k">def</span> <span class="nf">my_class_method</span>
+
+
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="mi">5</span><span class="o">.</span> <span class="no">Add</span> <span class="n">the</span> <span class="n">common</span> <span class="nb">methods</span> <span class="n">the</span> <span class="n">are</span> <span class="n">to</span> <span class="n">be</span> <span class="n">extracted</span> <span class="n">from</span> <span class="n">your</span> <span class="n">model</span>
+
+  <span class="k">module</span> <span class="nn">Votable</span>
+    <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+
+      <span class="k">def</span> <span class="nf">total_votes</span>
+        <span class="nb">self</span><span class="o">.</span><span class="n">up_votes</span> <span class="o">-</span> <span class="nb">self</span><span class="o">.</span><span class="n">down_votes</span>
+      <span class="k">end</span>
+
+      <span class="k">def</span> <span class="nf">up_votes</span>
+        <span class="nb">self</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">vote</span><span class="p">:</span> <span class="kp">true</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
+      <span class="k">end</span>
+
+      <span class="k">def</span> <span class="nf">down_votes</span>
+        <span class="nb">self</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">vote</span><span class="p">:</span> <span class="kp">false</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
+      <span class="k">end</span>
+
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+<span class="mi">6</span><span class="o">.</span> <span class="no">Add</span> <span class="kp">include</span> <span class="no">Voteable</span> <span class="n">to</span> <span class="n">your</span> <span class="n">model</span>
+
+<span class="mi">7</span><span class="o">.</span> <span class="no">Now</span> <span class="k">if</span> <span class="n">you</span> <span class="n">run</span> <span class="no">Post</span><span class="o">.</span><span class="n">ancestors</span> <span class="o">=&gt;</span> <span class="n">the</span> <span class="no">Voteable</span> <span class="k">module</span> <span class="nn">will</span> <span class="n">be</span> <span class="n">right</span> <span class="n">behind</span> <span class="n">the</span>
+  <span class="no">Post</span> <span class="n">class</span><span class="o">.</span>
+
+<span class="mi">8</span><span class="o">.</span> <span class="no">Modules</span> <span class="n">also</span> <span class="n">give</span> <span class="n">us</span> <span class="n">an</span> <span class="n">included</span> <span class="k">do</span> <span class="ss">block</span><span class="p">:</span>
+
+  <span class="n">included</span> <span class="k">do</span>
+    <span class="nb">puts</span> <span class="s2">&quot;I&#39;m being included&quot;</span>
+  <span class="k">end</span>
+
+  <span class="no">The</span> <span class="n">first</span> <span class="n">time</span> <span class="n">the</span> <span class="n">object</span> <span class="n">is</span> <span class="n">called</span><span class="p">,</span> <span class="s2">&quot;I&#39;m being called is printed&quot;</span>
+
+<span class="mi">9</span><span class="o">.</span> <span class="no">This</span> <span class="n">is</span> <span class="n">a</span> <span class="n">perfect</span> <span class="n">candidate</span> <span class="k">for</span> <span class="n">has_many</span> <span class="ss">:votes</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:voteable</span>
+
+  <span class="n">included</span> <span class="k">do</span>
+    <span class="n">has_many</span> <span class="ss">:votes</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:voteable</span>
+  <span class="k">end</span>
+
+<span class="o">*</span><span class="n">can</span> <span class="n">be</span> <span class="n">done</span> <span class="k">for</span> <span class="n">the</span> <span class="n">comment</span> <span class="ow">and</span> <span class="n">posts</span></code></pre></div>
+
+<hr>
+
+<h2>Creating a Gem!</h2>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">So</span> <span class="n">we</span> <span class="n">were</span> <span class="n">able</span> <span class="n">to</span> <span class="n">extract</span> <span class="n">common</span> <span class="nb">methods</span> <span class="n">into</span> <span class="n">a</span> <span class="n">module</span><span class="p">,</span> <span class="n">but</span> <span class="n">what</span> <span class="k">if</span> <span class="n">we</span> <span class="n">needed</span> <span class="n">the</span> <span class="n">same</span>
+<span class="n">functionality</span> <span class="n">across</span> <span class="n">several</span> <span class="ss">projects</span><span class="p">:</span>
+
+<span class="o">-</span> <span class="n">to</span> <span class="n">list</span> <span class="n">gems</span> <span class="k">in</span> <span class="ss">terminal</span><span class="p">:</span> <span class="n">gem</span> <span class="n">list</span> <span class="n">gem</span>
+
+<span class="mi">1</span><span class="o">.</span> <span class="no">You</span> <span class="n">need</span> <span class="ss">gem</span><span class="p">:</span> <span class="n">gemcutter</span> <span class="p">(</span><span class="mi">0</span><span class="o">.</span><span class="mi">7</span><span class="o">.</span><span class="mi">1</span><span class="p">)</span>
+<span class="mi">2</span><span class="o">.</span> <span class="n">mkdir</span> <span class="n">voteable</span><span class="o">-</span><span class="n">gem</span>
+<span class="mi">3</span><span class="o">.</span> <span class="no">Create</span> <span class="n">voteable</span><span class="o">.</span><span class="n">gemspec</span> <span class="n">file</span> <span class="n">within</span> <span class="n">folder</span>
+<span class="mi">4</span><span class="o">.</span> <span class="no">Add</span> <span class="n">the</span> <span class="n">following</span> <span class="n">tex</span> <span class="ss">t</span><span class="p">:</span>
+
+  <span class="no">Gem</span><span class="o">::</span><span class="no">Specification</span><span class="o">.</span><span class="n">new</span> <span class="k">do</span> <span class="o">|</span><span class="n">s</span><span class="o">|</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;votable_chris_oct&quot;</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;0.0.0&#39;</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="s1">&#39;2013-10-23&#39;</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">summary</span> <span class="o">=</span> <span class="s2">&quot;A voting gem&quot;</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;The best voting gem ever&quot;</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">authors</span> <span class="o">=</span> <span class="o">[</span><span class="s1">&#39;Jamela B.&#39;</span><span class="o">]</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">email</span> <span class="o">=</span> <span class="s1">&#39;jamela.black@gmail.com&#39;</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">files</span> <span class="o">=</span> <span class="o">[</span><span class="s1">&#39;lib/voteable_chris_oct.rb&#39;</span><span class="o">]</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">homepage</span> <span class="o">=</span> <span class="s1">&#39;http://github.com&#39;</span>
+  <span class="k">end</span>
+
+<span class="mi">5</span><span class="o">.</span> <span class="no">Create</span> <span class="n">lib</span> <span class="n">folder</span><span class="p">,</span> <span class="ow">and</span> <span class="n">voteable_chris_oct</span><span class="o">.</span><span class="n">rb</span> <span class="n">file</span> <span class="n">within</span> <span class="n">it</span>
+<span class="mi">6</span><span class="o">.</span> <span class="no">Cut</span> <span class="ow">and</span> <span class="n">paste</span> <span class="n">common</span> <span class="n">code</span> <span class="n">from</span> <span class="k">module</span>
+
+  <span class="nn">Module</span> <span class="no">VoteableChrisOct</span>
+    <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+
+      <span class="k">def</span> <span class="nf">total_votes</span>
+        <span class="nb">self</span><span class="o">.</span><span class="n">up_votes</span> <span class="o">-</span> <span class="nb">self</span><span class="o">.</span><span class="n">down_votes</span>
+      <span class="k">end</span>
+
+      <span class="k">def</span> <span class="nf">up_votes</span>
+        <span class="nb">self</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">vote</span><span class="p">:</span> <span class="kp">true</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
+      <span class="k">end</span>
+
+      <span class="k">def</span> <span class="nf">down_votes</span>
+        <span class="nb">self</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">vote</span><span class="p">:</span> <span class="kp">false</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
+      <span class="k">end</span>
+
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+<span class="mi">7</span><span class="o">.</span> <span class="no">Now</span><span class="p">,</span> <span class="n">using</span> <span class="n">gemcutter</span><span class="p">,</span> <span class="n">type</span> <span class="k">in</span> <span class="ss">terminal</span><span class="p">:</span>
+
+    <span class="n">gem</span> <span class="n">build</span> <span class="n">voteable</span><span class="o">.</span><span class="n">gemspec</span>
+
+<span class="mi">8</span><span class="o">.</span> <span class="no">Then</span><span class="p">,</span> <span class="n">push</span> <span class="n">to</span> <span class="n">rubygems</span><span class="o">.</span><span class="n">org</span><span class="p">:</span>
+
+    <span class="n">gem</span> <span class="n">push</span> <span class="n">voteable_chris_oct</span><span class="o">-</span><span class="mi">0</span><span class="o">.</span><span class="mi">0</span><span class="o">.</span><span class="mi">0</span><span class="o">.</span><span class="n">gem</span>
+
+<span class="mi">9</span><span class="o">.</span> <span class="no">To</span> <span class="n">list</span> <span class="n">your</span> <span class="n">newly</span> <span class="n">made</span> <span class="n">gem</span> <span class="n">to</span> <span class="n">make</span> <span class="n">sure</span>
+<span class="n">the</span> <span class="n">push</span> <span class="n">was</span> <span class="ss">successful</span><span class="p">:</span>
+
+  <span class="n">gem</span> <span class="n">list</span> <span class="o">-</span><span class="n">r</span> <span class="n">voteable_chris_oct</span>
+
+<span class="mi">10</span><span class="o">.</span>  <span class="no">THEN</span> <span class="no">ADD</span> <span class="no">GEM</span> <span class="no">TO</span> <span class="no">YOUR</span> <span class="no">GEM</span> <span class="no">FILE</span>
+
+    <span class="n">gem</span> <span class="s1">&#39;voteable_chris_oct</span>
+<span class="s1">____________________________________</span>
+<span class="s1">You don&#39;</span><span class="n">t</span> <span class="n">have</span> <span class="n">to</span> <span class="k">do</span> <span class="n">this</span> <span class="n">apparently</span><span class="o">.</span>
+
+<span class="mi">10</span><span class="o">.</span> <span class="no">Next</span> <span class="n">you</span> <span class="n">must</span> <span class="kp">include</span> <span class="n">the</span> <span class="n">file</span> <span class="nb">name</span> <span class="k">in</span> <span class="n">your</span> <span class="n">application</span><span class="o">.</span><span class="n">rb</span> <span class="n">file</span>
+
+  <span class="nb">require</span> <span class="s1">&#39;voteable_chris_oct&#39;</span>
+
+<span class="mi">11</span><span class="o">.</span> <span class="no">The</span> <span class="kp">include</span> <span class="n">the</span> <span class="k">module</span> <span class="nn">name</span> <span class="k">in</span> <span class="n">your</span> <span class="n">model</span>
+   <span class="kp">include</span> <span class="no">VoteableChrisOct</span>
+<span class="n">_______________________________________</span>
+
+<span class="mi">12</span><span class="o">.</span> <span class="no">For</span> <span class="n">changes</span> <span class="ow">or</span> <span class="n">updates</span> <span class="n">to</span> <span class="n">your</span> <span class="ss">gem</span><span class="p">:</span>
+<span class="no">You</span> <span class="n">want</span> <span class="n">to</span> <span class="n">change</span> <span class="n">your</span> <span class="n">version</span> <span class="n">number</span> <span class="k">in</span> <span class="n">your</span> <span class="n">gemspec</span><span class="p">,</span> <span class="n">run</span> <span class="n">gem</span> <span class="n">build</span> <span class="ow">and</span> <span class="n">push</span> <span class="n">to</span>
+<span class="n">rubygems</span><span class="o">.</span> <span class="no">Then</span> <span class="n">you</span> <span class="n">may</span> <span class="n">want</span> <span class="n">to</span> <span class="n">specify</span> <span class="n">the</span> <span class="n">gem</span> <span class="n">version</span> <span class="k">in</span> <span class="n">your</span> <span class="n">gemfile</span>
+
+  <span class="n">gem</span> <span class="s1">&#39;voteable_chris_oct&#39;</span><span class="p">,</span> <span class="s1">&#39;=0.1.0&#39;</span>
+
+<span class="mi">13</span><span class="o">.</span> <span class="no">What</span> <span class="k">if</span> <span class="n">you</span> <span class="n">don</span><span class="s1">&#39;t want to publish everytime you make a change and</span>
+<span class="s1">you just want test locally, then in your gem file you only have to specify the path up to the parent directory:</span>
+
+<span class="s1">  gem &#39;</span><span class="n">voteable_chris_oct</span><span class="s1">&#39;, path: (just run pwd in your terminal)</span>
+
+<span class="s1">14. To remove a gem from rubygems, just run the following in your terminal:</span>
+
+<span class="s1">  gem yank voteable_chris_oct -v &#39;</span><span class="mi">0</span><span class="o">.</span><span class="mi">0</span><span class="o">.</span><span class="mi">0</span><span class="err">&#39;</span>
+
+<span class="mi">15</span><span class="o">.</span> <span class="no">When</span> <span class="n">making</span> <span class="n">changes</span> <span class="n">to</span> <span class="n">your</span> <span class="n">gem</span> <span class="n">file</span><span class="p">,</span> <span class="n">you</span> <span class="n">should</span> <span class="n">run</span>
+<span class="n">bundle</span> <span class="n">install</span> <span class="o">--</span><span class="n">without</span> <span class="n">production</span>
+
+<span class="mi">16</span><span class="o">.</span> <span class="no">Changes</span> <span class="n">made</span> <span class="n">within</span> <span class="n">your</span> <span class="k">module</span> <span class="nn">are</span> <span class="n">hotlinked</span> <span class="n">to</span> <span class="n">your</span> <span class="n">app</span> <span class="n">so</span> <span class="n">all</span> <span class="n">changes</span> <span class="n">are</span> <span class="n">made</span> <span class="n">live</span> <span class="n">without</span> <span class="n">updating</span> <span class="n">your</span> <span class="n">gem</span> <span class="n">version</span></code></pre></div>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
       <a href="/2014/11/12/course2-lesson4/">
         Rapid Prototyping with Rails: Lesson 4, part 2
       </a>
@@ -726,33 +975,6 @@ Salts adds a small chunk of random data to password to prevent those attacks.</p
 <h3>Step 8. Add current_user</h3>
 
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Remove</span> <span class="no">User</span><span class="o">.</span><span class="n">first</span> <span class="ow">and</span> <span class="n">add</span> <span class="n">current_user</span> <span class="k">for</span> <span class="n">post</span><span class="o">.</span><span class="n">creator</span> <span class="ow">and</span> <span class="n">comment</span><span class="o">.</span><span class="n">creator</span></code></pre></div>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/11/01/course2-features/">
-        Rapid Prototyping with Rails: Lesson 3, Feature Building
-      </a>
-    </h1>
-
-    <span class="post-date">01 Nov 2014</span>
-
-    <h2>Review of Building Out a Feature</h2>
-
-<ol>
-<li>Bulid out html link in parital or html.erb</li>
-<li>Build necessary routes
-
-<ul>
-<li>run grep routes to determine which routes are needed</li>
-</ul></li>
-<li>Write code for action in controller
-
-<ul>
-<li>run binding pry to see what parameters are being submitted</li>
-</ul></li>
-</ol>
 
   </div>
   
