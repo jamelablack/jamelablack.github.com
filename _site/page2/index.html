@@ -129,6 +129,18 @@
   
   <div class="post">
     <h1 class="post-title">
+      <a href="/2015/04/05/course3-invite-users/">
+        Build Robust & Production Quality Applications - Lesson 6: Inviting Users- Part 3
+      </a>
+    </h1>
+
+    <span class="post-date">05 Apr 2015</span>
+
+    
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
       <a href="/2015/04/03/course3-invite-users/">
         Build Robust & Production Quality Applications - Lesson 6: Inviting Users- Part 2
       </a>
@@ -682,45 +694,6 @@ same way that we reference the Integration Tests in the &quot;Meet in the Middle
 <li>requires you to know rails really well and how things work together</li>
 <li>people often use cucumber or rspec feature tests for this.</li>
 </ul>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/03/17/course3-transactions/">
-        Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
-      </a>
-    </h1>
-
-    <span class="post-date">17 Mar 2015</span>
-
-    <p>The[ previous example reegarding updating video review while in queue does not follow typical Rails convention:
-- We are using in the update<em>queue method.
-- we have to use parameter naming conventions to parse out the queue</em>item id and
-position id in the form.
-- We have to specify the order of queue_items using in the user model according to position.</p>
-
-<h3>Using Transactions &amp; Exception Rescues when the value does not save.</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">update_queue</span>
-  <span class="k">begin</span>
-    <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">transaction</span> <span class="k">do</span>
-      <span class="n">params</span><span class="o">[</span><span class="ss">:queue_items</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">queue_item_data</span><span class="o">|</span>
-        <span class="n">queue_item</span> <span class="o">=</span> <span class="no">QueueItem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">queue_item_data</span><span class="o">[</span><span class="s2">&quot;id&quot;</span><span class="o">]</span><span class="p">)</span>
-        <span class="n">queue_item</span><span class="o">.</span><span class="n">update_attributes!</span><span class="p">(</span><span class="ss">position</span><span class="p">:</span> <span class="n">queue_item_data</span><span class="o">[</span><span class="s2">&quot;position&quot;</span><span class="o">]</span><span class="p">)</span>
-      <span class="k">end</span>
-    <span class="k">end</span>
-  <span class="k">rescue</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">RecordInvalid</span>
-    <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;You must use whole numbers for play position.&quot;</span>
-    <span class="n">redirect_to</span> <span class="n">my_queue_path</span>
-    <span class="k">return</span>
-  <span class="k">end</span>
-
-  <span class="n">current_user</span><span class="o">.</span><span class="n">queue_items</span><span class="o">.</span><span class="n">each_with_index</span> <span class="k">do</span> <span class="o">|</span><span class="n">queue_item</span><span class="p">,</span> <span class="n">index</span><span class="o">|</span>
-    <span class="n">queue_item</span><span class="o">.</span><span class="n">update_attributes</span><span class="p">(</span><span class="ss">position</span><span class="p">:</span> <span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-  <span class="k">end</span>
-  <span class="n">redirect_to</span> <span class="n">my_queue_path</span>
-<span class="k">end</span></code></pre></div>
 
   </div>
   

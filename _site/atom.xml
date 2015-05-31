@@ -4,7 +4,7 @@
  <title>grit| commit</title>
  <link href="http://jamelablack.github.io/atom.xml" rel="self"/>
  <link href="http://jamelablack.github.io/"/>
- <updated>2015-05-29T23:48:30-04:00</updated>
+ <updated>2015-05-31T09:13:45-04:00</updated>
  <id>http://jamelablack.github.io</id>
  <author>
    <name>Jam Black</name>
@@ -13,10 +13,110 @@
 
  
  <entry>
+   <title>POODR - Ch2: Desgining Classes with a Single Responsibility</title>
+   <link href="http://jamelablack.github.io/2015/04/22/POODR-ch2/"/>
+   <updated>2015-04-22T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/04/22/POODR-ch2</id>
+   <content type="html">&lt;p&gt;The foundation of an object-orietned is the message, but most visible organizational structure is the class.&lt;/p&gt;
+
+&lt;h3&gt;OO Questions:&lt;/h3&gt;
+
+&lt;p&gt;What are your classes?
+How many should you have?
+What behavior will they implement?
+How much do they know about the other classes?
+How much of themselves should the expose?&lt;/p&gt;
+
+&lt;p&gt;At this stage, your first obligation is to take a deep breath and insis that it be simple. Your goal is to model your application, using classes, such that is does what is is supposed to do right now. Design is more the art of perserving changability than it is the act of achieving perfection.&lt;/p&gt;
+
+&lt;h3&gt;Code should be TRUE:&lt;/h3&gt;
+
+&lt;p&gt;Transparent: The consquences of change should be obvious in the code that is changing and in distant code thst relies on it.&lt;/p&gt;
+
+&lt;p&gt;Reasonsable: The cost of any change should be proportional to the benefit thr change acheives&lt;/p&gt;
+
+&lt;p&gt;Usable: Existing code should be usable in a new and unexpected contents.&lt;/p&gt;
+
+&lt;p&gt;Expemplary: The cod itself should encourage those who change it to perpetuate these qualities.
+TRUE ensures that each class has a single, well-defined responsibilty.&lt;/p&gt;
+
+&lt;h2&gt;Creating Classes That have a Single Responsibility&lt;/h2&gt;
+
+&lt;p&gt;A class should do the smallest posbbile useful thing, that is - it should have a sing responsibility.&lt;/p&gt;
+
+&lt;h3&gt;Why Single Responsibility Matters&lt;/h3&gt;
+
+&lt;p&gt;Appliciations that are easy to change consist of classes that are easy to reuse. Reusable classes are pluggable into units of well-defined behavior that have few entanglements.&lt;/p&gt;
+
+&lt;p&gt;A class that has more than one responsibility is difficult to reuse. If you want to resuse some (but not all) of it behavior, it is impossible to get only the parts you need.&lt;/p&gt;
+
+&lt;p&gt;If the responsibilties are so coupled that you cannot use just the beviour you need, you could duplicat the code of interest.&lt;/p&gt;
+
+&lt;h3&gt;Deterimining If a Class Has Single Responsibility&lt;/h3&gt;
+
+&lt;p&gt;How can you determine if a class contains the behavior or belongs somewhere else?
+Ask it! &amp;quot;Mr Gear, What is your ratio?&amp;quot;&lt;/p&gt;
+
+&lt;p&gt;Another way to figure it out is to attempt to describe the class in one sentence. If the simplest description you can devise includes &amp;quot;and&amp;quot;, the class likely has more than one responsibility. If the description includes &amp;quot;or&amp;quot;, then the class has more than one responsibility and they aren&amp;#39;t even related.&lt;/p&gt;
+
+&lt;p&gt;When a class is related to it&amp;#39;s purpose, its considered &amp;quot;highly cohesive&amp;quot; or to have single responsibility (Single Responsibility Principle)&lt;/p&gt;
+
+&lt;h3&gt;Determining when to make desgin decisions:&lt;/h3&gt;
+
+&lt;p&gt;Don&amp;#39;t feel compelled to make desgin decisions prematurely. When the future cost of doing nothing is the same as the current cost, postpone the decision. Make the decision only when you must with the information you have at the time.&lt;/p&gt;
+
+&lt;h2&gt;Writing Code that Embraces Change&lt;/h2&gt;
+
+&lt;p&gt;Here are a few well known techniques that you can use to create code that embaces change:&lt;/p&gt;
+
+&lt;h3&gt;1. Depend on Behavior, not Data&lt;/h3&gt;
+
+&lt;p&gt;Behavior is captured in methods anid invoked by sending messages. In addition to behavior, objects often contain data. Data is held in an instance variable and can be anything from an simple string to complex hash. Data can be accessed in 2 ways: 1. you can refer directly to the instance variable
+2. you can wrap the intance variable in an accessor method&lt;/p&gt;
+
+&lt;h4&gt;Hide Data Structures&lt;/h4&gt;
+
+&lt;h4&gt;1. Always wrap instance variables in accessor methods insteadof directly referring to the variables&lt;/h4&gt;
+
+&lt;h5&gt;2. Use Structs&lt;/h5&gt;
+
+&lt;p&gt;Direct references into complicated structure are confusing, because they obscure what the data really is and the maintenance is a nightmare.
+In Ruby, it&amp;#39;s easy to seperate structure from meaning - just as you use a method to wrap an instance variable, you can use a Ruby Struct class to wrap a structure.
+Ruby defines Struct as &amp;quot;a convenient way to bundle a number of attributes together, using accessor methods, without having to write an explicit class.&lt;/p&gt;
+
+&lt;h2&gt;2. Enforce Signle Responsibilities Everywhere&lt;/h2&gt;
+
+&lt;h4&gt;3. Extract Extra Responsibilities from Methods&lt;/h4&gt;
+
+&lt;p&gt;Methods, like classes should have single responsibility so they are easier to use. Apply the same design techniques as you would with classes.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Seperating iteration from the action that&amp;#39;s being performed on each element is a common case of multiple responsibitlity that is easy to recognize.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The imapct of the single refactoring like ithis is small, but the cumulative effect of this coding style is huge. Methods that have single resonsibility confer the following benefits:&lt;/p&gt;
+
+&lt;h5&gt;1. Expose previously hidden qualities&lt;/h5&gt;
+
+&lt;h5&gt;2. Avoid the need for comments&lt;/h5&gt;
+
+&lt;h5&gt;3. Encourage reuse&lt;/h5&gt;
+
+&lt;h5&gt;4. Easy to move to another class&lt;/h5&gt;
+
+&lt;h3&gt;Isolate Extra Responsibilities in Classes&lt;/h3&gt;
+
+&lt;p&gt;Once every method has a single responsibility, the scope of your class will be more apparent&lt;/p&gt;
+
+&lt;p&gt;The path to changeable and maintable object oriented software begins with classes that have a single responsibility. Classes that do one thing isolate that thing from the rest of your application. This isolation allows change without consquence and reuse without duplication.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
    <title>POODR - Ch1: Object Oriented Design</title>
-   <link href="http://jamelablack.github.io/2015/04/20/course3-POODR-ch1/"/>
+   <link href="http://jamelablack.github.io/2015/04/20/POODR-ch1/"/>
    <updated>2015-04-20T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/04/20/course3-POODR-ch1</id>
+   <id>http://jamelablack.github.io/2015/04/20/POODR-ch1</id>
    <content type="html">&lt;p&gt;Object Oriented Design requires that you shift from thinking about the world as a collection of predefined procedures to modeling th world as a series of messages that are past between objects.&lt;/p&gt;
 
 &lt;h2&gt;In Praise of Design&lt;/h2&gt;

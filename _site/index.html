@@ -129,7 +129,111 @@
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/04/20/course3-POODR-ch1/">
+      <a href="/2015/04/22/POODR-ch2/">
+        POODR - Ch2: Desgining Classes with a Single Responsibility
+      </a>
+    </h1>
+
+    <span class="post-date">22 Apr 2015</span>
+
+    <p>The foundation of an object-orietned is the message, but most visible organizational structure is the class.</p>
+
+<h3>OO Questions:</h3>
+
+<p>What are your classes?
+How many should you have?
+What behavior will they implement?
+How much do they know about the other classes?
+How much of themselves should the expose?</p>
+
+<p>At this stage, your first obligation is to take a deep breath and insis that it be simple. Your goal is to model your application, using classes, such that is does what is is supposed to do right now. Design is more the art of perserving changability than it is the act of achieving perfection.</p>
+
+<h3>Code should be TRUE:</h3>
+
+<p>Transparent: The consquences of change should be obvious in the code that is changing and in distant code thst relies on it.</p>
+
+<p>Reasonsable: The cost of any change should be proportional to the benefit thr change acheives</p>
+
+<p>Usable: Existing code should be usable in a new and unexpected contents.</p>
+
+<p>Expemplary: The cod itself should encourage those who change it to perpetuate these qualities.
+TRUE ensures that each class has a single, well-defined responsibilty.</p>
+
+<h2>Creating Classes That have a Single Responsibility</h2>
+
+<p>A class should do the smallest posbbile useful thing, that is - it should have a sing responsibility.</p>
+
+<h3>Why Single Responsibility Matters</h3>
+
+<p>Appliciations that are easy to change consist of classes that are easy to reuse. Reusable classes are pluggable into units of well-defined behavior that have few entanglements.</p>
+
+<p>A class that has more than one responsibility is difficult to reuse. If you want to resuse some (but not all) of it behavior, it is impossible to get only the parts you need.</p>
+
+<p>If the responsibilties are so coupled that you cannot use just the beviour you need, you could duplicat the code of interest.</p>
+
+<h3>Deterimining If a Class Has Single Responsibility</h3>
+
+<p>How can you determine if a class contains the behavior or belongs somewhere else?
+Ask it! &quot;Mr Gear, What is your ratio?&quot;</p>
+
+<p>Another way to figure it out is to attempt to describe the class in one sentence. If the simplest description you can devise includes &quot;and&quot;, the class likely has more than one responsibility. If the description includes &quot;or&quot;, then the class has more than one responsibility and they aren&#39;t even related.</p>
+
+<p>When a class is related to it&#39;s purpose, its considered &quot;highly cohesive&quot; or to have single responsibility (Single Responsibility Principle)</p>
+
+<h3>Determining when to make desgin decisions:</h3>
+
+<p>Don&#39;t feel compelled to make desgin decisions prematurely. When the future cost of doing nothing is the same as the current cost, postpone the decision. Make the decision only when you must with the information you have at the time.</p>
+
+<h2>Writing Code that Embraces Change</h2>
+
+<p>Here are a few well known techniques that you can use to create code that embaces change:</p>
+
+<h3>1. Depend on Behavior, not Data</h3>
+
+<p>Behavior is captured in methods anid invoked by sending messages. In addition to behavior, objects often contain data. Data is held in an instance variable and can be anything from an simple string to complex hash. Data can be accessed in 2 ways: 1. you can refer directly to the instance variable
+2. you can wrap the intance variable in an accessor method</p>
+
+<h4>Hide Data Structures</h4>
+
+<h4>1. Always wrap instance variables in accessor methods insteadof directly referring to the variables</h4>
+
+<h5>2. Use Structs</h5>
+
+<p>Direct references into complicated structure are confusing, because they obscure what the data really is and the maintenance is a nightmare.
+In Ruby, it&#39;s easy to seperate structure from meaning - just as you use a method to wrap an instance variable, you can use a Ruby Struct class to wrap a structure.
+Ruby defines Struct as &quot;a convenient way to bundle a number of attributes together, using accessor methods, without having to write an explicit class.</p>
+
+<h2>2. Enforce Signle Responsibilities Everywhere</h2>
+
+<h4>3. Extract Extra Responsibilities from Methods</h4>
+
+<p>Methods, like classes should have single responsibility so they are easier to use. Apply the same design techniques as you would with classes.</p>
+
+<ul>
+<li>Seperating iteration from the action that&#39;s being performed on each element is a common case of multiple responsibitlity that is easy to recognize.</li>
+</ul>
+
+<p>The imapct of the single refactoring like ithis is small, but the cumulative effect of this coding style is huge. Methods that have single resonsibility confer the following benefits:</p>
+
+<h5>1. Expose previously hidden qualities</h5>
+
+<h5>2. Avoid the need for comments</h5>
+
+<h5>3. Encourage reuse</h5>
+
+<h5>4. Easy to move to another class</h5>
+
+<h3>Isolate Extra Responsibilities in Classes</h3>
+
+<p>Once every method has a single responsibility, the scope of your class will be more apparent</p>
+
+<p>The path to changeable and maintable object oriented software begins with classes that have a single responsibility. Classes that do one thing isolate that thing from the rest of your application. This isolation allows change without consquence and reuse without duplication.</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/04/20/POODR-ch1/">
         POODR - Ch1: Object Oriented Design
       </a>
     </h1>
@@ -328,18 +432,6 @@ config.autoload_paths &lt;&lt; &quot;#{Rails.root}/lib&quot;</li>
 
 <p>then remove require_relative from the model.</p>
 
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/04/05/course3-invite-users/">
-        Build Robust & Production Quality Applications - Lesson 6: Inviting Users- Part 3
-      </a>
-    </h1>
-
-    <span class="post-date">05 Apr 2015</span>
-
-    
   </div>
   
 </div>

@@ -129,6 +129,66 @@
   
   <div class="post">
     <h1 class="post-title">
+      <a href="/2015/01/20/course3-unit-functional-integration-tests/">
+        Build Robust & Production Quality Applications - Lesson 1: Unit vs. Functional vs. Integration Tests
+      </a>
+    </h1>
+
+    <span class="post-date">20 Jan 2015</span>
+
+    <h3>There are 3 types of tests:</h3>
+
+<ol>
+<li>Unit</li>
+<li>Functional</li>
+<li>Integration</li>
+</ol>
+
+<h3>Ranking according to:</h3>
+
+<h4>Coverage:</h4>
+
+<p>Unit &gt; Functional &gt; Integration</p>
+
+<h4>Speed:</h4>
+
+<p>Unit &gt; Functional &gt; Integration</p>
+
+<h4>Realistic:</h4>
+
+<p>Integration &gt; Functional &gt; Unit</p>
+
+<h3>1) Unit Tests</h3>
+
+<ul>
+<li>testing a component in isolation, focusing on 1 thing and making sure all cases are covered</li>
+<li>isolated components tested: routes, models, views, helpers</li>
+<li>allow you to thoroughly test all components.. as it is the closest to the code.</li>
+<li>is the fastest and gives you the best coverage</li>
+</ul>
+
+<h3>2) Functional Tests</h3>
+
+<ul>
+<li>testing components in collaboration, making sure not only they work but that they play nicely with each other</li>
+<li>components tested: controllers (where everything interacts), typically once request/response cycle</li>
+</ul>
+
+<h3>3) Integration Tests</h3>
+
+<p>Builds upon functional tests in the sense that not only must play nicely together but they must achieve a desired business objective.</p>
+
+<ul>
+<li>Components tested: Goal is to emulate the user, typically occurs in browser and follows the entire business process and
+that the business objective is achieved</li>
+</ul>
+
+<p>There are multiple styles of testing.. it has become very much like an &quot;art&quot; as devs often times develop a taste of styles for what to test, when, etc. In this course, we will primarily write unit and functional tests leaving integration tests for important business workflows.</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
       <a href="/2015/01/17/coures3-technical-debt/">
         Build Robust & Production Quality Applications - Lesson 1: Technical Debt
       </a>
@@ -354,55 +414,6 @@ stay there... therefore knowledge is lost.</li>
 <p>HTML:</p>
 
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span> <span class="no">Hi</span><span class="p">,</span> <span class="no">My</span> <span class="nb">name</span> <span class="n">is</span> <span class="no">Casey</span><span class="o">&lt;</span><span class="sr">/p&gt;</span></code></pre></div>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/12/15/course3-from-views-to-mockups/">
-        Build Robust & Production Quality Applications: Precourse, Views to Mockups
-      </a>
-    </h1>
-
-    <span class="post-date">15 Dec 2014</span>
-
-    <h2>The Process of Building Queues from Mockups:</h2>
-
-<h3>Building out the videos page</h3>
-
-<h4>Step 1. Copy layout from the ui videos template</h4>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">article</span><span class="o">.</span><span class="n">video</span>
-  <span class="o">.</span><span class="n">container</span>
-    <span class="o">.</span><span class="n">row</span>
-      <span class="o">.</span><span class="n">video_large_cover</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">7</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="n">offset</span><span class="o">-</span><span class="mi">1</span>
-        <span class="o">%</span><span class="n">img</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s2">&quot;http://dummyimage.com/665x375/000000/00a2ff&quot;</span><span class="p">)</span>
-      <span class="o">.</span><span class="n">video_info</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">3</span>
-        <span class="o">%</span><span class="n">header</span>
-          <span class="o">%</span><span class="n">h3</span> <span class="no">Futurama</span>
-          <span class="o">%</span><span class="n">span</span> <span class="ss">Rating</span><span class="p">:</span> <span class="mi">4</span><span class="o">.</span><span class="mi">5</span><span class="o">/</span><span class="mi">5</span><span class="o">.</span><span class="mi">0</span>
-        <span class="o">%</span><span class="nb">p</span> <span class="no">Pizza</span> <span class="n">boy</span> <span class="no">Philip</span> <span class="n">J</span><span class="o">.</span> <span class="no">Fry</span> <span class="n">awakens</span> <span class="k">in</span> <span class="n">the</span> <span class="mi">31</span><span class="n">st</span> <span class="n">century</span> <span class="n">after</span> <span class="mi">1</span><span class="p">,</span><span class="mo">000</span> <span class="n">years</span> <span class="n">of</span> <span class="n">cryogenic</span> <span class="n">preservation</span> <span class="k">in</span> <span class="n">this</span> <span class="n">animated</span> <span class="n">series</span><span class="o">.</span> <span class="no">After</span> <span class="n">he</span> <span class="nb">gets</span> <span class="n">a</span> <span class="n">job</span> <span class="n">at</span> <span class="n">an</span> <span class="n">interplanetary</span> <span class="n">delivery</span> <span class="n">service</span><span class="p">,</span> <span class="no">Fry</span> <span class="n">embarks</span> <span class="n">on</span> <span class="n">ridiculous</span> <span class="n">escapades</span> <span class="n">to</span> <span class="n">make</span> <span class="n">sense</span> <span class="n">of</span> <span class="n">his</span> <span class="n">predicament</span><span class="o">.</span></code></pre></div>
-
-<h4>Step 2. Change/Remove hardcoded data for future code</h4>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">article</span><span class="o">.</span><span class="n">video</span>
-  <span class="o">.</span><span class="n">container</span>
-    <span class="o">.</span><span class="n">row</span>
-      <span class="o">.</span><span class="n">video_large_cover</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">7</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="n">offset</span><span class="o">-</span><span class="mi">1</span>
-        <span class="o">%</span><span class="n">img</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">#{</span><span class="vi">@video</span><span class="o">.</span><span class="n">large_cover_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-      <span class="o">.</span><span class="n">video_info</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">3</span>
-        <span class="o">%</span><span class="n">header</span>
-          <span class="o">%</span><span class="n">h3</span><span class="o">=</span> <span class="vi">@video</span><span class="o">.</span><span class="n">title</span>
-          <span class="o">%</span><span class="n">span</span> <span class="ss">Rating</span><span class="p">:</span> <span class="mi">4</span><span class="o">.</span><span class="mi">5</span><span class="o">/</span><span class="mi">5</span><span class="o">.</span><span class="mi">0</span>
-        <span class="o">%</span><span class="nb">p</span><span class="o">=</span> <span class="vi">@video</span><span class="o">.</span><span class="n">description</span></code></pre></div>
-
-<h4>Step 3. Build Routes corresponding with future code</h4>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Myflix</span><span class="o">::</span><span class="no">Application</span><span class="o">.</span><span class="n">routes</span><span class="o">.</span><span class="n">draw</span> <span class="k">do</span>
-  <span class="n">resources</span> <span class="ss">:videos</span><span class="p">,</span> <span class="ss">only</span><span class="p">:</span> <span class="o">[</span><span class="ss">:show</span><span class="o">]</span>
- <span class="k">end</span></code></pre></div>
-
-<h4>Step 4. Begin testing videos controller spec</h4>
 
   </div>
   

@@ -129,6 +129,80 @@
   
   <div class="post">
     <h1 class="post-title">
+      <a href="/2014/11/03/course2-authentication/">
+        Rapid Prototyping with Rails: Lesson 3, Authentication
+      </a>
+    </h1>
+
+    <span class="post-date">03 Nov 2014</span>
+
+    <h2>Steps</h2>
+
+<h3>Step 1: Create routes</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#routes.rb</span>
+<span class="n">add</span> <span class="n">sessions</span><span class="c1">#new, sessions#create, sessions#destory routes</span></code></pre></div>
+
+<h3>Step 2: Create sessions template</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#sessions/new.html.erb</span>
+<span class="no">Add</span> <span class="n">html</span></code></pre></div>
+
+<h3>Step 3: Sessions_Controller.rb</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">SessionsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="k">def</span> <span class="nf">create</span>
+  <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">username</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:username</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
+    <span class="ow">or</span>
+  <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">find_by</span><span class="p">(</span><span class="ss">username</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:username</span><span class="o">]</span><span class="p">)</span>
+
+<span class="no">Alternative</span> <span class="no">Flash</span> <span class="n">syntax</span>
+
+  <span class="n">flash</span><span class="o">.</span><span class="n">now</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;There is something wrong with your username or password.&quot;</span>
+  <span class="n">render</span> <span class="ss">:new</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>Step 4: Helpers</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#application_helper.rb</span>
+  <span class="mi">1</span><span class="o">.</span> <span class="n">create</span> <span class="n">current_user</span> <span class="ow">and</span> <span class="n">logged_in?</span> <span class="nb">methods</span>
+
+<span class="o">*</span> <span class="ss">Memoization</span><span class="p">:</span> <span class="n">allows</span> <span class="n">you</span> <span class="n">to</span> <span class="n">only</span> <span class="n">hit</span> <span class="n">the</span> <span class="n">database</span> <span class="n">once</span> <span class="k">when</span> <span class="n">being</span> <span class="n">called</span> <span class="n">multiple</span> <span class="n">times</span> <span class="n">on</span> <span class="n">a</span> <span class="n">template</span>
+
+  <span class="mi">2</span><span class="o">.</span> <span class="n">add</span> <span class="n">helper_method</span> <span class="n">syntax</span> <span class="n">to</span> <span class="n">make</span> <span class="n">accessible</span> <span class="k">in</span> <span class="n">views</span></code></pre></div>
+
+<h3>Step 5. _navigation.html.erb</h3>
+
+<p>Two ways to protect the fuctionality of your application for non-logged in users:
+1. Links on User Interface (using &#39;if logged<em>in? method&#39;)
+2. Urls/Controller actions (using before</em>action)</p>
+
+<p>We want to keep those who aren&#39;t logged in from creating a post.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="sx">% if </span><span class="n">logged_in?</span> <span class="sx">%&gt;</span>
+<span class="sx">&lt;div class=&#39;nav item&#39;&gt;</span>
+  <span class="o">&lt;%=</span> <span class="n">link_to</span> <span class="s2">&quot;New Post&quot;</span><span class="p">,</span> <span class="n">new_post_path</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;btn btn-success btn-small&#39;</span> <span class="sx">%&gt;</span>
+<span class="sx">&lt;/div&gt;</span>
+<span class="o">&lt;</span><span class="sx">% end </span><span class="o">%&gt;</span></code></pre></div>
+
+<h3>Step 6. Add before action to prevent navigation to certain links</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">posts_controller</span><span class="o">.</span><span class="n">rb</span>
+  <span class="n">add</span> <span class="n">before_action</span> <span class="ss">:require_user</span><span class="p">,</span> <span class="ss">except</span><span class="p">:</span> <span class="o">[</span><span class="ss">:index</span><span class="p">,</span> <span class="ss">:show</span><span class="o">]</span></code></pre></div>
+
+<h3>Step 7. require_user method</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Create</span> <span class="n">require_user</span> <span class="nb">method</span> <span class="k">in</span> <span class="n">application_controller</span><span class="o">.</span><span class="n">rb</span></code></pre></div>
+
+<h3>Step 8. Add current_user</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Remove</span> <span class="no">User</span><span class="o">.</span><span class="n">first</span> <span class="ow">and</span> <span class="n">add</span> <span class="n">current_user</span> <span class="k">for</span> <span class="n">post</span><span class="o">.</span><span class="n">creator</span> <span class="ow">and</span> <span class="n">comment</span><span class="o">.</span><span class="n">creator</span></code></pre></div>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
       <a href="/2014/11/01/course2-features/">
         Rapid Prototyping with Rails: Lesson 3, Feature Building
       </a>
@@ -518,225 +592,6 @@ So basically you can create any route that you want using member, collections, a
 * method: &#39;post&#39; create data method: There is javascript that comes with rails
 that looks for anchor tags and the data-method=&quot;post&quot;,  that will turn the link
 into an actual form and submit content.</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/10/24/course2-lesson3/">
-        Rapid Prototyping with Rails: Lesson 3, part 2
-      </a>
-    </h1>
-
-    <span class="post-date">24 Oct 2014</span>
-
-    <h2>Items Covererd:</h2>
-
-<ol>
-<li>Creating/Updating User</li>
-<li>Login/Logout</li>
-<li>Memoization</li>
-</ol>
-
-<h2>Creating/Updating User</h2>
-
-<ol>
-<li>Create resources
-resources :users, only: [:create]</li>
-<li>Create users_controller.rb (new, create, edit, update actions)
-
-<ul>
-<li>since :password is the virtual attribute for :password<em>digest, you have to include it in strong</em>params:</li>
-</ul></li>
-</ol>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">users_params</span>
-  <span class="n">params</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span><span class="o">.</span><span class="n">permit</span><span class="p">(</span><span class="ss">:username</span><span class="p">,</span> <span class="ss">:password</span><span class="p">)</span>
-<span class="k">end</span></code></pre></div>
-
-<ol>
-<li>Create  users folder under views (new.html.erb, edit.html.erb, _form.html.erb)</li>
-<li>Add password validations</li>
-</ol>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">validates</span> <span class="ss">:password</span><span class="p">,</span> <span class="ss">presence</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span> <span class="ss">on</span><span class="p">:</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">length</span><span class="p">:</span> <span class="p">{</span><span class="ss">minimun</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span></code></pre></div>
-
-<ol>
-<li>Change users#new to register under routes file to add a register path &#39;/register&#39;:</li>
-</ol>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">get</span> <span class="s1">&#39;/register&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;users#new&#39;</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="s1">&#39;register&#39;</span></code></pre></div>
-
-<ol>
-<li>Add register link to _navigation.html.erb</li>
-</ol>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;</span>
-          <span class="o">&lt;%=</span> <span class="n">link_to</span> <span class="s1">&#39;Register&#39;</span><span class="p">,</span> <span class="n">register_path</span> <span class="o">%&gt;</span></code></pre></div>
-
-<h2>Login/Logout</h2>
-
-<ol>
-<li>Create routes - *resources are reserved for models, typcially custom routes are on-offs</li>
-</ol>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">get</span> <span class="s1">&#39;/login&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;sessions#new&#39;</span>
-      <span class="n">post</span> <span class="s1">&#39;/login&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;sessions#create&#39;</span>
-      <span class="n">get</span> <span class="s1">&#39;/logout&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s1">&#39;sessions#destroy&#39;</span></code></pre></div>
-
-<ol>
-<li>Create sessions_controller.rb</li>
-</ol>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">SessionsController</span> <span class="o">&lt;</span> <span class="no">Application</span><span class="o">.</span><span class="n">rb</span>
-  <span class="k">def</span> <span class="nf">new</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">create</span>
-    <span class="no">Let</span><span class="s1">&#39;s write pseudo code:</span>
-<span class="s1">    What are we trying to do... we want to run user.authenticate(&#39;</span><span class="n">password</span><span class="s1">&#39;)</span>
-<span class="s1">    How do we accomplish this?</span>
-<span class="s1">    1. Get user object</span>
-<span class="s1">    2. See if the password matches</span>
-<span class="s1">    3. If so, log in</span>
-<span class="s1">    4. If not, error message</span>
-
-<span class="s1">    user = User.find_by(username: params[:username])</span>
-<span class="s1">    # we can use a local variable bc we aren&#39;</span><span class="n">t</span> <span class="n">using</span> <span class="n">model</span> <span class="n">backed</span> <span class="n">forms</span> <span class="n">so</span> <span class="n">persistency</span> <span class="n">isn</span><span class="s1">&#39;t required.</span>
-
-<span class="s1">    if user &amp;&amp; user.authenticate(params[:password])</span>
-<span class="s1">      session[:user_id] = user_id</span>
-<span class="s1">      flash[:notice] = &quot;You&#39;</span><span class="n">re</span> <span class="n">logged</span> <span class="k">in</span><span class="o">!</span><span class="s2">&quot;</span>
-<span class="s2">      redirect_to root_path</span>
-
-<span class="s2">      #never pass an object into sessions ( like @user for example)</span>
-<span class="s2">      bc sessions only have 4KBs in bandwidth and will generate a &quot;</span><span class="n">cookie</span> <span class="n">overload</span> <span class="n">error</span><span class="s2">&quot; after the user carries out</span>
-<span class="s2">      so many actions.</span>
-
-<span class="s2">    else</span>
-<span class="s2">      flash[:error] = &quot;</span><span class="no">There</span> <span class="n">was</span> <span class="n">something</span> <span class="n">wrong</span> <span class="n">with</span> <span class="n">your</span> <span class="n">username</span> <span class="ow">and</span> <span class="n">password</span><span class="s2">&quot;</span>
-<span class="s2">      #Avoid being too specific here, (i.e. found username but wrong password)... to prevent hacking</span>
-<span class="s2">      redirect_to register_path</span>
-<span class="s2">    end</span>
-<span class="s2">  end</span>
-
-
-<span class="s2">  #Login pages should be https://, if not, passwords submitted over an http:// server are not encrypted. The https://</span>
-<span class="s2">  is not a very high added expense. You just have to purchase SSL certificate.</span>
-
-
-<span class="s2">  def delete</span>
-<span class="s2">    session[:user_id] = nil</span>
-<span class="s2">    flash[:notice] = &quot;</span><span class="no">You</span><span class="err">&#39;</span><span class="n">ve</span> <span class="n">logged</span> <span class="n">out</span><span class="s2">&quot;</span>
-<span class="s2">    redirect_to root_path</span>
-<span class="s2">    end</span>
-<span class="s2">  end</span></code></pre></div>
-
-<ol>
-<li><p>Create a sessions folder under views, new.html.erb file</p></li>
-<li><p>Add login/logout link to nav bar</p></li>
-</ol>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#_navigation.html.erb</span>
-
-    <span class="k">if</span> <span class="n">logged_in?</span>
-      <span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;</span><span class="no">Hi</span><span class="o">&lt;</span><span class="sx">%= current_user.username %&gt;&lt;/li&gt;</span>
-<span class="sx">  &lt;li&gt;</span>
-<span class="sx">      &lt;%=</span> <span class="n">link_to</span> <span class="s2">&quot;Log Out&quot;</span><span class="p">,</span> <span class="n">logout_path</span> <span class="sx">%&gt;</span>
-<span class="sx">  &lt;/li&gt;</span>
-    <span class="o">&lt;</span><span class="sx">% else %&gt;</span>
-<span class="sx">    &lt;li&gt;</span>
-      <span class="o">&lt;</span><span class="sx">%= link_to &quot;Register&quot;, register_path %&gt;</span>
-<span class="sx">    &lt;/li&gt;</span>
-<span class="sx">    &lt;li&gt;</span>
-<span class="sx">      &lt;%=</span> <span class="n">link_to</span> <span class="s2">&quot;Log in&quot;</span><span class="p">,</span> <span class="n">login_path</span> <span class="sx">%&gt;</span>
-<span class="sx">    &lt;% end %&gt;</span>
-    <span class="o">&lt;</span><span class="sr">/li&gt;</span></code></pre></div>
-
-<ol>
-<li>We need to create a method called logged<em>in (referenced above) in the application</em>controller.rb bc we want this method accessible across the application.</li>
-</ol>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">application_controller</span><span class="o">.</span><span class="n">rb</span>
-
-<span class="n">helper_method</span> <span class="ss">:current_user</span><span class="p">,</span> <span class="ss">:logged_in?</span>
-
-<span class="k">def</span> <span class="nf">current_user</span>
-  <span class="c1">#Wpseudo-code</span>
-  <span class="c1">#If current user, return the user obj</span>
-  <span class="c1">#else return nil</span>
-    <span class="vi">@current_user</span> <span class="o">||=</span> <span class="no">User</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">session</span><span class="o">[</span><span class="n">user_id</span><span class="o">]</span><span class="p">)</span> <span class="k">if</span> <span class="n">session</span><span class="o">[</span><span class="ss">:user_id</span><span class="o">]</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">logged_in?</span>
-    <span class="o">!!</span><span class="n">current_user</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<h2>Memoization</h2>
-
-<p>For effecient performance, we want to hit the database only once per request.
-For methods that are being called multiple times, it is more effecient to save in an instance variable rather than
-continously hitting the database.</p>
-
-<ol>
-<li>We can now hide links based on whether a user is logged in or not. Let&#39;s hide the &#39;edit&#39; link</li>
-</ol>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#posts/index.html.erb</span>
-<span class="o">&lt;</span><span class="n">h3</span><span class="o">&gt;</span> <span class="no">Welcome</span> <span class="o">&lt;</span><span class="sr">/h3&gt;</span>
-<span class="sr"> &lt;ul&gt;</span>
-<span class="sr">  &lt;% @posts.each do |post| %&gt;</span>
-<span class="sr">  &lt;li&gt;</span>
-<span class="sr">  &lt;%= link_to post.title, post_path(post)</span>
-<span class="sr">  &lt;% if logged_in? %&gt;</span>
-<span class="sr">  [&lt;%= link_to &#39;Edit&#39;, edit_post_path(post) %&gt;]</span></code></pre></div>
-
-<ol>
-<li>We also want to make sure you can&#39;t go to the link via url</li>
-</ol>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#posts_controller.rb</span>
-  <span class="n">before_action</span> <span class="ss">:require_user</span><span class="p">,</span><span class="ss">except</span><span class="p">:</span> <span class="o">[</span><span class="ss">:index</span><span class="p">,</span> <span class="ss">:show</span><span class="o">]</span></code></pre></div>
-
-<ol>
-<li>We must create a require_user method</li>
-</ol>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#application_controller.rb</span>
-
-  <span class="k">def</span> <span class="nf">require_user</span>
-    <span class="k">if</span> <span class="o">!</span><span class="n">logged_in?</span>
-      <span class="n">flash</span><span class="o">[</span><span class="ss">:notice</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Must be logged in to do that&quot;</span>
-      <span class="n">redirect_to</span> <span class="n">root_path</span>
-  <span class="k">end</span></code></pre></div>
-
-<ol>
-<li>Set up before<em>action under the comments</em>controller.rb, also.</li>
-</ol>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#comments_controller.rb</span>
-<span class="k">class</span> <span class="nc">CommentsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span><span class="o">.</span><span class="n">rb</span>
-<span class="n">before_action</span> <span class="ss">:require_user</span>
-
-  <span class="k">def</span> <span class="nf">create</span>
-    <span class="vi">@comment</span><span class="o">.</span><span class="n">creator</span> <span class="o">=</span> <span class="n">current_user</span> <span class="c1">#change from @comment_creator = User.first</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<ol>
-<li>Define post.creator as current_user</li>
-</ol>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#posts_controller.rb</span>
-  <span class="k">def</span> <span class="nf">create</span>
-    <span class="vi">@post</span><span class="o">.</span><span class="n">creator</span> <span class="o">=</span> <span class="n">current_user</span>
-  <span class="k">end</span></code></pre></div>
-
-<p>Remember - when you want to lock down a peice of functionality, you have to
-1. Remove it from the user interface (links)
-2. Set up a before_action</p>
 
   </div>
   

@@ -129,6 +129,116 @@
   
   <div class="post">
     <h1 class="post-title">
+      <a href="/2015/02/05/course3-custom-form-builder/">
+        Build Robust & Production Quality Applications - Lesson 1: Custom Form Builders
+      </a>
+    </h1>
+
+    <span class="post-date">05 Feb 2015</span>
+
+    <p>Let&#39;s say we have a Todo&#39;s app, where we allow our users to create a new todo. We also want to show errors when validation errors occur:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#new.html.haml</span>
+<span class="o">%</span><span class="n">section</span><span class="o">.</span><span class="n">new_todo</span>
+  <span class="o">%</span><span class="n">h3</span> <span class="no">Add</span> <span class="n">a</span> <span class="kp">new</span> <span class="n">todo</span>
+  <span class="o">=</span> <span class="n">form_for</span> <span class="vi">@todo</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:name</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:name</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:description</span><span class="p">,</span> <span class="ss">rows</span><span class="p">:</span> <span class="mi">6</span>
+    <span class="o">%</span><span class="n">br</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">submit</span> <span class="s2">&quot;Add This Todo&quot;</span></code></pre></div>
+
+<p>The issue with this code above is that it is not pulling in the
+errors on the Todos object.</p>
+
+<p>We could:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#new.html.haml</span>
+<span class="o">%</span><span class="n">section</span><span class="o">.</span><span class="n">new_todo</span>
+  <span class="o">%</span><span class="n">h3</span> <span class="no">Add</span> <span class="n">a</span> <span class="kp">new</span> <span class="n">todo</span>
+  <span class="o">=</span> <span class="n">form_for</span> <span class="vi">@todo</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+  <span class="k">if</span><span class="vi">@todos</span><span class="o">.</span><span class="n">errors?</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:name</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:name</span></code></pre></div>
+
+<p>...but this is cumbersome to do for each form.</p>
+
+<p>Lets create a helper called MyFormBuilder that will customize the label:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">MyFormBuilder</span> <span class="o">&lt;</span> <span class="no">ActionView</span><span class="o">::</span><span class="no">Helpers</span><span class="o">::</span><span class="no">FormBuilder</span>
+  <span class="k">def</span> <span class="nf">label</span><span class="p">(</span><span class="nb">method</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">,</span> <span class="n">options</span> <span class="o">=</span> <span class="p">{},</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="n">object</span><span class="o">.</span><span class="n">errors</span><span class="o">[</span><span class="nb">method</span><span class="o">.</span><span class="n">to_sym</span><span class="o">]</span>
+    <span class="k">if</span> <span class="n">errors</span>
+      <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot; &lt;span class =</span><span class="se">\&quot;</span><span class="s2">error&quot;</span><span class="o">&gt;</span><span class="c1">#{errors.first}&lt;/span&gt;&quot; #pull the first error from the errors object (an array)</span>
+    <span class="k">end</span>
+    <span class="k">super</span><span class="p">(</span><span class="nb">method</span><span class="p">,</span> <span class="n">text</span><span class="o">.</span><span class="n">html_safe</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span> <span class="c1">#delegates control back to the custom form builder</span>
+    <span class="k">end</span>
+  <span class="k">end</span></code></pre></div>
+
+<p>Update new.html.haml, make sure you add &quot;MyFormBuilder&quot; to your form_for block:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">section</span><span class="o">.</span><span class="n">new_todo</span>
+  <span class="o">%</span><span class="n">h3</span> <span class="no">Add</span> <span class="n">a</span> <span class="kp">new</span> <span class="n">todo</span>
+  <span class="o">=</span> <span class="n">form_for</span> <span class="vi">@todo</span><span class="p">,</span> <span class="ss">builder</span><span class="p">:</span> <span class="no">MyFormBuilder</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:name</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:name</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:description</span><span class="p">,</span> <span class="ss">rows</span><span class="p">:</span> <span class="mi">6</span>
+    <span class="o">%</span><span class="n">br</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">submit</span> <span class="s2">&quot;Add This Todo&quot;</span></code></pre></div>
+
+<hr>
+
+<h3>Alternate Option: my_ form_ for helper</h3>
+
+<p>This is still somewhat repetitive. Let&#39;s create a my_ form_ for helper. We can manually merge in the my<em>form</em>for rather passing in the MyFormBuilder:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">app</span><span class="o">/</span><span class="n">helpers</span><span class="o">/</span><span class="n">my_form_builder</span><span class="o">.</span><span class="n">rb</span>
+<span class="k">module</span> <span class="nn">ApplicationHelper</span>
+  <span class="k">def</span> <span class="nf">my_form_for</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">options</span> <span class="o">=</span> <span class="p">{},</span> <span class="o">&amp;</span><span class="nb">proc</span><span class="p">)</span> <span class="c1">#takes 3 arguements</span>
+    <span class="n">form_for</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">merge!</span><span class="p">({</span><span class="ss">builder</span><span class="p">:</span> <span class="no">MyFormBuidler</span><span class="p">}),</span> <span class="o">&amp;</span><span class="nb">proc</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<h4>Update the new.html.haml</h4>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">section</span><span class="o">.</span><span class="n">new_todo</span>
+  <span class="o">%</span><span class="n">h3</span> <span class="no">Add</span> <span class="n">a</span> <span class="kp">new</span> <span class="n">todo</span>
+  <span class="o">=</span> <span class="n">my_form_for</span> <span class="vi">@todo</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:name</span><span class="p">,</span> <span class="s2">&quot;Name&quot;</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:name</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:description</span><span class="p">,</span> <span class="ss">rows</span><span class="p">:</span> <span class="mi">6</span>
+    <span class="o">%</span><span class="n">br</span>
+    <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">submit</span> <span class="s2">&quot;Add This Todo&quot;</span></code></pre></div>
+
+<hr>
+
+<h2>Custom Form Builders in The Wild!</h2>
+
+<h3>1. Formtastic</h3>
+
+<ul>
+<li>You can use semantic form_ for</li>
+</ul>
+
+<h3>2. Simple_form (creators of devise)</h3>
+
+<ul>
+<li>allows integration with Twitter Bootstrap &amp; Zurb Foundation 3</li>
+<li>is not best for those with alot of customization</li>
+<li>has default mapping - which is not the best for complex forms</li>
+</ul>
+
+<h3>3. BootstapForm</h3>
+
+<ul>
+<li>minimal dsl</li>
+<li>similar flow/syntax to Rails</li>
+</ul>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
       <a href="/2015/02/01/course3-red-green-refactor/">
         Course3 Red Green Refactor
       </a>
@@ -295,66 +405,6 @@ your system - describing the interactions b/w various objects)</p>
 <li>Create another folder: spec, where your .spec test files will go.</li>
 <li>Make sure to require your code files inside your specs.</li>
 </ol>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/01/20/course3-unit-functional-integration-tests/">
-        Build Robust & Production Quality Applications - Lesson 1: Unit vs. Functional vs. Integration Tests
-      </a>
-    </h1>
-
-    <span class="post-date">20 Jan 2015</span>
-
-    <h3>There are 3 types of tests:</h3>
-
-<ol>
-<li>Unit</li>
-<li>Functional</li>
-<li>Integration</li>
-</ol>
-
-<h3>Ranking according to:</h3>
-
-<h4>Coverage:</h4>
-
-<p>Unit &gt; Functional &gt; Integration</p>
-
-<h4>Speed:</h4>
-
-<p>Unit &gt; Functional &gt; Integration</p>
-
-<h4>Realistic:</h4>
-
-<p>Integration &gt; Functional &gt; Unit</p>
-
-<h3>1) Unit Tests</h3>
-
-<ul>
-<li>testing a component in isolation, focusing on 1 thing and making sure all cases are covered</li>
-<li>isolated components tested: routes, models, views, helpers</li>
-<li>allow you to thoroughly test all components.. as it is the closest to the code.</li>
-<li>is the fastest and gives you the best coverage</li>
-</ul>
-
-<h3>2) Functional Tests</h3>
-
-<ul>
-<li>testing components in collaboration, making sure not only they work but that they play nicely with each other</li>
-<li>components tested: controllers (where everything interacts), typically once request/response cycle</li>
-</ul>
-
-<h3>3) Integration Tests</h3>
-
-<p>Builds upon functional tests in the sense that not only must play nicely together but they must achieve a desired business objective.</p>
-
-<ul>
-<li>Components tested: Goal is to emulate the user, typically occurs in browser and follows the entire business process and
-that the business objective is achieved</li>
-</ul>
-
-<p>There are multiple styles of testing.. it has become very much like an &quot;art&quot; as devs often times develop a taste of styles for what to test, when, etc. In this course, we will primarily write unit and functional tests leaving integration tests for important business workflows.</p>
 
   </div>
   

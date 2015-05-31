@@ -129,6 +129,107 @@
   
   <div class="post">
     <h1 class="post-title">
+      <a href="/2014/09/11/tic-tac-toe-procedural/">
+        Intro to Ruby & Web Dev: Tic-Tac-Toe Procedural Game
+      </a>
+    </h1>
+
+    <span class="post-date">11 Sep 2014</span>
+
+    <ol>
+<li>Come up with requirements/specifications - that will determine your own scope.</li>
+<li>Application logic, sequence of steps.</li>
+<li>Translation of those steps into code.</li>
+<li>Run code to verfiy logic.=end</li>
+</ol>
+
+<h1>Sequence of steps</h1>
+
+<ol>
+<li>Draw a board</li>
+<li>Assign Player to &quot;x&quot;</li>
+<li>Assign Computer to &quot;o&quot;
+Loop until a winner or all squares are taken</li>
+<li>Player 1 picks an empty square
+Check for winner</li>
+<li>Player 2 picks an empty square</li>
+<li>Check for winner</li>
+<li>If there is a winner, show winner; else &quot;It&#39;s a tie&quot;</li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;pry&#39;</span>
+
+<span class="c1">#create a way to allow players to input choice on tictactoe board, hash</span>
+<span class="k">def</span> <span class="nf">initialize_board</span>
+  <span class="n">b</span> <span class="o">=</span> <span class="p">{}</span>
+  <span class="p">(</span><span class="mi">1</span><span class="o">.</span><span class="n">.</span><span class="mi">9</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span><span class="o">|</span><span class="n">position</span><span class="o">|</span> <span class="n">b</span><span class="o">[</span><span class="n">position</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;  &#39;</span><span class="p">}</span>
+  <span class="n">b</span>
+<span class="k">end</span>
+
+<span class="c1">#define board position where player/computer choice will go</span>
+<span class="k">def</span> <span class="nf">draw_board</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+  <span class="nb">system</span> <span class="s1">&#39;clear&#39;</span>
+  <span class="nb">puts</span> <span class="s2">&quot; </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span><span class="si">}</span><span class="s2"> &quot;</span>
+  <span class="nb">puts</span> <span class="s2">&quot;--------------&quot;</span>
+  <span class="nb">puts</span> <span class="s2">&quot; </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">4</span><span class="o">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">5</span><span class="o">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">6</span><span class="o">]</span><span class="si">}</span><span class="s2"> &quot;</span>
+  <span class="nb">puts</span> <span class="s2">&quot;--------------&quot;</span>
+  <span class="nb">puts</span> <span class="s2">&quot; </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">7</span><span class="o">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">8</span><span class="o">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">9</span><span class="o">]</span><span class="si">}</span><span class="s2"> &quot;</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">empty_position</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+  <span class="n">b</span><span class="o">.</span><span class="n">select</span> <span class="p">{</span><span class="o">|</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="o">|</span> <span class="n">v</span> <span class="o">==</span> <span class="s1">&#39;  &#39;</span><span class="p">}</span><span class="o">.</span><span class="n">keys</span>
+
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">player_picks_square</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+  <span class="nb">puts</span> <span class="s2">&quot;Pick a square (1 - 9):&quot;</span>
+  <span class="c1">#make sure your gets.chomp is getting the state that your hash key is</span>
+  <span class="n">position</span> <span class="o">=</span> <span class="nb">gets</span><span class="o">.</span><span class="n">chomp</span><span class="o">.</span><span class="n">to_i</span>
+  <span class="n">b</span><span class="o">[</span><span class="n">position</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;x&#39;</span>
+  <span class="c1">#binding.pry</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">computer_picks_square</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+  <span class="n">position</span> <span class="o">=</span> <span class="n">empty_position</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span>
+  <span class="n">b</span><span class="o">[</span><span class="n">position</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;o&#39;</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">check_winner</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="n">winning_lines</span> <span class="o">=</span> <span class="o">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">8</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">9</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">9</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="o">]]</span>
+<span class="n">winning_lines</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span>
+    <span class="k">if</span> <span class="n">b</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">0</span><span class="o">]]</span> <span class="o">==</span> <span class="s1">&#39;x&#39;</span> <span class="ow">and</span> <span class="n">b</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">1</span><span class="o">]]</span> <span class="o">==</span> <span class="s1">&#39;x&#39;</span> <span class="ow">and</span> <span class="n">b</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">2</span><span class="o">]]</span> <span class="o">==</span> <span class="s1">&#39;x&#39;</span>
+      <span class="k">return</span> <span class="s1">&#39;Player&#39;</span>
+    <span class="k">elsif</span> <span class="n">b</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">0</span><span class="o">]]</span> <span class="o">==</span> <span class="s1">&#39;o&#39;</span> <span class="ow">and</span> <span class="n">b</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">1</span><span class="o">]]</span> <span class="o">==</span> <span class="s1">&#39;o&#39;</span> <span class="ow">and</span> <span class="n">b</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">2</span><span class="o">]]</span> <span class="o">==</span> <span class="s1">&#39;o&#39;</span>
+      <span class="k">return</span> <span class="s1">&#39;Computer&#39;</span>
+    <span class="k">else</span>
+      <span class="k">return</span> <span class="kp">nil</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1">#sets local variable b from the initialize method (inner_scope) equal to board, a variable defined in the outter scope</span>
+<span class="n">board</span> <span class="o">=</span> <span class="n">initialize_board</span>
+<span class="n">draw_board</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
+
+
+<span class="c1">#loop until</span>
+<span class="k">begin</span>
+  <span class="n">player_picks_square</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
+  <span class="n">computer_picks_square</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
+  <span class="n">draw_board</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
+  <span class="n">winner</span> <span class="o">=</span> <span class="n">check_winner</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
+<span class="k">end</span> <span class="k">until</span> <span class="n">winner</span> <span class="o">||</span> <span class="n">empty_position</span><span class="p">(</span><span class="n">board</span><span class="p">)</span><span class="o">.</span><span class="n">empty?</span>
+
+<span class="k">if</span> <span class="n">winner</span>
+  <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">winner</span><span class="si">}</span><span class="s2"> won!&quot;</span>
+<span class="k">else</span>
+  <span class="nb">puts</span> <span class="s2">&quot;It&#39;s a tie!&quot;</span>
+<span class="k">end</span></code></pre></div>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
       <a href="/2014/09/10/the-object-model/">
         Intro to Ruby & Web Dev: The Object Model
       </a>
