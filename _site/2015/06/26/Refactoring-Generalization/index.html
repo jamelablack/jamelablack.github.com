@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Refactoring - Dealing wihth Generalization &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Refactoring - Dealing wihth Generalization</h1>
+  <span class="post-date">26 Jun 2015</span>
+  <h3>1. Pull Up Method</h3>
+
+<p>You have methods with identical results on subclasses. Move them to the superclass.</p>
+
+<h3>2.Push Down Method</h3>
+
+<p>Behavior on a superclass is relevant only for some of its subclasses. Move it to those subclasses</p>
+
+<h3>3. Extract Module</h3>
+
+<p>You have duplicated behavior in two or more classes.
+Create a new module and move the relevant behavior from the old class into the module, and include the module in the class.</p>
+
+<h3>4. Inline Module</h3>
+
+<p>The resultant indirection of the included module is no longer worth the duplication it is preventing.
+Merge the module into the including class.</p>
+
+<h3>5. Extract Subclass</h3>
+
+<p>A class has features that are used only in some instances.
+Create a subclass for that subset of features.</p>
+
+<h3>6. Introduce Inheritance</h3>
+
+<p>You have two classes with similar features.
+Make one of the classes a superclass and move the common features to the superclass.</p>
+
+<h3>7. Collapse Hierarchy</h3>
+
+<p>A superclass and subclass (or module and the class that includes the module) are not very different.
+￼￼Merge them together</p>
+
+<h3>8. Form Template Method</h3>
+
+<p>You have two methods in subclasses that perform similar steps in the same order, yet the steps are different.
+Get the steps into methods with the same signature, so that the original methods become the same. Then you can pull them up.</p>
+
+<h3>9. Replace Inheritance with Delegation</h3>
+
+<p>A subclass uses only part of a superclass interface or does not want to inherit data.
+Create a field for the superclass, adjust methods to delegate to the superclass, and remove the subclassing.
+￼Replace Inheritance with Delegation</p>
+
+<h3>10. Replace Abstract Superclass with Module</h3>
+
+<p>You have an inheritance hierarchy, but never intend to explicitly instantiate an instance of the superclass.
+Replace the superclass with a module to better communicate your intention.</p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/06/30/Metz-5-Rules/">
+            Sandi Metz - The Rules
+            <small>30 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/06/25/Refactoring-conditionals/">
+            Refactoring - Simplifying Conditional Expressions
+            <small>25 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/06/25/Refactoring-Simple-Method-Calls/">
+            Refactoring - Simple Method Calls
+            <small>25 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

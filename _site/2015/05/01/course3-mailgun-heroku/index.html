@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications - Lesson 6: Mailgun & Heroku &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 6: Mailgun & Heroku</h1>
+  <span class="post-date">01 May 2015</span>
+  <h2>To send emails from your Heroku app using Mailgun is simple:</h2>
+
+<h3>1. Mailgun Addon</h3>
+
+<p>Add the <a href="https://addons.heroku.com/mailgun">Mailgun</a> add-on to your Heroku app through the command line (within your app project directory)</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">heroku</span> <span class="ss">addons</span><span class="p">:</span><span class="n">create</span> <span class="n">mailgun</span></code></pre></div>
+
+<p>or you can add via their web interface</p>
+
+<p><img src="jamelablack.github.io/images/mailgun.png" alt="Mailgun Heroku Image" title="Mailgun addon"></p>
+
+<h3>2. Change your smtp settings</h3>
+
+<p>Then you copy and paste their smtp settings into your config/production.rb file. Make sure to change your domain name and add your default url options (which should point to your domain name) - if not, you will get an error: Errno::ECONNREFUSED: Connection refused - connect(2) for action mailer ...port(25)</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">config</span><span class="o">.</span><span class="n">action_mailer</span><span class="o">.</span><span class="n">delivery_method</span> <span class="o">=</span> <span class="ss">:smtp</span>
+  <span class="c1"># SMTP settings for mailgun</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">action_mailer</span><span class="o">.</span><span class="n">smtp_settings</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="ss">:port</span>           <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;MAILGUN_SMTP_PORT&#39;</span><span class="o">]</span><span class="p">,</span>
+    <span class="ss">:address</span>        <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;MAILGUN_SMTP_SERVER&#39;</span><span class="o">]</span><span class="p">,</span>
+    <span class="ss">:user_name</span>      <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;MAILGUN_SMTP_LOGIN&#39;</span><span class="o">]</span><span class="p">,</span>
+    <span class="ss">:password</span>       <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;MAILGUN_SMTP_PASSWORD&#39;</span><span class="o">]</span><span class="p">,</span>
+    <span class="ss">:domain</span>         <span class="o">=&gt;</span> <span class="s1">&#39;aqueous-coast-5067.herokuapp.com&#39;</span><span class="p">,</span>
+    <span class="ss">:authentication</span> <span class="o">=&gt;</span> <span class="ss">:plain</span><span class="p">,</span>
+  <span class="p">}</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">action_mailer</span><span class="o">.</span><span class="n">default_url_options</span> <span class="o">=</span> <span class="p">{</span> <span class="ss">:host</span> <span class="o">=&gt;</span> <span class="s1">&#39;aqueous-coast-5067.herokuapp.com&#39;</span> <span class="p">}</span></code></pre></div>
+
+<h3>3. Heroku config</h3>
+
+<p>You do not have to store the ENV variable in application.yml, you only have to run &quot;heroku config&quot; from your command line.</p>
+
+<h3>4. If you find you do need to store ENV variable in your app, check out Figaro.</h3>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/06/30/Metz-5-Rules/">
+            Sandi Metz - The Rules
+            <small>30 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/06/26/Refactoring-Generalization/">
+            Refactoring - Dealing wihth Generalization
+            <small>26 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/06/25/Refactoring-conditionals/">
+            Refactoring - Simplifying Conditional Expressions
+            <small>25 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

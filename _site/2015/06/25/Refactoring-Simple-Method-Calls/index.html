@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Refactoring - Simple Method Calls &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Refactoring - Simple Method Calls</h1>
+  <span class="post-date">25 Jun 2015</span>
+  <h3>1.. Rename Method</h3>
+
+<p>The name of a method does not reveal its purpose.
+Change the name of the method.</p>
+
+<h3>2. Add Parameter</h3>
+
+<p>A method needs more information from its caller.
+Add a parameter for an object that can pass on this information.</p>
+
+<h3>3. Remove Parameter</h3>
+
+<p>A parameter is no longer used by the method body.
+Remove it.</p>
+
+<h3>4. Seperate Query from Modifier</h3>
+
+<p>You have a method that returns a value and also changes the state of an object.
+Create two methods, one for the query and one for the modification.</p>
+
+<h3>4. Parameterize Method</h3>
+
+<p>You have a method that returns a value and also changes the state of an object.
+Create two methods, one for the query and one for the modification.</p>
+
+<p>Motivation
+You may see a couple of methods that do similar things but vary depending on a few values. In this case you can simplify matters by replacing the separate methods with a single method that handles the variations by parameters. Such a change removes duplicate code and increases flexibility, because you can deal with other variations by adding parameters.</p>
+
+<h3>5. Perserve Whole Object</h3>
+
+<p>You are getting several values from an object and passing these values as param- eters in a method call.
+Send the whole object instead.</p>
+
+<h3>6. Replace Parameter with Method</h3>
+
+<p>An object invokes a method, then passes the result as a parameter for a method. The receiver can also invoke this method.
+Remove the parameter and let the receiver invoke the method.</p>
+
+<h3>7. Introduce Parameter Object</h3>
+
+<p>You have a group of parameters that naturally go together.
+Replace them with an object.</p>
+
+<h3>8. Remove Setting Method</h3>
+
+<p>A field should be set at creation time and never altered.
+Remove any setting method for that field.
+Providing a setting method indicates that a field may be changed. If you don’t want that field to change once the object is created, don’t provide a setting method. That way your intention is clear and you often remove the possibility that the field will change.</p>
+
+<h3>9. Hide Method</h3>
+
+<p>A method is not used by any other class.
+Make the method private.</p>
+
+<h3>10. Replace Constructor with Factory Method</h3>
+
+<p>You want to do more than simple construction when you create an object.
+Replace the constructor with a factory method.
+The most obvious motivation for Replace Constructor with Factory Method is when you have conditional logic to determine the kind of object to create. If you need to do this conditional logic in more than one place, it’s time for a Factory Method.</p>
+
+<h3>11.Replace Error Code with Exception</h3>
+
+<p>A method returns a special code to indicate an error.
+Raise an exception instead.</p>
+
+<h3>12. Replace Exception with Test</h3>
+
+<p>You are raising an exception on a condition the caller could have checked first.
+Change the caller to make the test first.
+Exceptions are an important advance in programming languages. They allow us to avoid complex codes by use of Replace Error Code with Exception. Like so many pleasures, exceptions can be used to excess, and they cease to be pleasur- able. Exceptions should be used for exceptional behavior: behavior that is an unexpected error. They should not act as a substitute for conditional tests. If you can reasonably expect the caller to check the condition before calling the operation, you should provide a test, and the caller should use it.</p>
+
+<h3>13. Introduce Gateway</h3>
+
+<p>You want to interact with a complex API of an external system or resource in a simplified way.
+Introduce a Gateway that encapsulates access to an external system or resource.</p>
+
+<h3>14. Introduce Expression Builder</h3>
+
+<p>You want to interact with a public interface in a more fluent manner and not muddy the interface of an existing object.
+Introduce an Expression Builder and create an interface specific to your application.
+￼Introduce Expression Builder
+￼￼</p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/06/30/Metz-5-Rules/">
+            Sandi Metz - The Rules
+            <small>30 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/06/26/Refactoring-Generalization/">
+            Refactoring - Dealing wihth Generalization
+            <small>26 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/06/25/Refactoring-conditionals/">
+            Refactoring - Simplifying Conditional Expressions
+            <small>25 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

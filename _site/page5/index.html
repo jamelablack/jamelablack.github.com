@@ -118,6 +118,26 @@
           
         
       
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
 
     <p>&copy; 2015. All rights reserved.</p>
   </div>
@@ -129,311 +149,506 @@
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/02/18/cardinality-boundary-conditions/">
-        Build Robust & Production Quality Applications - Lesson 2: Alternative Style of Rspec
+      <a href="/2015/05/05/course3-background-jobs/">
+        Build Robust & Production Quality Applications - Lesson 6: Background Jobs
       </a>
     </h1>
 
-    <span class="post-date">18 Feb 2015</span>
+    <span class="post-date">05 May 2015</span>
 
-    <h2>Techniques you can use to grow your test suite:</h2>
+    <h2>Background Jobs</h2>
 
-<p>Testing tags (many to many relationship with Todos)
-* When testing for numbers, you want to use the 0, 1, many, and boundary_condition
-(if there is one)</p>
+<p>Email sending typically is not very fast since we have to rely on some third party application. Waiting can slow up your app and potentially frustrate users so it&#39;s best to put non-essential and non-time-sensitive tasks in background jobs.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;display_text&quot;</span> <span class="k">do</span>
-  <span class="n">it</span> <span class="s2">&quot;displays the name when there&#39;s no tags&quot;</span>
-  <span class="n">it</span> <span class="s2">&quot;displays the only tag with word &#39;tag&#39; when there&#39;s one tag&quot;</span>
-  <span class="n">it</span> <span class="s2">&quot;displays name with multiple tags&quot;</span>
-  <span class="n">it</span> <span class="s2">&quot;displays up to four tags&quot;</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
+<p>Since you can web processes and background job processes running locally, you need tp run both the rails server and sidekiq servers to process jobs respectively.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;#display_text&quot;</span> <span class="k">do</span>
-  <span class="n">it</span> <span class="s2">&quot;displays the name when there&#39;s no tags&quot;</span> <span class="k">do</span>
-   <span class="n">todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook dinner&quot;</span><span class="p">)</span>
-   <span class="n">todo</span><span class="o">.</span><span class="n">display_text</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="s2">&quot;cook dinner&quot;</span>
-  <span class="k">end</span>
+<h3>Resque</h3>
 
-  <span class="n">it</span> <span class="nb">display</span> <span class="n">the</span> <span class="n">only</span> <span class="n">tag</span> <span class="n">with</span> <span class="n">the</span> <span class="n">word</span> <span class="s1">&#39;tag&#39;</span> <span class="k">when</span> <span class="n">there</span><span class="err">&#39;</span><span class="n">s</span> <span class="n">one</span> <span class="n">tag</span> <span class="k">do</span>
-    <span class="n">todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook dinner&quot;</span><span class="p">)</span>
-    <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;home&quot;</span><span class="p">)</span>
-    <span class="n">todo</span><span class="o">.</span><span class="n">display_text</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="s2">&quot;cook dinner (tags: home)&quot;</span>
-  <span class="k">end</span>
+<p>came out of Github - Resque is our Redis-backed library for creating background jobs, placing those jobs on multiple queues, and processing them later.</p>
 
-  <span class="n">it</span> <span class="s2">&quot;displays name with multiple tags&quot;</span> <span class="k">do</span>
-    <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook dinner&quot;</span><span class="p">)</span>
-    <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;home&quot;</span><span class="p">)</span>
-    <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;urgent&quot;</span><span class="p">)</span>
-    <span class="n">todo</span><span class="o">.</span><span class="n">display_text</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="s2">&quot;cook dinner(tags: home, urgent)&quot;</span>
-  <span class="k">end</span>
+<p>Benefits: has admin interface, is powered by Github
+Delayed Job does not require Redis, both uses a pulling queue
+Beanstalk and Stalker may be better if you care about speed, as they have a pulling mechanism</p>
 
-  <span class="n">it</span> <span class="s2">&quot;displays up to four tags&quot;</span> <span class="k">do</span>
-    <span class="n">todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook dinner&quot;</span><span class="p">)</span>
-    <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;home&quot;</span><span class="p">)</span>
-    <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;urgent&quot;</span><span class="p">)</span>
-    <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;help&quot;</span><span class="p">)</span>
-    <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;book&quot;</span><span class="p">)</span>
-    <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;patience&quot;</span><span class="p">)</span>
-    <span class="n">todo</span><span class="o">.</span><span class="n">displat_text</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="s2">&quot;cook dinner (tags: home, urgent, help, book, more...)&quot;</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
+<p>Sidekiq is a higher performance background solution than Resque and can even be ported, added on top of resque solution.</p>
 
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/02/16/course3-refactor-in-TDD/">
-        Build Robust & Production Quality Applications - Lesson 2: Refactor in TDD
-      </a>
-    </h1>
+<p>Check out the Railscast on Resque for intro.</p>
 
-    <span class="post-date">16 Feb 2015</span>
+<h3>Sidekiq</h3>
 
-    <h3>Add feature in the Red and refactor in the green.</h3>
+<p>In order to use Sidekiq, you must install and run <a href="http://redis.io">Redis</a>. Once downloaded, run the &quot;$ src/redis-server&quot; in the redis-3.0.2 folder.</p>
 
-<ol>
-<li>Pull out anything complex into a separate method and give it a name</li>
-<li>Clean up public facing methods.. pulling complex code into private methods</li>
-</ol>
+<p>You must also gem install sidekiq, and run &quot;bundle exec sidekiq&quot;</p>
 
-<p>Example:</p>
+<p>When watching the Railscast on Sidekiq, it talks about the creation of workers:</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Todo</span> <span class="o">&lt;</span> <span class="ss">ActiveRecord</span><span class="p">:;</span><span class="no">Base</span>
-  <span class="n">has_many</span> <span class="ss">:taggings</span>
-  <span class="n">has_many</span> <span class="ss">:tags</span><span class="p">,</span> <span class="ss">through</span><span class="p">:</span> <span class="ss">:taggings</span>
-  <span class="n">validates_presence_of</span> <span class="ss">:name</span>
-
-
-  <span class="k">def</span> <span class="nf">name_only?</span>
-    <span class="n">description</span><span class="o">.</span><span class="n">blank?</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">display_text</span>
-    <span class="nb">name</span> <span class="o">+</span> <span class="n">tag_text</span>
-  <span class="k">end</span>
-
-
-  <span class="kp">private</span>
-
-  <span class="k">def</span> <span class="nf">tag_text</span>
-    <span class="k">if</span> <span class="n">tags</span><span class="o">.</span><span class="n">any?</span>
-      <span class="s2">&quot; (</span><span class="si">#{</span><span class="n">tags</span><span class="o">.</span><span class="n">one?</span> <span class="p">?</span> <span class="s1">&#39;tag&#39;</span> <span class="p">:</span> <span class="s1">&#39;tags&#39;</span> <span class="si">}</span><span class="s2"> : </span><span class="si">#{</span><span class="n">tags</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:name</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">)</span><span class="si">}</span><span class="s2"></span>
-<span class="s2">      </span><span class="si">#{</span><span class="s1">&#39;, more...&#39;</span> <span class="k">if</span> <span class="n">tags</span><span class="o">.</span><span class="n">count</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="si">}</span><span class="s2">)&quot;</span>
-    <span class="k">else</span>
-      <span class="s2">&quot;&quot;</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/02/13/course3-write-controller-tests/">
-        Build Robust & Production Quality Applications - Lesson 2: Writing Controller Tests
-      </a>
-    </h1>
-
-    <span class="post-date">13 Feb 2015</span>
-
-    <h3>With any test, there are typically 3 actions:</h3>
-
-<ol>
-<li>Set up the data required for the action</li>
-<li>Perform the action</li>
-<li>Verify the the expected result</li>
-</ol>
-
-<h3>Controller Tests</h3>
-
-<ul>
-<li>are typically considered more functional bc you&#39;re pulling together
-multiple components</li>
-</ul>
-
-<p>You typically never have to tests the render or redirect views portion of an action
-because that is testing the functionality of rails rather than the code we write. The goal
-of testing is to test the code we write only.</p>
-
-<p>You do, however want to test redirect_to for unauthorized users.</p>
-
-<p>Also if you dont wan&#39;t to rerun all the tests in your suite and just run one in particular
-you can specify &quot;line:27&quot; and it will run the test on that line.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">rspec</span> <span class="n">spec</span><span class="o">/</span><span class="n">controllers</span><span class="o">/</span><span class="n">todos_controller_spec</span><span class="o">.</span><span class="n">rb</span> <span class="mi">27</span></code></pre></div>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">TodoController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
-
-  <span class="k">def</span> <span class="nf">index</span>
-    <span class="vi">@todos</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span>
-  <span class="k">end</span>
-
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/controllers/invitations_controller.rb</span>
+<span class="k">class</span> <span class="nc">InvitationsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="n">before_filter</span> <span class="ss">:require_user</span>
   <span class="k">def</span> <span class="nf">new</span>
-    <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span>
+    <span class="vi">@invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">new</span>
   <span class="k">end</span>
 
   <span class="k">def</span> <span class="nf">create</span>
-    <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:todo</span><span class="o">]</span><span class="p">)</span>
-    <span class="k">if</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">save</span>
-      <span class="n">redirect_to</span> <span class="n">root_path</span>
+    <span class="vi">@invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">invitation_params</span><span class="o">.</span><span class="n">merge!</span><span class="p">(</span><span class="ss">inviter_id</span><span class="p">:</span> <span class="n">current_user</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="vi">@invitation</span><span class="o">.</span><span class="n">save</span>
+      <span class="no">InivtationWorker</span><span class="o">.</span><span class="n">perform_async</span>
+      <span class="n">flash</span><span class="o">[</span><span class="ss">:success</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;You&#39;ve successfully invited </span><span class="si">#{</span><span class="vi">@invitation</span><span class="o">.</span><span class="n">recipient_name</span><span class="si">}</span><span class="s2">.&quot;</span>
+      <span class="n">redirect_to</span> <span class="n">new_invitation_path</span>
     <span class="k">else</span>
-    <span class="n">render</span> <span class="ss">:new</span>
+      <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Please fill in all inputs.&quot;</span>
+      <span class="n">render</span> <span class="ss">:new</span>
     <span class="k">end</span>
+  <span class="k">end</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/workers</span>
+<span class="k">class</span> <span class="nc">InvitationWorker</span>
+  <span class="kp">include</span> <span class="no">Sidekiq</span><span class="o">::</span><span class="no">Worker</span>
+
+  <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="n">invitation_id</span><span class="p">)</span>
+    <span class="n">invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">invitation_id</span><span class="p">)</span>
+    <span class="no">AppMailer</span><span class="o">.</span><span class="n">send_invitation_email</span><span class="p">(</span><span class="n">invitation</span><span class="p">)</span><span class="o">.</span><span class="n">deliver</span>
   <span class="k">end</span>
 <span class="k">end</span></code></pre></div>
 
-<h3>Steps:</h3>
+<p>But instead of creating workers, we can just use <a href="https://github.com/mperham/sidekiq/wiki/Delayed-extensions#actionmailer">delayed extentions</a></p>
 
-<ol>
-<li>Create directory: controllers</li>
-<li>Create spec: todos<em>conroller</em>spec.rb</li>
-<li>Controller typically have two goals... render and redirect</li>
-</ol>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/controlers/invitations_controller.rb</span>
+  <span class="k">def</span> <span class="nf">create</span>
+    <span class="vi">@invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">invitation_params</span><span class="o">.</span><span class="n">merge!</span><span class="p">(</span><span class="ss">inviter_id</span><span class="p">:</span> <span class="n">current_user</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
+    <span class="k">if</span> <span class="vi">@invitation</span><span class="o">.</span><span class="n">save</span>
+      <span class="no">AppMailer</span><span class="o">.</span><span class="n">delay</span><span class="o">.</span><span class="n">send_invitation_email</span><span class="p">(</span><span class="vi">@invitation</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+      <span class="n">flash</span><span class="o">[</span><span class="ss">:success</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;You&#39;ve successfully invited </span><span class="si">#{</span><span class="vi">@invitation</span><span class="o">.</span><span class="n">recipient_name</span><span class="si">}</span><span class="s2">.&quot;</span>
+      <span class="n">redirect_to</span> <span class="n">new_invitation_path</span>
+    <span class="k">else</span>
+      <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Please fill in all inputs.&quot;</span>
+      <span class="n">render</span> <span class="ss">:new</span>
+    <span class="k">end</span>
+  <span class="k">end</span></code></pre></div>
 
-<span class="n">describe</span> <span class="no">TodoController</span> <span class="k">do</span>
+<p>Since we aren&#39;t running .perform_async on a worker, we need to pass @invitiation.id to the AppMailer:</p>
 
-  <span class="n">describe</span> <span class="s2">&quot;GET index&quot;</span> <span class="k">do</span>
-  <span class="n">it</span> <span class="s2">&quot;set the @todos variable&quot;</span> <span class="k">do</span>
-    <span class="n">cook</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook&quot;</span><span class="p">)</span>
-    <span class="nb">sleep</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;sleep&quot;</span><span class="p">)</span>
-
-    <span class="n">get</span> <span class="ss">:index</span>
-    <span class="n">assigns</span><span class="p">(</span><span class="ss">:todos</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="p">(</span><span class="n">cook</span><span class="p">,</span> <span class="nb">sleep</span><span class="p">)</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/app_mailer.rb</span>
+<span class="k">def</span> <span class="nf">send_invitation_email</span><span class="p">(</span><span class="n">invitation_id</span><span class="p">)</span>
+    <span class="vi">@invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">invitation_id</span><span class="p">)</span>
+    <span class="n">mail</span> <span class="ss">to</span><span class="p">:</span> <span class="vi">@invitation</span><span class="o">.</span><span class="n">recipient_email</span><span class="p">,</span> <span class="ss">from</span><span class="p">:</span> <span class="s2">&quot;info@myflix.com&quot;</span><span class="p">,</span> <span class="ss">subject</span><span class="p">:</span> <span class="s2">&quot;Invitation to join Myflix&quot;</span>
   <span class="k">end</span>
-
-  <span class="n">it</span> <span class="s2">&quot;render the index template&quot;</span> <span class="k">do</span>
-    <span class="n">get</span> <span class="ss">:index</span>
-    <span class="n">response</span><span class="o">.</span><span class="n">should</span> <span class="n">render_template</span> <span class="ss">:index</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-
-  <span class="n">describe</span> <span class="s1">&#39;GET new&#39;</span> <span class="k">do</span>
-    <span class="n">it</span> <span class="s2">&quot;sets  the @todo variable&quot;</span> <span class="k">do</span>
-      <span class="n">get</span> <span class="ss">:new</span>
-      <span class="n">assigns</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="n">be_new_record</span>
-      <span class="n">assigns</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="n">be_instance_of</span><span class="p">(</span><span class="no">Todo</span><span class="p">)</span>
-    <span class="k">end</span>
-    <span class="n">it</span> <span class="s2">&quot;renders the new template&quot;</span> <span class="k">do</span>
-      <span class="n">get</span> <span class="ss">:new</span>
-      <span class="n">response</span><span class="o">.</span><span class="n">should</span> <span class="n">render_template</span> <span class="ss">:new</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-
-  <span class="n">describe</span> <span class="s2">&quot;POST create&quot;</span> <span class="k">do</span>
-    <span class="n">it</span> <span class="s2">&quot;creates the todo record when the input is valid&quot;</span> <span class="k">do</span>
-      <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">todo</span><span class="p">:</span> <span class="p">{</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook&quot;</span><span class="p">,</span> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;I like to cook&quot;</span><span class="p">}</span>
-      <span class="no">Todo</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="s2">&quot;cook&quot;</span>
-      <span class="no">Todo</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="s2">&quot;I like cooking&quot;</span>
-    <span class="k">end</span>
-
-    <span class="n">it</span> <span class="s2">&quot;redirects to the root path when the input is valid&quot;</span> <span class="k">do</span>
-        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">todo</span><span class="p">:</span> <span class="p">{</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook&quot;</span><span class="p">,</span> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;I like cooking&quot;</span><span class="p">}</span>
-        <span class="n">response</span><span class="o">.</span><span class="n">should</span> <span class="n">redirect_to</span> <span class="n">root_path</span>
-    <span class="k">end</span>
-
-    <span class="n">it</span> <span class="s2">&quot;does not create a todo when the input is invalid&quot;</span> <span class="k">do</span>
-        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">todo</span><span class="p">:</span> <span class="p">{</span><span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;I like cooking&quot;</span><span class="p">}</span>
-        <span class="no">Todo</span><span class="o">.</span><span class="n">count</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="mi">0</span>
-    <span class="k">end</span>
-
-    <span class="n">it</span> <span class="s2">&quot;renders the new template when the input is invalid&quot;</span> <span class="k">do</span>
-      <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">todo</span><span class="p">:</span> <span class="p">{</span><span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;I like cooking&quot;</span><span class="p">}</span>
-      <span class="n">response</span><span class="o">.</span><span class="n">should</span> <span class="n">render_template</span> <span class="ss">:new</span>
-    <span class="k">end</span>
 <span class="k">end</span></code></pre></div>
+
+<p>To run tests, you have to add the following to run them <a href="https://github.com/mperham/sidekiq/wiki/Testing">inline</a>:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#spec/spec_helper.rb</span>
+
+<span class="nb">require</span> <span class="s1">&#39;sidekiq/testing&#39;</span>
+<span class="no">Sidekiq</span><span class="o">::</span><span class="no">Testing</span><span class="o">.</span><span class="n">inline!</span></code></pre></div>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/02/10/shoulda-matchers/">
-        Build Robust & Production Quality Applications - Lesson 2: Shoulda Matchers
+      <a href="/2015/05/01/course3-mailgun-heroku/">
+        Build Robust & Production Quality Applications - Lesson 6: Mailgun & Heroku
       </a>
     </h1>
 
-    <span class="post-date">10 Feb 2015</span>
+    <span class="post-date">01 May 2015</span>
 
-    <p>With rspec, there comes built-in matchers, which can be found: <a href="http://www.relishapp.com/rspec/rspec-expectations/v/2-9/docs/built-in-matchers">shoulda matchers</a></p>
+    <h2>To send emails from your Heroku app using Mailgun is simple:</h2>
 
-<h3>1. Object Identity:</h3>
+<h3>1. Mailgun Addon</h3>
 
-<p>You should use &quot;Object Equivalence&quot; instead because you will be testing if the
-two objects are the same when in reality they may equal the same but be different objects</p>
+<p>Add the <a href="https://addons.heroku.com/mailgun">Mailgun</a> add-on to your Heroku app through the command line (within your app project directory)</p>
 
-<ul>
-<li>actual.should == expected</li>
-<li>actual.should eq(expected)</li>
-<li>actual.should eql(expected)</li>
-<li>actual.should equal(expected)</li>
-</ul>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">heroku</span> <span class="ss">addons</span><span class="p">:</span><span class="n">create</span> <span class="n">mailgun</span></code></pre></div>
 
-<h3>2. Comparison</h3>
+<p>or you can add via their web interface</p>
 
-<p>actual should.be &gt; expected</p>
+<p><img src="jamelablack.github.io/images/mailgun.png" alt="Mailgun Heroku Image" title="Mailgun addon"></p>
 
-<h3>3. Types of Classes</h3>
+<h3>2. Change your smtp settings</h3>
 
-<p>test whether the actual is an instance of a class</p>
+<p>Then you copy and paste their smtp settings into your config/production.rb file. Make sure to change your domain name and add your default url options (which should point to your domain name) - if not, you will get an error: Errno::ECONNREFUSED: Connection refused - connect(2) for action mailer ...port(25)</p>
 
-<h3>4. Truthiness and Existentialism</h3>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">config</span><span class="o">.</span><span class="n">action_mailer</span><span class="o">.</span><span class="n">delivery_method</span> <span class="o">=</span> <span class="ss">:smtp</span>
+  <span class="c1"># SMTP settings for mailgun</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">action_mailer</span><span class="o">.</span><span class="n">smtp_settings</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="ss">:port</span>           <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;MAILGUN_SMTP_PORT&#39;</span><span class="o">]</span><span class="p">,</span>
+    <span class="ss">:address</span>        <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;MAILGUN_SMTP_SERVER&#39;</span><span class="o">]</span><span class="p">,</span>
+    <span class="ss">:user_name</span>      <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;MAILGUN_SMTP_LOGIN&#39;</span><span class="o">]</span><span class="p">,</span>
+    <span class="ss">:password</span>       <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;MAILGUN_SMTP_PASSWORD&#39;</span><span class="o">]</span><span class="p">,</span>
+    <span class="ss">:domain</span>         <span class="o">=&gt;</span> <span class="s1">&#39;aqueous-coast-5067.herokuapp.com&#39;</span><span class="p">,</span>
+    <span class="ss">:authentication</span> <span class="o">=&gt;</span> <span class="ss">:plain</span><span class="p">,</span>
+  <span class="p">}</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">action_mailer</span><span class="o">.</span><span class="n">default_url_options</span> <span class="o">=</span> <span class="p">{</span> <span class="ss">:host</span> <span class="o">=&gt;</span> <span class="s1">&#39;aqueous-coast-5067.herokuapp.com&#39;</span> <span class="p">}</span></code></pre></div>
 
-<p>tests whether the actual is truthy(not nil or false)</p>
+<h3>3. Heroku config</h3>
 
-<h3>5. Expecting errors</h3>
+<p>You do not have to store the ENV variable in application.yml, you only have to run &quot;heroku config&quot; from your command line.</p>
 
-<h3>6. Expecting Throws</h3>
-
-<p>Expecting methods to throw a symbol
-* Predicate Matchers - passes if method returns a truthy result</p>
-
-<h3>7. Collection Membership</h3>
-
-<p>testing whether an array is a subset of the expected</p>
-
-<h3>8. Ranges (only for Ruby 1.9)</h3>
-
-<p>Also matchers worth mentioning:</p>
-
-<ul>
-<li>Have(n)items matcher</li>
-<li>Operator matchers</li>
-<li>Respond_to matchers - does this object respond to a certain method</li>
-<li>Satisfy matcher - very flexible, you can pass it a block to see if it will evaluate to true</li>
-<li>Specify a<em>kind</em>of matcher</li>
-<li>Yield matchers - allow you to work with blocks</li>
-<li>End<em>with, start</em>with</li>
-<li>Cover Matchers</li>
-</ul>
+<h3>4. If you find you do need to store ENV variable in your app, check out Figaro.</h3>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/02/07/course3-frontpage/">
-        Build Robust & Production Quality Applications - Lesson 1: Front Page
+      <a href="/2015/04/27/POODR-ch4/">
+        POODR - Ch4: Creating Flexible Interfaces
       </a>
     </h1>
 
-    <span class="post-date">07 Feb 2015</span>
+    <span class="post-date">27 Apr 2015</span>
 
-    <h2>Front Page</h2>
+    <p>There is design detail that must be captured at this level but an object-oriented application is more than just classes. It is made up of classes but defined by messages. Classes control what’s in your source code repository; messages reflect the living, ani- mated application.
+Design, therefore, must be concerned with the messages that pass between ob- jects. It deals not only with what objects know (their responsibilities) and who they know (their dependencies), but how they talk to one another. The conversation be- tween objects takes place using their interfaces.</p>
 
-<p>Front Pages or Root/home pages are typically static images. Those
-are rendered using the pages#controller. In this case however, we do not need the
-pages#front action defined in the controller bc it doesnt do anything.
-For now, we can just have the empty controller bc due rails conventions, Rails will just render
-the view of the same name if the action is not present in the controller.</p>
+<p>##Defining Public Interfaces
+ The kitchen does many things but does not, thankfully, expose them all to its customers. It has a public interface that customers are expected to use; the menu. Within the kitchen many things happen, many other messages get passed, but these messages are private and thus invisible to customers. Each of your classes is like a kitchen. The class exists to fulfill a single responsibil- ity but implements many methods.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#pages_controller.rb</span>
-<span class="k">class</span> <span class="nc">PagesController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
-  <span class="k">def</span> <span class="nf">front</span>
-    <span class="n">redirect_to</span> <span class="n">home_path</span> <span class="k">if</span> <span class="n">current_user</span>
+<p>###Public Interfaces
+The methods that make up the public interface of your class comprise the face it presents to the world. They:
+• Reveal its primary responsibility
+• Are expected to be invoked by others
+• Will not change on a whim
+• Are safe for others to depend on
+• Are thoroughly documented in the tests</p>
+
+<h3>Private Interfaces</h3>
+
+<p>All other methods in the class are part of its private interface. They:
+• Handle implementation details
+• Are not expected to be sent by other objects • Can change for any reason whatsoever
+• Are unsafe for others to depend on
+• May not even be referenced in the tests</p>
+
+<p>Domain objects are easy to find but they are not at the design center of your application. Instead, they are a trap for the unwary. If you fixate on domain objects you will tend to coerce behavior into them. Design experts notice domain objects without concentrating on them; they focus not on these objects but on the messages that pass between them. These messages are guides that lead you to discover other objects, ones that are just as necessary but far less obvious.</p>
+
+<p>Before you sit at the keyboard and start typing you should form an intention about the objects and the messages needed to satisfy this use case.</p>
+
+<h3>Using Sequence Diagrams</h3>
+
+<p>There is a perfect, low-cost way to experiment with objects and messages: sequence diagrams.
+Therein lies the value of sequence diagrams. They explicitly specify the messages that pass between objects, and because objects should only communicate using public interfaces, sequence diagrams are a vehicle for exposing, experimenting with, and ultimately defining those interfaces.</p>
+
+<p>Also, notice now that you have drawn a sequence diagram, this design conversation has been inverted. The previous design emphasis was on classes and who and what they knew. Suddenly, the conversation has changed; it is now revolving around mes- sages. Instead of deciding on a class and then figuring out its responsibilities, you are now deciding on a message and figuring out where to send it.</p>
+
+<p>This transition from class-based design to message-based design is a turning point in your design career. The message-based perspective yields more flexible applications than does the class-based perspective. Changing the fundamental design question from “I know I need this class, what should it do?” to “I need to send this message, who should respond to it?” is the first step in that direction.
+You don’t send messages because you have objects, you have objects because you send messages.</p>
+
+<h3>Asking for “What” Instead of Telling “How”</h3>
+
+<p>The distinction between a message that asks for what the sender wants and a message that tells the receiver how to behave may seem subtle but the consequences are significant. Understanding this difference is a key part of creating reusable classes with well-defined public interfaces.</p>
+
+<h3>Seeking Context Independence</h3>
+
+<p>The context that an object expects has a direct effect on how difficult it is to reuse. Objects that have a simple context are easy to use and easy to test; they expect few things from their surroundings. Objects that have a complicated context are hard to use and hard to test; they require complicated setup before they can do anything.
+The best possible situation is for an object to be completely independent of its context. An object that could collaborate with others without knowing who they are or what they do could be reused in novel and unanticipated ways.
+You already know the technique for collaborating with others without knowing who they are—dependency injection.</p>
+
+<h3>Trusting Other Objects</h3>
+
+<p>If objects were human and could describe their own relationships, in Figure 4.5 Trip would be telling Mechanic: “I know what I want and I know how you do it;” in Figure 4.6: “I know what I want and I know what you do” and in Figure 4.7: “I know what I want and I trust you to do your part.”
+This blind trust is a keystone of object-oriented design. It allows objects to collab- orate without binding themselves to context and is necessary in any application that expects to grow and change.</p>
+
+<h2>Create Explicit Interfaces</h2>
+
+<p>Your goal is to write code that works today, that can easily be reused, and that can be adapted for unexpected use in the future. Other people will invoke your methods; it is your obligation to communicate which ones are dependable.
+www.it-ebooks.info
+Writing Code That Puts Its Best (Inter)Face Forward 77 Every time you create a class, declare its interfaces. Methods in the public
+interface should
+• Be explicitly identified as such
+• Be more about what than how
+• Have names that, insofar as you can anticipate, will not change • Take a hash as an options parameter</p>
+
+<p>Be just as intentional about the private interface; make it inescapably obvious. Tests, because they serve as documentation, can support this endeavor. Either do not test private methods or, if you must, segregate those tests from the tests of public methods. Do not allow your tests to fool others into unintentionally depending on the changeable, private interface.
+Ruby provides three relevant keywords: public, protected, and private. Use of these keywords serves two distinct purposes. First, they indicate which methods are stable and which are unstable. Second, they control how visible a method is to other parts of your application. These two purposes are very different. Conveying informa- tion that a method is stable or unstable is one thing; attempting to control how others use it is quite another.
+Public, Protected, and Private Keywords
+The private keyword denotes the least stable kind of method and provides the most restricted visibility. Private methods must be called with an implicit receiver, or, inversely, may never be called with an explicit receiver.</p>
+
+<p>The protected keyword also indicates an unstable method, but one with slightly different visibility restrictions. Protected methods allow explicit receivers as long as the receiver is self or an instance of the same class or subclass of self.</p>
+
+<p>Honor the Public Interfaces of Others
+Do your best to interact with other classes using only their public interfaces.f your design forces the use of a private method in another class, first rethink your design. It’s possible that a committed effort will unearth an alternative; you should try very hard to find one. A dependency on a private method of an external framework is a form of technical debt. Avoid these dependencies.</p>
+
+<p>Minimize Context
+Construct public interfaces with an eye toward minimizing the context they require from others. Keep the what versus how distinction in mind; create public methods that allow senders to get what they want without knowing how your class implements its behavior.</p>
+
+<p>Do what best suits your needs, but create some kind of defined public interface and use it. This reduces your class’s context, making it easier to reuse and simpler to test.</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/04/23/POODR-ch3/">
+        POODR - Ch3: Mangaging Dependencies
+      </a>
+    </h1>
+
+    <span class="post-date">23 Apr 2015</span>
+
+    <p>Each message is initiated by an object to invoke some bit of behavior. All of the behavior is dispersed among the objects. Therefore, for any desired behavior:</p>
+
+<ul>
+<li>an object either knows it personally,</li>
+<li>inherits it, or</li>
+<li>knows another object who knows it.</li>
+</ul>
+
+<p>This chapter is about the third, getting access to behavior when that behavior is implemented in other objects.</p>
+
+<p>Because well designed objects have a single responsibility, their very nature requires that they collaborate to accomplish complex tasks. This collaboration is powerful and perilous. To collaborate, an object must know something know about others. Knowing creates a dependency. If not managed carefully, these dependencies will strangle your application.</p>
+
+<h2>Understanding Dependencies</h2>
+
+<p>An object depends on another object if, when one object changes, the other might be forced to change in turn.</p>
+
+<h3>Recognizing Dependencies</h3>
+
+<p>An object has a dependency when it knows
+• The name of another class. Gear expects a class named Wheel to exist.
+• The name of a message that it intends to send to someone other than self. Gear expects a Wheel instance to respond to diameter.
+• The arguments that a message requires. Gear knows that Wheel.new requires a rim and a tire.
+• The order of those arguments. Gear knows the first argument to Wheel.new should be rim, the second, tire.</p>
+
+<p>Your design challenge is to manage dependencies so that each class has the fewest possible; a class should know just enough to do its job and not one thing more</p>
+
+<h3>Coupling Between Objects (CBO)</h3>
+
+<p>Alternatively, you could say that each coupling creates a dependency.The dependencies cause these objects to act like a single thing. They move in lockstep; they change together.
+When two (or three or more) objects are so tightly coupled that they behave as a unit, it’s impossible to reuse just one. Changes to one object force changes to all. Left unchecked, unmanaged dependencies cause an entire application to become an entan- gled mess. A day will come when it’s easier to rewrite everything than to change anything.</p>
+
+<h3>Other Dependencies</h3>
+
+<p>One especially destructive kind of dependency occurs where an object knows another who knows another who knows something; that is, where many messages are chained together to reach behavior that lives in a distant object. This is the “knowing the name of a message you plan to send to someone other than self ” dependency, only magnified. Message chaining creates a dependency between the original object and every object and message along the way to its ultimate target. These additional couplings greatly increase the chance that the first object will be forced to change because a change to any of the intermediate objects might affect it. This is a Law of Demeter Violation.</p>
+
+<h2>Writing Loosley Coupled Code</h2>
+
+<h3>Inject Dependencies</h3>
+
+<p>Referring to another class by name create a sticky spot.</p>
+
+<p>Change:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Gear</span>
+<span class="kp">attr_reader</span> <span class="ss">:chainring</span><span class="p">,</span> <span class="ss">:cog</span><span class="p">,</span> <span class="ss">:rim</span><span class="p">:,</span> <span class="ss">:tire</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">chainring</span><span class="p">,</span> <span class="n">cog</span><span class="p">,</span> <span class="n">rim</span><span class="p">,</span> <span class="n">tire</span><span class="p">)</span>
+    <span class="vi">@chainring</span> <span class="o">=</span> <span class="n">chainring</span>
+    <span class="vi">@cog</span> <span class="o">=</span> <span class="n">cog</span>
+    <span class="vi">@rim</span> <span class="o">=</span> <span class="n">rim</span>
+    <span class="vi">@tire</span> <span class="o">=</span> <span class="n">tire</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">gear_inches</span>
+    <span class="n">ratio</span> <span class="o">*</span> <span class="no">Wheel</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">rim</span><span class="p">,</span><span class="n">tire</span><span class="p">)</span><span class="o">.</span><span class="n">diameter</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="no">Gear</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="mi">52</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">1</span><span class="o">.</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">gear_inches</span></code></pre></div>
+
+<p>to:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Gear</span>
+<span class="kp">attr_reader</span> <span class="ss">:chainring</span><span class="p">,</span> <span class="ss">:cog</span><span class="p">,</span> <span class="ss">:wheel</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">chainring</span><span class="p">,</span> <span class="n">cog</span><span class="p">,</span> <span class="n">wheel</span><span class="p">)</span>
+    <span class="vi">@chainring</span> <span class="o">=</span> <span class="n">chainring</span>
+    <span class="vi">@cog</span> <span class="o">=</span> <span class="n">cog</span>
+    <span class="vi">@wheel</span> <span class="o">=</span> <span class="n">wheel</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">gear_inches</span>
+    <span class="n">ratio</span> <span class="o">*</span> <span class="n">wheel</span><span class="o">.</span><span class="n">diameter</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="no">Gear</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="mi">52</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="no">Wheel</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="mi">26</span><span class="p">,</span> <span class="mi">1</span><span class="o">.</span><span class="mi">5</span><span class="p">))</span><span class="o">.</span><span class="n">gear_inches</span></code></pre></div>
+
+<p>Gear can now collaborate with any object that implements diameter.</p>
+
+<p>This technique is known as dependency injection. Despite its fearsome reputation, dependency injection truly is this simple. Gear previously had explicit dependencies on the Wheel class and on the type and order of its initialization arguments, but through injection these dependencies have been reduced to a single dependency on the diameter method. Gear is now smarter because it knows less.</p>
+
+<p>Using dependency injection to shape code relies on your ability to recognize that the responsibility for knowing the name of a class and the responsibility for knowing the name of a message to send to that class may belong in different objects.</p>
+
+<h3>Isolate Dependencies</h3>
+
+<p>It’s best to break all unnecessary dependences but, unfortunately, while this is always technically possible it may not be actually possible. Therefore, if you cannot remove unnecessary dependencies, you should isolate them within your class.</p>
+
+<h4>Isolate Instance Creation</h4>
+
+<p>In the first, creation of the new instance of Wheel has been moved from Gear’s gear<em>inches method to Gear’s initialization method. This cleans up the gear</em>inches method and publicly exposes the dependency in the initialize method.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Gear</span>
+<span class="kp">attr_reader</span> <span class="ss">:chainring</span><span class="p">,</span> <span class="ss">:cog</span><span class="p">,</span> <span class="ss">:rim</span><span class="p">,</span> <span class="ss">:tire</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">chainring</span><span class="p">,</span> <span class="n">cog</span><span class="p">,</span> <span class="n">rim</span><span class="p">,</span> <span class="n">tire</span><span class="p">)</span>
+    <span class="vi">@chainring</span> <span class="o">=</span> <span class="n">chainring</span>
+    <span class="vi">@cog</span> <span class="o">=</span> <span class="n">cog</span>
+    <span class="vi">@wheel</span> <span class="o">=</span> <span class="no">Wheel</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">rim</span><span class="p">,</span> <span class="n">tire</span><span class="p">)</span>
+  <span class="k">end</span></code></pre></div>
+
+<p>The next alternative isolates creation of a new Wheel in its own explicitly defined wheel method. This new method lazily creates a new instance of Wheel, using Ruby’s ||= operator. In this case, creation of a new instance of Wheel is deferred until gear_inches invokes the new wheel method.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Gear</span>
+<span class="kp">attr_reader</span> <span class="ss">:chainring</span><span class="p">,</span> <span class="ss">:cog</span><span class="p">,</span> <span class="ss">:rim</span><span class="p">,</span> <span class="ss">:tire</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">chainring</span><span class="p">,</span> <span class="n">cog</span><span class="p">,</span> <span class="n">rim</span><span class="p">,</span> <span class="n">tire</span><span class="p">)</span>
+      <span class="vi">@chainring</span> <span class="o">=</span> <span class="n">chainring</span>
+      <span class="vi">@cog</span>       <span class="o">=</span> <span class="n">cog</span>
+      <span class="vi">@rim</span>       <span class="o">=</span> <span class="n">rim</span>
+      <span class="vi">@tire</span>      <span class="o">=</span> <span class="n">tire</span>
+  <span class="k">end</span>
+  <span class="k">def</span> <span class="nf">gear_inches</span>
+    <span class="n">ratio</span> <span class="o">*</span> <span class="n">wheel</span><span class="o">.</span><span class="n">diameter</span>
+  <span class="k">end</span>
+  <span class="k">def</span> <span class="nf">wheel</span>
+    <span class="vi">@wheel</span> <span class="o">||=</span> <span class="no">Wheel</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">rim</span><span class="p">,</span> <span class="n">tire</span><span class="p">)</span>
   <span class="k">end</span>
 <span class="k">end</span></code></pre></div>
+
+<h3>Isolate Vulnerable External Messages</h3>
+
+<p>Now that you’ve isolated references to external class names it’s time to turn your attention to external messages, that is, messages that are “sent to someone other than self.” This technique becomes necessary when a class contains embedded references to a message that is likely to change. Isolating the reference provides some insurance against being affected by that change. Although not every external method is a candi- date for this preemptive isolation, it’s worth examining your code, looking for and wrapping the most vulnerable dependencies.</p>
+
+<p>An alternative way to eliminate these side effects is to avoid the problem from the very beginning by reversing the direction of the dependency. This idea will be addressed soon but first there’s one more coding technique to cover.</p>
+
+<h2>Remove Arguement-Order Dependencies</h2>
+
+<h3>Explicitly Define Defaults</h3>
+
+<p>When you send a message that requires arguments, you, as the sender, cannot avoid having knowledge of those arguments. This dependency is unavoidable. However, passing arguments often involves a second, more subtle, dependency. Many method signatures not only require arguments, but they also require that those arguments be passed in a specific, fixed order.</p>
+
+<h4>Use Hashes for Initialization Arguments</h4>
+
+<p>There’s a simple way to avoid depending on fixed-order arguments. If you have control over the Gear initialize method, change the code to take a hash of options instead of a fixed list of parameters. The initialize method now takes just one argument, args, a hash that contains all of the inputs. The above technique has several advantages. The first and most obvious is that it removes every dependency on argument order. This technique adds verbosity. In many situations verbosity is a detriment, but in this case it has value. The verbosity exists at the intersection between the needs of the present and the uncertainty of the future. Using fixed-order arguments requires less code today but you pay for this decrease in volume of code with an increase in the risk that changes will cascade into dependents later.</p>
+
+<h4>Explicitly Define Defaults</h4>
+
+<p>There are many techniques for adding defaults. Simple non-boolean defaults can be specified using Ruby’s || method. This is a common technique but one you should use with caution; there are situations in which it might not do what you want. The || method acts as an or condition; it first evaluates the left-hand expression and then, if the expression returns false or nil, proceeds to evaluate and return the result of the right-hand expression. The use of || above therefore, relies on the fact that the [] method of Hash returns nil for missing keys.
+In the case where args contains a :boolean_thing key that defaults to true, use of || in this way makes it impossible for the caller to ever explicitly set the final variable to false or nil.</p>
+
+<p>The above technique for substituting an options hash for a list of fixed-order arguments is perfect for cases where you are forced to depend on external interfaces that you cannot change. Do not allow these kinds of external dependencies to permeate your code; protect yourself by wrapping each in a method that is owned by your own application.</p>
+
+<h2>Managing Dependecy Direction</h2>
+
+<h3>Reversing  Dependecies</h3>
+
+<h4>Choosing Dependency Direction</h4>
+
+<p>Pretend for a moment that your classes are people. If you were to give them advice about how to behave you would tell them to depend on things that change less often than you do.
+This short statement belies the sophistication of the idea, which is based on three simple truths about code:
+• Some classes are more likely than others to have changes in requirements.
+• Concrete classes are more likely to change than abstract classes.
+• Changing a class that has many dependents will result in widespread consequences.</p>
+
+<h4>Recognizing Concretions and Abstractions</h4>
+
+<p>The second idea concerns itself with the concreteness and abstractness of code. The term abstract is used here just as Merriam-Webster defines it, as “disassociated from any specific instance,” and, as so many things in Ruby, represents an idea about code as opposed to a specific technical restriction.</p>
+
+<p>The wonderful thing about abstractions is that they represent common, stable qualities. They are less likely to change than are the concrete classes from which they were extracted. Depending on an abstraction is always safer than depending on a concretion because by its very nature, the abstraction is more stable. Ruby does not make you explicitly declare the abstraction in order to define the interface, but for design purposes you can behave as if your virtual interface is as real as a class. Indeed, in the rest of this discussion, the term “class” stands for both class and this kind of interface. These interfaces can have dependents and so must be taken into account during design.</p>
+
+<p>Depend on things that change less often than you do is a heuristic that stands in for all the ideas in this section. The zones are a useful way to organize your thoughts but in the fog of development it may not be obvious which classes go where.</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/04/22/POODR-ch2/">
+        POODR - Ch2: Designing Classes with a Single Responsibility
+      </a>
+    </h1>
+
+    <span class="post-date">22 Apr 2015</span>
+
+    <p>The foundation of an object-orietned is the message, but most visible organizational structure is the class.</p>
+
+<h3>OO Questions:</h3>
+
+<p>What are your classes?
+How many should you have?
+What behavior will they implement?
+How much do they know about the other classes?
+How much of themselves should the expose?</p>
+
+<p>At this stage, your first obligation is to take a deep breath and insist that it be simple. Your goal is to model your application, using classes, such that is does what is is supposed to do right now. Design is more the art of perserving changability than it is the act of achieving perfection.</p>
+
+<h3>Code should be TRUE:</h3>
+
+<p>Transparent: The consquences of change should be obvious in the code that is changing and in distant code thst relies on it.</p>
+
+<p>Reasonsable: The cost of any change should be proportional to the benefit thr change acheives</p>
+
+<p>Usable: Existing code should be usable in a new and unexpected contents.</p>
+
+<p>Expemplary: The cod itself should encourage those who change it to perpetuate these qualities.
+TRUE ensures that each class has a single, well-defined responsibilty.</p>
+
+<h2>Creating Classes That have a Single Responsibility</h2>
+
+<p>A class should do the smallest posbbile useful thing, that is - it should have a sing responsibility.</p>
+
+<h3>Why Single Responsibility Matters</h3>
+
+<p>Appliciations that are easy to change consist of classes that are easy to reuse. Reusable classes are pluggable into units of well-defined behavior that have few entanglements.</p>
+
+<p>A class that has more than one responsibility is difficult to reuse. If you want to resuse some (but not all) of it behavior, it is impossible to get only the parts you need.</p>
+
+<p>If the responsibilties are so coupled that you cannot use just the beviour you need, you could duplicat the code of interest.</p>
+
+<h3>Deterimining If a Class Has Single Responsibility</h3>
+
+<p>How can you determine if a class contains the behavior or belongs somewhere else?
+Ask it! &quot;Mr Gear, What is your ratio?&quot;</p>
+
+<p>Another way to figure it out is to attempt to describe the class in one sentence. If the simplest description you can devise includes &quot;and&quot;, the class likely has more than one responsibility. If the description includes &quot;or&quot;, then the class has more than one responsibility and they aren&#39;t even related.</p>
+
+<p>When a class is related to it&#39;s purpose, its considered &quot;highly cohesive&quot; or to have single responsibility (Single Responsibility Principle)</p>
+
+<h3>Determining when to make design decisions:</h3>
+
+<p>Don&#39;t feel compelled to make design decisions prematurely. When the future cost of doing nothing is the same as the current cost, postpone the decision. Make the decision only when you must with the information you have at the time.</p>
+
+<h2>Writing Code that Embraces Change</h2>
+
+<p>Here are a few well known techniques that you can use to create code that embaces change:</p>
+
+<h3>1. Depend on Behavior, not Data</h3>
+
+<p>Behavior is captured in methods anid invoked by sending messages. In addition to behavior, objects often contain data. Data is held in an instance variable and can be anything from an simple string to complex hash. Data can be accessed in 2 ways: 1. you can refer directly to the instance variable
+2. you can wrap the intance variable in an accessor method</p>
+
+<h4>Hide Data Structures</h4>
+
+<h4>1. Always wrap instance variables in accessor methods insteadof directly referring to the variables</h4>
+
+<h5>2. Use Structs</h5>
+
+<p>Direct references into complicated structure are confusing, because they obscure what the data really is and the maintenance is a nightmare.
+In Ruby, it&#39;s easy to seperate structure from meaning - just as you use a method to wrap an instance variable, you can use a Ruby Struct class to wrap a structure.
+Ruby defines Struct as &quot;a convenient way to bundle a number of attributes together, using accessor methods, without having to write an explicit class.</p>
+
+<h2>2. Enforce Single Responsibilities Everywhere</h2>
+
+<h4>3. Extract Extra Responsibilities from Methods</h4>
+
+<p>Methods, like classes should have single responsibility so they are easier to use. Apply the same design techniques as you would with classes.</p>
+
+<ul>
+<li>Seperating iteration from the action that&#39;s being performed on each element is a common case of multiple responsibitlity that is easy to recognize.</li>
+</ul>
+
+<p>The imapct of the single refactoring like ithis is small, but the cumulative effect of this coding style is huge. Methods that have single resonsibility confer the following benefits:</p>
+
+<h5>1. Expose previously hidden qualities</h5>
+
+<h5>2. Avoid the need for comments</h5>
+
+<h5>3. Encourage reuse</h5>
+
+<h5>4. Easy to move to another class</h5>
+
+<h3>Isolate Extra Responsibilities in Classes</h3>
+
+<p>Once every method has a single responsibility, the scope of your class will be more apparent</p>
+
+<p>The path to changeable and maintable object oriented software begins with classes that have a single responsibility. Classes that do one thing isolate that thing from the rest of your application. This isolation allows change without consquence and reuse without duplication.</p>
 
   </div>
   

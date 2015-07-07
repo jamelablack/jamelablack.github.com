@@ -1,3 +1,8 @@
+---
+layout: post
+title: "Build Robust & Production Quality Applications - Lesson 1: Red, Green, Refactor"
+tags: tealeaf
+---
 Generalization or Trianglization:
 Writing general code
 

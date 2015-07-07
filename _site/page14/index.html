@@ -118,6 +118,26 @@
           
         
       
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
 
     <p>&copy; 2015. All rights reserved.</p>
   </div>
@@ -129,385 +149,852 @@
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2014/09/11/tic-tac-toe-procedural/">
-        Intro to Ruby & Web Dev: Tic-Tac-Toe Procedural Game
+      <a href="/2014/11/15/course2-lesson4/">
+        Rapid Prototyping with Rails: Lesson 4, part 3
       </a>
     </h1>
 
-    <span class="post-date">11 Sep 2014</span>
+    <span class="post-date">15 Nov 2014</span>
 
-    <ol>
-<li>Come up with requirements/specifications - that will determine your own scope.</li>
-<li>Application logic, sequence of steps.</li>
-<li>Translation of those steps into code.</li>
-<li>Run code to verfiy logic.=end</li>
-</ol>
-
-<h1>Sequence of steps</h1>
+    <h2>Items Covered:</h2>
 
 <ol>
-<li>Draw a board</li>
-<li>Assign Player to &quot;x&quot;</li>
-<li>Assign Computer to &quot;o&quot;
-Loop until a winner or all squares are taken</li>
-<li>Player 1 picks an empty square
-Check for winner</li>
-<li>Player 2 picks an empty square</li>
-<li>Check for winner</li>
-<li>If there is a winner, show winner; else &quot;It&#39;s a tie&quot;</li>
+<li>voteable validations (ajax and regular flows)</li>
+<li>exposing APIs</li>
+<li>extracting common logic from models</li>
+<li>creating/publishing gem</li>
 </ol>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;pry&#39;</span>
+<h2>Voteable Validation:</h2>
 
-<span class="c1">#create a way to allow players to input choice on tictactoe board, hash</span>
-<span class="k">def</span> <span class="nf">initialize_board</span>
-  <span class="n">b</span> <span class="o">=</span> <span class="p">{}</span>
-  <span class="p">(</span><span class="mi">1</span><span class="o">.</span><span class="n">.</span><span class="mi">9</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span><span class="o">|</span><span class="n">position</span><span class="o">|</span> <span class="n">b</span><span class="o">[</span><span class="n">position</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;  &#39;</span><span class="p">}</span>
-  <span class="n">b</span>
-<span class="k">end</span>
+<p>We want to prevent users from voting on the same post or comment twice, but at the
+same time, allow them to vote on multiple posts, comments, etc.</p>
 
-<span class="c1">#define board position where player/computer choice will go</span>
-<span class="k">def</span> <span class="nf">draw_board</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-  <span class="nb">system</span> <span class="s1">&#39;clear&#39;</span>
-  <span class="nb">puts</span> <span class="s2">&quot; </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span><span class="si">}</span><span class="s2"> &quot;</span>
-  <span class="nb">puts</span> <span class="s2">&quot;--------------&quot;</span>
-  <span class="nb">puts</span> <span class="s2">&quot; </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">4</span><span class="o">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">5</span><span class="o">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">6</span><span class="o">]</span><span class="si">}</span><span class="s2"> &quot;</span>
-  <span class="nb">puts</span> <span class="s2">&quot;--------------&quot;</span>
-  <span class="nb">puts</span> <span class="s2">&quot; </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">7</span><span class="o">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">8</span><span class="o">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">9</span><span class="o">]</span><span class="si">}</span><span class="s2"> &quot;</span>
-<span class="k">end</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Post</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="n">validates_uniqueness_of</span> <span class="ss">:creator</span><span class="p">,</span> <span class="ss">scope</span><span class="p">:</span> <span class="ss">:voteable</span>
+<span class="k">end</span></code></pre></div>
 
-<span class="k">def</span> <span class="nf">empty_position</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-  <span class="n">b</span><span class="o">.</span><span class="n">select</span> <span class="p">{</span><span class="o">|</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="o">|</span> <span class="n">v</span> <span class="o">==</span> <span class="s1">&#39;  &#39;</span><span class="p">}</span><span class="o">.</span><span class="n">keys</span>
+<h2>Showing Js Errors when voting</h2>
 
-<span class="k">end</span>
+<p>You have two options:
+1. Alterting out (currently implemented)
+2. Traverse the DOM</p>
 
-<span class="k">def</span> <span class="nf">player_picks_square</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-  <span class="nb">puts</span> <span class="s2">&quot;Pick a square (1 - 9):&quot;</span>
-  <span class="c1">#make sure your gets.chomp is getting the state that your hash key is</span>
-  <span class="n">position</span> <span class="o">=</span> <span class="nb">gets</span><span class="o">.</span><span class="n">chomp</span><span class="o">.</span><span class="n">to_i</span>
-  <span class="n">b</span><span class="o">[</span><span class="n">position</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;x&#39;</span>
-  <span class="c1">#binding.pry</span>
-<span class="k">end</span>
+<p>Just like with using <span id> to change the number of votes, we can also create
+a div.</p>
 
-<span class="k">def</span> <span class="nf">computer_picks_square</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-  <span class="n">position</span> <span class="o">=</span> <span class="n">empty_position</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span>
-  <span class="n">b</span><span class="o">[</span><span class="n">position</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;o&#39;</span>
-<span class="k">end</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#posts/_post.html.erb</span>
+  <span class="o">&lt;</span><span class="n">div</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;post_vote_error_&lt;%= post.to_param %&gt;&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;alert alert-error&quot;</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;display: none&quot;</span><span class="o">&gt;</span>
+    <span class="no">You</span> <span class="n">can</span> <span class="n">only</span> <span class="n">vote</span> <span class="n">once</span><span class="o">.</span>
+  <span class="o">&lt;</span><span class="sr">/div&gt;</span></code></pre></div>
 
-<span class="k">def</span> <span class="nf">check_winner</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-<span class="n">winning_lines</span> <span class="o">=</span> <span class="o">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">8</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">9</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">9</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="o">]]</span>
-<span class="n">winning_lines</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span>
-    <span class="k">if</span> <span class="n">b</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">0</span><span class="o">]]</span> <span class="o">==</span> <span class="s1">&#39;x&#39;</span> <span class="ow">and</span> <span class="n">b</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">1</span><span class="o">]]</span> <span class="o">==</span> <span class="s1">&#39;x&#39;</span> <span class="ow">and</span> <span class="n">b</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">2</span><span class="o">]]</span> <span class="o">==</span> <span class="s1">&#39;x&#39;</span>
-      <span class="k">return</span> <span class="s1">&#39;Player&#39;</span>
-    <span class="k">elsif</span> <span class="n">b</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">0</span><span class="o">]]</span> <span class="o">==</span> <span class="s1">&#39;o&#39;</span> <span class="ow">and</span> <span class="n">b</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">1</span><span class="o">]]</span> <span class="o">==</span> <span class="s1">&#39;o&#39;</span> <span class="ow">and</span> <span class="n">b</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">2</span><span class="o">]]</span> <span class="o">==</span> <span class="s1">&#39;o&#39;</span>
-      <span class="k">return</span> <span class="s1">&#39;Computer&#39;</span>
-    <span class="k">else</span>
-      <span class="k">return</span> <span class="kp">nil</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#posts/vote.js.erb</span>
+  <span class="k">if</span> <span class="vi">@vote</span><span class="o">.</span><span class="n">valid?</span> <span class="sx">%&gt;</span>
+<span class="sx">    (&#39;#post_&lt;%= @post.to_param %&gt;</span><span class="n">_votes</span><span class="s1">&#39;).html(&#39;</span><span class="o">&lt;</span><span class="sx">%= @post.total_votes %&gt;&#39;);</span>
+<span class="sx">  else %&gt;</span>
+<span class="sx">    (&#39;#post_vote_error_&lt;%=</span> <span class="vi">@post</span><span class="o">.</span><span class="n">to_param</span> <span class="sx">%&gt;&#39;).show().html(&#39;&lt;%= @vote.errors.full_messages.join&#39;(&#39;&#39;) %&gt;</span><span class="p">);</span>
+  <span class="k">end</span></code></pre></div>
+
+<hr>
+
+<h2>APIs</h2>
+
+<p>APIs are how applications talk to each other. API versioning is a big deal - you have to have a versioning strategy, typically done by the date.</p>
+
+<hr>
+
+<h2>Extracting common logic from models</h2>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">When</span> <span class="n">you</span> <span class="n">have</span> <span class="n">common</span> <span class="n">code</span> <span class="k">in</span> <span class="n">your</span> <span class="n">models</span><span class="p">,</span> <span class="n">you</span> <span class="n">really</span> <span class="n">have</span> <span class="n">tow</span> <span class="n">options</span> <span class="n">to</span> <span class="no">DRY</span> <span class="n">your</span> <span class="ss">code</span><span class="p">:</span>
+<span class="mi">1</span><span class="o">.</span> <span class="n">place</span> <span class="n">code</span> <span class="k">in</span> <span class="n">your</span> <span class="n">superclass</span><span class="o">.</span>
+<span class="mi">2</span><span class="o">.</span> <span class="no">Extract</span> <span class="n">code</span> <span class="n">into</span> <span class="n">a</span> <span class="k">module</span>
+
+<span class="nn">Extracting</span> <span class="no">Common</span> <span class="no">Logic</span> <span class="n">from</span> <span class="no">Models</span>
+<span class="o">-</span><span class="no">One</span> <span class="n">way</span> <span class="n">to</span> <span class="k">do</span> <span class="n">so</span> <span class="n">is</span> <span class="n">through</span> <span class="k">module</span> <span class="nn">which</span> <span class="n">is</span> <span class="n">the</span> <span class="k">next</span> <span class="n">is</span> <span class="no">Post</span><span class="o">.</span><span class="n">ancestors</span> <span class="n">lookup</span> <span class="n">chain</span><span class="o">.</span>
+<span class="mi">1</span><span class="o">.</span> <span class="no">Go</span> <span class="n">into</span> <span class="n">your</span> <span class="n">application</span><span class="o">.</span><span class="n">rb</span> <span class="n">file</span>
+
+  <span class="n">config</span><span class="o">.</span><span class="n">autoload_paths</span> <span class="o">+=</span> <span class="sx">%W(</span><span class="si">#{</span><span class="n">config</span><span class="o">.</span><span class="n">root</span><span class="si">}</span><span class="sx">/lib)</span>
+
+<span class="no">So</span> <span class="n">what</span> <span class="n">this</span> <span class="n">line</span> <span class="n">of</span> <span class="n">code</span> <span class="n">does</span><span class="p">,</span> <span class="n">is</span> <span class="n">it</span> <span class="n">directs</span> <span class="n">your</span> <span class="n">rails</span> <span class="n">application</span> <span class="n">to</span> <span class="nb">load</span> <span class="n">t</span>
+<span class="n">his</span> <span class="n">path</span> <span class="ow">and</span> <span class="n">files</span> <span class="k">in</span> <span class="n">it</span> <span class="n">everytime</span> <span class="n">your</span> <span class="n">application</span> <span class="n">starts</span> <span class="n">up</span><span class="p">,</span> <span class="n">including</span> <span class="n">the</span>
+<span class="n">voteable</span><span class="o">.</span><span class="n">rb</span> <span class="n">file</span> <span class="n">found</span>
+
+<span class="mi">2</span><span class="o">.</span> <span class="no">So</span> <span class="n">just</span> <span class="n">like</span> <span class="n">with</span> <span class="n">modules</span> <span class="n">how</span> <span class="n">we</span> <span class="n">add</span> <span class="s1">&#39;-able&#39;</span> <span class="n">on</span> <span class="n">the</span> <span class="k">end</span> <span class="n">of</span> <span class="n">our</span> <span class="k">module</span> <span class="nn">name</span><span class="p">,</span>
+ <span class="n">we</span> <span class="n">create</span> <span class="n">a</span> <span class="n">file</span> <span class="n">called</span> <span class="no">Voteable</span><span class="o">.</span><span class="n">rb</span> <span class="n">under</span> <span class="n">the</span> <span class="n">lib</span> <span class="ss">folder</span><span class="p">:</span>
+ <span class="c1">#lib/voteable.rb</span>
+
+  <span class="k">module</span> <span class="nn">Voteable</span>
+
+    <span class="k">class</span> <span class="nc">InstanceMethods</span>
+
+    <span class="k">end</span>
+
+
+    <span class="k">class</span> <span class="nc">ClassMethods</span>
+
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+<span class="mi">3</span><span class="o">.</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+<span class="no">ActiveSupport</span> <span class="n">is</span> <span class="n">a</span> <span class="n">gem</span><span class="o">.</span>
+<span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span> <span class="p">(</span><span class="n">comes</span> <span class="n">with</span> <span class="no">Rails</span> <span class="mi">4</span><span class="p">)</span> <span class="n">says</span> <span class="n">that</span> <span class="n">all</span> <span class="n">the</span> <span class="n">instance</span> <span class="nb">methods</span>
+<span class="n">listed</span> <span class="n">within</span> <span class="n">it</span> <span class="n">are</span> <span class="n">going</span> <span class="n">to</span> <span class="n">be</span> <span class="n">instance</span> <span class="nb">methods</span> <span class="k">when</span> <span class="n">you</span> <span class="n">mixin</span> <span class="n">the</span> <span class="n">module</span><span class="o">.</span>
+
+<span class="mi">4</span><span class="o">.</span> <span class="no">To</span> <span class="kp">include</span> <span class="k">class</span> <span class="nb">methods</span> <span class="n">within</span> <span class="n">the</span> <span class="ss">module</span><span class="p">:</span>
+
+<span class="k">module</span> <span class="nn">Votable</span>
+  <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+
+  <span class="k">def</span> <span class="nf">total_votes</span>
+
+
+  <span class="k">end</span>
+
+
+  <span class="k">module</span> <span class="nn">ClassMethods</span>
+    <span class="k">def</span> <span class="nf">my_class_method</span>
+
+
     <span class="k">end</span>
   <span class="k">end</span>
 <span class="k">end</span>
 
-<span class="c1">#sets local variable b from the initialize method (inner_scope) equal to board, a variable defined in the outter scope</span>
-<span class="n">board</span> <span class="o">=</span> <span class="n">initialize_board</span>
-<span class="n">draw_board</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
+<span class="mi">5</span><span class="o">.</span> <span class="no">Add</span> <span class="n">the</span> <span class="n">common</span> <span class="nb">methods</span> <span class="n">the</span> <span class="n">are</span> <span class="n">to</span> <span class="n">be</span> <span class="n">extracted</span> <span class="n">from</span> <span class="n">your</span> <span class="n">model</span>
 
+  <span class="k">module</span> <span class="nn">Votable</span>
+    <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
 
-<span class="c1">#loop until</span>
-<span class="k">begin</span>
-  <span class="n">player_picks_square</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
-  <span class="n">computer_picks_square</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
-  <span class="n">draw_board</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
-  <span class="n">winner</span> <span class="o">=</span> <span class="n">check_winner</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
-<span class="k">end</span> <span class="k">until</span> <span class="n">winner</span> <span class="o">||</span> <span class="n">empty_position</span><span class="p">(</span><span class="n">board</span><span class="p">)</span><span class="o">.</span><span class="n">empty?</span>
+      <span class="k">def</span> <span class="nf">total_votes</span>
+        <span class="nb">self</span><span class="o">.</span><span class="n">up_votes</span> <span class="o">-</span> <span class="nb">self</span><span class="o">.</span><span class="n">down_votes</span>
+      <span class="k">end</span>
 
-<span class="k">if</span> <span class="n">winner</span>
-  <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">winner</span><span class="si">}</span><span class="s2"> won!&quot;</span>
-<span class="k">else</span>
-  <span class="nb">puts</span> <span class="s2">&quot;It&#39;s a tie!&quot;</span>
-<span class="k">end</span></code></pre></div>
+      <span class="k">def</span> <span class="nf">up_votes</span>
+        <span class="nb">self</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">vote</span><span class="p">:</span> <span class="kp">true</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
+      <span class="k">end</span>
 
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/09/10/the-object-model/">
-        Intro to Ruby & Web Dev: The Object Model
-      </a>
-    </h1>
+      <span class="k">def</span> <span class="nf">down_votes</span>
+        <span class="nb">self</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">vote</span><span class="p">:</span> <span class="kp">false</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
+      <span class="k">end</span>
 
-    <span class="post-date">10 Sep 2014</span>
-
-    <h2>What is OOP?</h2>
-
-<p>A way for progammers to deal with large, complex systems.
-One small change could be catastrophic in terms of the impact it could have on relevant parts within the system.
-Prorgrammers needed to create containers for code that could be changed without impacting the entire program. To section off code that performs certain procedures so that it became an interation of many small parts as opposed to one massive blob of code dependenies.</p>
-
-<h2>Encapsulation</h2>
-
-<p>is hiding peices of functionality and making it unavailable to the rest of the code base. It is form of data protection so that the data cannot change or be manipulated without intention. This allows your code to achieve new levels of complexity creating objects and exposin interfaces (i.e. methods) that allow these methods to interact.</p>
-
-<h2>Polymorphism</h2>
-
-<p>ability for data to be represented as many different types.
-Allows pre-written code to be used for different purposes.</p>
-
-<h2>Inheritance</h2>
-
-<p>class inherits the behavior of another class -- referred to as the superclass.
-This gives Ruby Programmers the ability to define large usabilty and smaller Subclass, with more defined, detailed behavior.</p>
-
-<h2>Modules</h2>
-
-<p>Modules are similar to classes in the they contain shared behavior, however you cannot create an object with a module. A module, must be mixed in with a class using the reserved word: include. This is called a &quot;mixin&quot; and after used in a module, the behanviors declared in the module are available to the class and its objects.</p>
-
-<h2>What are objects?</h2>
-
-<p>In Ruby, everything is an object.
-Objects are created from classes.</p>
-
-<h3>Class</h3>
-
-<p>Ruby defines attributes and behaviors of its objects in classes</p>
-
-<h3>Instantation</h3>
-
-<p>creating an object/instance of a class</p>
-
-<h3>Module</h3>
-
-<p>A collection of behaviors that useable by other classes, called mixins using the word &quot;include&quot;</p>
-
-<p>Example:
-Create a class, create an object, use a mixin.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">module</span> <span class="nn">Speak</span>
-  <span class="k">def</span> <span class="nf">speak</span><span class="p">(</span><span class="n">sound</span><span class="p">)</span>
-    <span class="nb">puts</span> <span class="c1">#{sound}</span>
+    <span class="k">end</span>
   <span class="k">end</span>
-<span class="k">end</span>
 
-<span class="k">class</span> <span class="nc">HumanBeing</span>
-  <span class="kp">include</span> <span class="no">Speak</span>
-<span class="k">end</span>
+<span class="mi">6</span><span class="o">.</span> <span class="no">Add</span> <span class="kp">include</span> <span class="no">Voteable</span> <span class="n">to</span> <span class="n">your</span> <span class="n">model</span>
 
-<span class="n">jamela</span> <span class="o">=</span> <span class="no">Humanbeing</span><span class="o">.</span><span class="n">new</span>
+<span class="mi">7</span><span class="o">.</span> <span class="no">Now</span> <span class="k">if</span> <span class="n">you</span> <span class="n">run</span> <span class="no">Post</span><span class="o">.</span><span class="n">ancestors</span> <span class="o">=&gt;</span> <span class="n">the</span> <span class="no">Voteable</span> <span class="k">module</span> <span class="nn">will</span> <span class="n">be</span> <span class="n">right</span> <span class="n">behind</span> <span class="n">the</span>
+  <span class="no">Post</span> <span class="n">class</span><span class="o">.</span>
 
-<span class="n">jamela</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s1">&#39;Hello!&#39;</span><span class="p">)</span></code></pre></div>
+<span class="mi">8</span><span class="o">.</span> <span class="no">Modules</span> <span class="n">also</span> <span class="n">give</span> <span class="n">us</span> <span class="n">an</span> <span class="n">included</span> <span class="k">do</span> <span class="ss">block</span><span class="p">:</span>
 
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/09/07/course1-lesson2/">
-        Intro to Ruby & Web Dev: Lesson 2
-      </a>
-    </h1>
-
-    <span class="post-date">07 Sep 2014</span>
-
-    <h1>Items covered:</h1>
-
-<ol>
-<li>Classes, Instances, &amp; Objects</li>
-<li>Modules</li>
-<li>Inheritance</li>
-<li>Method Lookup Chain</li>
-<li>Procedural vs OOP</li>
-</ol>
-
-<h2>Classes &amp; Objects</h2>
-
-<ul>
-<li>Objects are instantized through classes and contant states and behaviors</li>
-<li>Classes are the cookie cutters</li>
-<li>Instance methods encapsulate behaviors and are defined in classes.</li>
-<li>Instance variables = state</li>
-<li>Instance methods = behaviors
-Interesting syntax when using equals, setter:</li>
-</ul>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">set_name</span><span class="o">=</span><span class="p">(</span><span class="n">new_name</span><span class="p">)</span>
-  <span class="vi">@name</span> <span class="o">=</span> <span class="nb">name</span>
-<span class="k">end</span>
-
-<span class="n">jamela</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">new</span>
-
-<span class="n">jamela</span><span class="o">.</span><span class="n">set_name</span> <span class="o">=</span> <span class="s2">&quot;Jam&quot;</span></code></pre></div>
-
-<p>or</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">set_name</span><span class="p">(</span><span class="n">new_name</span><span class="p">)</span>
-  <span class="vi">@name</span> <span class="o">=</span> <span class="nb">name</span>
-<span class="k">end</span>
-
-<span class="n">jamela</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="s2">&quot;Jam&quot;</span><span class="p">)</span></code></pre></div>
-
-<p>Setters:</p>
-
-<p>You have to use .self when using the setter method within an instance method of the same class.
-Instance methods are like raw data and you can access them but in general, you always want to use the getters and setters when available for encapsulation and santization.</p>
-
-<h3>Class Variables:</h3>
-
-<p>Track states that are common across all instances within a class.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#To keep track of number of objects</span>
-<span class="vc">@@class</span> <span class="o">=</span> <span class="mi">0</span>
-
-<span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
-  <span class="vi">@name</span> <span class="o">=</span> <span class="n">n</span>
-  <span class="vi">@height</span> <span class="o">=</span> <span class="n">h</span>
-  <span class="vi">@weight</span> <span class="o">=</span> <span class="n">w</span>
-  <span class="vc">@@count</span> <span class="o">+=</span> <span class="mi">1</span>
-<span class="k">end</span>
-
-<span class="vc">@@class_variable</span> <span class="o">+=</span><span class="mi">1</span></code></pre></div>
-
-<h3>Class Methods:</h3>
-
-<p>Performs behaviors at the class level</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">total_count</span>
-<span class="s2">&quot;The total number of dogs is </span><span class="si">#{</span><span class="vc">@@count</span><span class="si">}</span><span class="s2">&quot;</span>
-<span class="k">end</span>
-
-<span class="nb">puts</span> <span class="no">Dog</span><span class="o">.</span><span class="n">total_count</span></code></pre></div>
-
-<h2>Inheritance</h2>
-
-<p>SubClass &lt; SuperClass</p>
-
-<p>object.ancestors shows you the method look-up chain</p>
-
-<h2>Namespace</h2>
-
-<p>class User &lt; ActiveRecord::Base
-refers to the inheritance of the Base class inside the ActiveRecord module
-Just like with Cms::User - refers to the User class in the CMS module.</p>
-
-<h2>Modules</h2>
-
-<p>Allows you to mixin in behavior. The difference between modules and classes are that modules cannot be instantiated.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">module</span> <span class="nn">Swimmable</span>
-  <span class="k">def</span> <span class="nf">swim</span>
-  <span class="nb">puts</span> <span class="s2">&quot;I&#39;m swimming!&quot;</span>
+  <span class="n">included</span> <span class="k">do</span>
+    <span class="nb">puts</span> <span class="s2">&quot;I&#39;m being included&quot;</span>
   <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
 
-<p>In method, you can mixin in the module by typing &quot;include Swimmable&quot;.
-When creating modules you simply add &quot;-able&quot; to the end of your method name and then type &quot;include swimmable&quot; in the method you want to add that behavior.</p>
+  <span class="no">The</span> <span class="n">first</span> <span class="n">time</span> <span class="n">the</span> <span class="n">object</span> <span class="n">is</span> <span class="n">called</span><span class="p">,</span> <span class="s2">&quot;I&#39;m being called is printed&quot;</span>
 
-<p>-In method lookups, a module that is mixin will superecede (be listed first) super classes. This means that if a module and a superclass has the same method, the module method will have precedence. When mixin two modules, the method lookup chain will be effected based on reverse inclusion, meanging the last module included will be looked at first.</p>
+<span class="mi">9</span><span class="o">.</span> <span class="no">This</span> <span class="n">is</span> <span class="n">a</span> <span class="n">perfect</span> <span class="n">candidate</span> <span class="k">for</span> <span class="n">has_many</span> <span class="ss">:votes</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:voteable</span>
 
-<p>The point of modules is extract code that is non-specific to a class... and make it reusable.</p>
-
-<p>Some modules can require methods or behaviors:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">module</span> <span class="nn">Fetchable</span>
-  <span class="k">def</span> <span class="nf">fetch</span>
-  <span class="c1">#{name} is fetching!</span>
+  <span class="n">included</span> <span class="k">do</span>
+    <span class="n">has_many</span> <span class="ss">:votes</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="ss">:voteable</span>
   <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
 
-<p>The above module requires the name getter method look up chain</p>
-
-<h2>OOP vs Procedural</h2>
-
-<p>Procedural thinks about &quot;what happens next...&quot; and small changes can have big impacts throughout your code.</p>
-
-<p>OOP thinks in terms of objects and how they behave Generally consider classes to be nouns and verbs to be methods. Start by first writing out requirements in pseudo-code.</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/09/01/course1-lesson1/">
-        Intro to Ruby & Web Dev: Lesson 1
-      </a>
-    </h1>
-
-    <span class="post-date">01 Sep 2014</span>
-
-    <h1>Items covered:</h1>
-
-<ol>
-<li>Hashes vs. Arrays</li>
-<li>Debugging</li>
-<li>Pass by Reference vs. Pass by Value</li>
-<li>Enumerables</li>
-</ol>
-
-<h2>Hashes vs. Arrays</h2>
-
-<h2>Debugging</h2>
-
-<p>How to debug?
- - Tips on how to work through bugs in your code or large problems where you don&#39;t know where to start.</p>
-
-<ol>
-<li>Google - copy and paste error into Google. Someone has had your issue before.</li>
-<li>Write out pseudocode - write what you are attempting to do in code in plain engish</li>
-<li>Break problems into small, numerical steps - start with what looks familiar ( or you know how to do)</li>
-<li>Ask questions in the forum (Tealeaf)</li>
-<li>Use binding.pry</li>
-<li>Paste Errors or problems in Gist - take issue to IRC chat</li>
-<li>Rubberduck debugging.
-When you come across a problem - explain how to came to that problem to your (fictitious) coworker - Ms. Rubberduck. Even better, explain the problem to someone who has no programming experience at all.</li>
-<li>Step away from the problem.</li>
-</ol>
-
-<h2>Pass by Value va. Pass by Reference</h2>
-
-<p>Some methods mutuate the caller, while others do not. To better understand this fact, let&#39;s look at:
-Pass by Value vs Pass by Reference:
-  Pass by Value - when a method is called on an object, the variable is just representation of the value and not the actual object (the reference), itself. When called, the method can never change the object itself. To effect change to the object, you must reassign the variable.</p>
-
-<p>In this case below, outter_str remains unchanged as a result of the method being called.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">some_method</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
-  <span class="n">str</span><span class="o">.</span><span class="n">changeit</span>
-<span class="k">end</span>
-
-<span class="n">outter_str</span> <span class="o">=</span> <span class="s2">&quot;hi&quot;</span>
-<span class="n">some_method</span><span class="p">(</span><span class="n">outter_str</span><span class="p">)</span></code></pre></div>
+<span class="o">*</span><span class="n">can</span> <span class="n">be</span> <span class="n">done</span> <span class="k">for</span> <span class="n">the</span> <span class="n">comment</span> <span class="ow">and</span> <span class="n">posts</span></code></pre></div>
 
 <hr>
 
-<p>Pass by Reference - When a method is called, the object acts a pointer and a modification is actually made to an actual space in memory.</p>
+<h2>Creating a Gem!</h2>
 
-<p>In the case below, outter_str is just a reference (pointer) to str, therefore any mutations to str will be reflected in the value of str</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">So</span> <span class="n">we</span> <span class="n">were</span> <span class="n">able</span> <span class="n">to</span> <span class="n">extract</span> <span class="n">common</span> <span class="nb">methods</span> <span class="n">into</span> <span class="n">a</span> <span class="n">module</span><span class="p">,</span> <span class="n">but</span> <span class="n">what</span> <span class="k">if</span> <span class="n">we</span> <span class="n">needed</span> <span class="n">the</span> <span class="n">same</span>
+<span class="n">functionality</span> <span class="n">across</span> <span class="n">several</span> <span class="ss">projects</span><span class="p">:</span>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">some_method</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
-  <span class="n">str</span><span class="o">.</span><span class="n">changeit</span>
-<span class="k">end</span>
+<span class="o">-</span> <span class="n">to</span> <span class="n">list</span> <span class="n">gems</span> <span class="k">in</span> <span class="ss">terminal</span><span class="p">:</span> <span class="n">gem</span> <span class="n">list</span> <span class="n">gem</span>
 
-<span class="n">outter_str</span> <span class="o">=</span> <span class="s2">&quot;hi&quot;</span>
-<span class="n">some_method</span><span class="p">(</span><span class="n">outter_str</span><span class="p">)</span></code></pre></div>
+<span class="mi">1</span><span class="o">.</span> <span class="no">You</span> <span class="n">need</span> <span class="ss">gem</span><span class="p">:</span> <span class="n">gemcutter</span> <span class="p">(</span><span class="mi">0</span><span class="o">.</span><span class="mi">7</span><span class="o">.</span><span class="mi">1</span><span class="p">)</span>
+<span class="mi">2</span><span class="o">.</span> <span class="n">mkdir</span> <span class="n">voteable</span><span class="o">-</span><span class="n">gem</span>
+<span class="mi">3</span><span class="o">.</span> <span class="no">Create</span> <span class="n">voteable</span><span class="o">.</span><span class="n">gemspec</span> <span class="n">file</span> <span class="n">within</span> <span class="n">folder</span>
+<span class="mi">4</span><span class="o">.</span> <span class="no">Add</span> <span class="n">the</span> <span class="n">following</span> <span class="n">tex</span> <span class="ss">t</span><span class="p">:</span>
 
-<p>Ruby is Passing by the Reference of the Caller: Whether or not the method creates a pass by reference or pass by reference scenario depends on whether the method mutates the caller or not</p>
+  <span class="no">Gem</span><span class="o">::</span><span class="no">Specification</span><span class="o">.</span><span class="n">new</span> <span class="k">do</span> <span class="o">|</span><span class="n">s</span><span class="o">|</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;votable_chris_oct&quot;</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;0.0.0&#39;</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="s1">&#39;2013-10-23&#39;</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">summary</span> <span class="o">=</span> <span class="s2">&quot;A voting gem&quot;</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;The best voting gem ever&quot;</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">authors</span> <span class="o">=</span> <span class="o">[</span><span class="s1">&#39;Jamela B.&#39;</span><span class="o">]</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">email</span> <span class="o">=</span> <span class="s1">&#39;jamela.black@gmail.com&#39;</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">files</span> <span class="o">=</span> <span class="o">[</span><span class="s1">&#39;lib/voteable_chris_oct.rb&#39;</span><span class="o">]</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">homepage</span> <span class="o">=</span> <span class="s1">&#39;http://github.com&#39;</span>
+  <span class="k">end</span>
 
-<h2>Enumerables</h2>
+<span class="mi">5</span><span class="o">.</span> <span class="no">Create</span> <span class="n">lib</span> <span class="n">folder</span><span class="p">,</span> <span class="ow">and</span> <span class="n">voteable_chris_oct</span><span class="o">.</span><span class="n">rb</span> <span class="n">file</span> <span class="n">within</span> <span class="n">it</span>
+<span class="mi">6</span><span class="o">.</span> <span class="no">Cut</span> <span class="ow">and</span> <span class="n">paste</span> <span class="n">common</span> <span class="n">code</span> <span class="n">from</span> <span class="k">module</span>
 
-<p>Tags:  <a href="tealeaf"> tealeaf </a></p>
+  <span class="nn">Module</span> <span class="no">VoteableChrisOct</span>
+    <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+
+      <span class="k">def</span> <span class="nf">total_votes</span>
+        <span class="nb">self</span><span class="o">.</span><span class="n">up_votes</span> <span class="o">-</span> <span class="nb">self</span><span class="o">.</span><span class="n">down_votes</span>
+      <span class="k">end</span>
+
+      <span class="k">def</span> <span class="nf">up_votes</span>
+        <span class="nb">self</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">vote</span><span class="p">:</span> <span class="kp">true</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
+      <span class="k">end</span>
+
+      <span class="k">def</span> <span class="nf">down_votes</span>
+        <span class="nb">self</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">vote</span><span class="p">:</span> <span class="kp">false</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
+      <span class="k">end</span>
+
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+<span class="mi">7</span><span class="o">.</span> <span class="no">Now</span><span class="p">,</span> <span class="n">using</span> <span class="n">gemcutter</span><span class="p">,</span> <span class="n">type</span> <span class="k">in</span> <span class="ss">terminal</span><span class="p">:</span>
+
+    <span class="n">gem</span> <span class="n">build</span> <span class="n">voteable</span><span class="o">.</span><span class="n">gemspec</span>
+
+<span class="mi">8</span><span class="o">.</span> <span class="no">Then</span><span class="p">,</span> <span class="n">push</span> <span class="n">to</span> <span class="n">rubygems</span><span class="o">.</span><span class="n">org</span><span class="p">:</span>
+
+    <span class="n">gem</span> <span class="n">push</span> <span class="n">voteable_chris_oct</span><span class="o">-</span><span class="mi">0</span><span class="o">.</span><span class="mi">0</span><span class="o">.</span><span class="mi">0</span><span class="o">.</span><span class="n">gem</span>
+
+<span class="mi">9</span><span class="o">.</span> <span class="no">To</span> <span class="n">list</span> <span class="n">your</span> <span class="n">newly</span> <span class="n">made</span> <span class="n">gem</span> <span class="n">to</span> <span class="n">make</span> <span class="n">sure</span>
+<span class="n">the</span> <span class="n">push</span> <span class="n">was</span> <span class="ss">successful</span><span class="p">:</span>
+
+  <span class="n">gem</span> <span class="n">list</span> <span class="o">-</span><span class="n">r</span> <span class="n">voteable_chris_oct</span>
+
+<span class="mi">10</span><span class="o">.</span>  <span class="no">THEN</span> <span class="no">ADD</span> <span class="no">GEM</span> <span class="no">TO</span> <span class="no">YOUR</span> <span class="no">GEM</span> <span class="no">FILE</span>
+
+    <span class="n">gem</span> <span class="s1">&#39;voteable_chris_oct</span>
+<span class="s1">____________________________________</span>
+<span class="s1">You don&#39;</span><span class="n">t</span> <span class="n">have</span> <span class="n">to</span> <span class="k">do</span> <span class="n">this</span> <span class="n">apparently</span><span class="o">.</span>
+
+<span class="mi">10</span><span class="o">.</span> <span class="no">Next</span> <span class="n">you</span> <span class="n">must</span> <span class="kp">include</span> <span class="n">the</span> <span class="n">file</span> <span class="nb">name</span> <span class="k">in</span> <span class="n">your</span> <span class="n">application</span><span class="o">.</span><span class="n">rb</span> <span class="n">file</span>
+
+  <span class="nb">require</span> <span class="s1">&#39;voteable_chris_oct&#39;</span>
+
+<span class="mi">11</span><span class="o">.</span> <span class="no">The</span> <span class="kp">include</span> <span class="n">the</span> <span class="k">module</span> <span class="nn">name</span> <span class="k">in</span> <span class="n">your</span> <span class="n">model</span>
+   <span class="kp">include</span> <span class="no">VoteableChrisOct</span>
+<span class="n">_______________________________________</span>
+
+<span class="mi">12</span><span class="o">.</span> <span class="no">For</span> <span class="n">changes</span> <span class="ow">or</span> <span class="n">updates</span> <span class="n">to</span> <span class="n">your</span> <span class="ss">gem</span><span class="p">:</span>
+<span class="no">You</span> <span class="n">want</span> <span class="n">to</span> <span class="n">change</span> <span class="n">your</span> <span class="n">version</span> <span class="n">number</span> <span class="k">in</span> <span class="n">your</span> <span class="n">gemspec</span><span class="p">,</span> <span class="n">run</span> <span class="n">gem</span> <span class="n">build</span> <span class="ow">and</span> <span class="n">push</span> <span class="n">to</span>
+<span class="n">rubygems</span><span class="o">.</span> <span class="no">Then</span> <span class="n">you</span> <span class="n">may</span> <span class="n">want</span> <span class="n">to</span> <span class="n">specify</span> <span class="n">the</span> <span class="n">gem</span> <span class="n">version</span> <span class="k">in</span> <span class="n">your</span> <span class="n">gemfile</span>
+
+  <span class="n">gem</span> <span class="s1">&#39;voteable_chris_oct&#39;</span><span class="p">,</span> <span class="s1">&#39;=0.1.0&#39;</span>
+
+<span class="mi">13</span><span class="o">.</span> <span class="no">What</span> <span class="k">if</span> <span class="n">you</span> <span class="n">don</span><span class="s1">&#39;t want to publish everytime you make a change and</span>
+<span class="s1">you just want test locally, then in your gem file you only have to specify the path up to the parent directory:</span>
+
+<span class="s1">  gem &#39;</span><span class="n">voteable_chris_oct</span><span class="s1">&#39;, path: (just run pwd in your terminal)</span>
+
+<span class="s1">14. To remove a gem from rubygems, just run the following in your terminal:</span>
+
+<span class="s1">  gem yank voteable_chris_oct -v &#39;</span><span class="mi">0</span><span class="o">.</span><span class="mi">0</span><span class="o">.</span><span class="mi">0</span><span class="err">&#39;</span>
+
+<span class="mi">15</span><span class="o">.</span> <span class="no">When</span> <span class="n">making</span> <span class="n">changes</span> <span class="n">to</span> <span class="n">your</span> <span class="n">gem</span> <span class="n">file</span><span class="p">,</span> <span class="n">you</span> <span class="n">should</span> <span class="n">run</span>
+<span class="n">bundle</span> <span class="n">install</span> <span class="o">--</span><span class="n">without</span> <span class="n">production</span>
+
+<span class="mi">16</span><span class="o">.</span> <span class="no">Changes</span> <span class="n">made</span> <span class="n">within</span> <span class="n">your</span> <span class="k">module</span> <span class="nn">are</span> <span class="n">hotlinked</span> <span class="n">to</span> <span class="n">your</span> <span class="n">app</span> <span class="n">so</span> <span class="n">all</span> <span class="n">changes</span> <span class="n">are</span> <span class="n">made</span> <span class="n">live</span> <span class="n">without</span> <span class="n">updating</span> <span class="n">your</span> <span class="n">gem</span> <span class="n">version</span></code></pre></div>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2014/08/30/path-to-becoming-a-ruby-dev/">
-        Welcome to my Dev blog
+      <a href="/2014/11/12/course2-lesson4/">
+        Rapid Prototyping with Rails: Lesson 4, part 2
       </a>
     </h1>
 
-    <span class="post-date">30 Aug 2014</span>
+    <span class="post-date">12 Nov 2014</span>
 
-    <p>My name is Jam. I&#39;m a recovering project manager with a creative knack for design, dance, and creating things. For the longest time, I&#39;ve wanted a career to be super passionate about. I&#39;d watch some of my favorite reality shows, like Project Runway, Top Chef.. etc. and be so inspired, maye even envious that they had something that they loved to do.. could do it hours on end. Rails Girls made learning to code accessible to me. . I had the pleasure of hearing<a href="http://www.sandimetz.com/">Sandi Metz</a> gave a talk on <a href="http://en.wikipedia%20org/wiki/Grit_%28personality_trait%29">grit</a> - which gave me some hope that I too, if I worked hard enough, that I could approach my life&#39;s work with that same passion and creativity.</p>
+    <h2>Items covered:</h2>
 
-<p>These are my daily takeways along my journey to becoming a rails dev. Hope you enjoy!</p>
+<ol>
+<li>Slugging</li>
+<li>Single Admin Role</li>
+<li>Timezones</li>
+<li>Users select their own timezone</li>
+</ol>
 
-<p>Tags:  <a href="thoughts"> thoughts </a></p>
+<h2>Slugging</h2>
+
+<p>a custom URL generated based off of some characteristic of the page being viewed.</p>
+
+<h3>In our case, we care about from a slugging perspective:</h3>
+
+<ol>
+<li>Posts</li>
+<li>Categories</li>
+<li>Users</li>
+</ol>
+
+<h3>What are the benefits of Slugging:</h3>
+
+<ol>
+<li>SEO friendly/user ease</li>
+<li>Security (exposing primary key ids)</li>
+<li>Prevent those from knowing how many users you have</li>
+</ol>
+
+<p>To set up a slug:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#posts/_post.html.erb</span>
+
+<span class="o">&lt;</span><span class="n">span</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="sx">%= link_to(&#39;</span><span class="si">#{</span><span class="n">post</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="sx"> comments&#39;, post_path(post))</span>
+<span class="sx">&lt;/span&gt;</span>
+
+<span class="sx">* the post_path(post) is actually calling the to_params method on the post object:</span>
+
+<span class="sx">&lt;span&gt;</span>
+<span class="sx">&lt;%=</span> <span class="n">link_to</span> <span class="p">(</span><span class="s1">&#39;#{post.comments.size} comments&#39;</span><span class="p">,</span> <span class="n">post_path</span><span class="p">(</span><span class="n">post</span><span class="o">.</span><span class="n">to_params</span><span class="p">))</span> <span class="sx">%&gt;</span>
+<span class="sx">&lt;/span&gt;</span></code></pre></div>
+
+<h3>1. So how can we change the to_params method?</h3>
+
+<p>Within our model, we can declare an instance method where the to_params method
+will go to our slug instead of the params id.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">to_param</span>
+  <span class="nb">self</span><span class="o">.</span><span class="n">slug</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>2. We must also create a migration to add our slug column to our existing table:</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">rails</span> <span class="n">g</span> <span class="n">migration</span> <span class="n">add_slug_to_posts</span></code></pre></div>
+
+<h3>3. Open Migration File</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">change</span> <span class="ss">:posts</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span> <span class="k">do</span>
+    <span class="n">add_column</span> <span class="ss">:posts</span><span class="p">,</span> <span class="ss">:slug</span><span class="p">,</span> <span class="ss">:string</span>
+  <span class="k">end</span></code></pre></div>
+
+<h3>4. In Model, we must create a method to generate the slug.</h3>
+
+<p>Take time to create a method using gsub/regex (for edge cases)</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">test</span> <span class="n">out</span> <span class="n">regex</span> <span class="n">on</span> <span class="n">rubylur</span><span class="o">.</span><span class="n">com</span></code></pre></div>
+
+<p>One example:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">generate_slug</span>
+  <span class="nb">self</span><span class="o">.</span><span class="n">slug</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">downcase</span>
+  <span class="nb">self</span><span class="o">.</span><span class="n">save</span> <span class="c1"># we hate calling .save explicitly, maybe we can add it a callback.</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>5. ActiveRecord Callbacks (look up online, listed in order of workflow)</h3>
+
+<p>Methods the are exposed to use as a apart of the lifecycle of an ActiveRecord object,
+so we can insert or make changes to any of the callbacks.</p>
+
+<p>A couple things to consider - do we want to generate the slug after created only,
+or after the post is created and updated?</p>
+
+<p>We call insert add generate_slug method after @post.save:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">after_save</span> <span class="ss">:generate_slug</span></code></pre></div>
+
+<p>But we dont want to create slugs off of bad urls!</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">So</span> <span class="n">how</span> <span class="ss">about</span><span class="p">:</span>
+    <span class="n">after_validations</span> <span class="ss">:generate_slug</span>
+    <span class="ow">or</span>
+    <span class="n">before_save</span> <span class="ss">:generate_slug</span></code></pre></div>
+
+<ul>
+<li>This code goes in the model</li>
+<li>Know the difference between</li>
+</ul>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">before_save</span>  <span class="o">-</span> <span class="n">update</span> <span class="n">slug</span> <span class="n">whenever</span> <span class="n">title</span> <span class="n">changes</span>
+<span class="n">before_create</span></code></pre></div>
+
+<h3>6. So if I go with before_save and then all my existing posts will blow up.</h3>
+
+<p>Why? because they do not have slugs. So I must go into to the Rails console and run
+Posts.all.each {|post| post.save}
+This is will trigger the before_save action and create slugs for all existing posts before saving.</p>
+
+<p>The above console command is not good for when in production, better to run a migration.</p>
+
+<h3>7. Now when visiting the link:</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">span</span><span class="o">&gt;</span>
+  <span class="n">link_to</span><span class="p">(</span><span class="s1">&#39;#{post.comments.size} comments&#39;</span><span class="p">,</span> <span class="n">post_path</span><span class="p">(</span><span class="n">post</span><span class="p">))</span>
+<span class="o">&lt;</span><span class="sr">/span&gt;</span></code></pre></div>
+
+<p>When using named routes, always use objects instead of hard-coding,
+bc on objects you can call to_params and its useful in case you want to sluggify.</p>
+
+<p>Now we must update the set<em>post method in our posts</em>controller since
+we&#39;ve changed the to_param method:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="ss">OLD</span><span class="p">:</span>
+  <span class="k">def</span> <span class="nf">set_post</span>
+    <span class="vi">@post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">)</span>
+  <span class="k">end</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="ss">NEW</span><span class="p">:</span>
+
+<span class="k">def</span> <span class="nf">set_post</span>
+  <span class="vi">@post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">find_by</span><span class="p">(</span><span class="ss">slug</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">)</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>8. Same thing goes for our comment which uses @post</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#comments_controller</span>
+
+  <span class="k">def</span> <span class="nf">create</span>
+    <span class="vi">@post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">find_by</span><span class="p">(</span><span class="ss">slug</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:post_id</span><span class="o">]</span><span class="p">)</span>
+  <span class="k">end</span></code></pre></div>
+
+<ul>
+<li>One of the best slugging gems is friendly_id</li>
+</ul>
+
+<h3>9. Update the span id</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">span</span> <span class="nb">id</span><span class="o">=</span><span class="s1">&#39;post_&lt;%=post.id%&gt;_votes&gt;&#39;</span> <span class="n">to</span> <span class="n">be</span>
+
+<span class="o">&lt;</span><span class="n">span</span> <span class="nb">id</span><span class="o">=</span><span class="s1">&#39;post_&lt;%=post.slug&#39;</span><span class="sx">%&gt;_votes&#39;&gt;</span> <span class="k">in</span> <span class="n">your</span> <span class="n">_post</span><span class="o">.</span><span class="n">html</span><span class="o">.</span><span class="n">erb</span> <span class="n">partial</span> <span class="ow">and</span> <span class="n">your</span>
+  <span class="n">vote</span><span class="o">.</span><span class="n">js</span><span class="o">.</span><span class="n">erb</span></code></pre></div>
+
+<h2>Single Admin Role</h2>
+
+<p>Define a number of roles and each roles has a set of permissions
+User has many roles, A Role has many permissions.</p>
+
+<p>You must create has_many through association. Over all, having various roles with permissions is
+discouraged because every action is required to be checked against a set of permissions and this will
+not only greatly complicate development and slow the application down.</p>
+
+<p>For simple apps, a single admin role is typically best
+This requires having a role column on users that takes a string as free form text, which allows you to
+specify whatever role you want. This doesnt allow for the most flexiiblity but will give you keep you
+from having to create a roles table and permissions table.</p>
+
+<h3>1. Create migration to add roles to users table:</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">rails</span> <span class="n">g</span> <span class="n">migration</span> <span class="n">add_roles_to_users</span></code></pre></div>
+
+<h3>2. Open migration file, add syntax</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">change</span>
+    <span class="n">add_column</span> <span class="ss">:users</span><span class="p">,</span> <span class="ss">:role</span><span class="p">,</span> <span class="ss">:string</span>
+
+  <span class="k">end</span></code></pre></div>
+
+<h3>3. Create roles in user model</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">admin?</span>
+    <span class="nb">self</span><span class="o">.</span><span class="n">admin</span> <span class="o">==</span> <span class="s1">&#39;admin&#39;</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">moderator?</span>
+    <span class="nb">self</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="s1">&#39;moderator?&#39;</span>
+  <span class="k">end</span></code></pre></div>
+
+<ul>
+<li>Or you can use a symbol for performance optimization</li>
+</ul>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">admin?</span>
+    <span class="nb">self</span><span class="o">.</span><span class="n">role</span><span class="o">.</span><span class="n">to_sym</span> <span class="o">==</span> <span class="ss">:admin</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">moderator?</span>
+    <span class="nb">self</span><span class="o">.</span><span class="n">role</span><span class="o">.</span><span class="n">to_sym</span> <span class="o">==</span> <span class="ss">:moderator</span>
+  <span class="k">end</span></code></pre></div>
+
+<h3>4. So what if we said &quot;In order to create a category, you must be an admin&quot;</h3>
+
+<p>We could create a before<em>action :require</em>admin in the categories_controller</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">CategoriesController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+    <span class="n">before_action</span> <span class="ss">:require_user</span>
+    <span class="n">before_action</span> <span class="ss">:require_admin</span>
+  <span class="k">end</span></code></pre></div>
+
+<h3>5. We want to create the require<em>admin method in the application</em>controller as</h3>
+
+<p>we did with require<em>user. We want to make sure that the user is logged</em>in? .
+If the current<em>user is an an admin but not logged</em>in, an exception will be thrown
+because you must consider nil condition.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">require_admin</span>
+  <span class="n">access_denied</span> <span class="k">unless</span> <span class="n">logged_in?</span> <span class="ow">and</span> <span class="n">current_user</span><span class="o">.</span><span class="n">admin?</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">access_denied</span>
+  <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Sawry.. you can&#39;t do that.&quot;</span>
+  <span class="n">redirect_to</span> <span class="n">root_path</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>6. Move New Category Link (and New Post Link) under if logged<em>in? under _navigation.html</em>erb</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#layout/_navigation.html.erb</span>
+
+<span class="o">&lt;</span><span class="sx">% if </span><span class="n">logged_in?</span> <span class="ow">and</span> <span class="n">current_user</span><span class="o">.</span><span class="n">admin?</span>
+  <span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="sx">%= link_to &quot;New Post&quot;, new_post_path %&gt;</span>
+<span class="sx">  &lt;/li&gt;</span>
+<span class="sx">  &lt;li&gt;</span>
+<span class="sx">    &lt;%=</span> <span class="n">link_to</span> <span class="s2">&quot;New Category&quot;</span><span class="p">,</span> <span class="n">new_category_path</span> <span class="sx">%&gt;</span>
+<span class="sx">  &lt;/li&gt;</span>
+  <span class="o">&lt;</span><span class="sx">% end %&gt;</span>
+<span class="sx">&lt;% end %&gt;</span></code></pre></div>
+
+<hr>
+
+<h2>Timezones</h2>
+
+<h3>1. We have an existing helper<em>method in our application</em>helper.rb that displays timezone,</h3>
+
+<p>we can just add %Z to include timezone:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">display_datetime</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+    <span class="n">dt</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%m%d%Y %1:%M%P %Z&quot;</span><span class="p">)</span>
+  <span class="k">end</span></code></pre></div>
+
+<h3>2. In your application.rb file, uncomment out:</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">config</span><span class="o">-</span><span class="n">time_sone</span> <span class="o">=</span> <span class="s1">&#39;Central Time (US &amp; Canada)&#39;</span></code></pre></div>
+
+<h3>3. Now we need to find the string for setting the default time to Eastern Standard Time</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">-</span> <span class="n">run</span> <span class="n">rake</span> <span class="o">-</span><span class="n">T</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">time</span> <span class="o">=&gt;</span> <span class="n">rake</span> <span class="ss">time</span><span class="p">:</span><span class="ss">zones</span><span class="p">:</span><span class="n">all</span>
+  <span class="o">-</span> <span class="n">run</span> <span class="n">rake</span> <span class="ss">time</span><span class="p">:</span><span class="ss">zones</span><span class="p">:</span><span class="n">all</span> <span class="o">=&gt;</span> <span class="n">displays</span> <span class="n">all</span> <span class="n">timezones</span> <span class="n">available</span> <span class="k">for</span> <span class="n">rails</span>
+  <span class="o">-</span> <span class="n">run</span> <span class="n">rake</span> <span class="ss">time</span><span class="p">:</span><span class="ss">zones</span><span class="p">:</span><span class="n">all</span> <span class="o">|</span> <span class="n">grep</span> <span class="no">US</span> <span class="o">=&gt;</span> <span class="s1">&#39;Eastern Time (US &amp; Canada)&#39;</span></code></pre></div>
+
+<h3>4. Anytime you make changes to the application.rb file, you must restart the server</h3>
+
+<hr>
+
+<h2>Users select their own timezone</h2>
+
+<p>This is great, but what if we want users to select their own timezone:</p>
+
+<h3>1. Create Rails migration add timezone column to users</h3>
+
+<p>rails g migration add<em>timezones</em>to_users</p>
+
+<h3>2. class AddTimeZonesToUsers &lt; ActiveRecord::Migration</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">change</span>
+      <span class="n">add_column</span> <span class="ss">:users</span><span class="p">,</span> <span class="ss">:time_zones</span><span class="p">,</span> <span class="ss">:string</span>
+    <span class="k">end</span>
+  <span class="k">end</span></code></pre></div>
+
+<h3>3. We want to add the ability for users to select their timezone upon registration:</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s1">&#39;control-group&#39;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="sx">%= f.label :time_zone %&gt;</span>
+<span class="sx">  &lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">time_zone_select</span> <span class="ss">:time_zone</span><span class="p">,</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">TimeZone</span><span class="o">.</span><span class="n">us_zones</span> <span class="sx">%&gt;</span>
+<span class="sx">&lt;/div&gt;</span></code></pre></div>
+
+<p>This time<em>zone</em>select comes with Rails 4 only and newer. The ActiveSupport::TimeZone.us.zones will display all US timezones at the top. Reference documentation for more option</p>
+
+<h3>4. Check what data can be submitted by adding a binding.pry to the user#create</h3>
+
+<p>action and running params in rails console</p>
+
+<h3>5. user<em>params will show what params have been submitted, and we can see that timezone was not saved because we need to add it to strong</em>params</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">user_params</span>
+      <span class="n">params</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span><span class="o">.</span><span class="n">permit</span><span class="p">(</span><span class="ss">:username</span><span class="p">,</span> <span class="ss">:password</span><span class="p">,</span> <span class="ss">:time_zone</span><span class="p">)</span>
+    <span class="k">end</span></code></pre></div>
+
+<h3>6. Once logged in, we want the users timezone to be displayed, we must edit the display_datetime method</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">in</span> <span class="n">the</span> <span class="ss">ApplicationHelper</span><span class="p">:</span>
+
+  <span class="k">module</span> <span class="nn">ApplicationHelper</span>
+    <span class="k">def</span> <span class="nf">display_datetime</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+      <span class="k">if</span> <span class="n">logged_in?</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">current_user</span><span class="o">.</span><span class="n">time_zone</span><span class="o">.</span><span class="n">blank?</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">in_time_zone</span><span class="p">(</span><span class="n">current_user</span><span class="o">.</span><span class="n">time_zone</span><span class="p">)</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+<span class="no">Time_zone</span> <span class="nb">method</span> <span class="n">will</span> <span class="nb">display</span> <span class="n">the</span> <span class="n">object</span><span class="err">&#39;</span><span class="n">s</span> <span class="n">time</span> <span class="k">if</span> <span class="n">its</span> <span class="n">passed</span> <span class="n">a</span> <span class="n">string</span><span class="o">.</span> <span class="no">So</span> <span class="k">in</span> <span class="n">rails</span> <span class="n">console</span><span class="p">,</span><span class="k">if</span> <span class="n">you</span> <span class="n">run</span> <span class="n">post</span><span class="o">.</span><span class="n">created_at</span><span class="o">.</span><span class="n">in_time_zone</span><span class="p">(</span><span class="s2">&quot;Arizona&quot;</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">will</span> <span class="k">return</span> <span class="n">the</span> <span class="n">datetime</span> <span class="n">object</span></code></pre></div>
+
+<p>To understand more about the time<em>zone</em>select or the in<em>time</em>zone method, look up the documentation.</p>
+
+<h3>7. If we wanted to specify the default time in our drop down</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s1">&#39;control-group&#39;</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="sx">%= f.label :time_zone %&gt;</span>
+<span class="sx">    &lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">time_zone_select</span> <span class="ss">:time_zone</span><span class="p">,</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">TimeZone</span><span class="o">.</span><span class="n">us_zones</span><span class="p">,</span> <span class="ss">default</span><span class="p">:</span> <span class="no">Time</span><span class="o">.</span><span class="n">zone</span><span class="o">.</span><span class="n">name</span><span class="sx">%&gt;</span>
+<span class="sx">  &lt;/div&gt;</span></code></pre></div>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2014/11/10/course2-lesson4/">
+        Rapid Prototyping with Rails: Lesson 4, part 1
+      </a>
+    </h1>
+
+    <span class="post-date">10 Nov 2014</span>
+
+    <h2>Items Covered</h2>
+
+<ol>
+<li>Ajax</li>
+<li>Slugs</li>
+<li>Simple Admin Role</li>
+<li>Time Zones</li>
+<li>Exposing APIs</li>
+</ol>
+
+<h2>Ajax</h2>
+
+<p>There are two forms of Javascript,
+1. (UJR) Unobstursive Js - which seperates the behavior layer from the websites content
+structure and presentation
+2. (SJR) Server Generated Responses (The Rails Way)</p>
+
+<p>Ajax is good for reloading only part of a page when all else stays the same.
+Really helpful when you have an expensive page that has alot of aggregate information.
+JQuery sits on top of Javascript to resolve the browser-specific qwerks</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">An</span> <span class="n">example</span> <span class="n">of</span> <span class="n">an</span> <span class="no">Ajax</span> <span class="n">request</span> <span class="k">in</span> <span class="n">jQuery</span> <span class="ss">code</span><span class="p">:</span>
+    <span class="err">$</span><span class="p">(</span><span class="n">document</span><span class="p">)</span><span class="o">.</span><span class="n">ready</span><span class="p">(</span><span class="n">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="err">$</span><span class="p">(</span><span class="s1">&#39;#hit_form input&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">click</span><span class="p">(</span><span class="n">function</span><span class="p">()</span> <span class="p">{</span> <span class="o">**</span> <span class="mi">1</span><span class="o">.</span> <span class="no">Unobstrusive</span> <span class="n">javascript</span> <span class="n">event</span> <span class="n">listener</span>
+        <span class="vg">$.</span><span class="n">ajax</span><span class="p">({</span><span class="o">**</span> <span class="mi">2</span><span class="o">.</span> <span class="no">Trigger</span> <span class="n">ajax</span>  <span class="n">request</span>
+        <span class="ss">type</span><span class="p">:</span> <span class="s1">&#39;POST&#39;</span>
+        <span class="ss">url</span><span class="p">:</span> <span class="s1">&#39;player/hit&#39;</span>
+        <span class="ss">data</span><span class="p">:</span> <span class="p">{</span><span class="ss">param1</span><span class="p">:</span> <span class="s2">&quot;hi&quot;</span><span class="p">,</span> <span class="ss">param2</span><span class="p">:</span> <span class="s2">&quot;There&quot;</span><span class="p">}</span>
+      <span class="p">})</span><span class="o">.</span><span class="n">done</span><span class="p">(</span><span class="n">function</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="p">{</span> <span class="o">**</span> <span class="mi">3</span><span class="o">.</span> <span class="no">Handle</span> <span class="n">the</span> <span class="no">Response</span>
+        <span class="err">$</span><span class="p">(</span><span class="s1">&#39;#some_element&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">html</span><span class="p">(</span><span class="n">msg</span><span class="p">);</span>
+      <span class="p">})</span>
+    <span class="p">});</span>
+  <span class="p">)};</span></code></pre></div>
+
+<p>So the steps to an ajax request are:
+  1. Unobstrusive Javascript Event Listener
+  2. Trigger ajax request
+  3. Handle the response</p>
+
+<h3>Step 1. Unobstrusive Javascript Event Listener</h3>
+
+<ol>
+<li>To add the ajax call to your up vote in your postit app, add remote: true:
+&lt;%= link<em>to vote</em>post_path(post, vote:&#39;true&#39;), method: &#39;post&#39;, remote: true do %&gt;
+<i class='icon-arrow-down'></i>
+&lt;% end %&gt;
+&lt;% end %&gt;</li>
+</ol>
+
+<p>*This will add a data-remote=&quot;true&quot;, similar to the data-method=&quot;post&quot;
+so similarly, just as with the data-method=&#39;post&#39; looks for data-method
+and applies javascript that turns the anchor tag into &#39;get&#39; link to &#39;post&#39; form,
+the same occurs when remote: true is identified, it turns those anchor tags
+into an ajax call(as seen above)</p>
+
+<p>In terminal, when clicking the up link, you should see:
+Processing by PostsController#vote as JS, but normally its as html,
+this let&#39;s you know that its an ajax call.</p>
+
+<h3>Step 2. Trigger ajax request</h3>
+
+<p>We have to be able to handle this response in the PostsController#vote:
+2. We have add code to handle the js request in vote controller action:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">vote</span>
+    <span class="n">vote</span> <span class="o">=</span> <span class="no">Vote</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">voteable</span><span class="p">:</span> <span class="vi">@post</span><span class="p">,</span> <span class="ss">creator</span><span class="p">:</span> <span class="n">current_user</span><span class="p">,</span> <span class="ss">vote</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:vote</span><span class="o">]</span><span class="p">)</span>
+
+    <span class="n">respond_to</span> <span class="k">do</span> <span class="o">|</span><span class="nb">format</span><span class="o">|</span>
+      <span class="nb">format</span><span class="o">.</span><span class="n">html</span> <span class="k">do</span>
+        <span class="k">if</span> <span class="n">vote</span><span class="o">.</span><span class="n">valid?</span>
+          <span class="n">flash</span><span class="o">[</span><span class="ss">:notice</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Your vote was counted!&quot;</span>
+        <span class="k">else</span>
+          <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Your vote was &lt;strong&gt;not&lt;/strong&gt; recorded!&quot;</span><span class="o">.</span><span class="n">html_safe</span>
+        <span class="k">end</span>
+        <span class="n">redirect_to</span> <span class="ss">:back</span>
+      <span class="k">end</span>
+      <span class="nb">format</span><span class="o">.</span><span class="n">js</span>
+    <span class="k">end</span>
+  <span class="k">end</span></code></pre></div>
+
+<p>We add format.js becasue instead of adding unobstrusive js, format.js will
+cause rails to render a js.erb template under the same name as the controller action name.
+The method determines if it can take a block. You can only render a template and redirect_to a url, the default is to render a template</p>
+
+<h3>Step 3. Testing out vote.js.erb</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#posts/vote.js.erb</span>
+<span class="o">**</span> <span class="no">You</span> <span class="n">have</span> <span class="n">access</span> <span class="n">to</span> <span class="n">the</span> <span class="n">instance</span> <span class="n">variables</span> <span class="n">created</span> <span class="k">in</span> <span class="n">the</span> <span class="n">action</span>
+
+<span class="n">alert</span><span class="p">(</span><span class="s1">&#39;total votes for &lt;%= @post.title %&gt; is &lt;%= @post.total_votes %&gt;&#39;</span><span class="p">);</span></code></pre></div>
+
+<p>The above action creates a pop up alert but does not change the number of votes on the main page.
+When inspecting the element, it shows that this is just an empty span in the html. Js needs away to
+identify the empty span to change to the number, that is accomplished through an  html id class:</p>
+
+<h3>Step 4. Changing the number of votes</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#posts/_post.html.erb</span>
+
+<span class="o">&lt;</span><span class="n">span</span> <span class="nb">id</span><span class="o">=</span><span class="s1">&#39;post_&lt;%=post.id%&gt;_votes&#39;</span><span class="o">&gt;&lt;%=</span> <span class="n">post</span><span class="o">.</span><span class="n">total_votes</span> <span class="sx">%&gt;&lt;/span&gt;</span></code></pre></div>
+
+<p>Rails gives you the ability to use js and parse out active record objects
+which isnt possible with normal js.
+So now, we can update the vote.js.erb file:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="err">$</span><span class="p">(</span><span class="s1">&#39;#post_&lt;%= @post.id %&gt;&#39;</span><span class="n">_votes</span><span class="p">)</span><span class="o">.</span><span class="n">html</span> <span class="p">(</span><span class="s1">&#39;&lt;%= post.total_votes %&gt;&#39;</span><span class="p">);</span></code></pre></div>
+
+<p>You can now also add remote: true to the down vote also.</p>
+
+<h3>Step 5. Limiting the number of votes</h3>
+
+<p>So when add the ajax request, we now do not get an error if we try to vote
+ on a post we&#39;ve already voted on.
+ 5a) We need to turn the local variable &#39;vote&#39; into an instance variable under
+ the vote action:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">vote</span>
+    <span class="vi">@vote</span> <span class="o">=</span> <span class="no">Vote</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">voteable</span><span class="p">:</span> <span class="vi">@post</span><span class="p">,</span> <span class="ss">creator</span><span class="p">:</span> <span class="n">current_user</span><span class="p">,</span> <span class="ss">vote</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:vote</span><span class="o">]</span><span class="p">)</span>
+
+    <span class="n">respond_to</span> <span class="k">do</span> <span class="o">|</span><span class="nb">format</span><span class="o">|</span>
+      <span class="nb">format</span><span class="o">.</span><span class="n">html</span> <span class="k">do</span>
+        <span class="k">if</span> <span class="n">vote</span><span class="o">.</span><span class="n">valid?</span>
+          <span class="n">flash</span><span class="o">[</span><span class="ss">:notice</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Your vote was counted!&quot;</span>
+        <span class="k">else</span>
+          <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Your vote was &lt;strong&gt;not&lt;/strong&gt; recorded!&quot;</span><span class="o">.</span><span class="n">html_safe</span>
+        <span class="k">end</span>
+        <span class="n">redirect_to</span> <span class="ss">:back</span>
+      <span class="k">end</span>
+      <span class="nb">format</span><span class="o">.</span><span class="n">js</span>
+    <span class="k">end</span>
+  <span class="k">end</span></code></pre></div>
+
+<p>5b) Write an if statement in the vote.js.erb file:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="sx">% if </span><span class="vi">@vote</span><span class="o">.</span><span class="n">valid?</span> <span class="sx">%&gt;</span>
+<span class="sx">      $(&quot;#post_&lt;%= @post.id %&gt;</span><span class="n">_votes</span><span class="s2">&quot;).html(&quot;</span><span class="o">&lt;%=</span> <span class="vi">@post</span><span class="o">.</span><span class="n">total_votes</span> <span class="sx">%&gt; votes&quot;)</span>
+<span class="sx">    &lt;% else %&gt;</span>
+      <span class="n">alert</span><span class="p">(</span><span class="s2">&quot;You can only vote on a post once.&quot;</span><span class="p">);</span>
+    <span class="o">&lt;</span><span class="sx">% end </span><span class="o">%&gt;</span></code></pre></div>
+
+<p>So in summary, Rails Core Developers wrote jQuery library that converts remote= true
+into data-remote= true, which converts to an ajax request.
+In turn, we told ajax how to respond via html and js</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2014/11/05/course2-has_secured_password/">
+        Rapid Prototyping with Rails: Lesson 3, Working with has_secured_password
+      </a>
+    </h1>
+
+    <span class="post-date">05 Nov 2014</span>
+
+    <h2>Steps:</h2>
+
+<ol>
+<li>Install bcrypt-ruby gem</li>
+<li>Add password_digest column to users table</li>
+<li>Add has<em>secured</em>password to user model</li>
+<li>Turned off validations for has<em>secured</em>password</li>
+</ol>
+
+<h2>Creating password in console:</h2>
+
+<ol>
+<li>bob = User.first</li>
+<li>bob.password = &quot;password&quot;</li>
+<li>bob.password_confirmation = &quot;password&quot;</li>
+<li>bob.save</li>
+</ol>
+
+<h2>To check what password is in console:</h2>
+
+<p>You can never retrieve the password directly, but you can verify using the authenticate</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">bob</span><span class="o">.</span><span class="n">authenticate</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">)</span></code></pre></div>
+
+<ul>
+<li>will return False, if guess is incorrect or retrieve the user object if True.</li>
+</ul>
+
+<p>Password Digest column includes salts to prevent against rainbow attacks.
+Salts adds a small chunk of random data to password to prevent those attacks.</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2014/11/03/course2-authentication/">
+        Rapid Prototyping with Rails: Lesson 3, Authentication
+      </a>
+    </h1>
+
+    <span class="post-date">03 Nov 2014</span>
+
+    <h2>Steps</h2>
+
+<h3>Step 1: Create routes</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#routes.rb</span>
+<span class="n">add</span> <span class="n">sessions</span><span class="c1">#new, sessions#create, sessions#destory routes</span></code></pre></div>
+
+<h3>Step 2: Create sessions template</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#sessions/new.html.erb</span>
+<span class="no">Add</span> <span class="n">html</span></code></pre></div>
+
+<h3>Step 3: Sessions_Controller.rb</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">SessionsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="k">def</span> <span class="nf">create</span>
+  <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">username</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:username</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
+    <span class="ow">or</span>
+  <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">find_by</span><span class="p">(</span><span class="ss">username</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:username</span><span class="o">]</span><span class="p">)</span>
+
+<span class="no">Alternative</span> <span class="no">Flash</span> <span class="n">syntax</span>
+
+  <span class="n">flash</span><span class="o">.</span><span class="n">now</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;There is something wrong with your username or password.&quot;</span>
+  <span class="n">render</span> <span class="ss">:new</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>Step 4: Helpers</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#application_helper.rb</span>
+  <span class="mi">1</span><span class="o">.</span> <span class="n">create</span> <span class="n">current_user</span> <span class="ow">and</span> <span class="n">logged_in?</span> <span class="nb">methods</span>
+
+<span class="o">*</span> <span class="ss">Memoization</span><span class="p">:</span> <span class="n">allows</span> <span class="n">you</span> <span class="n">to</span> <span class="n">only</span> <span class="n">hit</span> <span class="n">the</span> <span class="n">database</span> <span class="n">once</span> <span class="k">when</span> <span class="n">being</span> <span class="n">called</span> <span class="n">multiple</span> <span class="n">times</span> <span class="n">on</span> <span class="n">a</span> <span class="n">template</span>
+
+  <span class="mi">2</span><span class="o">.</span> <span class="n">add</span> <span class="n">helper_method</span> <span class="n">syntax</span> <span class="n">to</span> <span class="n">make</span> <span class="n">accessible</span> <span class="k">in</span> <span class="n">views</span></code></pre></div>
+
+<h3>Step 5. _navigation.html.erb</h3>
+
+<p>Two ways to protect the fuctionality of your application for non-logged in users:
+1. Links on User Interface (using &#39;if logged<em>in? method&#39;)
+2. Urls/Controller actions (using before</em>action)</p>
+
+<p>We want to keep those who aren&#39;t logged in from creating a post.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="sx">% if </span><span class="n">logged_in?</span> <span class="sx">%&gt;</span>
+<span class="sx">&lt;div class=&#39;nav item&#39;&gt;</span>
+  <span class="o">&lt;%=</span> <span class="n">link_to</span> <span class="s2">&quot;New Post&quot;</span><span class="p">,</span> <span class="n">new_post_path</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;btn btn-success btn-small&#39;</span> <span class="sx">%&gt;</span>
+<span class="sx">&lt;/div&gt;</span>
+<span class="o">&lt;</span><span class="sx">% end </span><span class="o">%&gt;</span></code></pre></div>
+
+<h3>Step 6. Add before action to prevent navigation to certain links</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">posts_controller</span><span class="o">.</span><span class="n">rb</span>
+  <span class="n">add</span> <span class="n">before_action</span> <span class="ss">:require_user</span><span class="p">,</span> <span class="ss">except</span><span class="p">:</span> <span class="o">[</span><span class="ss">:index</span><span class="p">,</span> <span class="ss">:show</span><span class="o">]</span></code></pre></div>
+
+<h3>Step 7. require_user method</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Create</span> <span class="n">require_user</span> <span class="nb">method</span> <span class="k">in</span> <span class="n">application_controller</span><span class="o">.</span><span class="n">rb</span></code></pre></div>
+
+<h3>Step 8. Add current_user</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Remove</span> <span class="no">User</span><span class="o">.</span><span class="n">first</span> <span class="ow">and</span> <span class="n">add</span> <span class="n">current_user</span> <span class="k">for</span> <span class="n">post</span><span class="o">.</span><span class="n">creator</span> <span class="ow">and</span> <span class="n">comment</span><span class="o">.</span><span class="n">creator</span></code></pre></div>
 
   </div>
   
@@ -515,7 +1002,7 @@ Pass by Value vs Pass by Reference:
 
 <div class="pagination">
   
-    <span class="pagination-item older">Older</span>
+    <a class="pagination-item older" href="/page15">Older</a>
   
   
     

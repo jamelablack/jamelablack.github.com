@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications - Lesson 6: Continuous Intgeration &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 6: Continuous Intgeration</h1>
+  <span class="post-date">30 May 2015</span>
+  <h2>Continuous Integration</h2>
+
+<p>According to Martin Fowler&#39;s <a href="http://martinfowler.com/articles/continuousIntegration.html">blog</a>, Continuous Integration is
+Continuous Integration is a software development practice where members of a team integrate their work frequently, usually each person integrates at least daily - leading to multiple integrations per day. Each integration is verified by an automated build (including test) to detect integration errors as quickly as possible. Many teams find that this approach leads to significantly reduced integration problems and allows a team to develop cohesive software more rapidly. This article is a quick overview of Continuous Integration summarizing the technique and its current usage.</p>
+
+<h4>According to Tealeaf...</h4>
+
+<p>The problem that CI solves is to force integration on a regular basis. For example, you may have just finished a feature on my_feature branch and have had all the tests pass locally. You open a PR and your fellow coworkers are happy with the way the code looks. Github shows the PR can be automatically merged without conflict - so you do that, merge it back to the master branch and ready to deploy the feature!</p>
+
+<p>The danger of this workflow is that while you are working on your feature, someone else could have just finished their feature and pushed to the master branch to Github, and your new feature never integrated with this new piece of code.</p>
+
+<p>A Continuous Integration solution would watch your repository and force integration (running the entire test suite on the CI server) whenever necessary.</p>
+
+<p>Once we have our CI server set up to monitor our repository, it&#39;ll pull the latest code and run the entire test suite every time we push code to any branch on Github (when you work with a CI server, you want to make sure that every push should always make the tests pass) and notify you on the results. The CI server also runs every time we merge our pull request to the master branch to ensure integration.</p>
+
+<p>CI server helps us catch integration errors before they reach to production, and the earlier we catch errors, the less costly we can fix them.</p>
+
+<p>A CI solution doesn&#39;t eliminate the necessity to run your tests locally - your will lose friends quickly if you constantly push code that &quot;breaks the build&quot; and have everyone notified. However, in cases of long running test suites, it is acceptable to run only the tests pertaining to the new feature built, and have the CI server to run the entire test suite to catch any potential regression. Most modern CI services allow you to run the tests in parallel (with a paid plan, typically) so it could run your tests several times faster.</p>
+
+<h3>Circle CI</h3>
+
+<h3>Set Up Continuous Integration with Circle CI</h3>
+
+<p><a href="http://circleci.com">Circle CI</a> is a popular Continuous Integration service. Set up your project with Circle CI is pretty simple - link and authorize your Github account, then add the repository that you want to enable CI. By default, Circle CI runs on every push and PR merge.</p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/06/30/Metz-5-Rules/">
+            Sandi Metz - The Rules
+            <small>30 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/06/26/Refactoring-Generalization/">
+            Refactoring - Dealing wihth Generalization
+            <small>26 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/06/25/Refactoring-conditionals/">
+            Refactoring - Simplifying Conditional Expressions
+            <small>25 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

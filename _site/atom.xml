@@ -4,7 +4,7 @@
  <title>grit| commit</title>
  <link href="http://jamelablack.github.io/atom.xml" rel="self"/>
  <link href="http://jamelablack.github.io/"/>
- <updated>2015-05-31T09:13:45-04:00</updated>
+ <updated>2015-07-07T09:02:07-04:00</updated>
  <id>http://jamelablack.github.io</id>
  <author>
    <name>Jam Black</name>
@@ -13,7 +13,1360 @@
 
  
  <entry>
-   <title>POODR - Ch2: Desgining Classes with a Single Responsibility</title>
+   <title>Sandi Metz - The Rules</title>
+   <link href="http://jamelablack.github.io/2015/06/30/Metz-5-Rules/"/>
+   <updated>2015-06-30T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/06/30/Metz-5-Rules</id>
+   <content type="html">&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;Class can have no more than 100 lines&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;A method can contain no more than 5 lines&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Can be passed no more than 4, more like 3 parameters&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;A controller action can only pass one instance variable&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;No more than 2 class names per controller action&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Make smaller things and they should know as little about each other as possible&lt;/p&gt;
+
+&lt;p&gt;When looking at large chucks of code, its okay to do the &amp;quot;squint method&amp;quot;
+**1. Changes in shape means you have nested conditionals and it will be very hard to reason about&lt;/p&gt;
+
+&lt;p&gt;**2. Changes in color signify different levels of abstraction means that it be hard to follow&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Refactoring - Dealing wihth Generalization</title>
+   <link href="http://jamelablack.github.io/2015/06/26/Refactoring-Generalization/"/>
+   <updated>2015-06-26T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/06/26/Refactoring-Generalization</id>
+   <content type="html">&lt;h3&gt;1. Pull Up Method&lt;/h3&gt;
+
+&lt;p&gt;You have methods with identical results on subclasses. Move them to the superclass.&lt;/p&gt;
+
+&lt;h3&gt;2.Push Down Method&lt;/h3&gt;
+
+&lt;p&gt;Behavior on a superclass is relevant only for some of its subclasses. Move it to those subclasses&lt;/p&gt;
+
+&lt;h3&gt;3. Extract Module&lt;/h3&gt;
+
+&lt;p&gt;You have duplicated behavior in two or more classes.
+Create a new module and move the relevant behavior from the old class into the module, and include the module in the class.&lt;/p&gt;
+
+&lt;h3&gt;4. Inline Module&lt;/h3&gt;
+
+&lt;p&gt;The resultant indirection of the included module is no longer worth the duplication it is preventing.
+Merge the module into the including class.&lt;/p&gt;
+
+&lt;h3&gt;5. Extract Subclass&lt;/h3&gt;
+
+&lt;p&gt;A class has features that are used only in some instances.
+Create a subclass for that subset of features.&lt;/p&gt;
+
+&lt;h3&gt;6. Introduce Inheritance&lt;/h3&gt;
+
+&lt;p&gt;You have two classes with similar features.
+Make one of the classes a superclass and move the common features to the superclass.&lt;/p&gt;
+
+&lt;h3&gt;7. Collapse Hierarchy&lt;/h3&gt;
+
+&lt;p&gt;A superclass and subclass (or module and the class that includes the module) are not very different.
+￼￼Merge them together&lt;/p&gt;
+
+&lt;h3&gt;8. Form Template Method&lt;/h3&gt;
+
+&lt;p&gt;You have two methods in subclasses that perform similar steps in the same order, yet the steps are different.
+Get the steps into methods with the same signature, so that the original methods become the same. Then you can pull them up.&lt;/p&gt;
+
+&lt;h3&gt;9. Replace Inheritance with Delegation&lt;/h3&gt;
+
+&lt;p&gt;A subclass uses only part of a superclass interface or does not want to inherit data.
+Create a field for the superclass, adjust methods to delegate to the superclass, and remove the subclassing.
+￼Replace Inheritance with Delegation&lt;/p&gt;
+
+&lt;h3&gt;10. Replace Abstract Superclass with Module&lt;/h3&gt;
+
+&lt;p&gt;You have an inheritance hierarchy, but never intend to explicitly instantiate an instance of the superclass.
+Replace the superclass with a module to better communicate your intention.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Refactoring - Simplifying Conditional Expressions</title>
+   <link href="http://jamelablack.github.io/2015/06/25/Refactoring-conditionals/"/>
+   <updated>2015-06-25T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/06/25/Refactoring-conditionals</id>
+   <content type="html">&lt;h3&gt;1. Decompose Condtional&lt;/h3&gt;
+
+&lt;p&gt;You have a complicated conditional (if-then-else) statement.
+Extract methods from the condition, “then” part, and “else” parts.
+Mechanics
+*&lt;em&gt;1. Extract the condition into its own method.
+*&lt;/em&gt;2. Extract the “then” part and the “else” part into their own methods.&lt;/p&gt;
+
+&lt;h3&gt;2. Recompose Conditional&lt;/h3&gt;
+
+&lt;p&gt;You have conditional code that is unnecessarily verbose and does not use the most readable Ruby construct.
+Replace the conditional code with the more idiomatic Ruby construct.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;ss&quot;&gt;before&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;parameters&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;params&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;params&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt;
+
+&lt;span class=&quot;ss&quot;&gt;after&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;parameters&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;params&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;3. Consolidate Conditional Expression&lt;/h3&gt;
+
+&lt;p&gt;You have a sequence of conditional tests with the same result.
+Combine them into a single conditional expression and extract it.&lt;/p&gt;
+
+&lt;h3&gt;4. Consolidate Duplicate Conditional Fragments&lt;/h3&gt;
+
+&lt;p&gt;The same fragment of code is in all branches of a conditional expression.
+Move it outside the expression.&lt;/p&gt;
+
+&lt;h3&gt;5. Replace Condtional with Polymorphism&lt;/h3&gt;
+
+&lt;p&gt;Motivation
+One of the grandest sounding words in object jargon is polymorphism. The essence of polymorphsim is that it allows you to avoid writing an explicit con- ditional when you have objects whose behavior varies depending on their types.
+As a result you find that case statements or if-then-else statements that switch on type codes are much less common in an Object-Oriented program.&lt;/p&gt;
+
+&lt;p&gt;Polymorphism gives you many advantages. The biggest gain occurs when this same set of conditions appears in many places in the program. If you want to add a new type, you have to find and update all the conditionals. But with polymorphism you just create a new class and provide the appropriate methods. Clients of the class don’t need to know about the polymorphism, which reduces the dependencies in your system and makes it easier to update.&lt;/p&gt;
+
+&lt;p&gt;Ruby’s duck typing makes it easy to introduce polymorphism. In a statically typed language like Java, you need inheritance or implementation of an inter- face to be able to call a method polymorphically. But in Ruby, an object’s cur- rent set of methods—not its inheritance from a particular class—determines its valid semantics. So long as objects A and B have the same method, you can call them in the same way.&lt;/p&gt;
+
+&lt;h2&gt;Mechanics&lt;/h2&gt;
+
+&lt;p&gt;Polymorphism in Ruby can be achieved in a couple of ways. In its simplest form, you can implement the same method signature on multiple objects and call these methods polymorphically. You can introduce a module hierarchy and have the method that is to be called polymorphically on the module. Or you can introduce an inheritance hierarchy and have the method that is to be called polymorphically on the subclasses. In each case, the mechanics are the same.
+The code you target may be a case statement or an if statement.&lt;/p&gt;
+
+&lt;p&gt;*&lt;em&gt;1. If the conditional statement is one part of a larger method, take apart the
+conditional statement and use Extract Method.
+*&lt;/em&gt;2. If necessary use Move Method to place the conditional at the appropriate place in the object structure.
+**3. Pick one of the polymorphic objects. Create a method on the polymor- phic object that will override the conditional statement method. Copy the body of that leg of the conditional statement into the polymorphic method and adjust it to fit.&lt;/p&gt;
+
+&lt;h3&gt;6. Introuduce a Null Object&lt;/h3&gt;
+
+&lt;p&gt;You have repeated checks for a nil value.
+Replace the nil value with a null object.&lt;/p&gt;
+
+&lt;p&gt;The essence of polymorphism is that instead of asking an object what type it is and then invoking some behavior based on the answer, you just invoke the behavior. The object, depending on its type, does the right thing. One of the less intuitive places to do this is where you have a null value in a field.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Refactoring - Simple Method Calls</title>
+   <link href="http://jamelablack.github.io/2015/06/25/Refactoring-Simple-Method-Calls/"/>
+   <updated>2015-06-25T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/06/25/Refactoring-Simple-Method-Calls</id>
+   <content type="html">&lt;h3&gt;1.. Rename Method&lt;/h3&gt;
+
+&lt;p&gt;The name of a method does not reveal its purpose.
+Change the name of the method.&lt;/p&gt;
+
+&lt;h3&gt;2. Add Parameter&lt;/h3&gt;
+
+&lt;p&gt;A method needs more information from its caller.
+Add a parameter for an object that can pass on this information.&lt;/p&gt;
+
+&lt;h3&gt;3. Remove Parameter&lt;/h3&gt;
+
+&lt;p&gt;A parameter is no longer used by the method body.
+Remove it.&lt;/p&gt;
+
+&lt;h3&gt;4. Seperate Query from Modifier&lt;/h3&gt;
+
+&lt;p&gt;You have a method that returns a value and also changes the state of an object.
+Create two methods, one for the query and one for the modification.&lt;/p&gt;
+
+&lt;h3&gt;4. Parameterize Method&lt;/h3&gt;
+
+&lt;p&gt;You have a method that returns a value and also changes the state of an object.
+Create two methods, one for the query and one for the modification.&lt;/p&gt;
+
+&lt;p&gt;Motivation
+You may see a couple of methods that do similar things but vary depending on a few values. In this case you can simplify matters by replacing the separate methods with a single method that handles the variations by parameters. Such a change removes duplicate code and increases flexibility, because you can deal with other variations by adding parameters.&lt;/p&gt;
+
+&lt;h3&gt;5. Perserve Whole Object&lt;/h3&gt;
+
+&lt;p&gt;You are getting several values from an object and passing these values as param- eters in a method call.
+Send the whole object instead.&lt;/p&gt;
+
+&lt;h3&gt;6. Replace Parameter with Method&lt;/h3&gt;
+
+&lt;p&gt;An object invokes a method, then passes the result as a parameter for a method. The receiver can also invoke this method.
+Remove the parameter and let the receiver invoke the method.&lt;/p&gt;
+
+&lt;h3&gt;7. Introduce Parameter Object&lt;/h3&gt;
+
+&lt;p&gt;You have a group of parameters that naturally go together.
+Replace them with an object.&lt;/p&gt;
+
+&lt;h3&gt;8. Remove Setting Method&lt;/h3&gt;
+
+&lt;p&gt;A field should be set at creation time and never altered.
+Remove any setting method for that field.
+Providing a setting method indicates that a field may be changed. If you don’t want that field to change once the object is created, don’t provide a setting method. That way your intention is clear and you often remove the possibility that the field will change.&lt;/p&gt;
+
+&lt;h3&gt;9. Hide Method&lt;/h3&gt;
+
+&lt;p&gt;A method is not used by any other class.
+Make the method private.&lt;/p&gt;
+
+&lt;h3&gt;10. Replace Constructor with Factory Method&lt;/h3&gt;
+
+&lt;p&gt;You want to do more than simple construction when you create an object.
+Replace the constructor with a factory method.
+The most obvious motivation for Replace Constructor with Factory Method is when you have conditional logic to determine the kind of object to create. If you need to do this conditional logic in more than one place, it’s time for a Factory Method.&lt;/p&gt;
+
+&lt;h3&gt;11.Replace Error Code with Exception&lt;/h3&gt;
+
+&lt;p&gt;A method returns a special code to indicate an error.
+Raise an exception instead.&lt;/p&gt;
+
+&lt;h3&gt;12. Replace Exception with Test&lt;/h3&gt;
+
+&lt;p&gt;You are raising an exception on a condition the caller could have checked first.
+Change the caller to make the test first.
+Exceptions are an important advance in programming languages. They allow us to avoid complex codes by use of Replace Error Code with Exception. Like so many pleasures, exceptions can be used to excess, and they cease to be pleasur- able. Exceptions should be used for exceptional behavior: behavior that is an unexpected error. They should not act as a substitute for conditional tests. If you can reasonably expect the caller to check the condition before calling the operation, you should provide a test, and the caller should use it.&lt;/p&gt;
+
+&lt;h3&gt;13. Introduce Gateway&lt;/h3&gt;
+
+&lt;p&gt;You want to interact with a complex API of an external system or resource in a simplified way.
+Introduce a Gateway that encapsulates access to an external system or resource.&lt;/p&gt;
+
+&lt;h3&gt;14. Introduce Expression Builder&lt;/h3&gt;
+
+&lt;p&gt;You want to interact with a public interface in a more fluent manner and not muddy the interface of an existing object.
+Introduce an Expression Builder and create an interface specific to your application.
+￼Introduce Expression Builder
+￼￼&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Refactoring - Organizng Data</title>
+   <link href="http://jamelablack.github.io/2015/06/23/Refactoring-Organizing-Data/"/>
+   <updated>2015-06-23T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/06/23/Refactoring-Organizing-Data</id>
+   <content type="html">&lt;h3&gt;1. Self Encapsulated Field&lt;/h3&gt;
+
+&lt;p&gt;You are accessing a field directly, but the coupling to the field is becoming awkward.
+Create getting and setting methods for the field and use only those to access the field.&lt;/p&gt;
+
+&lt;h3&gt;2. Replace Data Value with Object&lt;/h3&gt;
+
+&lt;p&gt;You have a data item that needs additional data or behavior.
+Turn the data item into an object:
+*&lt;em&gt;1. Create the class for the value. Give it an equivalent field to the field in the source class. Add an attribute reader and a constructor that takes the field as an argument.
+*&lt;/em&gt;2. Change the attribute reader in the source class to call the reader in the new class.&lt;/p&gt;
+
+&lt;h3&gt;3. Change Value to Reference&lt;/h3&gt;
+
+&lt;p&gt;You have a class with many equal instances that you want to replace with a single object.
+Turn the object into a reference object.&lt;/p&gt;
+
+&lt;h3&gt;4. Change Reference to Value&lt;/h3&gt;
+
+&lt;p&gt;You have a reference object that is small, immutable, and awkward to manage. Turn it into a value object.&lt;/p&gt;
+
+&lt;h3&gt;5. Replace Array with Object&lt;/h3&gt;
+
+&lt;p&gt;You have an Array in which certain elements mean different things. Replace the Array with an object that has a field for each element.
+*&lt;em&gt;1. Create a new class to represent the information in the Array. Give it a method called [] so that callers that read the Array can be changed one by one. Give it a method called []= so that callers that write to the Array can be changed one by one.
+*&lt;/em&gt;2. Construct the new object wherever the Array was instantiated.&lt;/p&gt;
+
+&lt;h3&gt;6. Replace Hash with Object&lt;/h3&gt;
+
+&lt;p&gt;You have a Hash that stores several different types of objects, and is passed around and used for more than one purpose.
+Replace the Hash with an object that has a field for each key.&lt;/p&gt;
+
+&lt;p&gt;*&lt;em&gt;1. Create a new class to represent the information in the Hash. Give it a method called [] so that callers that read the Hash can be changed one by one. Give it a method called []= so that callers that write to the Hash can be changed one by one.
+*&lt;/em&gt;2. Construct the new object wherever the Hash was instantiated.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Refactoring - Moving Features from Objects</title>
+   <link href="http://jamelablack.github.io/2015/06/21/Refactoring-Moving-Features/"/>
+   <updated>2015-06-21T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/06/21/Refactoring-Moving-Features</id>
+   <content type="html">&lt;p&gt;The most fundamental question in object oriented design is &amp;quot;Where to put responsibilities&amp;quot; Often times issues around these questions resolve these problems simply by using Move Method and Move Field to move the behavior around. If we need to use both, use Move Field first and then Move Method.&lt;/p&gt;
+
+&lt;h3&gt;Move Method&lt;/h3&gt;
+
+&lt;p&gt;A method is, or will be, using or used by more features of another class than the class on which it is defined.
+Create a new method with a similar body in the class it uses most. Either turn the old method into a simple delegation, or remove it altogether. Examine all features used by the source method that are defined on the
+source class. Consider whether they also should be moved.&lt;/p&gt;
+
+&lt;h3&gt;Move Field&lt;/h3&gt;
+
+&lt;p&gt;A field is, or will be, used by another class more than the class on which it is defined.
+Create a new attribute reader (and if necessary, a writer) in the target class, and change all its users.&lt;/p&gt;
+
+&lt;h3&gt;Extract Class&lt;/h3&gt;
+
+&lt;p&gt;You have one class doing work that should be done by two. Create a new class and move the relevant fields and methods from the old class into the new class.&lt;/p&gt;
+
+&lt;h3&gt;Inline Class&lt;/h3&gt;
+
+&lt;p&gt;A class isn’t doing very much.
+Move all its features into another class and delete it.&lt;/p&gt;
+
+&lt;h3&gt;Hide Delegate&lt;/h3&gt;
+
+&lt;p&gt;A client is calling a delegate class of an object.
+Create methods on the server to hide the delegate. One of the keys, if not the key, to objects is encapsulation. Encapsulation means that objects need to know less about other parts of the system. Then when things change, fewer objects need to be told about the change—which makes the change easier to make.&lt;/p&gt;
+
+&lt;h3&gt;Remove the Middle Man&lt;/h3&gt;
+
+&lt;p&gt;A class is doing too much simple delegation.
+Get the client to call the delegate directly. In the motivation for Hide Delegate, we talked about the advantages of encapsulating the use of a delegated object. There is a price for this. The price is that every time the client wants to use a new feature of the delegate, you have to add a simple delegating method to the server. After adding features for a while, it becomes painful. The server class is just a middle man, and perhaps it’s time for the client to call the delegate directly.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Refactoring - Composing Methods</title>
+   <link href="http://jamelablack.github.io/2015/06/20/refactoring-composing_methods/"/>
+   <updated>2015-06-20T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/06/20/refactoring-composing_methods</id>
+   <content type="html">&lt;h3&gt;Extract Method&lt;/h3&gt;
+
+&lt;p&gt;is moving duplicate code into a method. Create a new method, and name it after the intention of the method (name it by what it does, not by how it does it). &lt;/p&gt;
+
+&lt;h3&gt;Inline Method&lt;/h3&gt;
+
+&lt;p&gt;is replacing the caller of the method with the body of the method&lt;/p&gt;
+
+&lt;h3&gt;Inline Temp&lt;/h3&gt;
+
+&lt;p&gt;Find all references to the temp and replace them with the right-hand side of the assignment. &lt;/p&gt;
+
+&lt;h3&gt;Replace Temp with Query&lt;/h3&gt;
+
+&lt;p&gt;Find all references to the temp and replace them with the right-hand side of the assignment. &lt;/p&gt;
+
+&lt;h3&gt;Replace Temp with Chain&lt;/h3&gt;
+
+&lt;p&gt;removes unneeded creations of temp (variable assignments for method calling expressions) and chain with the right side of the expression, most likely using .self&lt;/p&gt;
+
+&lt;h4&gt;Introduce Explaining Variable&lt;/h4&gt;
+
+&lt;p&gt;You have a complicated expression, Put the result of the expression, or parts of the expression, in a temporary variable with a name that explains the purpose.&lt;/p&gt;
+
+&lt;h3&gt;Split Temporary Variable&lt;/h3&gt;
+
+&lt;p&gt;You have a temporary variable assigned to more than once, but it is not a loop variable nor a collecting temporary variable.
+Make a separate temporary variable for each assignment.&lt;/p&gt;
+
+&lt;h3&gt;Remove Assignments to Parameters: The code assigns to a parameter. Use a temporary variable instead.&lt;/h3&gt;
+
+&lt;h3&gt;Replace Method with Method Object&lt;/h3&gt;
+
+&lt;p&gt;You have a long method that uses local variables in such a way that you cannot apply Extract Method. Create a new class, name it after the method. &lt;/p&gt;
+
+&lt;h3&gt;Extract Surrounding Methods&lt;/h3&gt;
+
+&lt;p&gt;Step 1: Use Extract Method on one piece of duplication. Name it after the duplicated behavior.
+This will become our surrounding method.
+For now the surrounding method will still perform the unique behavior.&lt;/p&gt;
+
+&lt;p&gt;Step 2:  Modify the calling method to pass a block to the surrounding method. Copy the unique logic from the surrounding method into the block. &lt;/p&gt;
+
+&lt;p&gt;Step 3:  Replace the unique logic in the extracted method with the yield keyword. &lt;/p&gt;
+
+&lt;p&gt;Step 4:  Identify any variables in the surrounding method that are needed by the unique logic and pass them as parameters in the call to yield. &lt;/p&gt;
+
+&lt;h3&gt;Introduce the Named Parameter&lt;/h3&gt;
+
+&lt;p&gt;The parameters in a method call cannot easily be deduced from the name of the method you are calling. Convert the parameter list into a Hash, and use the keys of the Hash as names for the parameters.&lt;/p&gt;
+
+&lt;h3&gt;Dynamic Method Definition&lt;/h3&gt;
+
+&lt;h4&gt;Example: Using def_each to Define Similar Methods&lt;/h4&gt;
+
+&lt;p&gt;Defining several similar methods is verbose and often unnecessary. For example, each of the following methods is simply calling the state method.&lt;/p&gt;
+
+&lt;h3&gt;Isolate Dynamic Receptor&lt;/h3&gt;
+
+&lt;p&gt;A class utilizing method&lt;em&gt;missing has become painful to alter.
+Introduce a new class and move the method&lt;/em&gt;missing logic to that class.&lt;/p&gt;
+
+&lt;h3&gt;Move Eval from Runtime to Parse Time&lt;/h3&gt;
+
+&lt;p&gt;You need to use eval but want to limit the number of times eval is necessary. Move the use of eval from within the method definition to defining the method
+itself.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Refactoring - Code Smells</title>
+   <link href="http://jamelablack.github.io/2015/06/15/Refactoring-CodeSmells/"/>
+   <updated>2015-06-15T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/06/15/Refactoring-CodeSmells</id>
+   <content type="html">&lt;h2&gt;Code Smells&lt;/h2&gt;
+
+&lt;h3&gt;1. Duplicated Code&lt;/h3&gt;
+
+&lt;p&gt;Extract Method
+Extract Module or Extract Class if you have duplicated code in two unrelated classes.&lt;/p&gt;
+
+&lt;h3&gt;2. Long Method&lt;/h3&gt;
+
+&lt;p&gt;Shorten Method with Extract Method
+If you have a method with too many parameters that when you extract the method, you are passing in too many variables and creating so many temps that the original method was more readable, you can often use Replace Temp with Query or Replace Temp with Chain to eliminate the temps. Long lists of parameters can be slimmed down with Introduce Parameter Object and Preserve Whole Object. If you’ve tried that, and you still have too many temps and parameters, it’s time to get out the heavy artillery: Replace Method with Method Object.&lt;/p&gt;
+
+&lt;p&gt;Conditionals and loops also give signs for extractions. Use Decompose Conditional to deal with conditional expressions. Replace loops with Collection Closure Methods and consider using Extract Method on the call to the closure method and the closure itself.&lt;/p&gt;
+
+&lt;h3&gt;3. Long Parameter List&lt;/h3&gt;
+
+&lt;p&gt;Use Replace Parameter with Method when you can get the data in one parameter by making a request of an object you already know about. Use Pre- serve Whole Object to take a bunch of data gleaned from an object and replace it with the object itself. If you have several data items with no logical object, use Introduce Parameter Object to clump them together, or Introduce Named Parameter to improve the fluency.&lt;/p&gt;
+
+&lt;h3&gt;4. Divergent Change&lt;/h3&gt;
+
+&lt;p&gt;Divergent change occurs when one class is commonly changed in different ways for different reasons. If you look at a class and say, “Well, I will have to change these three methods every time I get a new database; I have to change these four methods every time there is a new financial instrument,” you likely have a situation in which two objects are better than one.&lt;/p&gt;
+
+&lt;p&gt;To clean this up you identify everything that changes for a particular cause and use Extract Class to put them all together.&lt;/p&gt;
+
+&lt;h3&gt;5. Shotgun Surgery&lt;/h3&gt;
+
+&lt;p&gt;Divergent change is one class that suffers many kinds of changes, and shotgun surgery is one change that alters many classes.&lt;/p&gt;
+
+&lt;p&gt;In this case you want to use Move Method and Move Field to put all the changes into a single class. If no current class looks like a good candidate, create one. Often you can use Inline Class to bring a whole bunch of behavior together. You get a small dose of divergent change, but you can easily deal with that.&lt;/p&gt;
+
+&lt;h3&gt;6. Feature Envy&lt;/h3&gt;
+
+&lt;p&gt;The most common focus of the envy is the data. We’ve lost count of the times we’ve seen a method that invokes half a dozen getting methods on another object to calculate some value. Fortunately the cure is obvious, the method clearly wants to be elsewhere, so you use Move Method to get it there. The fun- damental rule of thumb is to put things together that change together. Data and the behavior that references that data usually change together, but there are exceptions. When the exceptions occur, we move the behavior to keep changes in one place.&lt;/p&gt;
+
+&lt;h3&gt;7. Data Clumps&lt;/h3&gt;
+
+&lt;p&gt;Often you’ll see the same three or four data items together in many places: instance variables in a couple of classes, and parameters in many method signatures. Bunches of data that hang around together really ought to be made into their own object. The first step is to look for where the clumps appear as instance variables. Use Extract Class on the instance variables to turn the clumps into an object. Then turn your attention to method signatures using Introduce Parameter Object or Preserve Whole Object to slim them down.&lt;/p&gt;
+
+&lt;p&gt;A good test is to consider deleting one of the data values: If you did this, would the others make any sense? If they don’t, it’s a sure sign that you have an object that’s dying to be born.&lt;/p&gt;
+
+&lt;h3&gt;8. Primitive Obsession&lt;/h3&gt;
+
+&lt;p&gt;Most programming environments have two kinds of data. Record types allow you to structure data into meaningful groups. Primitive types are your building blocks. Records always carry a certain amount of overhead: They may mean tables in a database, or they may be awkward to create when you want them for only one or two things.&lt;/p&gt;
+
+&lt;p&gt;You can move out of the cave into the centrally heated world of objects by using Replace Data Value with Object on individual data values. If you have conditionals that depend on a type code, use Replace Type Code with Polymorphism, Replace Type Code with Module Extension, or Replace Type Code with State/Strategy.&lt;/p&gt;
+
+&lt;p&gt;If you have a group of instance variables that should go together, use Extract Class. If you see these primitives in parameter lists, try a civilizing dose of Intro- duce Parameter Object. If you find yourself picking apart an array, use Replace Array with Object.&lt;/p&gt;
+
+&lt;h3&gt;9. Temporary Field&lt;/h3&gt;
+
+&lt;p&gt;Sometimes you see an object in which an instance variable is set only in cer- tain circumstances.
+Use Extract Class to create a home for the poor orphan variables. Put all the code that concerns the variables into the component. You may also be able to eliminate conditional code by using Introduce Null Object to create an alterna- tive component for when the variables aren’t valid.&lt;/p&gt;
+
+&lt;h3&gt;10. Message Chain&lt;/h3&gt;
+
+&lt;p&gt;You see message chains when a client asks one object for another object, which the client then asks for yet another object, which the client then asks for yet another object, and so on. You may see these as a long line of get_this methods, or as a sequence of temps. Navigating this way means the client is coupled to the structure of the navigation. Any change to the intermediate relationships causes the client to have to change.&lt;/p&gt;
+
+&lt;p&gt;The move to use here is Hide Delegate. In principle you can apply Hide Delegate to potentially every object in the chain, but doing this often turns every intermediate object into a middle man. Often a better alternative is to see what the resulting object is used for. See whether you can use Extract Method to take a piece of the code that uses it and then Move Method to push it down the chain. If several clients of one of the objects in the chain want to navigate the rest of the way, add a method to do that.&lt;/p&gt;
+
+&lt;p&gt;Some people consider any method chain to be a terrible thing. We are known for our calm, reasoned moderation. Well, at least in this case we are.&lt;/p&gt;
+
+&lt;h3&gt;11. Middle Man&lt;/h3&gt;
+
+&lt;p&gt;One of the prime features of objects is encapsulation—hiding internal details from the rest of the world. Encapsulation often comes with delegation. You look at a class’s interface and find half the methods are delegating to this other class. After a while it is time to use Remove Middle Man and talk to the object that really knows what’s going on. If only a few methods aren’t doing much, use Inline Method to inline them into the caller. If there is additional behavior, you can use Replace Delegation with Hierarchy to turn the real object into a module and include it in the middle man. That allows you to extend behavior without chasing all that delegation.&lt;/p&gt;
+
+&lt;h3&gt;12. Inappropriate Intimacy&lt;/h3&gt;
+
+&lt;p&gt;Sometimes classes become far too intimate and spend too much time delving into each other’s private parts. We may not be prudes when it comes to people, but we think our classes should follow strict, puritan rules.&lt;/p&gt;
+
+&lt;p&gt;Overly intimate classes need to be broken up as lovers were in ancient days. Use Move Method and Move Field to separate the pieces to reduce the intimacy. See whether you can arrange a Change Bidirectional Association to Unidirec- tional. If the classes do have common interests, use Extract Class to put the commonality in a safe place and make honest classes of them. Or use Hide Del- egate to let another class act as go-between.&lt;/p&gt;
+
+&lt;h3&gt;13. Alternative Classes with Different Interfaces&lt;/h3&gt;
+
+&lt;p&gt;Use Rename Method on any methods that do the same thing but have different signatures for what they do. Often this doesn’t go far enough. In these cases the classes aren’t yet doing enough. Keep using Move Method to move behavior to the classes until the protocols are the same.&lt;/p&gt;
+
+&lt;h3&gt;14. Impossible Library Class&lt;/h3&gt;
+
+&lt;p&gt;Reuse is often touted as the purpose of objects. We think reuse is overrated (we just use). However, Ruby’s open classes make this easy to fix using Move Method to move the behavior needed directly to the library class.&lt;/p&gt;
+
+&lt;h3&gt;15.  Data Class&lt;/h3&gt;
+
+&lt;p&gt;These are classes that have attributes, and nothing else. Such classes are dumb data holders and are almost certainly being manipulated in far too much detail by other classes. Use Remove Setting Method on any instance variable that should not be changed. If you have collection instance variables, check to see whether they are properly encapsulated and apply Encapsulate Collection if they aren’t.&lt;/p&gt;
+
+&lt;p&gt;Look for where these getting and setting methods are used by other classes. Try to use Move Method to move behavior into the data class. If you can’t move a whole method, use Extract Method to create a method that can be moved. After a while you can start using Hide Method on the getters and setters.
+Data classes are like children. They are okay as a starting point, but to par- ticipate as a grownup object, they need to take some responsibility.&lt;/p&gt;
+
+&lt;h3&gt;16. Refused Bequest&lt;/h3&gt;
+
+&lt;p&gt;Subclasses get to inherit the methods and data of their parents. But what if they don’t want or need what they are given? They are given all these great gifts and pick just a few to play with.&lt;/p&gt;
+
+&lt;p&gt;The traditional story is that this means the hierarchy is wrong. You need to create a new sibling class and use Push Down Method to push all the unused methods to the sibling. That way the parent holds only what is common.&lt;/p&gt;
+
+&lt;h3&gt;17. Comments&lt;/h3&gt;
+
+&lt;p&gt;Don’t worry, we aren’t saying that people shouldn’t write comments. In our olfactory analogy, comments aren’t a bad smell; indeed they are a sweet smell. The reason we mention comments here is that comments often are used as a deodorant. It’s surprising how often you look at thickly com
+Tip When you feel the need to write a comment, first try to refactor the code so that any comment becomes superfluous.&lt;/p&gt;
+
+&lt;h3&gt;16. Metaprogramming Madness&lt;/h3&gt;
+
+&lt;p&gt;While in most cases Ruby’s dynamic nature provides great benefits, it can be misused. Some metaprogramming techniques can result in obfuscated code. The method&lt;em&gt;missing hook, for example, often results in code that is difficult to under- stand. It can be a powerful tool if an object’s interface cannot be determined at coding time, but unless it’s absolutely necessary I use Replace Dynamic Receptor with Dynamic Method Definition or even a simple Extract Method to remove the method&lt;/em&gt;missing definition. If the method_missing definition is truly needed, I might use Isolate Dynamic Receptor to separate concerns.&lt;/p&gt;
+
+&lt;h3&gt;17. Disjointed API&lt;/h3&gt;
+
+&lt;p&gt;Libraries are often written with flexibility as the number one priority. The author needs to build in this flexibility so that her library can be used by many different people in many different ways. This flexibility often presents itself as a relatively fine-grained, disjointed API, with many configuration options.&lt;/p&gt;
+
+&lt;p&gt;More often than not, an individual project will not take advantage of all the configuration options. The same configuration options will be used over and over. If this is the case, use Introduce Gateway to interact with the API in a simplified way.&lt;/p&gt;
+
+&lt;p&gt;Introduce Expression Builder can be applied to both internal and external APIs to interact with the public interface in a more fluent manner.&lt;/p&gt;
+
+&lt;h3&gt;18. Repetitive Boilerplate&lt;/h3&gt;
+
+&lt;p&gt;One of the easiest ways to remove duplication is Extract Method. Extract the method and call it from multiple places. Some kinds of methods become so commonplace that we can go even further. Take for example attr&lt;em&gt;reader in Ruby. Implementing attribute readers is so common in object-oriented languages that the author of Ruby decided to provide a succinct way to declare them. Intro- duce Class Annotation involves annotating a class by calling a class method from the class definition in the same way that attr&lt;/em&gt;reader is called. Most code isn’t simple enough to declare in this way, but when the purpose of the code can be captured clearly in a declarative statement, Introduce Class Annotation can clarify the intention of your code.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 7: File Uploading with Carrierwave</title>
+   <link href="http://jamelablack.github.io/2015/06/10/course3-Carrierwave/"/>
+   <updated>2015-06-10T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/06/10/course3-Carrierwave</id>
+   <content type="html">&lt;h2&gt;Adding Carrierwave to your Application&lt;/h2&gt;
+
+&lt;h4&gt;1. Install gem Carrierwave-aws&lt;/h4&gt;
+
+&lt;h4&gt;2. Make sure you have ImageMagick installed locally&lt;/h4&gt;
+
+&lt;h4&gt;3. Run migration to remove current small/large image urls and add columns for images&lt;/h4&gt;
+
+&lt;h4&gt;4. Mount uploaders to video model&lt;/h4&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;mount_uploader&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:large_cover&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;LargeCoverUploader&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;mount_uploader&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:small_cover&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;SmallCoverUploader&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4&gt;5. Create app/uploaders directory, add uploaders to folder:&lt;/h4&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#app/uploaders/large_cover_uploader.rb&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;LargeCoverUploader&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;CarrierWave&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Uploader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Base&lt;/span&gt;
+  &lt;span class=&quot;kp&quot;&gt;include&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;CarrierWave&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;MiniMagick&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;process&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:resize_to_fill&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;665&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;375&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#app/uploaders/small_cover_uploader.rb&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;SmallCoverUploader&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;CarrierWave&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Uploader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Base&lt;/span&gt;
+  &lt;span class=&quot;kp&quot;&gt;include&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;CarrierWave&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;MiniMagick&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;process&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:resize_to_fill&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;166&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;236&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4&gt;6. Create config/initializers/carrier_wave.rb&lt;/h4&gt;
+
+&lt;p&gt;Add configuration based on &lt;a href=&quot;https://github.com/carrierwaveuploader/carrierwave#using-amazon-s3&quot;&gt;docs&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4&gt;7. Follow this blog using &lt;a href=&quot;http://blog.danielle.tuckerlabs.com/post/60491757671/creating-a-simple-aws-s3-bucket-with-iam-access&quot;&gt;S3 IAMs&lt;/a&gt;&lt;/h4&gt;
+
+&lt;h4&gt;8. Update the User Policy to include the following configurations:&lt;/h4&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;s2&quot;&gt;&amp;quot;Version&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;2012-10-17&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;s2&quot;&gt;&amp;quot;Statement&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;s2&quot;&gt;&amp;quot;Effect&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Allow&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;s2&quot;&gt;&amp;quot;NotAction&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;iam:*&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;s2&quot;&gt;&amp;quot;Resource&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;*&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4&gt;9. Now you need to store your credentials in Rails Env variables. Follow this &lt;a href=&quot;http://www.gotealeaf.com/blog/managing-environment-configuration-variables-in-rails&quot;&gt;Tealeaf blogpost&lt;/a&gt;&lt;/h4&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 7: Amazon S3</title>
+   <link href="http://jamelablack.github.io/2015/06/08/course3-Amazon-S3/"/>
+   <updated>2015-06-08T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/06/08/course3-Amazon-S3</id>
+   <content type="html">&lt;h2&gt;Amazon S3&lt;/h2&gt;
+
+&lt;p&gt;Amazon Simple Sotrogae Service is a great storage service websites where large amounts of data are required for you to upload your own content, such as images and videos and you users can upload content, as well.&lt;/p&gt;
+
+&lt;p&gt;There is a free plan for 5GB available and sign up is easy. Mac users who interact with S3 frequently tend to prefer client tools like Cyberduck or Transmit.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 6: Securing Access</title>
+   <link href="http://jamelablack.github.io/2015/06/06/course3-securing-access/"/>
+   <updated>2015-06-06T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/06/06/course3-securing-access</id>
+   <content type="html">&lt;h2&gt;Securing Access for Different Actors&lt;/h2&gt;
+
+&lt;p&gt;In past, to secure access we would have created a before filter for each controller and specified the action - however, this can become cumbersome depending on the size of the app.&lt;/p&gt;
+
+&lt;p&gt;Instead, we can have our Admin::TodoController &amp;lt; AdminsController and have AdminsController &amp;lt; ApplicationController, moving our before filter from  Admin::TodoController to AdminsContollers&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AdminController&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ApplicationController&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;before_filter&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:ensure_admin&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ensure_admin&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;flash&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:error&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;You don&amp;#39;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;have&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;access&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;s2&quot;&gt;    redirect_to root_path unless current_user.admin?&lt;/span&gt;
+&lt;span class=&quot;s2&quot;&gt;  end&lt;/span&gt;
+&lt;span class=&quot;s2&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;AuthenticatedController&lt;/h2&gt;
+
+&lt;p&gt;We can even take things one step further by creating an AuthenticatedController that can superclass the TodosController and AdminsController.&lt;/p&gt;
+
+&lt;p&gt;We need to ensure the user is logged in first:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#app/controllers/authenticated_controller.rb&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AuthenticatedController&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ApplicationController&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;before_filter&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:ensure_sign_in&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;Actor-Specific Controllers&lt;/h2&gt;
+
+&lt;p&gt;It&amp;#39;s very common to have several types to actors within an application and features specific to the public. To manage this, it&amp;#39;s best to have actor-specfic controllers and then subclass one another. This allows you to compartentalize actions for actors easily.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 6: Continuous Delivery</title>
+   <link href="http://jamelablack.github.io/2015/06/05/course3-seperating-actors/"/>
+   <updated>2015-06-05T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/06/05/course3-seperating-actors</id>
+   <content type="html">&lt;h2&gt;Actors&lt;/h2&gt;
+
+&lt;p&gt;Actors are different types of users, most likely referred to as admins, becasue they act differently within your application.&lt;/p&gt;
+
+&lt;p&gt;In some instances, you could:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;index&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current_user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;admin?&lt;/span&gt;
+    &lt;span class=&quot;no&quot;&gt;Todo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;all&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;.&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;But dependeing on the size, this could be quite cumbersome.&lt;/p&gt;
+
+&lt;p&gt;Another alternative, is we can create a seperate action:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;admin_index&lt;/span&gt;
+  &lt;span class=&quot;vi&quot;&gt;@todos&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Todo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;all&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The advatange is that everything the admin can do is seperate from the other actors. But this is also cumbersome b/c if we have multiple actors, before each action, we have to check the users role.&lt;/p&gt;
+
+&lt;h2&gt;Namespace&lt;/h2&gt;
+
+&lt;p&gt;So instead, we are going to work with Namespaces.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#routes.rb&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;resources&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:todos&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;only&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:index&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:show&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;namespace&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:admin&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;resources&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:todos&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;only&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:index&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The above route would give us:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;ss&quot;&gt;http&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;sr&quot;&gt;//&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;localhost&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3000&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;admin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;todos&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;So, therefore your controller would be in app/controllers/admin/todos&lt;em&gt;controller, rather than app/controllers/todos&lt;/em&gt;controller&lt;/p&gt;
+
+&lt;p&gt;Add when created, our class name is prefixed with the module Admin&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Admin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;TodosController&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ApplicationController&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We also need to run a migration to add the admin column to the users table&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;rails&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;migration&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;add_admin_to_users&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AddAdminToUsers&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ActiveRecord&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Migration&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;change&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;add_column&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:users&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:admin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:boolean&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Our viewv template in this case would be in:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;views&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;admin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;index&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;html&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;haml&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This layout allows us to add things like an admin dashboard&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 6: Continuous Delivery</title>
+   <link href="http://jamelablack.github.io/2015/06/03/course3-Continuous-Delivery/"/>
+   <updated>2015-06-03T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/06/03/course3-Continuous-Delivery</id>
+   <content type="html">&lt;h2&gt;Continuous Delivery&lt;/h2&gt;
+
+&lt;h4&gt;Excerpt from Tealeaf:&lt;/h4&gt;
+
+&lt;p&gt;Continuous Delivery (CD) or sometimes known as Continuous Deployment goes one step beyond CI to automatically deploy features when the new code passes the continuous integration phase. Continuous Delivery encourages small and incremental software updates over big and infrequent releases to shorten the feedback loop and fix bugs earlier.&lt;/p&gt;
+
+&lt;p&gt;Let&amp;#39;s look at an example development workflow that has both CI and CD enabled, based on the Github Flow process:&lt;/p&gt;
+
+&lt;p&gt;** we pull the latest code from Github
+** we create a new feature branch and develop a new feature
+** after we finish the feature, we push it to a branch with the same name on Github
+** we create a PR from this branch to the staging branch.
+** we wait for the the CI server to ensure all tests pass.
+** we allow the CI server to automatically deploy the code from the staging branch to our staging server
+** we perform sanity tests on our staging server
+** we create a PR from the staging branch to the master branch on Github
+** this will trigger another round of integration and if it passes, the CI server will automatically deploy the code to the production server.&lt;/p&gt;
+
+&lt;p&gt;If adopted by everyone in the development team, this process will make sure our master branch is always in sync with the production server and new features are also always build on top of what&amp;#39;s on the production server.&lt;/p&gt;
+
+&lt;p&gt;Assignment: Set up Continuous Delivery with Circle CI&lt;/p&gt;
+
+&lt;p&gt;For this assignment, you are going to enable Continuous Delivery with Circle CI.&lt;/p&gt;
+
+&lt;p&gt;Here are the steps:&lt;/p&gt;
+
+&lt;p&gt;create a staging branch locally if you don&amp;#39;t have it yet.
+in Circle CI, follow Project settings for your project and select Heroku Deployment under Continuous Deployment
+configure the Heroku API key. (Get it from your Heroku account page)
+associate Heroku SSH key with your Circle account so Circle can have the authority to deploy to Heroku on your behalf.
+create a circle.yml file in your projects root directory and make sure your adjust production&lt;em&gt;app&lt;/em&gt;name &amp;amp; staging&lt;em&gt;app&lt;/em&gt;name to your own app name.
+Here is an example of a circle.yml file that you can use:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;ss&quot;&gt;machine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;ss&quot;&gt;ruby&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;version&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;
+&lt;span class=&quot;ss&quot;&gt;deployment&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;ss&quot;&gt;production&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;branch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;master&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;commands&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;heroku&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;maintenance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;on&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;app&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;production_app_name&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;heroku&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;pg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;backups&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;capture&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;app&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;production_app_name&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;git&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;push&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;git&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@heroku&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;com&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:production_app_name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;git&lt;/span&gt; &lt;span class=&quot;vg&quot;&gt;$CIRCLE_SHA1&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:refs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;heads&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;master&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;heroku&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;run&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rake&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;db&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;migrate&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;app&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;production_app_name&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;heroku&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;maintenance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;off&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;app&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;production_app_name&lt;/span&gt;
+  &lt;span class=&quot;ss&quot;&gt;staging&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;branch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;staging&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;commands&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;heroku&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;maintenance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;on&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;app&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;staging_app_name&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;git&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;push&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;git&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@heroku&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;com&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:staging_app_name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;git&lt;/span&gt; &lt;span class=&quot;vg&quot;&gt;$CIRCLE_SHA1&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:refs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;heads&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;master&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;heroku&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;run&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rake&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;db&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;migrate&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;app&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;staging_app_name&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;heroku&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;maintenance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;off&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;app&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;staging_app_name&lt;/span&gt;
+&lt;span class=&quot;ss&quot;&gt;Note&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;you&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;should&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;change&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;the&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Ruby&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;version&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;the&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;version&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;you&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;re&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;using&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;this&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;project&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This code should be pretty self explanatory - this allows Circle to monitor your staging branch and deploy to the staging server, and monitor your master branch to deploy to the production server. It&amp;#39;ll run migrations for you and for the production server, it also automatically backs up the database before a deploy.&lt;/p&gt;
+
+&lt;p&gt;Notifications Options&lt;/p&gt;
+
+&lt;p&gt;By default we will be notified by email on every status change of our builds. But receiving emails all the time build fails or passes might be cumbersome and there are also good alternatives.&lt;/p&gt;
+
+&lt;p&gt;For Mac users - there is a free application CCMenu by ThoughtWorks which we install and it will stick to our upper bar. In order to make it fully run - we will need to generate a CircleCI API key (Project settings -&amp;gt; API keys) and http address of build. See the setup info guide here. Great feature of this app is that it can play sounds based on build&amp;#39;s status and we are able to customize it to our needs.&lt;/p&gt;
+
+&lt;p&gt;Another great feature most CIs offer are Embedded Status Badges. These are especially useful for open source projects. They look nice in README.md usually placed in GitHub repo page giving out the information about build being successful or not.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 6: Continuous Intgeration</title>
+   <link href="http://jamelablack.github.io/2015/05/30/course3-CI/"/>
+   <updated>2015-05-30T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/05/30/course3-CI</id>
+   <content type="html">&lt;h2&gt;Continuous Integration&lt;/h2&gt;
+
+&lt;p&gt;According to Martin Fowler&amp;#39;s &lt;a href=&quot;http://martinfowler.com/articles/continuousIntegration.html&quot;&gt;blog&lt;/a&gt;, Continuous Integration is
+Continuous Integration is a software development practice where members of a team integrate their work frequently, usually each person integrates at least daily - leading to multiple integrations per day. Each integration is verified by an automated build (including test) to detect integration errors as quickly as possible. Many teams find that this approach leads to significantly reduced integration problems and allows a team to develop cohesive software more rapidly. This article is a quick overview of Continuous Integration summarizing the technique and its current usage.&lt;/p&gt;
+
+&lt;h4&gt;According to Tealeaf...&lt;/h4&gt;
+
+&lt;p&gt;The problem that CI solves is to force integration on a regular basis. For example, you may have just finished a feature on my_feature branch and have had all the tests pass locally. You open a PR and your fellow coworkers are happy with the way the code looks. Github shows the PR can be automatically merged without conflict - so you do that, merge it back to the master branch and ready to deploy the feature!&lt;/p&gt;
+
+&lt;p&gt;The danger of this workflow is that while you are working on your feature, someone else could have just finished their feature and pushed to the master branch to Github, and your new feature never integrated with this new piece of code.&lt;/p&gt;
+
+&lt;p&gt;A Continuous Integration solution would watch your repository and force integration (running the entire test suite on the CI server) whenever necessary.&lt;/p&gt;
+
+&lt;p&gt;Once we have our CI server set up to monitor our repository, it&amp;#39;ll pull the latest code and run the entire test suite every time we push code to any branch on Github (when you work with a CI server, you want to make sure that every push should always make the tests pass) and notify you on the results. The CI server also runs every time we merge our pull request to the master branch to ensure integration.&lt;/p&gt;
+
+&lt;p&gt;CI server helps us catch integration errors before they reach to production, and the earlier we catch errors, the less costly we can fix them.&lt;/p&gt;
+
+&lt;p&gt;A CI solution doesn&amp;#39;t eliminate the necessity to run your tests locally - your will lose friends quickly if you constantly push code that &amp;quot;breaks the build&amp;quot; and have everyone notified. However, in cases of long running test suites, it is acceptable to run only the tests pertaining to the new feature built, and have the CI server to run the entire test suite to catch any potential regression. Most modern CI services allow you to run the tests in parallel (with a paid plan, typically) so it could run your tests several times faster.&lt;/p&gt;
+
+&lt;h3&gt;Circle CI&lt;/h3&gt;
+
+&lt;h3&gt;Set Up Continuous Integration with Circle CI&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://circleci.com&quot;&gt;Circle CI&lt;/a&gt; is a popular Continuous Integration service. Set up your project with Circle CI is pretty simple - link and authorize your Github account, then add the repository that you want to enable CI. By default, Circle CI runs on every push and PR merge.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 6: Simple Deployment Pipeline</title>
+   <link href="http://jamelablack.github.io/2015/05/28/course3-production-error-monitoring/"/>
+   <updated>2015-05-28T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/05/28/course3-production-error-monitoring</id>
+   <content type="html">&lt;h2&gt;Set-up Production Error Monitoring&lt;/h2&gt;
+
+&lt;p&gt;Regardless how well we have tested our application, there will always be errors on the production server. To get notified of production errors so you can respond to them, you need to set up an error monitoring service in production.&lt;/p&gt;
+
+&lt;p&gt;Install &lt;a href=&quot;https://getsentry.com/welcome/&quot;&gt;Sentry&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;You also need to install the &lt;a href=&quot;https://github.com/getsentry/raven-ruby&quot;&gt;&amp;quot;sentry-raven&amp;quot;&lt;/a&gt; gem in your app.&lt;/p&gt;
+
+&lt;h3&gt;Setup&lt;/h3&gt;
+
+&lt;p&gt;After creating an account online and adding your project to Sentry, you will be given a DSN that should go into your config/initializers folder.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;# in Rails, this might be in config/initializers/sentry.rb&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;Raven&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;configure&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dsn&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;http://public:secret@example.com/project-id&amp;#39;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 6: Simple Deployment Pipeline</title>
+   <link href="http://jamelablack.github.io/2015/05/26/course3-simple-deploy-pipeline/"/>
+   <updated>2015-05-26T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/05/26/course3-simple-deploy-pipeline</id>
+   <content type="html">&lt;h2&gt;&lt;a href=&quot;http://martinfowler.com/bliki/ContinuousDelivery.html&quot;&gt;Continuous Delivery&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;Usually the first stage of a deployment pipeline will do any compilation and provide binaries for later stages. Later stages may include manual checks, such as any tests that can&amp;#39;t be automated. Stages can be automatic, or require human authorization to proceed, they may be parallelized over many machines to speed up the build. Deploying into production is usually the final stage in a pipeline.&lt;/p&gt;
+
+&lt;p&gt;Continuous Delivery is a software development discipline where you build software in such a way that the software can be released to production at any time.&lt;/p&gt;
+
+&lt;p&gt;You’re doing continuous delivery when: [1]&lt;/p&gt;
+
+&lt;p&gt;*&lt;em&gt;Your software is deployable throughout its lifecycle
+*&lt;/em&gt;Your team prioritizes keeping the software deployable over working on new features
+*&lt;em&gt;Anybody can get fast, automated feedback on the production readiness of their systems any time somebody makes a change to them
+*&lt;/em&gt;You can perform push-button deployments of any version of the software to any environment on demand&lt;/p&gt;
+
+&lt;h2&gt;Deployment Pipeline&lt;/h2&gt;
+
+&lt;p&gt;A deployment pipeline is a way to deal with this by breaking up your build into stages. Each stage provides increasing confidence, usually at the cost of extra time. Early stages can find most problems yielding faster feedback, while later stages provide slower and more through probing.&lt;/p&gt;
+
+&lt;p&gt;More broadly the deployment pipeline&amp;#39;s job is to detect any changes that will lead to problems in production.&lt;/p&gt;
+
+&lt;h3&gt;Simple Approach to the Deployment Pipeline&lt;/h3&gt;
+
+&lt;p&gt;Deployment pipelines can become very complex - typically the larger the project is and the more teams are involved, the more complicated the automatic deployment process is. For our purpose, we are going to adopt a simple but effective deployment pipeline for solo dev or small team situations.&lt;/p&gt;
+
+&lt;p&gt;1) Follow the Github Flow process, and after you complete a feature, merge the pull request back to the master branch.&lt;/p&gt;
+
+&lt;p&gt;2) Run your entire test suite. This is very important and you should always do this before pushing code to Github. The master branch should always have working code. Developers call this &amp;quot;don&amp;#39;t break the build&amp;quot;.&lt;/p&gt;
+
+&lt;p&gt;3) Deploy your code to the staging environment and test on your staging server manually to make sure that the new feature works. Again, your staging server should be as close to your production server as possible.&lt;/p&gt;
+
+&lt;p&gt;4) Deploy code to production. You want to deploy code to production as often as possible to get feedback as fast as possible. If something breaks, it&amp;#39;s much easier to fix it with your mind still fresh with the feature you worked on. In some teams this step is out of your control and there are strict production deployment times. In that situation you&amp;#39;d go back to step 1 and build your next feature.&lt;/p&gt;
+
+&lt;p&gt;When you deploy to the staging server or the production server, effectively what you are doing is to push code from your local master branch to the corresponding Heroku server&amp;#39;s master branch.&lt;/p&gt;
+
+&lt;p&gt;Why is it important to also push/deploy from your local master branch? The problem with deploy from a feature branch is that you miss the step of integration with other developers. For example, while you work on your feature, I might have push out my feature as well. If you deploy from your branch even if it does work you didn’t test if your feature would integrate with the feature that I just deployed, AFTER you branched off. By forcing everyone to integrate with master first, now every time you push, you HAVE to integrate with everyone else’ push at that moment. If someone pushed code after you branched off, this would force you to do a pull first on master, then integrate with it, otherwise you can’t push.&lt;/p&gt;
+
+&lt;p&gt;Note that you should never deploy to production before you go back home or go to sleep. Make sure you can be around your computer for some time to fix anything that could happen after a production deploy. Your error monitoring app will alert you with emails if they do happen.&lt;/p&gt;
+
+&lt;p&gt;In summary, our simple deployment pipeline process is run entire test suite locally -&amp;gt; deploy to staging and test -&amp;gt; deploy to production. This is probably good enough for solo developers or small teams. We&amp;#39;ll talk about Continuous Integration and Continuous Deployment with more automation in the next several topics.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 6: Staging Server & Production Servers</title>
+   <link href="http://jamelablack.github.io/2015/05/24/course3-staging-prod-server/"/>
+   <updated>2015-05-24T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/05/24/course3-staging-prod-server</id>
+   <content type="html">&lt;p&gt;Follow this tutorial on &lt;a href=&quot;https://devcenter.heroku.com/articles/multiple-environments&quot;&gt;Heroku&lt;/a&gt; to understand the difference between staging and prodcution&lt;/p&gt;
+
+&lt;p&gt;A few things I&amp;#39;d like to add:&lt;/p&gt;
+
+&lt;p&gt;1) Make staging server&amp;#39;s configuration and data as close to the production server as possible - after all, the purpose of having the staging server is to be able to test out new features in a &amp;quot;production like&amp;quot; environment.&lt;/p&gt;
+
+&lt;p&gt;If you production app is already launched, you can periodically take database dumps from the production server to populate the staging server. You could automate this as well with either a replication service, or if you are on Heroku, use Heroku&amp;#39;s follower DB (comes with a cost) https://devcenter.heroku.com/articles/heroku-postgres-follower-databases&lt;/p&gt;
+
+&lt;p&gt;2) You want to be mindful on email sending on staging - staging server will actually send out emails. You want to make sure that you do not spam your users while testing out features on the staging server. This can be achieved by adding a conditional in your mailer to see if the environment is staging, and if it is, set email recipients to administrators (such as yourself). This way, you can still test and verify that emails are sent out, but you don&amp;#39;t spam users.&lt;/p&gt;
+
+&lt;p&gt;3) Your staging server can (and typically should) have a different config itself - you just need to create a staging.rb file in config/environments directory, and with it you can specify the exact settings you want on there (for example, turning on asset pipeline or not, sending out email or not, charging credit card for real or not, etc). On your Heroku staging server, make sure to set RACK&lt;em&gt;ENV and RAILS&lt;/em&gt;ENV to staging, then it&amp;#39;ll use that config instead.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Course3 Staging Vs Production</title>
+   <link href="http://jamelablack.github.io/2015/05/22/course3-staging-vs-production/"/>
+   <updated>2015-05-22T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/05/22/course3-staging-vs-production</id>
+   <content type="html"></content>
+ </entry>
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 6: Riding Unicorns</title>
+   <link href="http://jamelablack.github.io/2015/05/20/course3-riding_unicorns/"/>
+   <updated>2015-05-20T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/05/20/course3-riding_unicorns</id>
+   <content type="html">&lt;h2&gt;Using Unicorn as a Production Server&lt;/h2&gt;
+
+&lt;p&gt;Visit http://devcenter.heroku.com/articles/rails-unicorn&lt;/p&gt;
+
+&lt;p&gt;The issue with the rails server, is that it only allows for one web process at a time. Unicorn allows you to add additional servers, which can be specified in your config/unicorn.rb file&lt;/p&gt;
+
+&lt;h3&gt;1. Add the Unicorn gem to your gemfile&lt;/h3&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;gem&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;unicorn&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;then, run bundle install&lt;/p&gt;
+
+&lt;h3&gt;2. Config&lt;/h3&gt;
+
+&lt;p&gt;This is where you define the number worker processes. Worker processes in this context is all processes not just background processes. Below indicates that we want three worker processes running at once.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#config/unicorn.rb&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;worker_processes&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Integer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;ENV&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;WEB_CONCURRENCY&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;timeout&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;15&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;preload_app&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;true&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;Update your Procfile&lt;/h3&gt;
+
+&lt;p&gt;Set Unicorn as the server for the web process in your Procfile:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;ss&quot;&gt;web&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bundle&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;exec&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;unicorn&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;vg&quot;&gt;$PORT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;/config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;unicorn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rb&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;Adding Unicorn to your Heroku App&lt;/h2&gt;
+
+&lt;h3&gt;1. Add Redis to go&lt;/h3&gt;
+
+&lt;p&gt;heroku addons:create redistogo&lt;/p&gt;
+
+&lt;h3&gt;2. Run the following for Sidekiq version 3.0 or later:&lt;/h3&gt;
+
+&lt;p&gt;heroku config:set REDIS&lt;em&gt;PROVIDER=REDISTOGO&lt;/em&gt;URL&lt;/p&gt;
+
+&lt;h3&gt;3 &lt;a href=&quot;https://coderwall.com/p/fprnhg/free-background-jobs-on-heroku&quot;&gt;Free background job on Heroku&lt;/a&gt;&lt;/h3&gt;
+
+&lt;p&gt;Running more than 1 dyno (server) on Heroku costs, and ain&amp;#39;t nobody got time for that. Coderwall has created a hack:&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Course3 Procfile Foreman</title>
+   <link href="http://jamelablack.github.io/2015/05/10/course3-procfile-foreman/"/>
+   <updated>2015-05-10T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/05/10/course3-procfile-foreman</id>
+   <content type="html">&lt;hr&gt;
+
+&lt;p&gt;layout: post
+  title: &amp;quot;Build Robust &amp;amp; Production Quality Applications - Lesson 6: Procfile &amp;amp; Foreman&amp;quot;
+  tags: tealeaf&lt;/p&gt;
+
+&lt;hr&gt;
+
+&lt;p&gt;On your server, you can run both web and worker processes locally - you can also do the same on Heroku, identifiying the processes you would like to run in your Procfile. A procfile is placed in the root of your diretory and declare what types of processes you want run in your app.&lt;/p&gt;
+
+&lt;p&gt;In your procfile, you will define:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;process&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;command&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;ss&quot;&gt;web&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bundle&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;exec&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rails&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;server&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;vg&quot;&gt;$PORT&lt;/span&gt;
+&lt;span class=&quot;ss&quot;&gt;worker&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bundle&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;exec&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rake&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;jobs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;work&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;example&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;delayed&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;jobs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;ss&quot;&gt;worker&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sidekiq&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;Develop locally with Foreman&lt;/h2&gt;
+
+&lt;p&gt;Instead of having to start both Sidekiq and our Rails server locally, we can use format to initiate both processes by runniong &amp;quot;foreman start&amp;quot; in your app directory.&lt;/p&gt;
+
+&lt;h2&gt;Heroku&lt;/h2&gt;
+
+&lt;p&gt;will parse out the web processes from your Procfile.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;heroku&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ps&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;will list the processes running&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;heroku&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;logs&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;will list all process types&lt;/p&gt;
+
+&lt;p&gt;Heroku will allow you to run one web &amp;amp; worker processes but if you&amp;#39;d like to run more, it may costs.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 6: Background Jobs</title>
+   <link href="http://jamelablack.github.io/2015/05/05/course3-background-jobs/"/>
+   <updated>2015-05-05T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/05/05/course3-background-jobs</id>
+   <content type="html">&lt;h2&gt;Background Jobs&lt;/h2&gt;
+
+&lt;p&gt;Email sending typically is not very fast since we have to rely on some third party application. Waiting can slow up your app and potentially frustrate users so it&amp;#39;s best to put non-essential and non-time-sensitive tasks in background jobs.&lt;/p&gt;
+
+&lt;p&gt;Since you can web processes and background job processes running locally, you need tp run both the rails server and sidekiq servers to process jobs respectively.&lt;/p&gt;
+
+&lt;h3&gt;Resque&lt;/h3&gt;
+
+&lt;p&gt;came out of Github - Resque is our Redis-backed library for creating background jobs, placing those jobs on multiple queues, and processing them later.&lt;/p&gt;
+
+&lt;p&gt;Benefits: has admin interface, is powered by Github
+Delayed Job does not require Redis, both uses a pulling queue
+Beanstalk and Stalker may be better if you care about speed, as they have a pulling mechanism&lt;/p&gt;
+
+&lt;p&gt;Sidekiq is a higher performance background solution than Resque and can even be ported, added on top of resque solution.&lt;/p&gt;
+
+&lt;p&gt;Check out the Railscast on Resque for intro.&lt;/p&gt;
+
+&lt;h3&gt;Sidekiq&lt;/h3&gt;
+
+&lt;p&gt;In order to use Sidekiq, you must install and run &lt;a href=&quot;http://redis.io&quot;&gt;Redis&lt;/a&gt;. Once downloaded, run the &amp;quot;$ src/redis-server&amp;quot; in the redis-3.0.2 folder.&lt;/p&gt;
+
+&lt;p&gt;You must also gem install sidekiq, and run &amp;quot;bundle exec sidekiq&amp;quot;&lt;/p&gt;
+
+&lt;p&gt;When watching the Railscast on Sidekiq, it talks about the creation of workers:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#app/controllers/invitations_controller.rb&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;InvitationsController&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ApplicationController&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;before_filter&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:require_user&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@invitation&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Invitation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;create&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@invitation&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Invitation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;invitation_params&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;merge!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;inviter_id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current_user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@invitation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;save&lt;/span&gt;
+      &lt;span class=&quot;no&quot;&gt;InivtationWorker&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;perform_async&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;flash&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:success&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;You&amp;#39;ve successfully invited &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@invitation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;recipient_name&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;.&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;redirect_to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;new_invitation_path&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;flash&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:error&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Please fill in all inputs.&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;render&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:new&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#app/workers&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;InvitationWorker&lt;/span&gt;
+  &lt;span class=&quot;kp&quot;&gt;include&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Sidekiq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Worker&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;perform&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;invitation_id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;invitation&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Invitation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;find&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;invitation_id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;no&quot;&gt;AppMailer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;send_invitation_email&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;invitation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;deliver&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;But instead of creating workers, we can just use &lt;a href=&quot;https://github.com/mperham/sidekiq/wiki/Delayed-extensions#actionmailer&quot;&gt;delayed extentions&lt;/a&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#app/controlers/invitations_controller.rb&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;create&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@invitation&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Invitation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;invitation_params&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;merge!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;inviter_id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current_user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@invitation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;save&lt;/span&gt;
+      &lt;span class=&quot;no&quot;&gt;AppMailer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;delay&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;send_invitation_email&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@invitation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;flash&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:success&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;You&amp;#39;ve successfully invited &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;vi&quot;&gt;@invitation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;recipient_name&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;.&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;redirect_to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;new_invitation_path&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;flash&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:error&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Please fill in all inputs.&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;render&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:new&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Since we aren&amp;#39;t running .perform_async on a worker, we need to pass @invitiation.id to the AppMailer:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#app/app_mailer.rb&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;send_invitation_email&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;invitation_id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@invitation&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Invitation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;find&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;invitation_id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;mail&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@invitation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;recipient_email&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;from&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;info@myflix.com&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;subject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Invitation to join Myflix&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;To run tests, you have to add the following to run them &lt;a href=&quot;https://github.com/mperham/sidekiq/wiki/Testing&quot;&gt;inline&lt;/a&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#spec/spec_helper.rb&lt;/span&gt;
+
+&lt;span class=&quot;nb&quot;&gt;require&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;sidekiq/testing&amp;#39;&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;Sidekiq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Testing&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;inline!&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 6: Mailgun & Heroku</title>
+   <link href="http://jamelablack.github.io/2015/05/01/course3-mailgun-heroku/"/>
+   <updated>2015-05-01T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/05/01/course3-mailgun-heroku</id>
+   <content type="html">&lt;h2&gt;To send emails from your Heroku app using Mailgun is simple:&lt;/h2&gt;
+
+&lt;h3&gt;1. Mailgun Addon&lt;/h3&gt;
+
+&lt;p&gt;Add the &lt;a href=&quot;https://addons.heroku.com/mailgun&quot;&gt;Mailgun&lt;/a&gt; add-on to your Heroku app through the command line (within your app project directory)&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;heroku&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;addons&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;create&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mailgun&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;or you can add via their web interface&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;jamelablack.github.io/images/mailgun.png&quot; alt=&quot;Mailgun Heroku Image&quot; title=&quot;Mailgun addon&quot;&gt;&lt;/p&gt;
+
+&lt;h3&gt;2. Change your smtp settings&lt;/h3&gt;
+
+&lt;p&gt;Then you copy and paste their smtp settings into your config/production.rb file. Make sure to change your domain name and add your default url options (which should point to your domain name) - if not, you will get an error: Errno::ECONNREFUSED: Connection refused - connect(2) for action mailer ...port(25)&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;action_mailer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;delivery_method&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:smtp&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# SMTP settings for mailgun&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;action_mailer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;smtp_settings&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;:port&lt;/span&gt;           &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ENV&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;MAILGUN_SMTP_PORT&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;:address&lt;/span&gt;        &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ENV&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;MAILGUN_SMTP_SERVER&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;:user_name&lt;/span&gt;      &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ENV&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;MAILGUN_SMTP_LOGIN&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;:password&lt;/span&gt;       &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ENV&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;MAILGUN_SMTP_PASSWORD&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;:domain&lt;/span&gt;         &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;aqueous-coast-5067.herokuapp.com&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;:authentication&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:plain&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;action_mailer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;default_url_options&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:host&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;aqueous-coast-5067.herokuapp.com&amp;#39;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;3. Heroku config&lt;/h3&gt;
+
+&lt;p&gt;You do not have to store the ENV variable in application.yml, you only have to run &amp;quot;heroku config&amp;quot; from your command line.&lt;/p&gt;
+
+&lt;h3&gt;4. If you find you do need to store ENV variable in your app, check out Figaro.&lt;/h3&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>POODR - Ch4: Creating Flexible Interfaces</title>
+   <link href="http://jamelablack.github.io/2015/04/27/POODR-ch4/"/>
+   <updated>2015-04-27T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/04/27/POODR-ch4</id>
+   <content type="html">&lt;p&gt;There is design detail that must be captured at this level but an object-oriented application is more than just classes. It is made up of classes but defined by messages. Classes control what’s in your source code repository; messages reflect the living, ani- mated application.
+Design, therefore, must be concerned with the messages that pass between ob- jects. It deals not only with what objects know (their responsibilities) and who they know (their dependencies), but how they talk to one another. The conversation be- tween objects takes place using their interfaces.&lt;/p&gt;
+
+&lt;p&gt;##Defining Public Interfaces
+ The kitchen does many things but does not, thankfully, expose them all to its customers. It has a public interface that customers are expected to use; the menu. Within the kitchen many things happen, many other messages get passed, but these messages are private and thus invisible to customers. Each of your classes is like a kitchen. The class exists to fulfill a single responsibil- ity but implements many methods.&lt;/p&gt;
+
+&lt;p&gt;###Public Interfaces
+The methods that make up the public interface of your class comprise the face it presents to the world. They:
+• Reveal its primary responsibility
+• Are expected to be invoked by others
+• Will not change on a whim
+• Are safe for others to depend on
+• Are thoroughly documented in the tests&lt;/p&gt;
+
+&lt;h3&gt;Private Interfaces&lt;/h3&gt;
+
+&lt;p&gt;All other methods in the class are part of its private interface. They:
+• Handle implementation details
+• Are not expected to be sent by other objects • Can change for any reason whatsoever
+• Are unsafe for others to depend on
+• May not even be referenced in the tests&lt;/p&gt;
+
+&lt;p&gt;Domain objects are easy to find but they are not at the design center of your application. Instead, they are a trap for the unwary. If you fixate on domain objects you will tend to coerce behavior into them. Design experts notice domain objects without concentrating on them; they focus not on these objects but on the messages that pass between them. These messages are guides that lead you to discover other objects, ones that are just as necessary but far less obvious.&lt;/p&gt;
+
+&lt;p&gt;Before you sit at the keyboard and start typing you should form an intention about the objects and the messages needed to satisfy this use case.&lt;/p&gt;
+
+&lt;h3&gt;Using Sequence Diagrams&lt;/h3&gt;
+
+&lt;p&gt;There is a perfect, low-cost way to experiment with objects and messages: sequence diagrams.
+Therein lies the value of sequence diagrams. They explicitly specify the messages that pass between objects, and because objects should only communicate using public interfaces, sequence diagrams are a vehicle for exposing, experimenting with, and ultimately defining those interfaces.&lt;/p&gt;
+
+&lt;p&gt;Also, notice now that you have drawn a sequence diagram, this design conversation has been inverted. The previous design emphasis was on classes and who and what they knew. Suddenly, the conversation has changed; it is now revolving around mes- sages. Instead of deciding on a class and then figuring out its responsibilities, you are now deciding on a message and figuring out where to send it.&lt;/p&gt;
+
+&lt;p&gt;This transition from class-based design to message-based design is a turning point in your design career. The message-based perspective yields more flexible applications than does the class-based perspective. Changing the fundamental design question from “I know I need this class, what should it do?” to “I need to send this message, who should respond to it?” is the first step in that direction.
+You don’t send messages because you have objects, you have objects because you send messages.&lt;/p&gt;
+
+&lt;h3&gt;Asking for “What” Instead of Telling “How”&lt;/h3&gt;
+
+&lt;p&gt;The distinction between a message that asks for what the sender wants and a message that tells the receiver how to behave may seem subtle but the consequences are significant. Understanding this difference is a key part of creating reusable classes with well-defined public interfaces.&lt;/p&gt;
+
+&lt;h3&gt;Seeking Context Independence&lt;/h3&gt;
+
+&lt;p&gt;The context that an object expects has a direct effect on how difficult it is to reuse. Objects that have a simple context are easy to use and easy to test; they expect few things from their surroundings. Objects that have a complicated context are hard to use and hard to test; they require complicated setup before they can do anything.
+The best possible situation is for an object to be completely independent of its context. An object that could collaborate with others without knowing who they are or what they do could be reused in novel and unanticipated ways.
+You already know the technique for collaborating with others without knowing who they are—dependency injection.&lt;/p&gt;
+
+&lt;h3&gt;Trusting Other Objects&lt;/h3&gt;
+
+&lt;p&gt;If objects were human and could describe their own relationships, in Figure 4.5 Trip would be telling Mechanic: “I know what I want and I know how you do it;” in Figure 4.6: “I know what I want and I know what you do” and in Figure 4.7: “I know what I want and I trust you to do your part.”
+This blind trust is a keystone of object-oriented design. It allows objects to collab- orate without binding themselves to context and is necessary in any application that expects to grow and change.&lt;/p&gt;
+
+&lt;h2&gt;Create Explicit Interfaces&lt;/h2&gt;
+
+&lt;p&gt;Your goal is to write code that works today, that can easily be reused, and that can be adapted for unexpected use in the future. Other people will invoke your methods; it is your obligation to communicate which ones are dependable.
+www.it-ebooks.info
+Writing Code That Puts Its Best (Inter)Face Forward 77 Every time you create a class, declare its interfaces. Methods in the public
+interface should
+• Be explicitly identified as such
+• Be more about what than how
+• Have names that, insofar as you can anticipate, will not change • Take a hash as an options parameter&lt;/p&gt;
+
+&lt;p&gt;Be just as intentional about the private interface; make it inescapably obvious. Tests, because they serve as documentation, can support this endeavor. Either do not test private methods or, if you must, segregate those tests from the tests of public methods. Do not allow your tests to fool others into unintentionally depending on the changeable, private interface.
+Ruby provides three relevant keywords: public, protected, and private. Use of these keywords serves two distinct purposes. First, they indicate which methods are stable and which are unstable. Second, they control how visible a method is to other parts of your application. These two purposes are very different. Conveying informa- tion that a method is stable or unstable is one thing; attempting to control how others use it is quite another.
+Public, Protected, and Private Keywords
+The private keyword denotes the least stable kind of method and provides the most restricted visibility. Private methods must be called with an implicit receiver, or, inversely, may never be called with an explicit receiver.&lt;/p&gt;
+
+&lt;p&gt;The protected keyword also indicates an unstable method, but one with slightly different visibility restrictions. Protected methods allow explicit receivers as long as the receiver is self or an instance of the same class or subclass of self.&lt;/p&gt;
+
+&lt;p&gt;Honor the Public Interfaces of Others
+Do your best to interact with other classes using only their public interfaces.f your design forces the use of a private method in another class, first rethink your design. It’s possible that a committed effort will unearth an alternative; you should try very hard to find one. A dependency on a private method of an external framework is a form of technical debt. Avoid these dependencies.&lt;/p&gt;
+
+&lt;p&gt;Minimize Context
+Construct public interfaces with an eye toward minimizing the context they require from others. Keep the what versus how distinction in mind; create public methods that allow senders to get what they want without knowing how your class implements its behavior.&lt;/p&gt;
+
+&lt;p&gt;Do what best suits your needs, but create some kind of defined public interface and use it. This reduces your class’s context, making it easier to reuse and simpler to test.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>POODR - Ch3: Mangaging Dependencies</title>
+   <link href="http://jamelablack.github.io/2015/04/23/POODR-ch3/"/>
+   <updated>2015-04-23T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/04/23/POODR-ch3</id>
+   <content type="html">&lt;p&gt;Each message is initiated by an object to invoke some bit of behavior. All of the behavior is dispersed among the objects. Therefore, for any desired behavior:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;an object either knows it personally,&lt;/li&gt;
+&lt;li&gt;inherits it, or&lt;/li&gt;
+&lt;li&gt;knows another object who knows it.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This chapter is about the third, getting access to behavior when that behavior is implemented in other objects.&lt;/p&gt;
+
+&lt;p&gt;Because well designed objects have a single responsibility, their very nature requires that they collaborate to accomplish complex tasks. This collaboration is powerful and perilous. To collaborate, an object must know something know about others. Knowing creates a dependency. If not managed carefully, these dependencies will strangle your application.&lt;/p&gt;
+
+&lt;h2&gt;Understanding Dependencies&lt;/h2&gt;
+
+&lt;p&gt;An object depends on another object if, when one object changes, the other might be forced to change in turn.&lt;/p&gt;
+
+&lt;h3&gt;Recognizing Dependencies&lt;/h3&gt;
+
+&lt;p&gt;An object has a dependency when it knows
+• The name of another class. Gear expects a class named Wheel to exist.
+• The name of a message that it intends to send to someone other than self. Gear expects a Wheel instance to respond to diameter.
+• The arguments that a message requires. Gear knows that Wheel.new requires a rim and a tire.
+• The order of those arguments. Gear knows the first argument to Wheel.new should be rim, the second, tire.&lt;/p&gt;
+
+&lt;p&gt;Your design challenge is to manage dependencies so that each class has the fewest possible; a class should know just enough to do its job and not one thing more&lt;/p&gt;
+
+&lt;h3&gt;Coupling Between Objects (CBO)&lt;/h3&gt;
+
+&lt;p&gt;Alternatively, you could say that each coupling creates a dependency.The dependencies cause these objects to act like a single thing. They move in lockstep; they change together.
+When two (or three or more) objects are so tightly coupled that they behave as a unit, it’s impossible to reuse just one. Changes to one object force changes to all. Left unchecked, unmanaged dependencies cause an entire application to become an entan- gled mess. A day will come when it’s easier to rewrite everything than to change anything.&lt;/p&gt;
+
+&lt;h3&gt;Other Dependencies&lt;/h3&gt;
+
+&lt;p&gt;One especially destructive kind of dependency occurs where an object knows another who knows another who knows something; that is, where many messages are chained together to reach behavior that lives in a distant object. This is the “knowing the name of a message you plan to send to someone other than self ” dependency, only magnified. Message chaining creates a dependency between the original object and every object and message along the way to its ultimate target. These additional couplings greatly increase the chance that the first object will be forced to change because a change to any of the intermediate objects might affect it. This is a Law of Demeter Violation.&lt;/p&gt;
+
+&lt;h2&gt;Writing Loosley Coupled Code&lt;/h2&gt;
+
+&lt;h3&gt;Inject Dependencies&lt;/h3&gt;
+
+&lt;p&gt;Referring to another class by name create a sticky spot.&lt;/p&gt;
+
+&lt;p&gt;Change:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Gear&lt;/span&gt;
+&lt;span class=&quot;kp&quot;&gt;attr_reader&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:chainring&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:cog&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:rim&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:tire&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;chainring&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cog&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rim&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tire&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@chainring&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;chainring&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@cog&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cog&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@rim&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rim&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@tire&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tire&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;gear_inches&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ratio&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Wheel&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rim&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tire&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;diameter&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;no&quot;&gt;Gear&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;52&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;11&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;26&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gear_inches&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;to:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Gear&lt;/span&gt;
+&lt;span class=&quot;kp&quot;&gt;attr_reader&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:chainring&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:cog&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:wheel&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;chainring&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cog&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;wheel&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@chainring&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;chainring&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@cog&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cog&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@wheel&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;wheel&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;gear_inches&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ratio&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;wheel&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;diameter&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;no&quot;&gt;Gear&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;52&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;11&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Wheel&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;26&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gear_inches&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Gear can now collaborate with any object that implements diameter.&lt;/p&gt;
+
+&lt;p&gt;This technique is known as dependency injection. Despite its fearsome reputation, dependency injection truly is this simple. Gear previously had explicit dependencies on the Wheel class and on the type and order of its initialization arguments, but through injection these dependencies have been reduced to a single dependency on the diameter method. Gear is now smarter because it knows less.&lt;/p&gt;
+
+&lt;p&gt;Using dependency injection to shape code relies on your ability to recognize that the responsibility for knowing the name of a class and the responsibility for knowing the name of a message to send to that class may belong in different objects.&lt;/p&gt;
+
+&lt;h3&gt;Isolate Dependencies&lt;/h3&gt;
+
+&lt;p&gt;It’s best to break all unnecessary dependences but, unfortunately, while this is always technically possible it may not be actually possible. Therefore, if you cannot remove unnecessary dependencies, you should isolate them within your class.&lt;/p&gt;
+
+&lt;h4&gt;Isolate Instance Creation&lt;/h4&gt;
+
+&lt;p&gt;In the first, creation of the new instance of Wheel has been moved from Gear’s gear&lt;em&gt;inches method to Gear’s initialization method. This cleans up the gear&lt;/em&gt;inches method and publicly exposes the dependency in the initialize method.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Gear&lt;/span&gt;
+&lt;span class=&quot;kp&quot;&gt;attr_reader&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:chainring&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:cog&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:rim&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:tire&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;chainring&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cog&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rim&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tire&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@chainring&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;chainring&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@cog&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cog&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@wheel&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Wheel&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rim&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tire&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The next alternative isolates creation of a new Wheel in its own explicitly defined wheel method. This new method lazily creates a new instance of Wheel, using Ruby’s ||= operator. In this case, creation of a new instance of Wheel is deferred until gear_inches invokes the new wheel method.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Gear&lt;/span&gt;
+&lt;span class=&quot;kp&quot;&gt;attr_reader&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:chainring&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:cog&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:rim&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:tire&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;chainring&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cog&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rim&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tire&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;vi&quot;&gt;@chainring&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;chainring&lt;/span&gt;
+      &lt;span class=&quot;vi&quot;&gt;@cog&lt;/span&gt;       &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cog&lt;/span&gt;
+      &lt;span class=&quot;vi&quot;&gt;@rim&lt;/span&gt;       &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rim&lt;/span&gt;
+      &lt;span class=&quot;vi&quot;&gt;@tire&lt;/span&gt;      &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tire&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;gear_inches&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ratio&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;wheel&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;diameter&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;wheel&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@wheel&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Wheel&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rim&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tire&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;Isolate Vulnerable External Messages&lt;/h3&gt;
+
+&lt;p&gt;Now that you’ve isolated references to external class names it’s time to turn your attention to external messages, that is, messages that are “sent to someone other than self.” This technique becomes necessary when a class contains embedded references to a message that is likely to change. Isolating the reference provides some insurance against being affected by that change. Although not every external method is a candi- date for this preemptive isolation, it’s worth examining your code, looking for and wrapping the most vulnerable dependencies.&lt;/p&gt;
+
+&lt;p&gt;An alternative way to eliminate these side effects is to avoid the problem from the very beginning by reversing the direction of the dependency. This idea will be addressed soon but first there’s one more coding technique to cover.&lt;/p&gt;
+
+&lt;h2&gt;Remove Arguement-Order Dependencies&lt;/h2&gt;
+
+&lt;h3&gt;Explicitly Define Defaults&lt;/h3&gt;
+
+&lt;p&gt;When you send a message that requires arguments, you, as the sender, cannot avoid having knowledge of those arguments. This dependency is unavoidable. However, passing arguments often involves a second, more subtle, dependency. Many method signatures not only require arguments, but they also require that those arguments be passed in a specific, fixed order.&lt;/p&gt;
+
+&lt;h4&gt;Use Hashes for Initialization Arguments&lt;/h4&gt;
+
+&lt;p&gt;There’s a simple way to avoid depending on fixed-order arguments. If you have control over the Gear initialize method, change the code to take a hash of options instead of a fixed list of parameters. The initialize method now takes just one argument, args, a hash that contains all of the inputs. The above technique has several advantages. The first and most obvious is that it removes every dependency on argument order. This technique adds verbosity. In many situations verbosity is a detriment, but in this case it has value. The verbosity exists at the intersection between the needs of the present and the uncertainty of the future. Using fixed-order arguments requires less code today but you pay for this decrease in volume of code with an increase in the risk that changes will cascade into dependents later.&lt;/p&gt;
+
+&lt;h4&gt;Explicitly Define Defaults&lt;/h4&gt;
+
+&lt;p&gt;There are many techniques for adding defaults. Simple non-boolean defaults can be specified using Ruby’s || method. This is a common technique but one you should use with caution; there are situations in which it might not do what you want. The || method acts as an or condition; it first evaluates the left-hand expression and then, if the expression returns false or nil, proceeds to evaluate and return the result of the right-hand expression. The use of || above therefore, relies on the fact that the [] method of Hash returns nil for missing keys.
+In the case where args contains a :boolean_thing key that defaults to true, use of || in this way makes it impossible for the caller to ever explicitly set the final variable to false or nil.&lt;/p&gt;
+
+&lt;p&gt;The above technique for substituting an options hash for a list of fixed-order arguments is perfect for cases where you are forced to depend on external interfaces that you cannot change. Do not allow these kinds of external dependencies to permeate your code; protect yourself by wrapping each in a method that is owned by your own application.&lt;/p&gt;
+
+&lt;h2&gt;Managing Dependecy Direction&lt;/h2&gt;
+
+&lt;h3&gt;Reversing  Dependecies&lt;/h3&gt;
+
+&lt;h4&gt;Choosing Dependency Direction&lt;/h4&gt;
+
+&lt;p&gt;Pretend for a moment that your classes are people. If you were to give them advice about how to behave you would tell them to depend on things that change less often than you do.
+This short statement belies the sophistication of the idea, which is based on three simple truths about code:
+• Some classes are more likely than others to have changes in requirements.
+• Concrete classes are more likely to change than abstract classes.
+• Changing a class that has many dependents will result in widespread consequences.&lt;/p&gt;
+
+&lt;h4&gt;Recognizing Concretions and Abstractions&lt;/h4&gt;
+
+&lt;p&gt;The second idea concerns itself with the concreteness and abstractness of code. The term abstract is used here just as Merriam-Webster defines it, as “disassociated from any specific instance,” and, as so many things in Ruby, represents an idea about code as opposed to a specific technical restriction.&lt;/p&gt;
+
+&lt;p&gt;The wonderful thing about abstractions is that they represent common, stable qualities. They are less likely to change than are the concrete classes from which they were extracted. Depending on an abstraction is always safer than depending on a concretion because by its very nature, the abstraction is more stable. Ruby does not make you explicitly declare the abstraction in order to define the interface, but for design purposes you can behave as if your virtual interface is as real as a class. Indeed, in the rest of this discussion, the term “class” stands for both class and this kind of interface. These interfaces can have dependents and so must be taken into account during design.&lt;/p&gt;
+
+&lt;p&gt;Depend on things that change less often than you do is a heuristic that stands in for all the ideas in this section. The zones are a useful way to organize your thoughts but in the fog of development it may not be obvious which classes go where.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>POODR - Ch2: Designing Classes with a Single Responsibility</title>
    <link href="http://jamelablack.github.io/2015/04/22/POODR-ch2/"/>
    <updated>2015-04-22T00:00:00-04:00</updated>
    <id>http://jamelablack.github.io/2015/04/22/POODR-ch2</id>
@@ -27,7 +1380,7 @@ What behavior will they implement?
 How much do they know about the other classes?
 How much of themselves should the expose?&lt;/p&gt;
 
-&lt;p&gt;At this stage, your first obligation is to take a deep breath and insis that it be simple. Your goal is to model your application, using classes, such that is does what is is supposed to do right now. Design is more the art of perserving changability than it is the act of achieving perfection.&lt;/p&gt;
+&lt;p&gt;At this stage, your first obligation is to take a deep breath and insist that it be simple. Your goal is to model your application, using classes, such that is does what is is supposed to do right now. Design is more the art of perserving changability than it is the act of achieving perfection.&lt;/p&gt;
 
 &lt;h3&gt;Code should be TRUE:&lt;/h3&gt;
 
@@ -61,9 +1414,9 @@ Ask it! &amp;quot;Mr Gear, What is your ratio?&amp;quot;&lt;/p&gt;
 
 &lt;p&gt;When a class is related to it&amp;#39;s purpose, its considered &amp;quot;highly cohesive&amp;quot; or to have single responsibility (Single Responsibility Principle)&lt;/p&gt;
 
-&lt;h3&gt;Determining when to make desgin decisions:&lt;/h3&gt;
+&lt;h3&gt;Determining when to make design decisions:&lt;/h3&gt;
 
-&lt;p&gt;Don&amp;#39;t feel compelled to make desgin decisions prematurely. When the future cost of doing nothing is the same as the current cost, postpone the decision. Make the decision only when you must with the information you have at the time.&lt;/p&gt;
+&lt;p&gt;Don&amp;#39;t feel compelled to make design decisions prematurely. When the future cost of doing nothing is the same as the current cost, postpone the decision. Make the decision only when you must with the information you have at the time.&lt;/p&gt;
 
 &lt;h2&gt;Writing Code that Embraces Change&lt;/h2&gt;
 
@@ -84,7 +1437,7 @@ Ask it! &amp;quot;Mr Gear, What is your ratio?&amp;quot;&lt;/p&gt;
 In Ruby, it&amp;#39;s easy to seperate structure from meaning - just as you use a method to wrap an instance variable, you can use a Ruby Struct class to wrap a structure.
 Ruby defines Struct as &amp;quot;a convenient way to bundle a number of attributes together, using accessor methods, without having to write an explicit class.&lt;/p&gt;
 
-&lt;h2&gt;2. Enforce Signle Responsibilities Everywhere&lt;/h2&gt;
+&lt;h2&gt;2. Enforce Single Responsibilities Everywhere&lt;/h2&gt;
 
 &lt;h4&gt;3. Extract Extra Responsibilities from Methods&lt;/h4&gt;
 
@@ -136,7 +1489,7 @@ Ruby defines Struct as &amp;quot;a convenient way to bundle a number of attribut
 &lt;p&gt;Design is an art of arranging code. Design has two components:
 You must not only write code for the feature you plan to deliver today, you must also create code that is amendable to being changed later.&lt;/p&gt;
 
-&lt;p&gt;Design that is that anticipates specific future requirements almost always ends badly. It shouldn&amp;#39;t guess hte future, but rather perserves options for accomodating the future, leaving you romm to move.&lt;/p&gt;
+&lt;p&gt;Design that is that anticipates specific future requirements almost always ends badly. It shouldn&amp;#39;t guess hte future, but rather perserves options for accomodating the future, leaving you room to move.&lt;/p&gt;
 
 &lt;p&gt;Primary goal is to allow you to desiglm later, and its primary goal is reduce the cost of change.&lt;/p&gt;
 
@@ -237,6 +1590,8 @@ your skills and your timeframe.&lt;/p&gt;
 &lt;p&gt;Mailgun &amp;amp; Postmark are the recommended email service providers. When considering vendors, you want to focus on devliverability.&lt;/p&gt;
 
 &lt;p&gt;Check out the is &lt;a href=&quot;http://www.quora.com/Why-are-Mailgun-and-Postmark-so-much-more-expensive-than-Sendgrid-and-AWS-SES&quot;&gt;Quora article&lt;/a&gt; on comparing well-known email service providers. In this course, we will use Mailgun.&lt;/p&gt;
+
+&lt;p&gt;Good &lt;a href=&quot;http://www.gotealeaf.com/blog/handling-emails-in-rails&quot;&gt;blogpost&lt;/a&gt; for getting set up with Gmail.&lt;/p&gt;
 </content>
  </entry>
  
@@ -304,7 +1659,63 @@ config.autoload_paths &amp;lt;&amp;lt; &amp;quot;#{Rails.root}/lib&amp;quot;&lt;
    <link href="http://jamelablack.github.io/2015/04/05/course3-invite-users/"/>
    <updated>2015-04-05T00:00:00-04:00</updated>
    <id>http://jamelablack.github.io/2015/04/05/course3-invite-users</id>
-   <content type="html"></content>
+   <content type="html">&lt;h2&gt;Feature Spec: Inviting Users&lt;/h2&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;nb&quot;&gt;require&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;spec_helper&amp;#39;&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;feature&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;User invited friend&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;scenario&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;User succesfully intvites friend and invitation is accepted&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;jam&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Fabricate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;sign_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jam&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;invite_a_friend&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;friend_accepts_invitation&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;friend_signs_in&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;friend_should_follow&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jam&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;inviter_should_follow_friend&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;jam&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;clear_email&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;invite_a_friend&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;visit&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;new_invitation_path&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;fill_in&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Friend&amp;#39;s Name&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;with&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;Amber Howard&amp;#39;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;fill_in&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Friend&amp;#39;s Email Address&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;with&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;amberhoward1@gmail.com&amp;#39;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;fill_in&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Message&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;with&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Hey girl, you gotta check this out!&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;click_button&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Send Invitation&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;sign_out&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;friend_accepts_invitation&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;open_email&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;amberhoward1@gmail.com&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;current_email&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;click_link&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Accept this invitation&amp;quot;&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;fill_in&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Password&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;with&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;password&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;fill_in&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Full Name&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;with&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Amber Howard&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;click_button&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Sign Up&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;friend_signs_in&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;fill_in&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Email Address&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;with&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;amberhoward1@gmail.com&amp;#39;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;fill_in&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Password&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;with&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;password&amp;#39;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;click_button&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Sign in&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;friend_should_follow&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;inviter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;click_link&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;People&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;page&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;have_content&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inviter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;full_name&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;sign_out&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;inviter_should_follow_friend&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;inviter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;sign_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;inviter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;click_link&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;People&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;page&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;have_content&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Amber Howard&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+</content>
  </entry>
  
  <entry>
@@ -764,7 +2175,7 @@ To test this feature, Capybara-email is a great way to test this functionality a
 
 &lt;p&gt;Example spec for inviting a user:&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#suser_resets_password_spec.rb&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#user_resets_password_spec.rb&lt;/span&gt;
 &lt;span class=&quot;nb&quot;&gt;require&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;spec_helper&amp;#39;&lt;/span&gt;
 &lt;span class=&quot;n&quot;&gt;feature&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;User resets password&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;scenario&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;user successfully resets the password&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
@@ -2087,7 +3498,7 @@ errors on the Todos object.&lt;/p&gt;
  </entry>
  
  <entry>
-   <title>Course3 Red Green Refactor</title>
+   <title>Build Robust & Production Quality Applications - Lesson 1: Red, Green, Refactor</title>
    <link href="http://jamelablack.github.io/2015/02/01/course3-red-green-refactor/"/>
    <updated>2015-02-01T00:00:00-05:00</updated>
    <id>http://jamelablack.github.io/2015/02/01/course3-red-green-refactor</id>

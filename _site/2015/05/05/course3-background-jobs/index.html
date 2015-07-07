@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications - Lesson 6: Background Jobs &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 6: Background Jobs</h1>
+  <span class="post-date">05 May 2015</span>
+  <h2>Background Jobs</h2>
+
+<p>Email sending typically is not very fast since we have to rely on some third party application. Waiting can slow up your app and potentially frustrate users so it&#39;s best to put non-essential and non-time-sensitive tasks in background jobs.</p>
+
+<p>Since you can web processes and background job processes running locally, you need tp run both the rails server and sidekiq servers to process jobs respectively.</p>
+
+<h3>Resque</h3>
+
+<p>came out of Github - Resque is our Redis-backed library for creating background jobs, placing those jobs on multiple queues, and processing them later.</p>
+
+<p>Benefits: has admin interface, is powered by Github
+Delayed Job does not require Redis, both uses a pulling queue
+Beanstalk and Stalker may be better if you care about speed, as they have a pulling mechanism</p>
+
+<p>Sidekiq is a higher performance background solution than Resque and can even be ported, added on top of resque solution.</p>
+
+<p>Check out the Railscast on Resque for intro.</p>
+
+<h3>Sidekiq</h3>
+
+<p>In order to use Sidekiq, you must install and run <a href="http://redis.io">Redis</a>. Once downloaded, run the &quot;$ src/redis-server&quot; in the redis-3.0.2 folder.</p>
+
+<p>You must also gem install sidekiq, and run &quot;bundle exec sidekiq&quot;</p>
+
+<p>When watching the Railscast on Sidekiq, it talks about the creation of workers:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/controllers/invitations_controller.rb</span>
+<span class="k">class</span> <span class="nc">InvitationsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="n">before_filter</span> <span class="ss">:require_user</span>
+  <span class="k">def</span> <span class="nf">new</span>
+    <span class="vi">@invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">new</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">create</span>
+    <span class="vi">@invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">invitation_params</span><span class="o">.</span><span class="n">merge!</span><span class="p">(</span><span class="ss">inviter_id</span><span class="p">:</span> <span class="n">current_user</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="vi">@invitation</span><span class="o">.</span><span class="n">save</span>
+      <span class="no">InivtationWorker</span><span class="o">.</span><span class="n">perform_async</span>
+      <span class="n">flash</span><span class="o">[</span><span class="ss">:success</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;You&#39;ve successfully invited </span><span class="si">#{</span><span class="vi">@invitation</span><span class="o">.</span><span class="n">recipient_name</span><span class="si">}</span><span class="s2">.&quot;</span>
+      <span class="n">redirect_to</span> <span class="n">new_invitation_path</span>
+    <span class="k">else</span>
+      <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Please fill in all inputs.&quot;</span>
+      <span class="n">render</span> <span class="ss">:new</span>
+    <span class="k">end</span>
+  <span class="k">end</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/workers</span>
+<span class="k">class</span> <span class="nc">InvitationWorker</span>
+  <span class="kp">include</span> <span class="no">Sidekiq</span><span class="o">::</span><span class="no">Worker</span>
+
+  <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="n">invitation_id</span><span class="p">)</span>
+    <span class="n">invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">invitation_id</span><span class="p">)</span>
+    <span class="no">AppMailer</span><span class="o">.</span><span class="n">send_invitation_email</span><span class="p">(</span><span class="n">invitation</span><span class="p">)</span><span class="o">.</span><span class="n">deliver</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>But instead of creating workers, we can just use <a href="https://github.com/mperham/sidekiq/wiki/Delayed-extensions#actionmailer">delayed extentions</a></p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/controlers/invitations_controller.rb</span>
+  <span class="k">def</span> <span class="nf">create</span>
+    <span class="vi">@invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">invitation_params</span><span class="o">.</span><span class="n">merge!</span><span class="p">(</span><span class="ss">inviter_id</span><span class="p">:</span> <span class="n">current_user</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="vi">@invitation</span><span class="o">.</span><span class="n">save</span>
+      <span class="no">AppMailer</span><span class="o">.</span><span class="n">delay</span><span class="o">.</span><span class="n">send_invitation_email</span><span class="p">(</span><span class="vi">@invitation</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+      <span class="n">flash</span><span class="o">[</span><span class="ss">:success</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;You&#39;ve successfully invited </span><span class="si">#{</span><span class="vi">@invitation</span><span class="o">.</span><span class="n">recipient_name</span><span class="si">}</span><span class="s2">.&quot;</span>
+      <span class="n">redirect_to</span> <span class="n">new_invitation_path</span>
+    <span class="k">else</span>
+      <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Please fill in all inputs.&quot;</span>
+      <span class="n">render</span> <span class="ss">:new</span>
+    <span class="k">end</span>
+  <span class="k">end</span></code></pre></div>
+
+<p>Since we aren&#39;t running .perform_async on a worker, we need to pass @invitiation.id to the AppMailer:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/app_mailer.rb</span>
+<span class="k">def</span> <span class="nf">send_invitation_email</span><span class="p">(</span><span class="n">invitation_id</span><span class="p">)</span>
+    <span class="vi">@invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">invitation_id</span><span class="p">)</span>
+    <span class="n">mail</span> <span class="ss">to</span><span class="p">:</span> <span class="vi">@invitation</span><span class="o">.</span><span class="n">recipient_email</span><span class="p">,</span> <span class="ss">from</span><span class="p">:</span> <span class="s2">&quot;info@myflix.com&quot;</span><span class="p">,</span> <span class="ss">subject</span><span class="p">:</span> <span class="s2">&quot;Invitation to join Myflix&quot;</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>To run tests, you have to add the following to run them <a href="https://github.com/mperham/sidekiq/wiki/Testing">inline</a>:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#spec/spec_helper.rb</span>
+
+<span class="nb">require</span> <span class="s1">&#39;sidekiq/testing&#39;</span>
+<span class="no">Sidekiq</span><span class="o">::</span><span class="no">Testing</span><span class="o">.</span><span class="n">inline!</span></code></pre></div>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/06/30/Metz-5-Rules/">
+            Sandi Metz - The Rules
+            <small>30 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/06/26/Refactoring-Generalization/">
+            Refactoring - Dealing wihth Generalization
+            <small>26 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/06/25/Refactoring-conditionals/">
+            Refactoring - Simplifying Conditional Expressions
+            <small>25 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

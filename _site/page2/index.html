@@ -118,6 +118,26 @@
           
         
       
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
 
     <p>&copy; 2015. All rights reserved.</p>
   </div>
@@ -129,571 +149,324 @@
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/04/05/course3-invite-users/">
-        Build Robust & Production Quality Applications - Lesson 6: Inviting Users- Part 3
+      <a href="/2015/06/21/Refactoring-Moving-Features/">
+        Refactoring - Moving Features from Objects
       </a>
     </h1>
 
-    <span class="post-date">05 Apr 2015</span>
+    <span class="post-date">21 Jun 2015</span>
 
-    
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/04/03/course3-invite-users/">
-        Build Robust & Production Quality Applications - Lesson 6: Inviting Users- Part 2
-      </a>
-    </h1>
+    <p>The most fundamental question in object oriented design is &quot;Where to put responsibilities&quot; Often times issues around these questions resolve these problems simply by using Move Method and Move Field to move the behavior around. If we need to use both, use Move Field first and then Move Method.</p>
 
-    <span class="post-date">03 Apr 2015</span>
+<h3>Move Method</h3>
 
-    <h2>Inviting Users - 2nd part of Workflow:</h2>
+<p>A method is, or will be, using or used by more features of another class than the class on which it is defined.
+Create a new method with a similar body in the class it uses most. Either turn the old method into a simple delegation, or remove it altogether. Examine all features used by the source method that are defined on the
+source class. Consider whether they also should be moved.</p>
 
-<ol>
-<li>User gets email and selects the &quot;Accept this invitation&quot; link. URL will contain special token</li>
-<li>Registation form has email prefilled</li>
-<li>Upon sign up, user automatically follows recommender and vice versa</li>
-</ol>
+<h3>Move Field</h3>
 
-<h3>Step 1. User recieves email:</h3>
+<p>A field is, or will be, used by another class more than the class on which it is defined.
+Create a new attribute reader (and if necessary, a writer) in the target class, and change all its users.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#views/app_mailers/send_invitation_email.html.haml</span>
-<span class="o">!!!</span> <span class="mi">5</span>
-<span class="o">%</span><span class="n">html</span><span class="p">(</span><span class="n">lang</span><span class="o">=</span><span class="s2">&quot;en-US&quot;</span><span class="p">)</span>
-  <span class="o">%</span><span class="n">body</span>
-  <span class="o">%</span><span class="nb">p</span> <span class="no">You</span> <span class="n">are</span> <span class="n">inivited</span> <span class="n">by</span> <span class="c1">#{@invitation.inviter.full_name} to join Myflix!</span>
-  <span class="o">%</span><span class="nb">p</span><span class="o">=</span> <span class="vi">@invitation</span><span class="o">.</span><span class="n">message</span>
-  <span class="o">%</span><span class="nb">p</span><span class="o">=</span> <span class="n">link_to</span> <span class="s2">&quot;Accept this invitation&quot;</span><span class="p">,</span> <span class="n">register_with_token_url</span><span class="p">(</span><span class="vi">@invitation</span><span class="o">.</span><span class="n">token</span><span class="p">)</span></code></pre></div>
+<h3>Extract Class</h3>
 
-<h3>Create routes</h3>
+<p>You have one class doing work that should be done by two. Create a new class and move the relevant fields and methods from the old class into the new class.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">resources</span> <span class="ss">:users</span><span class="p">,</span> <span class="ss">only</span><span class="p">:</span> <span class="o">[</span><span class="ss">:create</span><span class="p">,</span> <span class="ss">:show</span><span class="o">]</span>
-  <span class="n">get</span> <span class="s1">&#39;register/:token&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s2">&quot;users#new_with_invitation_token&quot;</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="s1">&#39;register_with_token&#39;</span></code></pre></div>
+<h3>Inline Class</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#users_controller_spec.rb</span>
-<span class="n">describe</span> <span class="s2">&quot;GET new_with_invitation_token&quot;</span> <span class="k">do</span>
-  <span class="n">it</span> <span class="s2">&quot;render the :new view template&quot;</span> <span class="k">do</span>
-    <span class="n">invitation</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">)</span>
-    <span class="n">get</span> <span class="ss">:new_with_invitation_token</span><span class="p">,</span> <span class="ss">token</span><span class="p">:</span> <span class="n">invitation</span><span class="o">.</span><span class="n">token</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">response</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">render_template</span> <span class="ss">:new</span>
-  <span class="k">end</span>
+<p>A class isn’t doing very much.
+Move all its features into another class and delete it.</p>
 
-  <span class="n">it</span> <span class="s2">&quot;sets @user with recipient&#39;s email&quot;</span> <span class="k">do</span>
-    <span class="n">invitation</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">)</span>
-    <span class="n">get</span> <span class="ss">:new_with_invitation_token</span><span class="p">,</span> <span class="ss">token</span><span class="p">:</span> <span class="n">invitation</span><span class="o">.</span><span class="n">token</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">assigns</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span><span class="o">.</span><span class="n">email</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">eq</span><span class="p">(</span><span class="n">invitation</span><span class="o">.</span><span class="n">recipient_email</span><span class="p">)</span>
-  <span class="k">end</span>
+<h3>Hide Delegate</h3>
 
-  <span class="n">it</span> <span class="s2">&quot;sets @invitation_token&quot;</span> <span class="k">do</span>
-    <span class="n">invitation</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">)</span>
-    <span class="n">get</span> <span class="ss">:new_with_invitation_token</span><span class="p">,</span> <span class="ss">token</span><span class="p">:</span> <span class="n">invitation</span><span class="o">.</span><span class="n">token</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">assigns</span><span class="p">(</span><span class="ss">:invitation_token</span><span class="p">))</span><span class="o">.</span><span class="n">to</span> <span class="n">eq</span><span class="p">(</span><span class="n">invitation</span><span class="o">.</span><span class="n">token</span><span class="p">)</span>
-  <span class="k">end</span>
+<p>A client is calling a delegate class of an object.
+Create methods on the server to hide the delegate. One of the keys, if not the key, to objects is encapsulation. Encapsulation means that objects need to know less about other parts of the system. Then when things change, fewer objects need to be told about the change—which makes the change easier to make.</p>
 
-  <span class="n">it</span> <span class="s2">&quot;redirects to expired token page for invalid tokens&quot;</span> <span class="k">do</span>
-    <span class="n">get</span> <span class="ss">:new_with_invitation_token</span><span class="p">,</span> <span class="ss">token</span><span class="p">:</span> <span class="s1">&#39;asdffdhh&#39;</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">response</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">redirect_to</span> <span class="n">expired_token_path</span>
-  <span class="k">end</span></code></pre></div>
+<h3>Remove the Middle Man</h3>
 
-<h3>We need to fabricate an invitation:</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#fabricators/invitation_fabricators.rb</span>
-<span class="no">Fabricator</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">)</span> <span class="k">do</span>
-  <span class="n">recipient_name</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Name</span><span class="o">.</span><span class="n">name</span> <span class="p">}</span>
-  <span class="n">recipient_email</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Internet</span><span class="o">.</span><span class="n">email</span> <span class="p">}</span>
-  <span class="n">message</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Lorem</span><span class="o">.</span><span class="n">paragraphs</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="p">}</span>
-<span class="k">end</span></code></pre></div>
-
-<h3>Add Tokens Column to Invitations:</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">AddTokenToInvitations</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span>
-  <span class="k">def</span> <span class="nf">change</span>
-    <span class="n">add_column</span> <span class="ss">:invitations</span><span class="p">,</span> <span class="ss">:token</span><span class="p">,</span> <span class="ss">:string</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#users_controller.rb</span>
-  <span class="k">def</span> <span class="nf">new_with_invitation_token</span>
-    <span class="n">invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">token</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:token</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
-    <span class="k">if</span> <span class="n">invitation</span>
-      <span class="vi">@user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">email</span><span class="p">:</span> <span class="n">invitation</span><span class="o">.</span><span class="n">recipient_email</span><span class="p">)</span>
-      <span class="vi">@invitation_token</span> <span class="o">=</span> <span class="n">invitation</span><span class="o">.</span><span class="n">token</span>
-      <span class="n">render</span> <span class="ss">:new</span>
-    <span class="k">else</span>
-      <span class="n">redirect_to</span> <span class="n">expired_token_path</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-
-  <span class="kp">private</span>
-  <span class="k">def</span> <span class="nf">user_params</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span><span class="o">.</span><span class="n">permit!</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">handle_invitations</span>
-    <span class="k">if</span> <span class="n">params</span><span class="o">[</span><span class="ss">:invitation_token</span><span class="o">].</span><span class="n">present?</span>
-      <span class="n">invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">token</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:invitation_token</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
-      <span class="vi">@user</span><span class="o">.</span><span class="n">follow</span><span class="p">(</span><span class="n">invitation</span><span class="o">.</span><span class="n">inviter</span><span class="p">)</span>
-      <span class="n">invitation</span><span class="o">.</span><span class="n">inviter</span><span class="o">.</span><span class="n">follow</span><span class="p">(</span><span class="vi">@user</span><span class="p">)</span>
-      <span class="n">invitation</span><span class="o">.</span><span class="n">update_column</span><span class="p">(</span><span class="ss">:token</span><span class="p">,</span> <span class="kp">nil</span><span class="p">)</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<h3>User registers upon clicking link</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#users/new.html.haml</span>
-<span class="o">%</span><span class="n">section</span><span class="o">.</span><span class="n">register</span><span class="o">.</span><span class="n">container</span>
-  <span class="o">.</span><span class="n">row</span>
-    <span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">10</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="n">offset</span><span class="o">-</span><span class="mi">1</span>
-      <span class="o">=</span> <span class="n">bootstrap_form_for</span> <span class="vi">@user</span><span class="p">,</span> <span class="ss">html</span><span class="p">:</span> <span class="p">{</span> <span class="ss">class</span><span class="p">:</span> <span class="s2">&quot;form-horizontal&quot;</span><span class="p">}</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
-        <span class="o">%</span><span class="n">header</span>
-          <span class="o">%</span><span class="n">h1</span> <span class="no">Register</span>
-        <span class="o">%</span><span class="n">fieldset</span>
-          <span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">6</span>
-            <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">email_field</span> <span class="ss">:email</span><span class="p">,</span> <span class="ss">label</span><span class="p">:</span> <span class="s2">&quot;Email Address&quot;</span>
-            <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">password_field</span> <span class="ss">:password</span>
-            <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:full_name</span><span class="p">,</span> <span class="ss">label</span><span class="p">:</span> <span class="s2">&quot;Full Name&quot;</span>
-            <span class="o">=</span> <span class="n">hidden_field_tag</span> <span class="ss">:invitation_token</span><span class="p">,</span> <span class="vi">@invitation_token</span>
-        <span class="o">%</span><span class="n">fieldset</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">control</span><span class="o">-</span><span class="n">group</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="n">offset</span><span class="o">-</span><span class="mi">0</span>
-          <span class="o">.</span><span class="n">controls</span>
-            <span class="o">%</span><span class="n">input</span><span class="p">(</span><span class="n">type</span><span class="o">=</span><span class="s2">&quot;submit&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;Sign Up&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;btn btn-default&quot;</span><span class="p">)</span></code></pre></div>
-
-<h3>Gotchas</h3>
-
-<p>Another issue with the current form is when the invitee signs up, we lose the
- lose inviter&#39;s info and they are not not following the inviter. To fix this, we need a hidden field on the invitee registration form. This hidden field is a field tag, rather than model backed becasue we don&#39;t want this token to be stored under the user&#39;s token.</p>
-
-<h3>Step 3: Inviter/Invitee automatically follow each other after being invited:</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#users_controller_spec.rb</span>
-   <span class="n">describe</span> <span class="s2">&quot;POST create&quot;</span> <span class="k">do</span>
-    <span class="n">context</span> <span class="s2">&quot;with valid input&quot;</span> <span class="k">do</span>
-      <span class="n">before</span> <span class="p">{</span> <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">user</span><span class="p">:</span> <span class="no">Fabricate</span><span class="o">.</span><span class="n">attributes_for</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span> <span class="p">}</span>
-      <span class="n">it</span> <span class="s2">&quot;creates the user&quot;</span> <span class="k">do</span>
-        <span class="n">expect</span><span class="p">(</span><span class="no">User</span><span class="o">.</span><span class="n">count</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">eq</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-      <span class="k">end</span>
-      <span class="n">it</span> <span class="s2">&quot;redirects to th sign on page&quot;</span> <span class="k">do</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">response</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">redirect_to</span> <span class="n">sign_in_path</span>
-      <span class="k">end</span>
-
-      <span class="n">it</span> <span class="s2">&quot;makes the user follow the inviter&quot;</span> <span class="k">do</span>
-        <span class="n">alice</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
-        <span class="n">invitation</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">,</span> <span class="ss">inviter</span><span class="p">:</span> <span class="n">alice</span><span class="p">,</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s1">&#39;jam@jamblack.com&#39;</span><span class="p">)</span>
-        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">user</span><span class="p">:</span> <span class="p">{</span><span class="ss">email</span><span class="p">:</span> <span class="s1">&#39;jam@jamblack.com&#39;</span><span class="p">,</span> <span class="ss">password</span><span class="p">:</span> <span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="ss">full_name</span><span class="p">:</span> <span class="s1">&#39;Jam Black&#39;</span><span class="p">},</span> <span class="ss">invitation_token</span><span class="p">:</span> <span class="n">invitation</span><span class="o">.</span><span class="n">token</span>
-        <span class="n">jam</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">email</span><span class="p">:</span> <span class="s1">&#39;jam@jamblack.com&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">jam</span><span class="o">.</span><span class="n">follows?</span><span class="p">(</span><span class="n">alice</span><span class="p">))</span><span class="o">.</span><span class="n">to</span> <span class="n">be_true</span>
-      <span class="k">end</span>
-
-      <span class="n">it</span> <span class="s2">&quot;makes the inviter follow the user&quot;</span> <span class="k">do</span>
-        <span class="n">alice</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
-        <span class="n">invitation</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">,</span> <span class="ss">inviter</span><span class="p">:</span> <span class="n">alice</span><span class="p">,</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s1">&#39;jam@jamblack.com&#39;</span><span class="p">)</span>
-        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">user</span><span class="p">:</span> <span class="p">{</span><span class="ss">email</span><span class="p">:</span> <span class="s1">&#39;jam@jamblack.com&#39;</span><span class="p">,</span> <span class="ss">password</span><span class="p">:</span> <span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="ss">full_name</span><span class="p">:</span> <span class="s1">&#39;Jam Black&#39;</span><span class="p">},</span> <span class="ss">invitation_token</span><span class="p">:</span> <span class="n">invitation</span><span class="o">.</span><span class="n">token</span>
-        <span class="n">jam</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">email</span><span class="p">:</span> <span class="s1">&#39;jam@jamblack.com&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">alice</span><span class="o">.</span><span class="n">follows?</span><span class="p">(</span><span class="n">jam</span><span class="p">))</span><span class="o">.</span><span class="n">to</span> <span class="n">be_true</span>
-      <span class="k">end</span>
-      <span class="n">it</span> <span class="s2">&quot;expires the invitation upon acceptance&quot;</span> <span class="k">do</span>
-        <span class="n">alice</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
-        <span class="n">invitation</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">,</span> <span class="ss">inviter</span><span class="p">:</span> <span class="n">alice</span><span class="p">,</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s1">&#39;jam@jamblack.com&#39;</span><span class="p">)</span>
-        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">user</span><span class="p">:</span> <span class="p">{</span><span class="ss">email</span><span class="p">:</span> <span class="s1">&#39;jam@jamblack.com&#39;</span><span class="p">,</span> <span class="ss">password</span><span class="p">:</span> <span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="ss">full_name</span><span class="p">:</span> <span class="s1">&#39;Jam Black&#39;</span><span class="p">},</span> <span class="ss">invitation_token</span><span class="p">:</span> <span class="n">invitation</span><span class="o">.</span><span class="n">token</span>
-        <span class="n">jam</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">email</span><span class="p">:</span> <span class="s1">&#39;jam@jamblack.com&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
-        <span class="n">expect</span><span class="p">(</span><span class="no">Invitation</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">token</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">be_nil</span>
-      <span class="k">end</span>
-    <span class="k">end</span></code></pre></div>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;#follows?&quot;</span> <span class="k">do</span>
-    <span class="n">it</span> <span class="s2">&quot;returns true if the user has a following relationship with another user&quot;</span> <span class="k">do</span>
-      <span class="n">alice</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
-      <span class="n">bob</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
-      <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:relationship</span><span class="p">,</span> <span class="ss">leader</span><span class="p">:</span> <span class="n">bob</span><span class="p">,</span> <span class="ss">follower</span><span class="p">:</span> <span class="n">alice</span><span class="p">)</span>
-      <span class="n">expect</span><span class="p">(</span><span class="n">alice</span><span class="o">.</span><span class="n">follows?</span><span class="p">(</span><span class="n">bob</span><span class="p">))</span><span class="o">.</span><span class="n">to</span> <span class="n">be_true</span>
-    <span class="k">end</span>
-
-    <span class="n">it</span> <span class="s2">&quot;returns false if the user does not have a following relationship with another user&quot;</span> <span class="k">do</span>
-      <span class="n">alice</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
-      <span class="n">bob</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
-      <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:relationship</span><span class="p">,</span> <span class="ss">leader</span><span class="p">:</span> <span class="n">alice</span><span class="p">,</span> <span class="ss">follower</span><span class="p">:</span> <span class="n">bob</span><span class="p">)</span>
-      <span class="n">expect</span><span class="p">(</span><span class="n">alice</span><span class="o">.</span><span class="n">follows?</span><span class="p">(</span><span class="n">bob</span><span class="p">))</span><span class="o">.</span><span class="n">to</span> <span class="n">be_false</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-
-  <span class="n">describe</span> <span class="s2">&quot;#follow&quot;</span> <span class="k">do</span>
-    <span class="n">it</span> <span class="s2">&quot;follows another user&quot;</span> <span class="k">do</span>
-      <span class="n">alice</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
-      <span class="n">bob</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
-      <span class="n">alice</span><span class="o">.</span><span class="n">follow</span><span class="p">(</span><span class="n">bob</span><span class="p">)</span>
-      <span class="n">expect</span><span class="p">(</span><span class="n">alice</span><span class="o">.</span><span class="n">follows?</span><span class="p">(</span><span class="n">bob</span><span class="p">))</span><span class="o">.</span><span class="n">to</span> <span class="n">be_true</span>
-    <span class="k">end</span>
-
-    <span class="n">it</span> <span class="s2">&quot;does not follow one self&quot;</span> <span class="k">do</span>
-      <span class="n">alice</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
-      <span class="n">alice</span><span class="o">.</span><span class="n">follow</span><span class="p">(</span><span class="n">alice</span><span class="p">)</span>
-      <span class="n">expect</span><span class="p">(</span><span class="n">alice</span><span class="o">.</span><span class="n">follows?</span><span class="p">(</span><span class="n">alice</span><span class="p">))</span><span class="o">.</span><span class="n">to</span> <span class="n">be_false</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#users.rb</span>
-  <span class="k">def</span> <span class="nf">follows?</span><span class="p">(</span><span class="n">another_user</span><span class="p">)</span>
-    <span class="n">following_relationships</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:leader</span><span class="p">)</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="n">another_user</span><span class="p">)</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">can_follow?</span><span class="p">(</span><span class="n">another_user</span><span class="p">)</span>
-    <span class="o">!</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">follows?</span><span class="p">(</span><span class="n">another_user</span><span class="p">)</span> <span class="o">||</span> <span class="nb">self</span> <span class="o">==</span> <span class="n">another_user</span><span class="p">)</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">follow</span><span class="p">(</span><span class="n">another_user</span><span class="p">)</span>
-    <span class="n">following_relationships</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">leader</span><span class="p">:</span> <span class="n">another_user</span><span class="p">)</span> <span class="k">if</span> <span class="n">can_follow?</span><span class="p">(</span><span class="n">another_user</span><span class="p">)</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
+<p>A class is doing too much simple delegation.
+Get the client to call the delegate directly. In the motivation for Hide Delegate, we talked about the advantages of encapsulating the use of a delegated object. There is a price for this. The price is that every time the client wants to use a new feature of the delegate, you have to add a simple delegating method to the server. After adding features for a while, it becomes painful. The server class is just a middle man, and perhaps it’s time for the client to call the delegate directly.</p>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/03/31/course3-invite-users/">
-        Build Robust & Production Quality Applications - Lesson 6: Inviting Users
+      <a href="/2015/06/20/refactoring-composing_methods/">
+        Refactoring - Composing Methods
       </a>
     </h1>
 
-    <span class="post-date">31 Mar 2015</span>
+    <span class="post-date">20 Jun 2015</span>
 
-    <p>Let&#39;s write add functionality to allow users to invite their friends:</p>
+    <h3>Extract Method</h3>
 
-<h3>Workflow:</h3>
+<p>is moving duplicate code into a method. Create a new method, and name it after the intention of the method (name it by what it does, not by how it does it). </p>
 
-<ol>
-<li>User can input friends name and email, click invite friend link</li>
-<li>An email is sent to friend</li>
-<li>Friend open email, clicks link and then is directed to Registration Form</li>
-<li>Email address is pre-filled</li>
-<li>Upon sign up, user automatically follows recommender and vice versa</li>
-</ol>
+<h3>Inline Method</h3>
 
-<h3>Steps:</h3>
+<p>is replacing the caller of the method with the body of the method</p>
 
-<h5>1. Copy ui controller into views/invitations/new.html.haml</h5>
+<h3>Inline Temp</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">section</span><span class="o">.</span><span class="n">invite</span><span class="o">.</span><span class="n">container</span>
-  <span class="o">.</span><span class="n">row</span>
-    <span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">10</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="n">offset</span><span class="o">-</span><span class="mi">1</span>
-      <span class="o">%</span><span class="n">form</span><span class="o">.</span><span class="n">invite</span>
-        <span class="o">%</span><span class="n">header</span>
-          <span class="o">%</span><span class="n">h1</span> <span class="no">Invite</span> <span class="n">a</span> <span class="n">friend</span> <span class="n">to</span> <span class="n">join</span> <span class="no">MyFlix</span><span class="o">!</span>
-        <span class="o">%</span><span class="n">fieldset</span>
-          <span class="o">.</span><span class="n">form</span><span class="o">-</span><span class="n">group</span>
-            <span class="o">%</span><span class="n">label</span> <span class="no">Friend</span><span class="s1">&#39;s Name</span>
-<span class="s1">            .row</span>
-<span class="s1">              .col-sm-4</span>
-<span class="s1">                %input.form-control(type=&quot;text&quot;)</span>
-<span class="s1">          .form-group</span>
-<span class="s1">            %label Friend&#39;</span><span class="n">s</span> <span class="no">Email</span> <span class="no">Address</span>
-            <span class="o">.</span><span class="n">row</span>
-              <span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">4</span>
-                <span class="o">%</span><span class="n">input</span><span class="o">.</span><span class="n">form</span><span class="o">-</span><span class="n">control</span><span class="p">(</span><span class="n">type</span><span class="o">=</span><span class="s2">&quot;email&quot;</span><span class="p">)</span>
-          <span class="o">.</span><span class="n">form</span><span class="o">-</span><span class="n">group</span>
-            <span class="o">%</span><span class="n">label</span> <span class="no">Invitation</span> <span class="no">Message</span>
-            <span class="o">.</span><span class="n">row</span>
-              <span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">6</span>
-                <span class="o">%</span><span class="n">textarea</span><span class="o">.</span><span class="n">form</span><span class="o">-</span><span class="n">control</span><span class="p">(</span><span class="n">rows</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span> <span class="no">Please</span> <span class="n">join</span> <span class="n">this</span> <span class="n">really</span> <span class="n">cool</span> <span class="n">site!</span>
-        <span class="o">%</span><span class="n">fieldset</span><span class="o">.</span><span class="n">form</span><span class="o">-</span><span class="n">group</span><span class="o">.</span><span class="n">action</span>
-          <span class="o">%</span><span class="n">input</span><span class="p">(</span><span class="n">type</span><span class="o">=</span><span class="s2">&quot;submit&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;Send Invitation&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;btn btn-default&quot;</span><span class="p">)</span></code></pre></div>
+<p>Find all references to the temp and replace them with the right-hand side of the assignment. </p>
 
-<h4>2. Edit template to create need attributes: recipient name, email, message</h4>
+<h3>Replace Temp with Query</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">section</span><span class="o">.</span><span class="n">invite</span><span class="o">.</span><span class="n">container</span>
-  <span class="o">.</span><span class="n">row</span>
-    <span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">10</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="n">offset</span><span class="o">-</span><span class="mi">1</span>
-      <span class="o">%</span><span class="n">form</span><span class="o">.</span><span class="n">invite</span>
-      <span class="o">=</span> <span class="n">bootstrap_form_for</span> <span class="vi">@invitation</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s2">&quot;invite&quot;</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
-        <span class="o">%</span><span class="n">header</span>
-          <span class="o">%</span><span class="n">h1</span> <span class="no">Invite</span> <span class="n">a</span> <span class="n">friend</span> <span class="n">to</span> <span class="n">join</span> <span class="no">MyFlix</span><span class="o">!</span>
-        <span class="o">%</span><span class="n">fieldset</span>
-          <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:recipient_name</span><span class="p">,</span> <span class="ss">label</span><span class="p">:</span> <span class="s2">&quot;Friend&#39;s Name&quot;</span>
-          <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:recipient_email</span><span class="p">,</span> <span class="ss">label</span><span class="p">:</span> <span class="s2">&quot;Friend&#39;s Email Address&quot;</span>
-          <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_area</span> <span class="ss">:message</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s2">&quot;span4&quot;</span><span class="p">,</span> <span class="ss">rows</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="ss">placeholder</span><span class="p">:</span>  <span class="s2">&quot;Please join this really cool site!&quot;</span><span class="p">,</span> <span class="ss">label</span><span class="p">:</span> <span class="s2">&quot;Message&quot;</span>
-        <span class="o">%</span><span class="n">fieldset</span><span class="o">.</span><span class="n">form</span><span class="o">-</span><span class="n">group</span><span class="o">.</span><span class="n">action</span>
-          <span class="o">%</span><span class="n">input</span><span class="p">(</span><span class="n">type</span><span class="o">=</span><span class="s2">&quot;submit&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;Send Invitation&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;btn btn-default&quot;</span><span class="p">)</span></code></pre></div>
+<p>Find all references to the temp and replace them with the right-hand side of the assignment. </p>
 
-<h4>3. Create new and create routes for invitations</h4>
+<h3>Replace Temp with Chain</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">resources</span> <span class="ss">:invitations</span><span class="p">,</span> <span class="ss">only</span><span class="p">:</span> <span class="o">[</span><span class="ss">:new</span><span class="p">,</span> <span class="ss">:create</span><span class="o">]</span></code></pre></div>
+<p>removes unneeded creations of temp (variable assignments for method calling expressions) and chain with the right side of the expression, most likely using .self</p>
 
-<h4>4. Create InvitationsController</h4>
+<h4>Introduce Explaining Variable</h4>
 
-<h4>5. Begin with InvitationsController spec</h4>
+<p>You have a complicated expression, Put the result of the expression, or parts of the expression, in a temporary variable with a name that explains the purpose.</p>
 
-<h4>6. Create context: for valid inputs and invalid inputs</h4>
+<h3>Split Temporary Variable</h3>
 
-<h3>GET new</h3>
+<p>You have a temporary variable assigned to more than once, but it is not a loop variable nor a collecting temporary variable.
+Make a separate temporary variable for each assignment.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#invitation_controller_spec.rb</span>
-<span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
+<h3>Remove Assignments to Parameters: The code assigns to a parameter. Use a temporary variable instead.</h3>
 
-<span class="n">describe</span> <span class="no">InvitationsController</span> <span class="k">do</span>
-  <span class="n">describe</span> <span class="s2">&quot;GET new&quot;</span> <span class="k">do</span>
-    <span class="n">it</span> <span class="s2">&quot;sets @invitation to a new invitation&quot;</span> <span class="k">do</span>
-      <span class="n">set_current_user</span>
-      <span class="n">get</span> <span class="ss">:new</span>
-      <span class="n">expect</span><span class="p">(</span><span class="n">assigns</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">))</span><span class="o">.</span><span class="n">to</span> <span class="n">be_new_record</span>
-      <span class="n">expect</span><span class="p">(</span><span class="n">assigns</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">))</span><span class="o">.</span><span class="n">to</span> <span class="n">be_instance_of</span> <span class="no">Invitation</span>
-    <span class="k">end</span>
-    <span class="n">it_behaves_like</span> <span class="s2">&quot;requires sign in&quot;</span> <span class="k">do</span>
-      <span class="n">let</span><span class="p">(</span><span class="ss">:action</span><span class="p">)</span> <span class="p">{</span> <span class="n">get</span> <span class="ss">:new</span> <span class="p">}</span>
-    <span class="k">end</span>
-  <span class="k">end</span></code></pre></div>
+<h3>Replace Method with Method Object</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">InvitationsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
-  <span class="n">before_filter</span> <span class="ss">:require_user</span>
-  <span class="k">def</span> <span class="nf">new</span>
-    <span class="vi">@invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">new</span>
-  <span class="k">end</span></code></pre></div>
+<p>You have a long method that uses local variables in such a way that you cannot apply Extract Method. Create a new class, name it after the method. </p>
 
-<h3>Generate Migration</h3>
+<h3>Extract Surrounding Methods</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">CreateInvitations</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span>
-  <span class="k">def</span> <span class="nf">change</span>
-    <span class="n">create_table</span> <span class="ss">:invitations</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
-      <span class="n">t</span><span class="o">.</span><span class="n">integer</span> <span class="ss">:inviter_id</span>
-      <span class="n">t</span><span class="o">.</span><span class="n">string</span> <span class="ss">:recipient_name</span><span class="p">,</span> <span class="ss">:recipient_email</span>
-      <span class="n">t</span><span class="o">.</span><span class="n">text</span> <span class="ss">:message</span>
-      <span class="n">t</span><span class="o">.</span><span class="n">timestamps</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
+<p>Step 1: Use Extract Method on one piece of duplication. Name it after the duplicated behavior.
+This will become our surrounding method.
+For now the surrounding method will still perform the unique behavior.</p>
 
-<h3>Create Invitation Model/Model Spec</h3>
+<p>Step 2:  Modify the calling method to pass a block to the surrounding method. Copy the unique logic from the surrounding method into the block. </p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#invitation.rb</span>
-<span class="k">class</span> <span class="nc">Invitation</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
-<span class="n">before_create</span> <span class="ss">:generate_token</span>
-  <span class="n">belongs_to</span> <span class="ss">:inviter</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span>
-  <span class="n">validates_presence_of</span> <span class="ss">:recipient_name</span><span class="p">,</span> <span class="ss">:recipient_email</span><span class="p">,</span> <span class="ss">:message</span>
+<p>Step 3:  Replace the unique logic in the extracted method with the yield keyword. </p>
 
-  <span class="k">def</span> <span class="nf">generate_token</span>
-    <span class="nb">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="no">SecureRandom</span><span class="o">.</span><span class="n">urlsafe_base64</span>
-    <span class="k">end</span>
-  <span class="k">end</span></code></pre></div>
+<p>Step 4:  Identify any variables in the surrounding method that are needed by the unique logic and pass them as parameters in the call to yield. </p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#invitation_model_spec.rb</span>
-<span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
+<h3>Introduce the Named Parameter</h3>
 
-<span class="n">describe</span> <span class="no">Invitation</span> <span class="k">do</span>
-  <span class="n">it</span> <span class="p">{</span> <span class="n">should</span> <span class="n">validate_presence_of</span><span class="p">(</span><span class="ss">:recipient_name</span><span class="p">)</span> <span class="p">}</span>
-  <span class="n">it</span> <span class="p">{</span> <span class="n">should</span> <span class="n">validate_presence_of</span><span class="p">(</span><span class="ss">:recipient_email</span><span class="p">)</span> <span class="p">}</span>
-  <span class="n">it</span> <span class="p">{</span> <span class="n">should</span> <span class="n">validate_presence_of</span><span class="p">(</span><span class="ss">:message</span><span class="p">)</span> <span class="p">}</span></code></pre></div>
+<p>The parameters in a method call cannot easily be deduced from the name of the method you are calling. Convert the parameter list into a Hash, and use the keys of the Hash as names for the parameters.</p>
 
-<h3>POST create</h3>
+<h3>Dynamic Method Definition</h3>
 
-<h4>Context: with valid Inputs</h4>
+<h4>Example: Using def_each to Define Similar Methods</h4>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#invitations_controller_spec.rb</span>
-  <span class="n">describe</span> <span class="s2">&quot;POST create&quot;</span> <span class="k">do</span>
-    <span class="n">it_behaves_like</span> <span class="s2">&quot;requires sign in&quot;</span> <span class="k">do</span>
-      <span class="n">let</span><span class="p">(</span><span class="ss">:action</span><span class="p">)</span> <span class="p">{</span> <span class="n">post</span> <span class="ss">:create</span> <span class="p">}</span>
-    <span class="k">end</span>
-    <span class="n">context</span> <span class="s2">&quot;with valid input&quot;</span> <span class="k">do</span>
-      <span class="n">it</span> <span class="s2">&quot;redirects to ithe invitation new page&quot;</span> <span class="k">do</span>
-        <span class="n">set_current_user</span>
-        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_name</span><span class="p">:</span> <span class="s2">&quot;Jam Black&quot;</span><span class="p">,</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">response</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">redirect_to</span> <span class="n">new_invitation_path</span>
-      <span class="k">end</span>
+<p>Defining several similar methods is verbose and often unnecessary. For example, each of the following methods is simply calling the state method.</p>
 
-      <span class="n">it</span> <span class="s2">&quot;creates the invitation&quot;</span> <span class="k">do</span>
-        <span class="n">set_current_user</span>
-        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_name</span><span class="p">:</span> <span class="s2">&quot;Jam Black&quot;</span><span class="p">,</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
-        <span class="n">expect</span><span class="p">(</span><span class="no">Invitation</span><span class="o">.</span><span class="n">count</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">eq</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-      <span class="k">end</span>
-      <span class="n">it</span> <span class="s2">&quot;sends an email to the recipient&quot;</span> <span class="k">do</span>
-        <span class="n">set_current_user</span>
-        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_name</span><span class="p">:</span> <span class="s2">&quot;Jam Black&quot;</span><span class="p">,</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
-        <span class="n">expect</span><span class="p">(</span><span class="no">ActionMailer</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">deliveries</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">to</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">eq</span><span class="p">(</span><span class="o">[</span><span class="s1">&#39;jam@jamblack.com&#39;</span><span class="o">]</span><span class="p">)</span>
-      <span class="k">end</span>
+<h3>Isolate Dynamic Receptor</h3>
 
-      <span class="n">it</span> <span class="s2">&quot;sets the flash success message&quot;</span> <span class="k">do</span>
-        <span class="n">set_current_user</span>
-        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_name</span><span class="p">:</span> <span class="s2">&quot;Jam Black&quot;</span><span class="p">,</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">flash</span><span class="o">[</span><span class="ss">:success</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">be_present</span>
-      <span class="k">end</span>
-    <span class="k">end</span></code></pre></div>
+<p>A class utilizing method<em>missing has become painful to alter.
+Introduce a new class and move the method</em>missing logic to that class.</p>
 
-<h4>Context: With invalid inputs</h4>
+<h3>Move Eval from Runtime to Parse Time</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#invitations_controller_spec.rb</span>
-    <span class="n">context</span> <span class="s2">&quot;with invalid input&quot;</span> <span class="k">do</span>
-      <span class="n">after</span> <span class="p">{</span> <span class="no">ActionMailer</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">deliveries</span><span class="o">.</span><span class="n">clear</span> <span class="p">}</span>
-      <span class="n">it</span> <span class="s2">&quot;renders the :new template&quot;</span> <span class="k">do</span>
-        <span class="n">set_current_user</span>
-        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">response</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">render_template</span> <span class="ss">:new</span>
-      <span class="k">end</span>
-
-      <span class="n">it</span> <span class="s2">&quot;does not create an invitation&quot;</span> <span class="k">do</span>
-        <span class="n">set_current_user</span>
-        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
-        <span class="n">expect</span><span class="p">(</span><span class="no">Invitation</span><span class="o">.</span><span class="n">count</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">eq</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-      <span class="k">end</span>
-      <span class="n">it</span> <span class="s2">&quot;does not send out an email&quot;</span> <span class="k">do</span>
-        <span class="n">set_current_user</span>
-        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
-        <span class="n">expect</span><span class="p">(</span><span class="no">ActionMailer</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">deliveries</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">be_empty</span>
-      <span class="k">end</span>
-
-      <span class="n">it</span> <span class="s2">&quot;sets the flash error message&quot;</span> <span class="k">do</span>
-        <span class="n">set_current_user</span>
-        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span><span class="p">)</span><span class="o">.</span> <span class="n">to</span> <span class="n">be_present</span>
-      <span class="k">end</span>
-
-      <span class="n">it</span> <span class="s2">&quot;sets </span><span class="si">#@invitation</span><span class="s2">&quot;</span> <span class="k">do</span>
-        <span class="n">set_current_user</span>
-        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">assigns</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">))</span><span class="o">.</span><span class="n">to</span> <span class="n">be_present</span>
-      <span class="k">end</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#invitations_controller.rb</span>
-  <span class="k">def</span> <span class="nf">create</span>
-    <span class="vi">@invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">invitation_params</span><span class="o">.</span><span class="n">merge!</span><span class="p">(</span><span class="ss">inviter_id</span><span class="p">:</span> <span class="n">current_user</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
-
-    <span class="k">if</span> <span class="vi">@invitation</span><span class="o">.</span><span class="n">save</span>
-      <span class="no">AppMailer</span><span class="o">.</span><span class="n">send_invitation_email</span><span class="p">(</span><span class="vi">@invitation</span><span class="p">)</span><span class="o">.</span><span class="n">deliver</span>
-      <span class="n">flash</span><span class="o">[</span><span class="ss">:success</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;You&#39;ve successfully invited </span><span class="si">#{</span><span class="vi">@invitation</span><span class="o">.</span><span class="n">recipient_name</span><span class="si">}</span><span class="s2">.&quot;</span>
-      <span class="n">redirect_to</span> <span class="n">new_invitation_path</span>
-    <span class="k">else</span>
-      <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Please fill in all inputs.&quot;</span>
-      <span class="n">render</span> <span class="ss">:new</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-
-  <span class="kp">private</span>
-  <span class="k">def</span> <span class="nf">invitation_params</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">)</span><span class="o">.</span><span class="n">permit</span><span class="p">(</span><span class="ss">:recipient_name</span><span class="p">,</span> <span class="ss">:recipient_email</span><span class="p">,</span> <span class="ss">:message</span><span class="p">,</span> <span class="ss">:inviter_id</span><span class="p">)</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">AppMailer</span> <span class="o">&lt;</span> <span class="no">ActionMailer</span><span class="o">::</span><span class="no">Base</span>
-  <span class="k">def</span> <span class="nf">send_invitation_email</span><span class="p">(</span><span class="n">invitation</span><span class="p">)</span>
-    <span class="vi">@invitation</span> <span class="o">=</span> <span class="n">invitation</span>
-    <span class="n">mail</span> <span class="ss">to</span><span class="p">:</span> <span class="n">invitation</span><span class="o">.</span><span class="n">recipient_email</span><span class="p">,</span> <span class="ss">from</span><span class="p">:</span> <span class="s2">&quot;info@myflix.com&quot;</span><span class="p">,</span> <span class="ss">subject</span><span class="p">:</span> <span class="s2">&quot;Invitation to join Myflix&quot;</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<h3>Remember to:</h3>
-
-<p>clear the ActionMailer deliveries in the valid input context so they don&#39;t interfer with
-the invalid inputs. - we want that number to be 0</p>
+<p>You need to use eval but want to limit the number of times eval is necessary. Move the use of eval from within the method definition to defining the method
+itself.</p>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/03/25/course3-writing-feature-tests-for-emails/">
-        Build Robust & Production Quality Applications - Lesson 6: Writing Feature Tests for Emails
+      <a href="/2015/06/15/Refactoring-CodeSmells/">
+        Refactoring - Code Smells
       </a>
     </h1>
 
-    <span class="post-date">25 Mar 2015</span>
+    <span class="post-date">15 Jun 2015</span>
 
-    <h2>Interact with Emails in Feature Tests:</h2>
+    <h2>Code Smells</h2>
 
-<p>Sometimes applications may require you to complete a form and an email is
-is generated.
-To test this feature, Capybara-email is a great way to test this functionality and provides a nice interface that allows you to write specs on the level of user interaction. This is better than as creating a feature test for ActionMailer and its deliveries because it will require too much low level detail.</p>
+<h3>1. Duplicated Code</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">gem</span> <span class="s1">&#39;capybara-email&#39;</span>
- <span class="ss">documentation</span><span class="p">:</span> <span class="n">github</span><span class="o">//</span><span class="n">dockyard</span><span class="o">/</span><span class="n">capybara</span><span class="o">-</span><span class="n">email</span></code></pre></div>
+<p>Extract Method
+Extract Module or Extract Class if you have duplicated code in two unrelated classes.</p>
 
-<p>Example spec for inviting a user:</p>
+<h3>2. Long Method</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#suser_resets_password_spec.rb</span>
-<span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
-<span class="n">feature</span> <span class="s1">&#39;User resets password&#39;</span> <span class="k">do</span>
-  <span class="n">scenario</span> <span class="s1">&#39;user successfully resets the password&#39;</span> <span class="k">do</span>
-    <span class="n">alice</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">,</span> <span class="ss">password</span><span class="p">:</span> <span class="s1">&#39;old_password&#39;</span><span class="p">)</span>
-    <span class="n">visit</span> <span class="n">sign_in_path</span>
-    <span class="n">click_link</span> <span class="s2">&quot;Forgot Password&quot;</span>
-    <span class="n">fill_in</span> <span class="s2">&quot;Email Address&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="n">alice</span><span class="o">.</span><span class="n">email</span>
-    <span class="n">click_button</span> <span class="s2">&quot;Send Email&quot;</span>
+<p>Shorten Method with Extract Method
+If you have a method with too many parameters that when you extract the method, you are passing in too many variables and creating so many temps that the original method was more readable, you can often use Replace Temp with Query or Replace Temp with Chain to eliminate the temps. Long lists of parameters can be slimmed down with Introduce Parameter Object and Preserve Whole Object. If you’ve tried that, and you still have too many temps and parameters, it’s time to get out the heavy artillery: Replace Method with Method Object.</p>
 
-    <span class="n">open_email</span><span class="p">(</span><span class="n">alice</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
-    <span class="n">current_email</span><span class="o">.</span><span class="n">click_link</span><span class="p">(</span><span class="s2">&quot;Reset My Password&quot;</span><span class="p">)</span>
+<p>Conditionals and loops also give signs for extractions. Use Decompose Conditional to deal with conditional expressions. Replace loops with Collection Closure Methods and consider using Extract Method on the call to the closure method and the closure itself.</p>
 
-    <span class="n">fill_in</span> <span class="s2">&quot;New Password&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s2">&quot;new_password&quot;</span>
-    <span class="n">click_button</span> <span class="s2">&quot;Reset Password&quot;</span>
+<h3>3. Long Parameter List</h3>
 
-    <span class="n">fill_in</span> <span class="s2">&quot;Email Address&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="n">alice</span><span class="o">.</span><span class="n">email</span>
-    <span class="n">fill_in</span> <span class="s2">&quot;Password&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s2">&quot;new_password&quot;</span>
-    <span class="n">click_button</span> <span class="s2">&quot;Sign in&quot;</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">)</span><span class="o">.</span> <span class="n">to</span> <span class="n">have_content</span><span class="p">(</span><span class="s2">&quot;Welcome, </span><span class="si">#{</span><span class="n">alice</span><span class="o">.</span><span class="n">full_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<p>Use Replace Parameter with Method when you can get the data in one parameter by making a request of an object you already know about. Use Pre- serve Whole Object to take a bunch of data gleaned from an object and replace it with the object itself. If you have several data items with no logical object, use Introduce Parameter Object to clump them together, or Introduce Named Parameter to improve the fluency.</p>
 
-    <span class="n">clear_email</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
+<h3>4. Divergent Change</h3>
+
+<p>Divergent change occurs when one class is commonly changed in different ways for different reasons. If you look at a class and say, “Well, I will have to change these three methods every time I get a new database; I have to change these four methods every time there is a new financial instrument,” you likely have a situation in which two objects are better than one.</p>
+
+<p>To clean this up you identify everything that changes for a particular cause and use Extract Class to put them all together.</p>
+
+<h3>5. Shotgun Surgery</h3>
+
+<p>Divergent change is one class that suffers many kinds of changes, and shotgun surgery is one change that alters many classes.</p>
+
+<p>In this case you want to use Move Method and Move Field to put all the changes into a single class. If no current class looks like a good candidate, create one. Often you can use Inline Class to bring a whole bunch of behavior together. You get a small dose of divergent change, but you can easily deal with that.</p>
+
+<h3>6. Feature Envy</h3>
+
+<p>The most common focus of the envy is the data. We’ve lost count of the times we’ve seen a method that invokes half a dozen getting methods on another object to calculate some value. Fortunately the cure is obvious, the method clearly wants to be elsewhere, so you use Move Method to get it there. The fun- damental rule of thumb is to put things together that change together. Data and the behavior that references that data usually change together, but there are exceptions. When the exceptions occur, we move the behavior to keep changes in one place.</p>
+
+<h3>7. Data Clumps</h3>
+
+<p>Often you’ll see the same three or four data items together in many places: instance variables in a couple of classes, and parameters in many method signatures. Bunches of data that hang around together really ought to be made into their own object. The first step is to look for where the clumps appear as instance variables. Use Extract Class on the instance variables to turn the clumps into an object. Then turn your attention to method signatures using Introduce Parameter Object or Preserve Whole Object to slim them down.</p>
+
+<p>A good test is to consider deleting one of the data values: If you did this, would the others make any sense? If they don’t, it’s a sure sign that you have an object that’s dying to be born.</p>
+
+<h3>8. Primitive Obsession</h3>
+
+<p>Most programming environments have two kinds of data. Record types allow you to structure data into meaningful groups. Primitive types are your building blocks. Records always carry a certain amount of overhead: They may mean tables in a database, or they may be awkward to create when you want them for only one or two things.</p>
+
+<p>You can move out of the cave into the centrally heated world of objects by using Replace Data Value with Object on individual data values. If you have conditionals that depend on a type code, use Replace Type Code with Polymorphism, Replace Type Code with Module Extension, or Replace Type Code with State/Strategy.</p>
+
+<p>If you have a group of instance variables that should go together, use Extract Class. If you see these primitives in parameter lists, try a civilizing dose of Intro- duce Parameter Object. If you find yourself picking apart an array, use Replace Array with Object.</p>
+
+<h3>9. Temporary Field</h3>
+
+<p>Sometimes you see an object in which an instance variable is set only in cer- tain circumstances.
+Use Extract Class to create a home for the poor orphan variables. Put all the code that concerns the variables into the component. You may also be able to eliminate conditional code by using Introduce Null Object to create an alterna- tive component for when the variables aren’t valid.</p>
+
+<h3>10. Message Chain</h3>
+
+<p>You see message chains when a client asks one object for another object, which the client then asks for yet another object, which the client then asks for yet another object, and so on. You may see these as a long line of get_this methods, or as a sequence of temps. Navigating this way means the client is coupled to the structure of the navigation. Any change to the intermediate relationships causes the client to have to change.</p>
+
+<p>The move to use here is Hide Delegate. In principle you can apply Hide Delegate to potentially every object in the chain, but doing this often turns every intermediate object into a middle man. Often a better alternative is to see what the resulting object is used for. See whether you can use Extract Method to take a piece of the code that uses it and then Move Method to push it down the chain. If several clients of one of the objects in the chain want to navigate the rest of the way, add a method to do that.</p>
+
+<p>Some people consider any method chain to be a terrible thing. We are known for our calm, reasoned moderation. Well, at least in this case we are.</p>
+
+<h3>11. Middle Man</h3>
+
+<p>One of the prime features of objects is encapsulation—hiding internal details from the rest of the world. Encapsulation often comes with delegation. You look at a class’s interface and find half the methods are delegating to this other class. After a while it is time to use Remove Middle Man and talk to the object that really knows what’s going on. If only a few methods aren’t doing much, use Inline Method to inline them into the caller. If there is additional behavior, you can use Replace Delegation with Hierarchy to turn the real object into a module and include it in the middle man. That allows you to extend behavior without chasing all that delegation.</p>
+
+<h3>12. Inappropriate Intimacy</h3>
+
+<p>Sometimes classes become far too intimate and spend too much time delving into each other’s private parts. We may not be prudes when it comes to people, but we think our classes should follow strict, puritan rules.</p>
+
+<p>Overly intimate classes need to be broken up as lovers were in ancient days. Use Move Method and Move Field to separate the pieces to reduce the intimacy. See whether you can arrange a Change Bidirectional Association to Unidirec- tional. If the classes do have common interests, use Extract Class to put the commonality in a safe place and make honest classes of them. Or use Hide Del- egate to let another class act as go-between.</p>
+
+<h3>13. Alternative Classes with Different Interfaces</h3>
+
+<p>Use Rename Method on any methods that do the same thing but have different signatures for what they do. Often this doesn’t go far enough. In these cases the classes aren’t yet doing enough. Keep using Move Method to move behavior to the classes until the protocols are the same.</p>
+
+<h3>14. Impossible Library Class</h3>
+
+<p>Reuse is often touted as the purpose of objects. We think reuse is overrated (we just use). However, Ruby’s open classes make this easy to fix using Move Method to move the behavior needed directly to the library class.</p>
+
+<h3>15.  Data Class</h3>
+
+<p>These are classes that have attributes, and nothing else. Such classes are dumb data holders and are almost certainly being manipulated in far too much detail by other classes. Use Remove Setting Method on any instance variable that should not be changed. If you have collection instance variables, check to see whether they are properly encapsulated and apply Encapsulate Collection if they aren’t.</p>
+
+<p>Look for where these getting and setting methods are used by other classes. Try to use Move Method to move behavior into the data class. If you can’t move a whole method, use Extract Method to create a method that can be moved. After a while you can start using Hide Method on the getters and setters.
+Data classes are like children. They are okay as a starting point, but to par- ticipate as a grownup object, they need to take some responsibility.</p>
+
+<h3>16. Refused Bequest</h3>
+
+<p>Subclasses get to inherit the methods and data of their parents. But what if they don’t want or need what they are given? They are given all these great gifts and pick just a few to play with.</p>
+
+<p>The traditional story is that this means the hierarchy is wrong. You need to create a new sibling class and use Push Down Method to push all the unused methods to the sibling. That way the parent holds only what is common.</p>
+
+<h3>17. Comments</h3>
+
+<p>Don’t worry, we aren’t saying that people shouldn’t write comments. In our olfactory analogy, comments aren’t a bad smell; indeed they are a sweet smell. The reason we mention comments here is that comments often are used as a deodorant. It’s surprising how often you look at thickly com
+Tip When you feel the need to write a comment, first try to refactor the code so that any comment becomes superfluous.</p>
+
+<h3>16. Metaprogramming Madness</h3>
+
+<p>While in most cases Ruby’s dynamic nature provides great benefits, it can be misused. Some metaprogramming techniques can result in obfuscated code. The method<em>missing hook, for example, often results in code that is difficult to under- stand. It can be a powerful tool if an object’s interface cannot be determined at coding time, but unless it’s absolutely necessary I use Replace Dynamic Receptor with Dynamic Method Definition or even a simple Extract Method to remove the method</em>missing definition. If the method_missing definition is truly needed, I might use Isolate Dynamic Receptor to separate concerns.</p>
+
+<h3>17. Disjointed API</h3>
+
+<p>Libraries are often written with flexibility as the number one priority. The author needs to build in this flexibility so that her library can be used by many different people in many different ways. This flexibility often presents itself as a relatively fine-grained, disjointed API, with many configuration options.</p>
+
+<p>More often than not, an individual project will not take advantage of all the configuration options. The same configuration options will be used over and over. If this is the case, use Introduce Gateway to interact with the API in a simplified way.</p>
+
+<p>Introduce Expression Builder can be applied to both internal and external APIs to interact with the public interface in a more fluent manner.</p>
+
+<h3>18. Repetitive Boilerplate</h3>
+
+<p>One of the easiest ways to remove duplication is Extract Method. Extract the method and call it from multiple places. Some kinds of methods become so commonplace that we can go even further. Take for example attr<em>reader in Ruby. Implementing attribute readers is so common in object-oriented languages that the author of Ruby decided to provide a succinct way to declare them. Intro- duce Class Annotation involves annotating a class by calling a class method from the class definition in the same way that attr</em>reader is called. Most code isn’t simple enough to declare in this way, but when the purpose of the code can be captured clearly in a declarative statement, Introduce Class Annotation can clarify the intention of your code.</p>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/03/20/course3-three-styles-of-bdd/">
-        Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
+      <a href="/2015/06/10/course3-Carrierwave/">
+        Build Robust & Production Quality Applications - Lesson 7: File Uploading with Carrierwave
       </a>
     </h1>
 
-    <span class="post-date">20 Mar 2015</span>
+    <span class="post-date">10 Jun 2015</span>
 
-    <h2>Testing Styles in Rails: Three Styles of Behavior Driven Development</h2>
+    <h2>Adding Carrierwave to your Application</h2>
 
-<p>Traditionally we have followed the following flow:</p>
+<h4>1. Install gem Carrierwave-aws</h4>
 
-<h3>Meet in the Middle Technique</h3>
+<h4>2. Make sure you have ImageMagick installed locally</h4>
 
-<ol>
-<li>Turn mock ups into view templates:
-copy the mockups and replace the placeholder data</li>
-<li>Controller Tests (inner layer)- the controller tests will drive the model layer
-tests, routes, db migrations, etc.</li>
-<li>Model Level Tests(inner layer) - if we need active record based and non-active record based
-model - logic, we will need to drop down to model layer to test their</li>
-<li>Feature Specs/Integration - (Outer most layer) Tests will allow us to test everything including the view templates</li>
-</ol>
+<h4>3. Run migration to remove current small/large image urls and add columns for images</h4>
 
-<ul>
-<li>Here you will end up with less feature/integration specs than outside in because they are typically written after multiple specs.</li>
-</ul>
+<h4>4. Mount uploaders to video model</h4>
 
-<h3>Inside out Approach</h3>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">mount_uploader</span> <span class="ss">:large_cover</span><span class="p">,</span> <span class="no">LargeCoverUploader</span>
+<span class="n">mount_uploader</span> <span class="ss">:small_cover</span><span class="p">,</span> <span class="no">SmallCoverUploader</span></code></pre></div>
 
-<ol>
-<li>Start from the models and migrations that are required for that feature and then
-right specs to test that model</li>
-<li>Controller Level</li>
-<li>View/Intergation Specs</li>
-</ol>
+<h4>5. Create app/uploaders directory, add uploaders to folder:</h4>
 
-<ul>
-<li>easier to start .. allows you to work with something small</li>
-<li>But you sometimes don&#39;t know where you&#39;re going and you may end up
-adding alot of code that is not needed.</li>
-<li>This is used primarily in productized shops where its easier to add a model to a more mature product.</li>
-</ul>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/uploaders/large_cover_uploader.rb</span>
+<span class="k">class</span> <span class="nc">LargeCoverUploader</span> <span class="o">&lt;</span> <span class="no">CarrierWave</span><span class="o">::</span><span class="no">Uploader</span><span class="o">::</span><span class="no">Base</span>
+  <span class="kp">include</span> <span class="no">CarrierWave</span><span class="o">::</span><span class="no">MiniMagick</span>
 
-<h3>Outside in Approach</h3>
+  <span class="n">process</span> <span class="ss">:resize_to_fill</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="mi">665</span><span class="p">,</span> <span class="mi">375</span><span class="o">]</span>
+<span class="k">end</span></code></pre></div>
 
-<p>Start at the Integration Level - This integration level does not mean in the
-same way that we reference the Integration Tests in the &quot;Meet in the Middle&quot; technique where where we test multiple features (horizontal) but rather vertical -integration means where we test for models, controllers and views for one feature
-- written in a very business level decision level - you have to think &#39;what is the business value we are looking to provide?&#39;</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/uploaders/small_cover_uploader.rb</span>
+<span class="k">class</span> <span class="nc">SmallCoverUploader</span> <span class="o">&lt;</span> <span class="no">CarrierWave</span><span class="o">::</span><span class="no">Uploader</span><span class="o">::</span><span class="no">Base</span>
+  <span class="kp">include</span> <span class="no">CarrierWave</span><span class="o">::</span><span class="no">MiniMagick</span>
 
-<ul>
-<li>route, controller, models</li>
-<li>also called BDD or ABDD (A is for Acceptance)</li>
-<li>often used in consultancys, clients provide the feature</li>
-<li>often follows more a natural flow</li>
-<li>requires you to know rails really well and how things work together</li>
-<li>people often use cucumber or rspec feature tests for this.</li>
-</ul>
+  <span class="n">process</span> <span class="ss">:resize_to_fill</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="mi">166</span><span class="p">,</span> <span class="mi">236</span><span class="o">]</span>
+<span class="k">end</span></code></pre></div>
+
+<h4>6. Create config/initializers/carrier_wave.rb</h4>
+
+<p>Add configuration based on <a href="https://github.com/carrierwaveuploader/carrierwave#using-amazon-s3">docs</a></p>
+
+<h4>7. Follow this blog using <a href="http://blog.danielle.tuckerlabs.com/post/60491757671/creating-a-simple-aws-s3-bucket-with-iam-access">S3 IAMs</a></h4>
+
+<h4>8. Update the User Policy to include the following configurations:</h4>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="p">{</span>
+  <span class="s2">&quot;Version&quot;</span><span class="p">:</span> <span class="s2">&quot;2012-10-17&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;Statement&quot;</span><span class="p">:</span> <span class="o">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;Effect&quot;</span><span class="p">:</span> <span class="s2">&quot;Allow&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;NotAction&quot;</span><span class="p">:</span> <span class="s2">&quot;iam:*&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;Resource&quot;</span><span class="p">:</span> <span class="s2">&quot;*&quot;</span>
+    <span class="p">}</span>
+  <span class="o">]</span>
+<span class="p">}</span></code></pre></div>
+
+<h4>9. Now you need to store your credentials in Rails Env variables. Follow this <a href="http://www.gotealeaf.com/blog/managing-environment-configuration-variables-in-rails">Tealeaf blogpost</a></h4>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/06/08/course3-Amazon-S3/">
+        Build Robust & Production Quality Applications - Lesson 7: Amazon S3
+      </a>
+    </h1>
+
+    <span class="post-date">08 Jun 2015</span>
+
+    <h2>Amazon S3</h2>
+
+<p>Amazon Simple Sotrogae Service is a great storage service websites where large amounts of data are required for you to upload your own content, such as images and videos and you users can upload content, as well.</p>
+
+<p>There is a free plan for 5GB available and sign up is easy. Mac users who interact with S3 frequently tend to prefer client tools like Cyberduck or Transmit.</p>
 
   </div>
   

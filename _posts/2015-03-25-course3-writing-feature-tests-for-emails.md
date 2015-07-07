@@ -17,7 +17,7 @@ To test this feature, Capybara-email is a great way to test this functionality a
  Example spec for inviting a user:
 
 {%highlight ruby%}
-#suser_resets_password_spec.rb
+#user_resets_password_spec.rb
 require 'spec_helper'
 feature 'User resets password' do
   scenario 'user successfully resets the password' do

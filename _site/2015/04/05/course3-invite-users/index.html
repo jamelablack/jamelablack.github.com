@@ -118,6 +118,26 @@
           
         
       
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
 
     <p>&copy; 2015. All rights reserved.</p>
   </div>
@@ -128,7 +148,63 @@
       <div class="post">
   <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 6: Inviting Users- Part 3</h1>
   <span class="post-date">05 Apr 2015</span>
-  
+  <h2>Feature Spec: Inviting Users</h2>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
+
+<span class="n">feature</span> <span class="s2">&quot;User invited friend&quot;</span> <span class="k">do</span>
+  <span class="n">scenario</span> <span class="s2">&quot;User succesfully intvites friend and invitation is accepted&quot;</span> <span class="k">do</span>
+    <span class="n">jam</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
+    <span class="n">sign_in</span><span class="p">(</span><span class="n">jam</span><span class="p">)</span>
+
+    <span class="n">invite_a_friend</span>
+    <span class="n">friend_accepts_invitation</span>
+    <span class="n">friend_signs_in</span>
+
+    <span class="n">friend_should_follow</span><span class="p">(</span><span class="n">jam</span><span class="p">)</span>
+    <span class="n">inviter_should_follow_friend</span><span class="p">(</span><span class="n">jam</span><span class="p">)</span>
+
+    <span class="n">clear_email</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">invite_a_friend</span>
+    <span class="n">visit</span> <span class="n">new_invitation_path</span>
+    <span class="n">fill_in</span> <span class="s2">&quot;Friend&#39;s Name&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s1">&#39;Amber Howard&#39;</span>
+    <span class="n">fill_in</span> <span class="s2">&quot;Friend&#39;s Email Address&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s1">&#39;amberhoward1@gmail.com&#39;</span>
+    <span class="n">fill_in</span> <span class="s2">&quot;Message&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s2">&quot;Hey girl, you gotta check this out!&quot;</span>
+    <span class="n">click_button</span> <span class="s2">&quot;Send Invitation&quot;</span>
+    <span class="n">sign_out</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">friend_accepts_invitation</span>
+    <span class="n">open_email</span> <span class="s2">&quot;amberhoward1@gmail.com&quot;</span>
+    <span class="n">current_email</span><span class="o">.</span><span class="n">click_link</span> <span class="s2">&quot;Accept this invitation&quot;</span>
+
+    <span class="n">fill_in</span> <span class="s2">&quot;Password&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s2">&quot;password&quot;</span>
+    <span class="n">fill_in</span> <span class="s2">&quot;Full Name&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s2">&quot;Amber Howard&quot;</span>
+    <span class="n">click_button</span> <span class="s2">&quot;Sign Up&quot;</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">friend_signs_in</span>
+    <span class="n">fill_in</span> <span class="s2">&quot;Email Address&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s1">&#39;amberhoward1@gmail.com&#39;</span>
+    <span class="n">fill_in</span> <span class="s2">&quot;Password&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s1">&#39;password&#39;</span>
+    <span class="n">click_button</span> <span class="s2">&quot;Sign in&quot;</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">friend_should_follow</span><span class="p">(</span><span class="n">inviter</span><span class="p">)</span>
+    <span class="n">click_link</span> <span class="s2">&quot;People&quot;</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_content</span> <span class="n">inviter</span><span class="o">.</span><span class="n">full_name</span>
+    <span class="n">sign_out</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">inviter_should_follow_friend</span><span class="p">(</span><span class="n">inviter</span><span class="p">)</span>
+    <span class="n">sign_in</span><span class="p">(</span><span class="n">inviter</span><span class="p">)</span>
+    <span class="n">click_link</span> <span class="s2">&quot;People&quot;</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_content</span> <span class="s2">&quot;Amber Howard&quot;</span>
+  <span class="k">end</span>
+
+<span class="k">end</span></code></pre></div>
+
 </div>
 
 <div class="related">
@@ -137,27 +213,27 @@
     
       <li>
         <h3>
-          <a href="/2015/04/22/POODR-ch2/">
-            POODR - Ch2: Desgining Classes with a Single Responsibility
-            <small>22 Apr 2015</small>
+          <a href="/2015/06/30/Metz-5-Rules/">
+            Sandi Metz - The Rules
+            <small>30 Jun 2015</small>
           </a>
         </h3>
       </li>
     
       <li>
         <h3>
-          <a href="/2015/04/20/POODR-ch1/">
-            POODR - Ch1: Object Oriented Design
-            <small>20 Apr 2015</small>
+          <a href="/2015/06/26/Refactoring-Generalization/">
+            Refactoring - Dealing wihth Generalization
+            <small>26 Jun 2015</small>
           </a>
         </h3>
       </li>
     
       <li>
         <h3>
-          <a href="/2015/04/16/course3-mailgun/">
-            Build Robust & Production Quality Applications - Lesson 6: Mailgun
-            <small>16 Apr 2015</small>
+          <a href="/2015/06/25/Refactoring-conditionals/">
+            Refactoring - Simplifying Conditional Expressions
+            <small>25 Jun 2015</small>
           </a>
         </h3>
       </li>

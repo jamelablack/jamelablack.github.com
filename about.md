@@ -4,15 +4,14 @@ title: About
 ---
 
 <p class="message">
-This blog is to chronicle my growth in understanding of ruby, rails development, front-end frameworks, e-commerce, and design. 
+This blog is to chronicle my growth in understanding of ruby, rails development, front-end frameworks, e-commerce, and design.
 
 
 </p>
 
  My name is Jam, when I'm not blogging - I enjoy running, hot yoga and Wast African Dance. Follow me on Twitter [@pplcallmejam](https://twitter.com/pplcallmejam).
 
-Special love to these programs for giving the foundation I needed:
-
+##Study
 * [Tealeaf Academy](http://gotealeaf.com)
 * [Parson's The New School](http://www.newschool.edu/parsons/)
 

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications - Lesson 6: Continuous Delivery &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 6: Continuous Delivery</h1>
+  <span class="post-date">05 Jun 2015</span>
+  <h2>Actors</h2>
+
+<p>Actors are different types of users, most likely referred to as admins, becasue they act differently within your application.</p>
+
+<p>In some instances, you could:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">index</span>
+  <span class="k">if</span> <span class="n">current_user</span><span class="o">.</span><span class="n">admin?</span>
+    <span class="no">Todo</span><span class="o">.</span><span class="n">all</span>
+    <span class="k">else</span> <span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="n">.</span>
+  <span class="k">end</span></code></pre></div>
+
+<p>But dependeing on the size, this could be quite cumbersome.</p>
+
+<p>Another alternative, is we can create a seperate action:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">admin_index</span>
+  <span class="vi">@todos</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">all</span>
+<span class="k">end</span></code></pre></div>
+
+<p>The advatange is that everything the admin can do is seperate from the other actors. But this is also cumbersome b/c if we have multiple actors, before each action, we have to check the users role.</p>
+
+<h2>Namespace</h2>
+
+<p>So instead, we are going to work with Namespaces.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#routes.rb</span>
+<span class="n">resources</span> <span class="ss">:todos</span><span class="p">,</span> <span class="ss">only</span><span class="p">:</span> <span class="o">[</span><span class="ss">:index</span><span class="p">,</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">:new</span><span class="p">,</span> <span class="ss">:show</span><span class="o">]</span>
+<span class="n">namespace</span> <span class="ss">:admin</span> <span class="k">do</span>
+  <span class="n">resources</span> <span class="ss">:todos</span><span class="p">,</span> <span class="ss">only</span><span class="p">:</span> <span class="o">[</span><span class="ss">:index</span><span class="o">]</span>
+<span class="k">end</span></code></pre></div>
+
+<p>The above route would give us:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="ss">http</span><span class="p">:</span><span class="sr">//</span><span class="ss">localhost</span><span class="p">:</span><span class="mi">3000</span><span class="o">/</span><span class="n">admin</span><span class="o">/</span><span class="n">todos</span></code></pre></div>
+
+<p>So, therefore your controller would be in app/controllers/admin/todos<em>controller, rather than app/controllers/todos</em>controller</p>
+
+<p>Add when created, our class name is prefixed with the module Admin</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Admin</span><span class="o">::</span><span class="no">TodosController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+<span class="k">end</span></code></pre></div>
+
+<p>We also need to run a migration to add the admin column to the users table</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">rails</span> <span class="n">g</span> <span class="n">migration</span> <span class="n">add_admin_to_users</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">AddAdminToUsers</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span>
+  <span class="k">def</span> <span class="nf">change</span>
+    <span class="n">add_column</span> <span class="ss">:users</span><span class="p">,</span> <span class="ss">:admin</span><span class="p">,</span> <span class="ss">:boolean</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>Our viewv template in this case would be in:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">app</span><span class="o">/</span><span class="n">views</span><span class="o">/</span><span class="n">admin</span><span class="o">/</span><span class="n">index</span><span class="o">.</span><span class="n">html</span><span class="o">.</span><span class="n">haml</span></code></pre></div>
+
+<p>This layout allows us to add things like an admin dashboard</p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/06/30/Metz-5-Rules/">
+            Sandi Metz - The Rules
+            <small>30 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/06/26/Refactoring-Generalization/">
+            Refactoring - Dealing wihth Generalization
+            <small>26 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/06/25/Refactoring-conditionals/">
+            Refactoring - Simplifying Conditional Expressions
+            <small>25 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

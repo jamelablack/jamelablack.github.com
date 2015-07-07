@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      POODR - Ch3: Mangaging Dependencies &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">POODR - Ch3: Mangaging Dependencies</h1>
+  <span class="post-date">23 Apr 2015</span>
+  <p>Each message is initiated by an object to invoke some bit of behavior. All of the behavior is dispersed among the objects. Therefore, for any desired behavior:</p>
+
+<ul>
+<li>an object either knows it personally,</li>
+<li>inherits it, or</li>
+<li>knows another object who knows it.</li>
+</ul>
+
+<p>This chapter is about the third, getting access to behavior when that behavior is implemented in other objects.</p>
+
+<p>Because well designed objects have a single responsibility, their very nature requires that they collaborate to accomplish complex tasks. This collaboration is powerful and perilous. To collaborate, an object must know something know about others. Knowing creates a dependency. If not managed carefully, these dependencies will strangle your application.</p>
+
+<h2>Understanding Dependencies</h2>
+
+<p>An object depends on another object if, when one object changes, the other might be forced to change in turn.</p>
+
+<h3>Recognizing Dependencies</h3>
+
+<p>An object has a dependency when it knows
+• The name of another class. Gear expects a class named Wheel to exist.
+• The name of a message that it intends to send to someone other than self. Gear expects a Wheel instance to respond to diameter.
+• The arguments that a message requires. Gear knows that Wheel.new requires a rim and a tire.
+• The order of those arguments. Gear knows the first argument to Wheel.new should be rim, the second, tire.</p>
+
+<p>Your design challenge is to manage dependencies so that each class has the fewest possible; a class should know just enough to do its job and not one thing more</p>
+
+<h3>Coupling Between Objects (CBO)</h3>
+
+<p>Alternatively, you could say that each coupling creates a dependency.The dependencies cause these objects to act like a single thing. They move in lockstep; they change together.
+When two (or three or more) objects are so tightly coupled that they behave as a unit, it’s impossible to reuse just one. Changes to one object force changes to all. Left unchecked, unmanaged dependencies cause an entire application to become an entan- gled mess. A day will come when it’s easier to rewrite everything than to change anything.</p>
+
+<h3>Other Dependencies</h3>
+
+<p>One especially destructive kind of dependency occurs where an object knows another who knows another who knows something; that is, where many messages are chained together to reach behavior that lives in a distant object. This is the “knowing the name of a message you plan to send to someone other than self ” dependency, only magnified. Message chaining creates a dependency between the original object and every object and message along the way to its ultimate target. These additional couplings greatly increase the chance that the first object will be forced to change because a change to any of the intermediate objects might affect it. This is a Law of Demeter Violation.</p>
+
+<h2>Writing Loosley Coupled Code</h2>
+
+<h3>Inject Dependencies</h3>
+
+<p>Referring to another class by name create a sticky spot.</p>
+
+<p>Change:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Gear</span>
+<span class="kp">attr_reader</span> <span class="ss">:chainring</span><span class="p">,</span> <span class="ss">:cog</span><span class="p">,</span> <span class="ss">:rim</span><span class="p">:,</span> <span class="ss">:tire</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">chainring</span><span class="p">,</span> <span class="n">cog</span><span class="p">,</span> <span class="n">rim</span><span class="p">,</span> <span class="n">tire</span><span class="p">)</span>
+    <span class="vi">@chainring</span> <span class="o">=</span> <span class="n">chainring</span>
+    <span class="vi">@cog</span> <span class="o">=</span> <span class="n">cog</span>
+    <span class="vi">@rim</span> <span class="o">=</span> <span class="n">rim</span>
+    <span class="vi">@tire</span> <span class="o">=</span> <span class="n">tire</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">gear_inches</span>
+    <span class="n">ratio</span> <span class="o">*</span> <span class="no">Wheel</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">rim</span><span class="p">,</span><span class="n">tire</span><span class="p">)</span><span class="o">.</span><span class="n">diameter</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="no">Gear</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="mi">52</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">1</span><span class="o">.</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">gear_inches</span></code></pre></div>
+
+<p>to:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Gear</span>
+<span class="kp">attr_reader</span> <span class="ss">:chainring</span><span class="p">,</span> <span class="ss">:cog</span><span class="p">,</span> <span class="ss">:wheel</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">chainring</span><span class="p">,</span> <span class="n">cog</span><span class="p">,</span> <span class="n">wheel</span><span class="p">)</span>
+    <span class="vi">@chainring</span> <span class="o">=</span> <span class="n">chainring</span>
+    <span class="vi">@cog</span> <span class="o">=</span> <span class="n">cog</span>
+    <span class="vi">@wheel</span> <span class="o">=</span> <span class="n">wheel</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">gear_inches</span>
+    <span class="n">ratio</span> <span class="o">*</span> <span class="n">wheel</span><span class="o">.</span><span class="n">diameter</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="no">Gear</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="mi">52</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="no">Wheel</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="mi">26</span><span class="p">,</span> <span class="mi">1</span><span class="o">.</span><span class="mi">5</span><span class="p">))</span><span class="o">.</span><span class="n">gear_inches</span></code></pre></div>
+
+<p>Gear can now collaborate with any object that implements diameter.</p>
+
+<p>This technique is known as dependency injection. Despite its fearsome reputation, dependency injection truly is this simple. Gear previously had explicit dependencies on the Wheel class and on the type and order of its initialization arguments, but through injection these dependencies have been reduced to a single dependency on the diameter method. Gear is now smarter because it knows less.</p>
+
+<p>Using dependency injection to shape code relies on your ability to recognize that the responsibility for knowing the name of a class and the responsibility for knowing the name of a message to send to that class may belong in different objects.</p>
+
+<h3>Isolate Dependencies</h3>
+
+<p>It’s best to break all unnecessary dependences but, unfortunately, while this is always technically possible it may not be actually possible. Therefore, if you cannot remove unnecessary dependencies, you should isolate them within your class.</p>
+
+<h4>Isolate Instance Creation</h4>
+
+<p>In the first, creation of the new instance of Wheel has been moved from Gear’s gear<em>inches method to Gear’s initialization method. This cleans up the gear</em>inches method and publicly exposes the dependency in the initialize method.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Gear</span>
+<span class="kp">attr_reader</span> <span class="ss">:chainring</span><span class="p">,</span> <span class="ss">:cog</span><span class="p">,</span> <span class="ss">:rim</span><span class="p">,</span> <span class="ss">:tire</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">chainring</span><span class="p">,</span> <span class="n">cog</span><span class="p">,</span> <span class="n">rim</span><span class="p">,</span> <span class="n">tire</span><span class="p">)</span>
+    <span class="vi">@chainring</span> <span class="o">=</span> <span class="n">chainring</span>
+    <span class="vi">@cog</span> <span class="o">=</span> <span class="n">cog</span>
+    <span class="vi">@wheel</span> <span class="o">=</span> <span class="no">Wheel</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">rim</span><span class="p">,</span> <span class="n">tire</span><span class="p">)</span>
+  <span class="k">end</span></code></pre></div>
+
+<p>The next alternative isolates creation of a new Wheel in its own explicitly defined wheel method. This new method lazily creates a new instance of Wheel, using Ruby’s ||= operator. In this case, creation of a new instance of Wheel is deferred until gear_inches invokes the new wheel method.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Gear</span>
+<span class="kp">attr_reader</span> <span class="ss">:chainring</span><span class="p">,</span> <span class="ss">:cog</span><span class="p">,</span> <span class="ss">:rim</span><span class="p">,</span> <span class="ss">:tire</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">chainring</span><span class="p">,</span> <span class="n">cog</span><span class="p">,</span> <span class="n">rim</span><span class="p">,</span> <span class="n">tire</span><span class="p">)</span>
+      <span class="vi">@chainring</span> <span class="o">=</span> <span class="n">chainring</span>
+      <span class="vi">@cog</span>       <span class="o">=</span> <span class="n">cog</span>
+      <span class="vi">@rim</span>       <span class="o">=</span> <span class="n">rim</span>
+      <span class="vi">@tire</span>      <span class="o">=</span> <span class="n">tire</span>
+  <span class="k">end</span>
+  <span class="k">def</span> <span class="nf">gear_inches</span>
+    <span class="n">ratio</span> <span class="o">*</span> <span class="n">wheel</span><span class="o">.</span><span class="n">diameter</span>
+  <span class="k">end</span>
+  <span class="k">def</span> <span class="nf">wheel</span>
+    <span class="vi">@wheel</span> <span class="o">||=</span> <span class="no">Wheel</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">rim</span><span class="p">,</span> <span class="n">tire</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>Isolate Vulnerable External Messages</h3>
+
+<p>Now that you’ve isolated references to external class names it’s time to turn your attention to external messages, that is, messages that are “sent to someone other than self.” This technique becomes necessary when a class contains embedded references to a message that is likely to change. Isolating the reference provides some insurance against being affected by that change. Although not every external method is a candi- date for this preemptive isolation, it’s worth examining your code, looking for and wrapping the most vulnerable dependencies.</p>
+
+<p>An alternative way to eliminate these side effects is to avoid the problem from the very beginning by reversing the direction of the dependency. This idea will be addressed soon but first there’s one more coding technique to cover.</p>
+
+<h2>Remove Arguement-Order Dependencies</h2>
+
+<h3>Explicitly Define Defaults</h3>
+
+<p>When you send a message that requires arguments, you, as the sender, cannot avoid having knowledge of those arguments. This dependency is unavoidable. However, passing arguments often involves a second, more subtle, dependency. Many method signatures not only require arguments, but they also require that those arguments be passed in a specific, fixed order.</p>
+
+<h4>Use Hashes for Initialization Arguments</h4>
+
+<p>There’s a simple way to avoid depending on fixed-order arguments. If you have control over the Gear initialize method, change the code to take a hash of options instead of a fixed list of parameters. The initialize method now takes just one argument, args, a hash that contains all of the inputs. The above technique has several advantages. The first and most obvious is that it removes every dependency on argument order. This technique adds verbosity. In many situations verbosity is a detriment, but in this case it has value. The verbosity exists at the intersection between the needs of the present and the uncertainty of the future. Using fixed-order arguments requires less code today but you pay for this decrease in volume of code with an increase in the risk that changes will cascade into dependents later.</p>
+
+<h4>Explicitly Define Defaults</h4>
+
+<p>There are many techniques for adding defaults. Simple non-boolean defaults can be specified using Ruby’s || method. This is a common technique but one you should use with caution; there are situations in which it might not do what you want. The || method acts as an or condition; it first evaluates the left-hand expression and then, if the expression returns false or nil, proceeds to evaluate and return the result of the right-hand expression. The use of || above therefore, relies on the fact that the [] method of Hash returns nil for missing keys.
+In the case where args contains a :boolean_thing key that defaults to true, use of || in this way makes it impossible for the caller to ever explicitly set the final variable to false or nil.</p>
+
+<p>The above technique for substituting an options hash for a list of fixed-order arguments is perfect for cases where you are forced to depend on external interfaces that you cannot change. Do not allow these kinds of external dependencies to permeate your code; protect yourself by wrapping each in a method that is owned by your own application.</p>
+
+<h2>Managing Dependecy Direction</h2>
+
+<h3>Reversing  Dependecies</h3>
+
+<h4>Choosing Dependency Direction</h4>
+
+<p>Pretend for a moment that your classes are people. If you were to give them advice about how to behave you would tell them to depend on things that change less often than you do.
+This short statement belies the sophistication of the idea, which is based on three simple truths about code:
+• Some classes are more likely than others to have changes in requirements.
+• Concrete classes are more likely to change than abstract classes.
+• Changing a class that has many dependents will result in widespread consequences.</p>
+
+<h4>Recognizing Concretions and Abstractions</h4>
+
+<p>The second idea concerns itself with the concreteness and abstractness of code. The term abstract is used here just as Merriam-Webster defines it, as “disassociated from any specific instance,” and, as so many things in Ruby, represents an idea about code as opposed to a specific technical restriction.</p>
+
+<p>The wonderful thing about abstractions is that they represent common, stable qualities. They are less likely to change than are the concrete classes from which they were extracted. Depending on an abstraction is always safer than depending on a concretion because by its very nature, the abstraction is more stable. Ruby does not make you explicitly declare the abstraction in order to define the interface, but for design purposes you can behave as if your virtual interface is as real as a class. Indeed, in the rest of this discussion, the term “class” stands for both class and this kind of interface. These interfaces can have dependents and so must be taken into account during design.</p>
+
+<p>Depend on things that change less often than you do is a heuristic that stands in for all the ideas in this section. The zones are a useful way to organize your thoughts but in the fog of development it may not be obvious which classes go where.</p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/06/30/Metz-5-Rules/">
+            Sandi Metz - The Rules
+            <small>30 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/06/26/Refactoring-Generalization/">
+            Refactoring - Dealing wihth Generalization
+            <small>26 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/06/25/Refactoring-conditionals/">
+            Refactoring - Simplifying Conditional Expressions
+            <small>25 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

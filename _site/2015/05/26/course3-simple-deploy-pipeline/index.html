@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications - Lesson 6: Simple Deployment Pipeline &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 6: Simple Deployment Pipeline</h1>
+  <span class="post-date">26 May 2015</span>
+  <h2><a href="http://martinfowler.com/bliki/ContinuousDelivery.html">Continuous Delivery</a></h2>
+
+<p>Usually the first stage of a deployment pipeline will do any compilation and provide binaries for later stages. Later stages may include manual checks, such as any tests that can&#39;t be automated. Stages can be automatic, or require human authorization to proceed, they may be parallelized over many machines to speed up the build. Deploying into production is usually the final stage in a pipeline.</p>
+
+<p>Continuous Delivery is a software development discipline where you build software in such a way that the software can be released to production at any time.</p>
+
+<p>You’re doing continuous delivery when: [1]</p>
+
+<p>*<em>Your software is deployable throughout its lifecycle
+*</em>Your team prioritizes keeping the software deployable over working on new features
+*<em>Anybody can get fast, automated feedback on the production readiness of their systems any time somebody makes a change to them
+*</em>You can perform push-button deployments of any version of the software to any environment on demand</p>
+
+<h2>Deployment Pipeline</h2>
+
+<p>A deployment pipeline is a way to deal with this by breaking up your build into stages. Each stage provides increasing confidence, usually at the cost of extra time. Early stages can find most problems yielding faster feedback, while later stages provide slower and more through probing.</p>
+
+<p>More broadly the deployment pipeline&#39;s job is to detect any changes that will lead to problems in production.</p>
+
+<h3>Simple Approach to the Deployment Pipeline</h3>
+
+<p>Deployment pipelines can become very complex - typically the larger the project is and the more teams are involved, the more complicated the automatic deployment process is. For our purpose, we are going to adopt a simple but effective deployment pipeline for solo dev or small team situations.</p>
+
+<p>1) Follow the Github Flow process, and after you complete a feature, merge the pull request back to the master branch.</p>
+
+<p>2) Run your entire test suite. This is very important and you should always do this before pushing code to Github. The master branch should always have working code. Developers call this &quot;don&#39;t break the build&quot;.</p>
+
+<p>3) Deploy your code to the staging environment and test on your staging server manually to make sure that the new feature works. Again, your staging server should be as close to your production server as possible.</p>
+
+<p>4) Deploy code to production. You want to deploy code to production as often as possible to get feedback as fast as possible. If something breaks, it&#39;s much easier to fix it with your mind still fresh with the feature you worked on. In some teams this step is out of your control and there are strict production deployment times. In that situation you&#39;d go back to step 1 and build your next feature.</p>
+
+<p>When you deploy to the staging server or the production server, effectively what you are doing is to push code from your local master branch to the corresponding Heroku server&#39;s master branch.</p>
+
+<p>Why is it important to also push/deploy from your local master branch? The problem with deploy from a feature branch is that you miss the step of integration with other developers. For example, while you work on your feature, I might have push out my feature as well. If you deploy from your branch even if it does work you didn’t test if your feature would integrate with the feature that I just deployed, AFTER you branched off. By forcing everyone to integrate with master first, now every time you push, you HAVE to integrate with everyone else’ push at that moment. If someone pushed code after you branched off, this would force you to do a pull first on master, then integrate with it, otherwise you can’t push.</p>
+
+<p>Note that you should never deploy to production before you go back home or go to sleep. Make sure you can be around your computer for some time to fix anything that could happen after a production deploy. Your error monitoring app will alert you with emails if they do happen.</p>
+
+<p>In summary, our simple deployment pipeline process is run entire test suite locally -&gt; deploy to staging and test -&gt; deploy to production. This is probably good enough for solo developers or small teams. We&#39;ll talk about Continuous Integration and Continuous Deployment with more automation in the next several topics.</p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/06/30/Metz-5-Rules/">
+            Sandi Metz - The Rules
+            <small>30 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/06/26/Refactoring-Generalization/">
+            Refactoring - Dealing wihth Generalization
+            <small>26 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/06/25/Refactoring-conditionals/">
+            Refactoring - Simplifying Conditional Expressions
+            <small>25 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

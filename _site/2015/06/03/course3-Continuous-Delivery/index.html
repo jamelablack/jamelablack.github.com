@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications - Lesson 6: Continuous Delivery &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href="/about/">About</a>
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 6: Continuous Delivery</h1>
+  <span class="post-date">03 Jun 2015</span>
+  <h2>Continuous Delivery</h2>
+
+<h4>Excerpt from Tealeaf:</h4>
+
+<p>Continuous Delivery (CD) or sometimes known as Continuous Deployment goes one step beyond CI to automatically deploy features when the new code passes the continuous integration phase. Continuous Delivery encourages small and incremental software updates over big and infrequent releases to shorten the feedback loop and fix bugs earlier.</p>
+
+<p>Let&#39;s look at an example development workflow that has both CI and CD enabled, based on the Github Flow process:</p>
+
+<p>** we pull the latest code from Github
+** we create a new feature branch and develop a new feature
+** after we finish the feature, we push it to a branch with the same name on Github
+** we create a PR from this branch to the staging branch.
+** we wait for the the CI server to ensure all tests pass.
+** we allow the CI server to automatically deploy the code from the staging branch to our staging server
+** we perform sanity tests on our staging server
+** we create a PR from the staging branch to the master branch on Github
+** this will trigger another round of integration and if it passes, the CI server will automatically deploy the code to the production server.</p>
+
+<p>If adopted by everyone in the development team, this process will make sure our master branch is always in sync with the production server and new features are also always build on top of what&#39;s on the production server.</p>
+
+<p>Assignment: Set up Continuous Delivery with Circle CI</p>
+
+<p>For this assignment, you are going to enable Continuous Delivery with Circle CI.</p>
+
+<p>Here are the steps:</p>
+
+<p>create a staging branch locally if you don&#39;t have it yet.
+in Circle CI, follow Project settings for your project and select Heroku Deployment under Continuous Deployment
+configure the Heroku API key. (Get it from your Heroku account page)
+associate Heroku SSH key with your Circle account so Circle can have the authority to deploy to Heroku on your behalf.
+create a circle.yml file in your projects root directory and make sure your adjust production<em>app</em>name &amp; staging<em>app</em>name to your own app name.
+Here is an example of a circle.yml file that you can use:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="ss">machine</span><span class="p">:</span>
+  <span class="ss">ruby</span><span class="p">:</span>
+    <span class="ss">version</span><span class="p">:</span> <span class="mi">2</span><span class="o">.</span><span class="mi">1</span><span class="o">.</span><span class="mi">5</span>
+<span class="ss">deployment</span><span class="p">:</span>
+  <span class="ss">production</span><span class="p">:</span>
+    <span class="ss">branch</span><span class="p">:</span> <span class="n">master</span>
+    <span class="ss">commands</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">heroku</span> <span class="ss">maintenance</span><span class="p">:</span><span class="n">on</span> <span class="o">--</span><span class="n">app</span> <span class="n">production_app_name</span>
+      <span class="o">-</span> <span class="n">heroku</span> <span class="ss">pg</span><span class="p">:</span><span class="n">backups</span> <span class="n">capture</span> <span class="o">--</span><span class="n">app</span> <span class="n">production_app_name</span>
+      <span class="o">-</span> <span class="n">git</span> <span class="n">push</span> <span class="n">git</span><span class="vi">@heroku</span><span class="o">.</span><span class="n">com</span><span class="ss">:production_app_name</span><span class="o">.</span><span class="n">git</span> <span class="vg">$CIRCLE_SHA1</span><span class="ss">:refs</span><span class="o">/</span><span class="n">heads</span><span class="o">/</span><span class="n">master</span>
+      <span class="o">-</span> <span class="n">heroku</span> <span class="n">run</span> <span class="n">rake</span> <span class="ss">db</span><span class="p">:</span><span class="n">migrate</span> <span class="o">--</span><span class="n">app</span> <span class="n">production_app_name</span>
+      <span class="o">-</span> <span class="n">heroku</span> <span class="ss">maintenance</span><span class="p">:</span><span class="n">off</span> <span class="o">--</span><span class="n">app</span> <span class="n">production_app_name</span>
+  <span class="ss">staging</span><span class="p">:</span>
+    <span class="ss">branch</span><span class="p">:</span> <span class="n">staging</span>
+    <span class="ss">commands</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">heroku</span> <span class="ss">maintenance</span><span class="p">:</span><span class="n">on</span> <span class="o">--</span><span class="n">app</span> <span class="n">staging_app_name</span>
+      <span class="o">-</span> <span class="n">git</span> <span class="n">push</span> <span class="n">git</span><span class="vi">@heroku</span><span class="o">.</span><span class="n">com</span><span class="ss">:staging_app_name</span><span class="o">.</span><span class="n">git</span> <span class="vg">$CIRCLE_SHA1</span><span class="ss">:refs</span><span class="o">/</span><span class="n">heads</span><span class="o">/</span><span class="n">master</span>
+      <span class="o">-</span> <span class="n">heroku</span> <span class="n">run</span> <span class="n">rake</span> <span class="ss">db</span><span class="p">:</span><span class="n">migrate</span> <span class="o">--</span><span class="n">app</span> <span class="n">staging_app_name</span>
+      <span class="o">-</span> <span class="n">heroku</span> <span class="ss">maintenance</span><span class="p">:</span><span class="n">off</span> <span class="o">--</span><span class="n">app</span> <span class="n">staging_app_name</span>
+<span class="ss">Note</span><span class="p">:</span> <span class="n">you</span> <span class="n">should</span> <span class="n">change</span> <span class="n">the</span> <span class="no">Ruby</span> <span class="n">version</span> <span class="n">to</span> <span class="n">the</span> <span class="n">version</span> <span class="n">you</span><span class="err">&#39;</span><span class="n">re</span> <span class="n">using</span> <span class="k">for</span> <span class="n">this</span> <span class="n">project</span><span class="o">.</span></code></pre></div>
+
+<p>This code should be pretty self explanatory - this allows Circle to monitor your staging branch and deploy to the staging server, and monitor your master branch to deploy to the production server. It&#39;ll run migrations for you and for the production server, it also automatically backs up the database before a deploy.</p>
+
+<p>Notifications Options</p>
+
+<p>By default we will be notified by email on every status change of our builds. But receiving emails all the time build fails or passes might be cumbersome and there are also good alternatives.</p>
+
+<p>For Mac users - there is a free application CCMenu by ThoughtWorks which we install and it will stick to our upper bar. In order to make it fully run - we will need to generate a CircleCI API key (Project settings -&gt; API keys) and http address of build. See the setup info guide here. Great feature of this app is that it can play sounds based on build&#39;s status and we are able to customize it to our needs.</p>
+
+<p>Another great feature most CIs offer are Embedded Status Badges. These are especially useful for open source projects. They look nice in README.md usually placed in GitHub repo page giving out the information about build being successful or not.</p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/06/30/Metz-5-Rules/">
+            Sandi Metz - The Rules
+            <small>30 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/06/26/Refactoring-Generalization/">
+            Refactoring - Dealing wihth Generalization
+            <small>26 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/06/25/Refactoring-conditionals/">
+            Refactoring - Simplifying Conditional Expressions
+            <small>25 Jun 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

@@ -118,6 +118,26 @@
           
         
       
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
 
     <p>&copy; 2015. All rights reserved.</p>
   </div>
@@ -129,313 +149,184 @@
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/03/02/course3-lesson3/">
-        Build Robust & Production Quality Applications - Lesson 3: Part 1
+      <a href="/2015/05/26/course3-simple-deploy-pipeline/">
+        Build Robust & Production Quality Applications - Lesson 6: Simple Deployment Pipeline
       </a>
     </h1>
 
-    <span class="post-date">02 Mar 2015</span>
+    <span class="post-date">26 May 2015</span>
 
-    <h2>Items Covered:</h2>
+    <h2><a href="http://martinfowler.com/bliki/ContinuousDelivery.html">Continuous Delivery</a></h2>
 
-<ol>
-<li>Growing Complexity</li>
-<li>Interactive Debugging for Solution Delivery</li>
-<li>Transactions</li>
-</ol>
+<p>Usually the first stage of a deployment pipeline will do any compilation and provide binaries for later stages. Later stages may include manual checks, such as any tests that can&#39;t be automated. Stages can be automatic, or require human authorization to proceed, they may be parallelized over many machines to speed up the build. Deploying into production is usually the final stage in a pipeline.</p>
 
-<h2>Growing Complexity Guided By Tests</h2>
+<p>Continuous Delivery is a software development discipline where you build software in such a way that the software can be released to production at any time.</p>
 
-<p>Tags.all.map(&amp;:name) == Tags.all.map{|tag| tag.name}</p>
+<p>You’re doing continuous delivery when: [1]</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">create</span>
-  <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:todo</span><span class="o">]</span><span class="p">)</span>
-  <span class="k">if</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">save</span>
-    <span class="n">location_string</span> <span class="o">=</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;at&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">strip</span>
-    <span class="vi">@todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;location#(location_string)&quot;</span><span class="p">)</span>
-    <span class="n">redrect_to</span> <span class="n">root_path</span>
-  <span class="k">else</span>
-  <span class="n">render</span> <span class="ss">:new</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
+<p>*<em>Your software is deployable throughout its lifecycle
+*</em>Your team prioritizes keeping the software deployable over working on new features
+*<em>Anybody can get fast, automated feedback on the production readiness of their systems any time somebody makes a change to them
+*</em>You can perform push-button deployments of any version of the software to any environment on demand</p>
 
-<p>strip method removes all spaces.</p>
+<h2>Deployment Pipeline</h2>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">create</span>
-  <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:todo</span><span class="o">]</span><span class="p">)</span>
-  <span class="k">if</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">save</span>
-    <span class="n">location_string</span> <span class="o">=</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;at&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">strip</span>
-    <span class="n">locations</span> <span class="o">=</span> <span class="n">location_string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;and&#39;</span><span class="p">)</span>
-    <span class="n">locations</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">location</span><span class="o">|</span>
-    <span class="vi">@todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;location:#(location)&quot;</span><span class="p">)</span>
-    <span class="n">redrect_to</span> <span class="n">root_path</span>
-  <span class="k">else</span>
-  <span class="n">render</span> <span class="ss">:new</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
+<p>A deployment pipeline is a way to deal with this by breaking up your build into stages. Each stage provides increasing confidence, usually at the cost of extra time. Early stages can find most problems yielding faster feedback, while later stages provide slower and more through probing.</p>
 
-<h3>When to use each vs map</h3>
+<p>More broadly the deployment pipeline&#39;s job is to detect any changes that will lead to problems in production.</p>
 
-<p>each is used for when you want to iterate through a an collection of data, an
-array for example but you dont want to manipulate the result.
-map is ideal for when iterating over a collection and then you need to alter of manipulate those returned values for input into another problem.</p>
+<h3>Simple Approach to the Deployment Pipeline</h3>
 
-<h3>When to use split vs regex</h3>
+<p>Deployment pipelines can become very complex - typically the larger the project is and the more teams are involved, the more complicated the automatic deployment process is. For our purpose, we are going to adopt a simple but effective deployment pipeline for solo dev or small team situations.</p>
 
-<p>Use split when searching for one element
-And regex when searching for more than one.</p>
+<p>1) Follow the Github Flow process, and after you complete a feature, merge the pull request back to the master branch.</p>
 
-<h2>Interactive Debugging for Solution Discovery</h2>
+<p>2) Run your entire test suite. This is very important and you should always do this before pushing code to Github. The master branch should always have working code. Developers call this &quot;don&#39;t break the build&quot;.</p>
 
-<p>After writing and implementing your test cases, you should run sanity checks within your browser.
-If bugs are identified, you should run write tests to isolate it the bug.</p>
+<p>3) Deploy your code to the staging environment and test on your staging server manually to make sure that the new feature works. Again, your staging server should be as close to your production server as possible.</p>
 
-<p>Use Binding.pry to in your controller being tested, after the problematic line.
-Binding.pry is really just irb so you now have a means to experiment with your code
-until you find the right solution.</p>
+<p>4) Deploy code to production. You want to deploy code to production as often as possible to get feedback as fast as possible. If something breaks, it&#39;s much easier to fix it with your mind still fresh with the feature you worked on. In some teams this step is out of your control and there are strict production deployment times. In that situation you&#39;d go back to step 1 and build your next feature.</p>
 
-<p>For a good regex tutorial:
-<a href="www.regular-expressions.info">Regex Tutorial</a>
-<a href="www.rubular.com">Rubular</a></p>
+<p>When you deploy to the staging server or the production server, effectively what you are doing is to push code from your local master branch to the corresponding Heroku server&#39;s master branch.</p>
 
-<p>.split method cannot run on nil so Ruby 1.9 introduced .try(:split),
-which will run .split if not nil.</p>
+<p>Why is it important to also push/deploy from your local master branch? The problem with deploy from a feature branch is that you miss the step of integration with other developers. For example, while you work on your feature, I might have push out my feature as well. If you deploy from your branch even if it does work you didn’t test if your feature would integrate with the feature that I just deployed, AFTER you branched off. By forcing everyone to integrate with master first, now every time you push, you HAVE to integrate with everyone else’ push at that moment. If someone pushed code after you branched off, this would force you to do a pull first on master, then integrate with it, otherwise you can’t push.</p>
 
-<h2>Transactions</h2>
+<p>Note that you should never deploy to production before you go back home or go to sleep. Make sure you can be around your computer for some time to fix anything that could happen after a production deploy. Your error monitoring app will alert you with emails if they do happen.</p>
 
-<p>Wrapping batch operations into transactions:</p>
-
-<p>To update the queue in MyFlix, the position entered must be an integer.
-If not, the entire page will fail to update. This is unlike normal transactions
-where we can include a validation error.
-This is where the concept of transactions come in. If all actions in the transaction
-do not save, it will rollback.</p>
-
-<p>Transactions are protective blocks where SQL statements are only permanent if
-they can all succeed as one atomic action. The classic example is a transfer between
-two accounts where you can only have a deposit if the withdrawal succeeded and vice versa.
-Transactions enforce the integrity of the database and guard the data against program errors or database break-downs.
-So basically you should use transaction blocks whenever you have a number of statements that must be executed together
-or not at all.</p>
+<p>In summary, our simple deployment pipeline process is run entire test suite locally -&gt; deploy to staging and test -&gt; deploy to production. This is probably good enough for solo developers or small teams. We&#39;ll talk about Continuous Integration and Continuous Deployment with more automation in the next several topics.</p>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/02/28/course3-faker/">
-        Build Robust & Production Quality Applications - Lesson 2: Generate Fake Data with Faker
+      <a href="/2015/05/24/course3-staging-prod-server/">
+        Build Robust & Production Quality Applications - Lesson 6: Staging Server & Production Servers
       </a>
     </h1>
 
-    <span class="post-date">28 Feb 2015</span>
+    <span class="post-date">24 May 2015</span>
 
-    <h2>Use Faker to Generate Fake Data</h2>
+    <p>Follow this tutorial on <a href="https://devcenter.heroku.com/articles/multiple-environments">Heroku</a> to understand the difference between staging and prodcution</p>
 
-<p>Creating fake data when your model has uniqueness validations will throw errors
-if your data is not unique.</p>
+<p>A few things I&#39;d like to add:</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="k">do</span>
-  <span class="nb">name</span> <span class="p">{</span> <span class="s2">&quot;cooking&quot;</span> <span class="p">}</span>
-  <span class="n">user</span>
-<span class="k">end</span></code></pre></div>
+<p>1) Make staging server&#39;s configuration and data as close to the production server as possible - after all, the purpose of having the staging server is to be able to test out new features in a &quot;production like&quot; environment.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span> <span class="k">do</span>
-  <span class="n">email</span> <span class="p">{</span> <span class="s2">&quot;joe@example.com&quot;</span><span class="p">}</span> <span class="c1">#This will throw an error eventually if email record already exists.</span>
-<span class="k">end</span></code></pre></div>
+<p>If you production app is already launched, you can periodically take database dumps from the production server to populate the staging server. You could automate this as well with either a replication service, or if you are on Heroku, use Heroku&#39;s follower DB (comes with a cost) https://devcenter.heroku.com/articles/heroku-postgres-follower-databases</p>
 
-<h3>Examples</h3>
+<p>2) You want to be mindful on email sending on staging - staging server will actually send out emails. You want to make sure that you do not spam your users while testing out features on the staging server. This can be achieved by adding a conditional in your mailer to see if the environment is staging, and if it is, set email recipients to administrators (such as yourself). This way, you can still test and verify that emails are sent out, but you don&#39;t spam users.</p>
 
-<p>Creating a category:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:category</span><span class="p">)</span> <span class="k">do</span>
-  <span class="nb">name</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Name</span><span class="o">.</span><span class="n">name</span> <span class="p">}</span>
-<span class="k">end</span></code></pre></div>
-
-<p>Creating a video:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:video</span><span class="p">)</span> <span class="k">do</span>
-  <span class="n">title</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Lorem</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="p">}</span>
-  <span class="n">description</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Lorem</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="p">}</span>
-<span class="k">end</span></code></pre></div>
-
-<p>Creating an invitation:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">)</span> <span class="k">do</span>
-  <span class="n">recipient_name</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Name</span><span class="o">.</span><span class="n">name</span> <span class="p">}</span>
-  <span class="n">recipient_email</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Internet</span><span class="o">.</span><span class="n">email</span> <span class="p">}</span>
-  <span class="n">message</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Lorem</span><span class="o">.</span><span class="n">paragraphs</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="p">}</span>
-<span class="k">end</span></code></pre></div>
-
-<p>Read more: <a href="https://github.com/stympy/faker">Faker Docs</a></p>
+<p>3) Your staging server can (and typically should) have a different config itself - you just need to create a staging.rb file in config/environments directory, and with it you can specify the exact settings you want on there (for example, turning on asset pipeline or not, sending out email or not, charging credit card for real or not, etc). On your Heroku staging server, make sure to set RACK<em>ENV and RAILS</em>ENV to staging, then it&#39;ll use that config instead.</p>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/02/26/course3-fabricators/">
-        Build Robust & Production Quality Applications - Lesson 2: Object Generation with Fabricators
+      <a href="/2015/05/22/course3-staging-vs-production/">
+        Course3 Staging Vs Production
       </a>
     </h1>
 
-    <span class="post-date">26 Feb 2015</span>
+    <span class="post-date">22 May 2015</span>
 
-    <p>It&#39;s typical to create many objects during testing and the more attributes you have
-the more cumbersome it could be to maintain, moreover, if an attribute changes, it then becomes very difficult
-to update all those tests.</p>
+    
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/05/20/course3-riding_unicorns/">
+        Build Robust & Production Quality Applications - Lesson 6: Riding Unicorns
+      </a>
+    </h1>
 
-<p>To make this better, we can use an object generator framework called Fabrication.</p>
+    <span class="post-date">20 May 2015</span>
 
-<h3>Steps:</h3>
+    <h2>Using Unicorn as a Production Server</h2>
 
-<h4>1. Create a folder under specs called &quot;Fabricators&quot;</h4>
+<p>Visit http://devcenter.heroku.com/articles/rails-unicorn</p>
 
-<h4>2. create fabricator_todo.rb</h4>
+<p>The issue with the rails server, is that it only allows for one web process at a time. Unicorn allows you to add additional servers, which can be specified in your config/unicorn.rb file</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="k">do</span>
-    <span class="nb">name</span> <span class="p">{</span> <span class="s2">&quot;cooking&quot;</span> <span class="p">}</span>
-  <span class="k">end</span></code></pre></div>
+<h3>1. Add the Unicorn gem to your gemfile</h3>
 
-<h4>3. You can also create a user each time a todo is created:</h4>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">gem</span> <span class="s1">&#39;unicorn&#39;</span></code></pre></div>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="k">do</span>
-  <span class="nb">name</span> <span class="p">{</span> <span class="s2">&quot;cooking&quot;</span> <span class="p">}</span>
-  <span class="n">user</span> <span class="p">{</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span> <span class="p">}</span>
-<span class="k">end</span></code></pre></div>
+<p>then, run bundle install</p>
 
-<p>or</p>
+<h3>2. Config</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="k">do</span>
-  <span class="nb">name</span> <span class="p">{</span> <span class="s2">&quot;cooking&quot;</span> <span class="p">}</span>
-  <span class="n">user</span>
-<span class="k">end</span></code></pre></div>
+<p>This is where you define the number worker processes. Worker processes in this context is all processes not just background processes. Below indicates that we want three worker processes running at once.</p>
 
-<h3>In your test suite:</h3>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#config/unicorn.rb</span>
+<span class="n">worker_processes</span> <span class="nb">Integer</span><span class="p">(</span><span class="no">ENV</span><span class="o">[</span><span class="s2">&quot;WEB_CONCURRENCY&quot;</span><span class="o">]</span> <span class="o">||</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">timeout</span> <span class="mi">15</span>
+<span class="n">preload_app</span> <span class="kp">true</span></code></pre></div>
 
-<p>If you want to create an object in your database:</p>
+<h3>Update your Procfile</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;#display_text&quot;</span> <span class="k">do</span>
-  <span class="n">let</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="p">{</span> <span class="n">fabricate</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="p">}</span>
-  <span class="n">subject</span> <span class="p">{</span> <span class="n">todo</span><span class="o">.</span><span class="n">display_text</span> <span class="p">}</span></code></pre></div>
+<p>Set Unicorn as the server for the web process in your Procfile:</p>
 
-<p>If you would rather create an object in memory, you could:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="ss">web</span><span class="p">:</span> <span class="n">bundle</span> <span class="nb">exec</span> <span class="n">unicorn</span> <span class="o">-</span><span class="nb">p</span> <span class="vg">$PORT</span> <span class="o">-</span><span class="n">c</span> <span class="o">.</span><span class="n">/config</span><span class="o">/</span><span class="n">unicorn</span><span class="o">.</span><span class="n">rb</span></code></pre></div>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;#display_text&quot;</span> <span class="k">do</span>
-  <span class="n">let</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="p">{</span> <span class="n">fabricate</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="p">}</span>
-  <span class="n">subject</span> <span class="p">{</span> <span class="n">todo</span><span class="o">.</span><span class="n">display_text</span> <span class="p">}</span></code></pre></div>
+<h2>Adding Unicorn to your Heroku App</h2>
+
+<h3>1. Add Redis to go</h3>
+
+<p>heroku addons:create redistogo</p>
+
+<h3>2. Run the following for Sidekiq version 3.0 or later:</h3>
+
+<p>heroku config:set REDIS<em>PROVIDER=REDISTOGO</em>URL</p>
+
+<h3>3 <a href="https://coderwall.com/p/fprnhg/free-background-jobs-on-heroku">Free background job on Heroku</a></h3>
+
+<p>Running more than 1 dyno (server) on Heroku costs, and ain&#39;t nobody got time for that. Coderwall has created a hack:</p>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/02/23/course3-single-assertion-principle/">
-        Build Robust & Production Quality Applications - Lesson 2: Single Assertion Principle
+      <a href="/2015/05/10/course3-procfile-foreman/">
+        Course3 Procfile Foreman
       </a>
     </h1>
 
-    <span class="post-date">23 Feb 2015</span>
+    <span class="post-date">10 May 2015</span>
 
-    <h2>Single Assertion principle states:</h2>
+    <hr>
 
-<p>A test suite should only have one assertion, so that if there is a failure
-they fail separately. If you find yourself using &quot;and&quot; then you are probably
-testing too much at once:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">get</span> <span class="ss">:index</span>
-  <span class="n">assigns</span><span class="p">(</span><span class="ss">:todos</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="p">(</span><span class="n">cook</span><span class="p">,</span> <span class="nb">sleep</span><span class="p">)</span></code></pre></div>
-
-<p>There is an exception to this rule - when the assertions are very related concerning the same object:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">get</span> <span class="ss">:new</span>
-  <span class="n">assigns</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="n">be_new_record</span>
-  <span class="n">assigns</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="n">be</span> <span class="n">instance_of</span><span class="p">(</span><span class="no">Todo</span><span class="p">)</span></code></pre></div>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/02/20/course3-alt-style-or-rspec/">
-        Build Robust & Production Quality Applications - Lesson 2: Alternative Style of Rspec
-      </a>
-    </h1>
-
-    <span class="post-date">20 Feb 2015</span>
-
-    <h2>An Alternative Style of Rspec</h2>
-
-<ul>
-<li>using let, before, subject, etc.</li>
-</ul>
-
-<p>Uses lazy evaluation which means it doesn&#39;t evaluate the :todo
-or the subject until it has to ...namingly when it reaches it or before.</p>
-
-<p>To avoid lazy evaluation, you could do:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">let!</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="p">{</span><span class="no">Todo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook dinner&quot;</span><span class="p">)}</span></code></pre></div>
-
-<h3>Pros:</h3>
-
-<p>is more concise and separates the common set  up code using lets</p>
-
-<h3>Cons:</h3>
-
-<p>For a lengthy test suite it may be hard to connect the test with the description.</p>
-
-<h4>Using let</h4>
-
-<p>Step 1. Eliminate the repetition of Todo.create in each test:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;#display_text&quot;</span> <span class="k">do</span>
-  <span class="n">let</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="p">{</span> <span class="no">Todo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook dinner&quot;</span><span class="p">)</span> <span class="p">}</span></code></pre></div>
-
-<p>Step 2. Replace todo.display_ text</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;#display_text&quot;</span> <span class="k">do</span>
-  <span class="n">let</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="p">{</span> <span class="no">Todo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook dinner&quot;</span><span class="p">)</span> <span class="p">}</span>
-  <span class="n">let</span><span class="p">(</span><span class="ss">:subject</span><span class="p">)</span> <span class="p">{</span> <span class="n">todo</span><span class="o">.</span><span class="n">display_text</span> <span class="p">}</span></code></pre></div>
-
-<p>or</p>
-
-<p>Step3. Replace todo.display_text</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;#display_text&quot;</span> <span class="k">do</span>
-  <span class="n">let</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="p">{</span> <span class="no">Todo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook dinner&quot;</span><span class="p">)</span> <span class="p">}</span>
-  <span class="n">subject</span> <span class="p">{</span> <span class="n">todo</span><span class="o">.</span><span class="n">display_text</span> <span class="p">}</span></code></pre></div>
+<p>layout: post
+  title: &quot;Build Robust &amp; Production Quality Applications - Lesson 6: Procfile &amp; Foreman&quot;
+  tags: tealeaf</p>
 
 <hr>
 
-<h4>Using before for case specific tests</h4>
+<p>On your server, you can run both web and worker processes locally - you can also do the same on Heroku, identifiying the processes you would like to run in your Procfile. A procfile is placed in the root of your diretory and declare what types of processes you want run in your app.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">context</span> <span class="s2">&quot;displays the name when there&#39;s no tags&quot;</span> <span class="k">do</span>
-  <span class="n">it</span> <span class="s2">&quot;displays the name when there&#39;s no tags&quot;</span> <span class="k">do</span>
-    <span class="n">subject</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="s2">&quot;cook dinner&quot;</span>
-  <span class="k">end</span>
-<span class="k">end</span>
+<p>In your procfile, you will define:</p>
 
-<span class="n">context</span> <span class="s2">&quot;displays the only tag with word &#39;tags&#39; when there&#39;s one tag&quot;</span>
-  <span class="n">before</span> <span class="k">do</span>
-    <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;home&quot;</span><span class="p">)</span>
-    <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;urgent&quot;</span><span class="p">)</span>
-  <span class="k">end</span>
-  <span class="n">it</span> <span class="s2">&quot;displays name with multiple tags&quot;</span> <span class="k">do</span>
-    <span class="n">subject</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="s2">&quot;cook dinner (tags: home, urgent)&quot;</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">process</span> <span class="n">type</span><span class="o">&gt;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">command</span><span class="o">&gt;</span>
+<span class="ss">web</span><span class="p">:</span> <span class="n">bundle</span> <span class="nb">exec</span> <span class="n">rails</span> <span class="n">server</span> <span class="o">-</span><span class="nb">p</span> <span class="vg">$PORT</span>
+<span class="ss">worker</span><span class="p">:</span> <span class="n">bundle</span> <span class="nb">exec</span> <span class="n">rake</span> <span class="ss">jobs</span><span class="p">:</span><span class="n">work</span> <span class="p">(</span><span class="n">example</span> <span class="n">from</span> <span class="n">delayed</span> <span class="n">jobs</span><span class="p">)</span>
+<span class="ss">worker</span><span class="p">:</span> <span class="n">sidekiq</span></code></pre></div>
 
-<p>Change lengthy context to more succinct:</p>
+<h2>Develop locally with Foreman</h2>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">context</span> <span class="s2">&quot;displays the only tag with word &#39;tags&#39; when there&#39;s one tag&quot;</span></code></pre></div>
+<p>Instead of having to start both Sidekiq and our Rails server locally, we can use format to initiate both processes by runniong &quot;foreman start&quot; in your app directory.</p>
 
-<p>to =&gt;</p>
+<h2>Heroku</h2>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">context</span> <span class="s2">&quot;multiple tags&quot;</span></code></pre></div>
+<p>will parse out the web processes from your Procfile.</p>
 
-<p>Remove the &quot;it -text-&quot; because its in context with the description</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">heroku</span> <span class="n">ps</span></code></pre></div>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">context</span> <span class="s2">&quot;one tag&quot;</span> <span class="k">do</span>
-  <span class="n">before</span> <span class="p">{</span> <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;home&quot;</span><span class="p">)</span> <span class="p">}</span>
-  <span class="n">it</span> <span class="p">{</span> <span class="n">should</span> <span class="o">==</span> <span class="s2">&quot;cook dinner (tag: home)&quot;</span> <span class="p">}</span>
-<span class="k">end</span></code></pre></div>
+<p>will list the processes running</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">heroku</span> <span class="n">logs</span></code></pre></div>
+
+<p>will list all process types</p>
+
+<p>Heroku will allow you to run one web &amp; worker processes but if you&#39;d like to run more, it may costs.</p>
 
   </div>
   
