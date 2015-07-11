@@ -43,6 +43,8 @@
       <p class="lead">daily learnings as a ruby dev</p>
     </div>
 
+
+
     <nav class="sidebar-nav">
       <a class="sidebar-nav-item" href="/">Home</a>
 
@@ -56,10 +58,26 @@
       
         
           
+            <a class="sidebar-nav-item" href=""></a>
+
             <a class="sidebar-nav-item" href="/about/">About</a>
+
           
         
       
+        
+          
+            <a class="sidebar-nav-item" href=""></a>
+
+            <a class="sidebar-nav-item" href="/archive/">Archive</a>
+
+          
+        
+      
+        
+      
+        
+          
         
       
         
@@ -164,11 +182,24 @@
 <h4>5. Create app/uploaders directory, add uploaders to folder:</h4>
 
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/uploaders/large_cover_uploader.rb</span>
-<span class="k">class</span> <span class="nc">LargeCoverUploader</span> <span class="o">&lt;</span> <span class="no">CarrierWave</span><span class="o">::</span><span class="no">Uploader</span><span class="o">::</span><span class="no">Base</span>
+<span class="k">class</span> <span class="nc">LargeCoverUploader</span> <span class="o">&lt;</span> <span class="k">class</span> <span class="nc">LargeCoverUploader</span> <span class="o">&lt;</span> <span class="no">CarrierWave</span><span class="o">::</span><span class="no">Uploader</span><span class="o">::</span><span class="no">Base</span>
   <span class="kp">include</span> <span class="no">CarrierWave</span><span class="o">::</span><span class="no">MiniMagick</span>
 
-  <span class="n">process</span> <span class="ss">:resize_to_fill</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="mi">665</span><span class="p">,</span> <span class="mi">375</span><span class="o">]</span>
+  <span class="n">version</span> <span class="ss">:large_version</span> <span class="k">do</span>
+    <span class="n">process</span> <span class="ss">resize_to_fill</span><span class="p">:</span> <span class="o">[</span><span class="mi">665</span><span class="p">,</span> <span class="mi">375</span><span class="o">]</span>
+  <span class="k">end</span>
 <span class="k">end</span></code></pre></div>
+
+<p>Note: That specifiying version is required since uploading the same file, although it is being resized for the large or small cover photo will cause it to be overidden.</p>
+
+<p>You will also need to specificy the version in the views:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#videos/show.html.haml</span>
+<span class="o">%</span><span class="n">article</span><span class="o">.</span><span class="n">video</span>
+  <span class="o">.</span><span class="n">container</span>
+    <span class="o">.</span><span class="n">row</span>
+      <span class="o">.</span><span class="n">video_large_cover</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">7</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="n">offset</span><span class="o">-</span><span class="mi">1</span>
+        <span class="o">=</span> <span class="n">image_tag</span> <span class="vi">@video</span><span class="o">.</span><span class="n">large_cover</span><span class="o">.</span><span class="n">large_version</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="ss">alt</span><span class="p">:</span> <span class="s2">&quot;large video&quot;</span></code></pre></div>
 
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/uploaders/small_cover_uploader.rb</span>
 <span class="k">class</span> <span class="nc">SmallCoverUploader</span> <span class="o">&lt;</span> <span class="no">CarrierWave</span><span class="o">::</span><span class="no">Uploader</span><span class="o">::</span><span class="no">Base</span>
@@ -206,27 +237,27 @@
     
       <li>
         <h3>
-          <a href="/2015/06/30/Metz-5-Rules/">
-            Sandi Metz - The Rules
-            <small>30 Jun 2015</small>
+          <a href="/2015/07/04/course3-isolated-api-tests/">
+            Build Robust & Production Quality Applications - Lesson 8: Fully Integrated API Tests
+            <small>04 Jul 2015</small>
           </a>
         </h3>
       </li>
     
       <li>
         <h3>
-          <a href="/2015/06/26/Refactoring-Generalization/">
-            Refactoring - Dealing wihth Generalization
-            <small>26 Jun 2015</small>
+          <a href="/2015/07/03/course3-integrated-API-tests/">
+            Build Robust & Production Quality Applications - Lesson 8: Fully Integrated API Tests
+            <small>03 Jul 2015</small>
           </a>
         </h3>
       </li>
     
       <li>
         <h3>
-          <a href="/2015/06/25/Refactoring-conditionals/">
-            Refactoring - Simplifying Conditional Expressions
-            <small>25 Jun 2015</small>
+          <a href="/2015/07/02/course3-API-wrappers/">
+            Build Robust & Production Quality Applications - Lesson 8: How to Build API Wrappers
+            <small>02 Jul 2015</small>
           </a>
         </h3>
       </li>

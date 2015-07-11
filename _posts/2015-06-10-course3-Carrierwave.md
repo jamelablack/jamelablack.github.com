@@ -19,11 +19,26 @@ mount_uploader :small_cover, SmallCoverUploader
 ####5. Create app/uploaders directory, add uploaders to folder:
 {%highlight ruby%}
 #app/uploaders/large_cover_uploader.rb
-class LargeCoverUploader < CarrierWave::Uploader::Base
+class LargeCoverUploader < class LargeCoverUploader < CarrierWave::Uploader::Base
   include CarrierWave::MiniMagick
 
-  process :resize_to_fill => [665, 375]
+  version :large_version do
+    process resize_to_fill: [665, 375]
+  end
 end
+{%endhighlight%}
+Note: That specifiying version is required since uploading the same file, although it is being resized for the large or small cover photo will cause it to be overidden.
+
+
+You will also need to specificy the version in the views:
+{%highlight ruby%}
+#videos/show.html.haml
+%article.video
+  .container
+    .row
+      .video_large_cover.col-sm-7.col-sm-offset-1
+        = image_tag @video.large_cover.large_version.url, alt: "large video"
+
 {%endhighlight%}
 
 {%highlight ruby%}

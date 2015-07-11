@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications - Lesson 7: Processing Credit Card Payments Online with Stripe &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href=""></a>
+
+            <a class="sidebar-nav-item" href="/about/">About</a>
+
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href=""></a>
+
+            <a class="sidebar-nav-item" href="/archive/">Archive</a>
+
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 7: Processing Credit Card Payments Online with Stripe</h1>
+  <span class="post-date">01 Jul 2015</span>
+  <h2>Processing Credit Card Payments Online</h2>
+
+<p>Back in the day, processing credit cards online was intense as told by 37Signals in their <a href="https://signalvnoise.com/posts/753-ask-37signals-how-do-you-process-credit-cards">blogpost</a> back in 2007. If merchants didn&#39;t want to connect their customers to Paypal to checkout, they had create a Merchant Account, followed by having an account with Authorize.net, and then an engine called ActiveMarchant with is Ruby gem for reoccuring billing - which required alot of custom code and an intense daily business process.
+One thing that was&#39;nt mentioned was security - Payment Card Industry Security Standard (PCI Compliance). This means that if you do take credit card information via your website, your site must be sercured, for example. And if you store credit card data, it must be encrypted, etc.</p>
+
+<h3>Stripe</h3>
+
+<p><a href="https://stripe.com">Stripe</a>, luckily has changed all that as one of the first pioneers in this line of payment processing. You don&#39;t need a merchant account or gateway - which is a huge advantage.</p>
+
+<p>Stripe also has the advantage of having a test mode that will allow you to test the payment pipeline while in the prototyping phase. Stripe will connect to your bank account and submit funds recieved on a 7 day rolling basis.</p>
+
+<h4>Stripe.js</h4>
+
+<p>If you incorporate Stripe.js in your payment processing, the clients credit card info is never touches your website, it goes straight to Stripe and token is returned. This also allows us to bypass the PCI Compliance standards. The cost is also pretty negligible to have a robust, reliable, safe payment processing system for your online business.</p>
+
+<h2>How to create a payment with Stripe</h2>
+
+<p>Select Test mode, once signing up</p>
+
+<p>Include Stripe gem and bundle install</p>
+
+<p>Specify your API key, use your Test Secret Key and set it a local variable in your rails console.</p>
+
+<p>&quot;Stripe.api_key = &#39;4uhsvjfudjpsdf0u fvpdapo&#39; &quot;</p>
+
+<p>Grab Fake Charge Data from Stripe API docks:
+Copy code block and enter in Rails console
+The Charge object, along with attributes will be returned once process.</p>
+
+<p>Remember: currency is always in cents and you don&#39;t have to collect address information from customers when using Stripe</p>
+
+<p>Refresh and you should see the charge that was just submitted in your console.</p>
+
+<h2>Accept Payments with Checkout</h2>
+
+<p>How to get the credit card information from customers to the web application</p>
+
+<h3>Using Stripe Checkout Buttom</h3>
+
+<p>is simply done with a button and you can add text, as well.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#views/payments/new.html.haml</span>
+<span class="o">%</span><span class="nb">p</span> <span class="no">Thank</span> <span class="n">you</span> <span class="k">for</span> <span class="n">you</span> <span class="n">support</span><span class="o">.</span>
+<span class="o">=</span> <span class="n">form_tag</span> <span class="n">payments_path</span> <span class="k">do</span>
+  <span class="o">%</span><span class="n">script</span><span class="o">.</span><span class="n">stripe</span><span class="o">-</span><span class="n">button</span><span class="p">{</span><span class="s2">&quot;data-amount&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;2000&quot;</span><span class="p">,</span> <span class="s2">&quot;data-description&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;2 widgets ($20.00)&quot;</span><span class="p">,</span> <span class="s2">&quot;data-image&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;/128x128.png&quot;</span><span class="p">,</span> <span class="s2">&quot;data-key&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;pk_test_------------------------&quot;</span><span class="p">,</span> <span class="s2">&quot;data-name&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;Demo Site&quot;</span><span class="p">,</span> <span class="ss">:src</span> <span class="o">=&gt;</span> <span class="s2">&quot;https://checkout.stripe.com/checkout.js&quot;</span><span class="p">}</span></code></pre></div>
+
+<p>Update the following fields:
+Data amount, Data-name, Description, and remove logo</p>
+
+<h4>Create routes</h4>
+
+<p>Create &#39;/payements&#39;, new and create routes and grab code from API docs</p>
+
+<h4>If you run binding.pry in the payments#create action</h4>
+
+<p>You will see that one of the params submitted to your server is the stripe token - which is the only indication that credit card info has been submitted.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">PaymentsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+
+<span class="k">def</span> <span class="nf">create</span>
+  <span class="no">Stripe</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="s2">&quot;sk_test_FKBLHWUFHPWHFO29793772&quot;</span>
+
+  <span class="n">token</span> <span class="o">=</span> <span class="n">paramns</span><span class="o">[</span><span class="ss">:stripeToken</span><span class="o">]</span>
+
+  <span class="k">begin</span>
+    <span class="n">charge</span> <span class="o">=</span> <span class="no">Stripe</span><span class="o">::</span><span class="no">Charge</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+      <span class="ss">:amount</span> <span class="o">=&gt;</span> <span class="mi">3000</span><span class="p">,</span>
+      <span class="ss">:currency</span> <span class="o">=&gt;</span> <span class="s2">&quot;usd&quot;</span>
+      <span class="ss">:card</span> <span class="o">=&gt;</span> <span class="n">token</span>
+    <span class="p">)</span>
+    <span class="n">flash</span><span class="o">[</span><span class="ss">:success</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Thank you for your payment&quot;</span>
+    <span class="n">redirect_to</span> <span class="n">new_payment_path</span>
+
+  <span class="k">rescue</span> <span class="no">Stripe</span><span class="o">::</span><span class="no">CardError</span> <span class="o">=&gt;</span> <span class="n">e</span>
+    <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span>
+    <span class="n">redirect_to</span> <span class="n">new_payment_path</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<h2>Accept Payments with Custom Form using Stripe.js</h2>
+
+<p>Sometimes using the Stripe Checkout button is not seamless enough and you want submit payments through a custom form, where the payment form is apart of the UI:</p>
+
+<h3>1. Add Stripe at the top of the views template and set publishable key</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">script</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text/javascript&quot;</span> <span class="n">src</span><span class="o">=</span><span class="s2">&quot;https://js.stripe.com/v2/&quot;</span><span class="o">&gt;&lt;</span><span class="sr">/script&gt;</span>
+
+<span class="sr">&lt;script type=&quot;text/</span><span class="n">javascript</span><span class="s2">&quot;&gt;Stripe.setPublishableKey(&quot;</span><span class="c1">#{ENV[&#39;STRIPE_PUBLISHABLE_KEY&#39;]}&quot;);</span>
+<span class="o">&lt;</span><span class="sr">/script&gt;</span>
+
+<span class="sr">= javascript_include_tag &#39;payment&#39;</span></code></pre></div>
+
+<p>The above code also includes a turns off the submit button once its clicked to disable multiple submissions and then submit the custom form data to stripe for the stripe token and name attributes are set to nil, which means the data being submit will not be posted to the database. A hidden field for the StripeToken is generated and then submited to our server.</p>
+
+<p>You should also create a file config/initializers/assets.rb with the following content (assuming your javascript file is called payments.js):</p>
+
+<p>Rails.application.config.assets.precompile += [&#39;payments.js&#39;]
+This file will help to make sure that you add the payments.js file in the asset pipeline for all environments (dev, test and production), although in the development environment it doesn&#39;t really compress the assets for you.</p>
+
+<p>Note: If you are using CircleCI at this point, your build may fail and you may need to set your stripe key environment variable on the CircleCI server as well, so it&#39;ll have access to it. (Project Settings -&gt; Environment Variables)</p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/07/04/course3-isolated-api-tests/">
+            Build Robust & Production Quality Applications - Lesson 8: Fully Integrated API Tests
+            <small>04 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/07/03/course3-integrated-API-tests/">
+            Build Robust & Production Quality Applications - Lesson 8: Fully Integrated API Tests
+            <small>03 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/07/02/course3-API-wrappers/">
+            Build Robust & Production Quality Applications - Lesson 8: How to Build API Wrappers
+            <small>02 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

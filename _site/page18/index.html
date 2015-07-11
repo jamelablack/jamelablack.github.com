@@ -43,6 +43,8 @@
       <p class="lead">daily learnings as a ruby dev</p>
     </div>
 
+
+
     <nav class="sidebar-nav">
       <a class="sidebar-nav-item" href="/">Home</a>
 
@@ -56,10 +58,26 @@
       
         
           
+            <a class="sidebar-nav-item" href=""></a>
+
             <a class="sidebar-nav-item" href="/about/">About</a>
+
           
         
       
+        
+          
+            <a class="sidebar-nav-item" href=""></a>
+
+            <a class="sidebar-nav-item" href="/archive/">Archive</a>
+
+          
+        
+      
+        
+      
+        
+          
         
       
         
@@ -146,6 +164,862 @@
 
     <div class="content container">
       <div class="posts">
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2014/10/05/course2-lesson2/">
+        Rapid Prototyping with Rails: Lesson 2, part 1
+      </a>
+    </h1>
+
+    <span class="post-date">05 Oct 2014</span>
+
+    <p>Items covered:
+1. Rails Forms
+2. Strong Parameters</p>
+
+<h2>Rails Forms</h2>
+
+<p>There are 3 ways to create a form
+  1. Pure HTML
+  2. Rails Forms Helpers
+  3. Rails model-backed Forms Helpers</p>
+
+<ol>
+<li>PURE HTML</li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">h5</span><span class="o">&gt;</span> <span class="no">Pure</span> <span class="no">HTML</span> <span class="no">Form</span> <span class="o">&lt;</span><span class="sr">/h5&gt;</span>
+<span class="sr">  &lt;form action=&#39;/</span><span class="n">posts</span><span class="s1">&#39; method=&#39;</span><span class="no">POST</span><span class="s1">&#39;&gt;</span>
+<span class="s1">    Title &lt;input type=&#39;</span><span class="n">text</span><span class="s1">&#39; name=&#39;</span><span class="n">my_title</span><span class="s1">&#39;&gt;</span>
+
+<span class="s1">    &lt;br/&gt;</span>
+
+<span class="s1">    &lt;input type=&#39;</span><span class="n">submit</span><span class="s1">&#39; class=&#39;</span><span class="n">btn</span> <span class="n">btn</span><span class="o">-</span><span class="n">primary</span><span class="err">&#39;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="sr">/form&gt;</span></code></pre></div>
+
+<p><em>Rails has something called CSFP - cross site forgery protection built into it.
+It tries to prevent fake forms from submitting to your website.. without token.</em>
+This can be disabled in your application_controller.rb</p>
+
+<p>In the above section, where it says</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Title</span> <span class="o">&lt;</span><span class="n">input</span> <span class="n">type</span><span class="o">=</span><span class="s1">&#39;text name=&#39;</span><span class="n">my_title</span><span class="err">&#39;</span><span class="o">&gt;</span></code></pre></div>
+
+<p>Giving the title attribute a name called &quot;my_title&quot; gives you the ability refer to it as a hash. So params typed into pry would give you:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="p">{</span><span class="s2">&quot;my_title&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;some title&quot;</span><span class="p">}</span></code></pre></div>
+
+<p>or</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">params</span><span class="o">[</span><span class="ss">:my_title</span><span class="o">]</span> <span class="n">would</span> <span class="n">give</span> <span class="n">you</span> <span class="s2">&quot;some title&quot;</span> <span class="n">returned</span></code></pre></div>
+
+<p>*Hash with indifferent access - means although the key is a string, I can refer to it as a :symbol&quot;
+So therefore, in your console, you could type:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Post</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">title</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:my_title</span><span class="o">]</span><span class="p">)</span> <span class="o">**</span><span class="no">This</span> <span class="n">is</span> <span class="n">called</span> <span class="n">mass</span> <span class="n">assignment</span><span class="o">**</span></code></pre></div>
+
+<ol>
+<li>RAILS FORMS HELPERS
+When creating pure html forms, use form helpers.</li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">h4</span><span class="o">&gt;</span> <span class="no">Rails</span> <span class="no">Forms</span> <span class="no">Helpers</span> <span class="o">&lt;</span><span class="sr">/h4&gt;</span>
+<span class="sr">&lt;%= form_tag &#39;/</span><span class="n">posts</span><span class="s1">&#39; do %&gt;</span>
+<span class="s1">  &lt;%= label_tag :title, &quot;Input a title&quot; %&gt;</span>
+<span class="s1">  &lt;%= text_field_tag :title %&gt;</span>
+<span class="s1">  &lt;br/&gt;</span>
+<span class="s1">  &lt;%= submit_tag &quot;Create Post&quot;, class: &#39;</span><span class="n">btn</span> <span class="n">btn</span><span class="o">-</span><span class="n">primary</span><span class="err">&#39;</span> <span class="sx">%&gt;</span>
+<span class="sx">&lt;% end %&gt;</span></code></pre></div>
+
+<h2>Form helpers, do several things:</h2>
+
+<ol>
+<li>Automatically determines the method=&#39;POST&#39;
+B/c it is a form</li>
+<li>Security
+Provides an UTF 8 &amp; authenticity token in a hidden div that helps allows us to submit under cross site forgery protection</li>
+<li><p>Using the label_tag (helper)
+Gives more guidance to the blind. Label elements correalate with input elements and is read
+by screenreaders for the hearing impaired. <Where is says "Input a title"></p>
+
+<ol>
+<li>RAILS MODEL-BACKED FORMS</li>
+</ol></li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">h4</span><span class="o">&gt;</span> <span class="no">Rails</span> <span class="n">model</span><span class="o">-</span><span class="n">backed</span> <span class="n">form</span> <span class="n">helpers</span> <span class="o">&lt;</span><span class="sr">/h4&gt;</span>
+<span class="sr">  &lt;%= form_for @post do |f| %&gt;</span>
+<span class="sr">  &lt;%= f.label :title %&gt;</span>
+<span class="sr">  &lt;%= f.text_field :title %&gt;</span>
+
+<span class="sr">  &lt;%= f.label :url %&gt;</span>
+<span class="sr">  &lt;% f.text_field :title %&gt;</span>
+<span class="sr">  &lt;br/</span><span class="o">&gt;</span>
+  <span class="o">&lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">submit</span> <span class="s2">&quot;Create Post&quot;</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;btn btn-primary&#39;</span> <span class="sx">%&gt;</span>
+<span class="sx">&lt;% end %&gt;</span></code></pre></div>
+
+<p>You can mix and match forms and tags (from 2 and 3), if needed.</p>
+
+<h3>What is happening here:</h3>
+
+<p>The form_for is taking an object (@post). We must define @post in our controller:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">new</span>
+      <span class="vi">@post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">new</span>
+    <span class="k">end</span></code></pre></div>
+
+<h3>This gives us a few liberties:</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Post</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:post</span><span class="o">]</span><span class="p">)</span> <span class="ow">or</span> <span class="no">Post</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:post</span><span class="o">]</span><span class="p">)</span> <span class="n">is</span> <span class="n">effectively</span> <span class="n">doing</span> <span class="n">mass</span> <span class="n">assignment</span><span class="p">,</span>
+<span class="n">using</span> <span class="n">the</span> <span class="nb">hash</span> <span class="n">assigned</span> <span class="n">to</span> <span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:post</span><span class="o">]</span><span class="p">)</span></code></pre></div>
+
+<h2>Associations</h2>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">has_many</span> <span class="ss">:comments</span>
+<span class="n">has_many</span> <span class="ss">:posts</span></code></pre></div>
+
+<p>These become getters and setter bc they are virtual attributes as opposed to the
+actual column names which are actual attributes</p>
+
+<p>When you have a model-backed form, you must use fields that are virtual or actual attributes
+because your input will attempt roll up and mass assign. This will not work if the actual
+attribute does not exist.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:whatever</span> <span class="p">(</span><span class="n">yes</span><span class="p">)</span>
+  <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:whatever</span> <span class="p">(</span><span class="n">no</span><span class="p">)</span></code></pre></div>
+
+<p>However, the above can be accomplished with Rails Forms Helpers (#2) or Pure HTML,
+you can do what you want and just parse it out on the back-end.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">URL</span>
+      <span class="nb">name</span> <span class="o">=</span> <span class="p">(</span><span class="n">post</span><span class="o">[</span><span class="ss">:url</span><span class="o">]</span><span class="p">)</span> <span class="n">is</span> <span class="n">how</span> <span class="n">rails</span> <span class="n">magic</span><span class="p">,</span> <span class="n">mass</span> <span class="n">assignment</span> <span class="n">occurs</span>
+      <span class="no">In</span> <span class="n">console</span> <span class="ow">or</span> <span class="n">during</span> <span class="nb">binding</span><span class="o">.</span><span class="n">pry</span><span class="p">,</span> <span class="n">typing</span> <span class="n">params</span> <span class="n">will</span> <span class="n">list</span>
+      <span class="no">UTf8</span>
+      <span class="no">Authenticity</span> <span class="no">Token</span>
+      <span class="no">Post</span> <span class="n">attributes</span> <span class="k">in</span> <span class="nb">hash</span> <span class="n">form</span>
+      <span class="no">Commit</span>
+      <span class="no">Action</span>
+      <span class="no">Controller</span></code></pre></div>
+
+<p>Typing params[:post] is the same as post.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Strong</span> <span class="no">Parameters</span>
+<span class="k">def</span> <span class="nf">create</span>
+  <span class="n">post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:post</span><span class="o">]</span><span class="p">)</span>
+<span class="k">end</span></code></pre></div>
+
+<p>Will through an error in Rails 4 bc you don&#39;t have strong_parameters.
+They realized that the concern regarding strong parameters and security really
+didn&#39;t occur at the model layer but rather in the action based on user access,
+roles, etc.</p>
+
+<p>So no-longer a white list of attributes available for mass<em>assignment,
+attr</em>accessible :name :sex :location</p>
+
+<p>So the Rails 4 version is:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">create</span>
+  <span class="vi">@post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">post_params</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="kp">private</span>
+<span class="k">def</span> <span class="nf">post_params</span> <span class="c1">#because we want to reuse this, so lets create a post_params method</span>
+  <span class="n">params</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="ss">:post</span><span class="p">)</span><span class="o">.</span><span class="n">permit</span><span class="p">(</span><span class="ss">:title</span><span class="p">,</span> <span class="ss">:url</span><span class="p">)</span>
+<span class="k">end</span></code></pre></div>
+
+<p>OR you can assign strong parameters based roles</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">post_params</span>
+  <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">admin?</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="ss">:post</span><span class="p">)</span><span class="o">.</span><span class="n">permit!</span> <span class="c1">#permit everything</span>
+
+  <span class="k">else</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="ss">:post</span><span class="p">)</span><span class="o">.</span><span class="n">permit</span><span class="p">(</span><span class="ss">:title</span><span class="p">,</span> <span class="ss">:url</span><span class="p">)</span> <span class="c1">#only permit title and url</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>If in the future, you add other input fields but do not update your strong params, it will just wipe away
+your entry attempt, it will not throw an error as to let hackers know what ways to pass the security restriction</p>
+
+<p>So Rails 3 is attr<em>accessible :title (whitelist) and Rails 4 is strong</em>params in controller action.</p>
+
+<p>Now that you have understood post params, next memorize the following:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">create</span>
+
+  <span class="vi">@post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">post_params</span><span class="p">)</span>
+
+  <span class="k">if</span> <span class="vi">@post</span><span class="o">.</span><span class="n">save</span>
+    <span class="n">flash</span><span class="o">[</span><span class="ss">:notice</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Your post was created.&quot;</span>
+    <span class="n">redirect_to</span> <span class="n">posts_path</span>
+  <span class="k">else</span>
+    <span class="n">render</span> <span class="s1">&#39;new&#39;</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2014/10/01/course2-lesson1/">
+        Rapid Prototyping with Rails: Lesson 1
+      </a>
+    </h1>
+
+    <span class="post-date">01 Oct 2014</span>
+
+    <h1>Items covered:</h1>
+
+<ol>
+<li>Bundle Install/Bundle Exec</li>
+<li>Creating your Rails App</li>
+<li>Folder Directory</li>
+<li>Rake Routes</li>
+<li>Relational Databases</li>
+</ol>
+
+<h2>Bundle Install</h2>
+
+<p>Before you couldn&#39;t have multiple versions of gems installed on your machine when
+switching b/w projects.</p>
+
+<p>Bundler creates a sandbox in your application where the proper versions of your gems
+are stored.</p>
+
+<h3>Bundle exec</h3>
+
+<p>does the samething and is used when your system level rake (rake db:migrate) for example
+is not compatible with the current settings.
+Therefore you have to use bundle exec rake db:migrate or just bundle exec.</p>
+
+<p>Heroku also uses Bundler.</p>
+
+<h2>Creating your app:</h2>
+
+<p>Files you should always look at:</p>
+
+<h3>1. database.yml</h3>
+
+<p>Tells the application how to connect to the database
+*In development - we use sqlite3
+*In production - we use postgres (although in this course Heroku takes care it for us)</p>
+
+<p>For sqlite - your database is in your code base and its one file, unlike others
+where is an application and usually your database is hosted somewhere:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">production</span>
+        <span class="ss">adapter</span><span class="p">:</span> <span class="n">mysql</span>
+        <span class="ss">database</span><span class="p">:</span> <span class="n">myapp_development</span>
+        <span class="ss">host</span><span class="p">:</span> <span class="n">localhost</span>
+        <span class="ss">username</span><span class="p">:</span>
+        <span class="ss">password</span><span class="p">:</span></code></pre></div>
+
+<p>You will want to mimick your local enviornment as much as possible to your production
+enviornment in order to catch bugs</p>
+
+<h2>2. Gemfile</h2>
+
+<h3>3. Routes File</h3>
+
+<p>How the request initally get&#39;s routed. The blueprint of your application ad its
+capabilities.</p>
+
+<h2>Folder Directory</h2>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">app</span> <span class="o">-</span> <span class="n">where</span> <span class="n">you</span> <span class="n">spend</span> <span class="n">most</span> <span class="n">time</span>
+  <span class="n">assets</span> <span class="o">-</span> <span class="n">where</span> <span class="n">you</span> <span class="n">put</span> <span class="n">all</span> <span class="n">static</span> <span class="n">files</span><span class="p">,</span> <span class="n">images</span><span class="p">,</span> <span class="n">etc</span><span class="o">.</span>
+  <span class="n">controllers</span>
+  <span class="n">mailers</span> <span class="o">-</span> <span class="n">outbound</span> <span class="n">mail</span><span class="o">.</span> <span class="no">Not</span> <span class="n">good</span> <span class="n">to</span> <span class="n">use</span> <span class="n">because</span> <span class="n">you</span> <span class="n">can</span> <span class="n">easily</span> <span class="n">get</span> <span class="n">flagged</span> <span class="n">as</span> <span class="n">spam</span>
+   <span class="p">(</span><span class="n">use</span> <span class="n">a</span> <span class="n">transactional</span> <span class="n">email</span> <span class="n">provider</span> <span class="p">(</span><span class="n">stmp</span> <span class="n">mailers</span><span class="p">)</span> <span class="n">hosts</span> <span class="n">such</span> <span class="n">as</span> <span class="n">mailgun</span><span class="p">,</span> <span class="n">postmark</span><span class="p">,</span> <span class="n">etc</span><span class="o">.</span> <span class="p">)</span>
+   <span class="n">models</span>
+   <span class="n">views</span> <span class="o">-</span> <span class="n">where</span> <span class="n">our</span> <span class="n">erb</span> <span class="n">goes</span>
+<span class="n">bin</span> <span class="o">-</span> <span class="n">where</span> <span class="n">your</span> <span class="n">executable</span> <span class="n">code</span> <span class="n">goes</span> <span class="o">-</span> <span class="n">we</span> <span class="n">never</span> <span class="n">touch</span> <span class="n">this</span>
+<span class="n">application</span><span class="o">.</span><span class="n">rb</span> <span class="o">-</span> <span class="n">sets</span> <span class="n">application</span> <span class="n">defaults</span> <span class="n">such</span> <span class="n">as</span> <span class="n">timezone</span><span class="p">,</span> <span class="nb">load</span> <span class="n">path</span>
+<span class="n">enviornment</span> <span class="n">folder</span> <span class="o">-</span> <span class="n">configurations</span> <span class="k">for</span> <span class="n">development</span> <span class="ow">and</span> <span class="n">production</span><span class="p">,</span> <span class="ow">and</span> <span class="n">testing</span><span class="o">.</span>
+                  <span class="o">-</span> <span class="n">you</span> <span class="n">can</span> <span class="n">also</span> <span class="n">create</span> <span class="n">custom</span> <span class="n">enviornments</span> <span class="o">-</span> <span class="n">such</span> <span class="no">QA</span><span class="p">,</span> <span class="n">intergration</span> <span class="ow">or</span> <span class="n">staging</span>
+<span class="n">initializers</span> <span class="n">folder</span> <span class="o">-</span> <span class="n">where</span> <span class="n">you</span> <span class="n">files</span> <span class="n">that</span> <span class="n">you</span> <span class="n">want</span> <span class="n">to</span> <span class="nb">load</span> <span class="k">when</span> <span class="n">your</span> <span class="n">application</span>
+                    <span class="n">is</span> <span class="n">initialized</span>
+<span class="no">Config</span> <span class="n">folder</span>
+  <span class="n">locales</span> <span class="o">-</span> <span class="n">yml</span> <span class="n">files</span> <span class="o">-</span> <span class="n">is</span> <span class="n">a</span> <span class="n">way</span> <span class="n">to</span> <span class="n">internationalize</span> <span class="n">your</span> <span class="n">app</span><span class="o">.</span> <span class="no">Is</span> <span class="n">comprised</span> <span class="n">of</span> <span class="n">comlicated</span> <span class="n">hashes</span>
+        <span class="ow">and</span> <span class="n">you</span> <span class="n">no</span> <span class="n">longer</span> <span class="n">write</span> <span class="n">using</span> <span class="n">strings</span><span class="o">.</span> <span class="no">Extremely</span> <span class="n">painful</span> <span class="n">to</span> <span class="n">manage</span> <span class="n">files</span>
+<span class="no">Lib</span> <span class="o">-</span> <span class="n">you</span> <span class="n">can</span> <span class="n">also</span> <span class="n">put</span> <span class="n">assets</span> <span class="k">in</span> <span class="n">there</span>
+<span class="no">Tasks</span> <span class="o">-</span> <span class="n">you</span> <span class="n">can</span> <span class="n">place</span> <span class="n">rake</span> <span class="n">tasks</span> <span class="k">in</span> <span class="n">here</span>
+<span class="n">log</span> <span class="o">-</span> <span class="n">stores</span> <span class="n">all</span> <span class="n">terminal</span> <span class="n">logs</span> <span class="n">from</span> <span class="n">your</span> <span class="n">application</span>
+<span class="kp">public</span> <span class="o">-</span> <span class="n">where</span> <span class="n">you</span> <span class="n">store</span> <span class="n">your</span> <span class="n">error</span> <span class="n">pages</span>
+      <span class="o">-</span> <span class="n">robosts</span> <span class="o">-</span> <span class="n">tell</span> <span class="n">search</span> <span class="n">engines</span> <span class="n">where</span> <span class="n">to</span> <span class="n">go</span> <span class="n">within</span> <span class="n">your</span> <span class="n">application</span>
+<span class="no">Vendor</span> <span class="o">-</span> <span class="n">a</span> <span class="n">relic</span> <span class="n">from</span> <span class="n">the</span> <span class="n">past</span>
+<span class="o">.</span><span class="n">gitignore</span> <span class="o">-</span> <span class="n">tells</span> <span class="n">git</span> <span class="n">what</span> <span class="n">files</span> <span class="n">to</span> <span class="n">ignore</span> <span class="k">when</span> <span class="n">committing</span><span class="o">.</span> <span class="p">(</span><span class="o">.</span><span class="n">files</span> <span class="n">are</span> <span class="n">hidden</span> <span class="n">files</span><span class="p">)</span>
+<span class="no">Readme</span> <span class="o">-</span> <span class="n">is</span> <span class="n">what</span> <span class="n">is</span> <span class="n">dispayed</span> <span class="k">when</span> <span class="n">you</span> <span class="n">push</span> <span class="n">your</span> <span class="n">app</span> <span class="n">to</span> <span class="no">Github</span><span class="o">.</span></code></pre></div>
+
+<h2>Rake Routes</h2>
+
+<p>shows all possible endpoints in your application
+You can also view your routes in your browser by going to localhost:3000/rails/info/routes
+in Rails 4 only or you can use the terminal: rake routes | grep _______</p>
+
+<h2>Relational Databases:</h2>
+
+<p>A series of spreadsheets.</p>
+
+<p>To connect these tables in order to link infromation:
+1. primary<em>key in rails is the &quot;id&quot;
+2. foreign</em>key is the creation of a &quot;user<em>id&quot; column with the primary</em>key in on
+other tables to connect to the main table.</p>
+
+<h3>There are 2 Views</h3>
+
+<ol>
+<li>Data View: very much like Excel</li>
+<li>Schema View: lists the column name and the data type allowed for that column.</li>
+</ol>
+
+<h3>1:M</h3>
+
+<p>the Foreign_key is always on the many side of a one to many relationship</p>
+
+<h3>ORMs</h3>
+
+<p>ActiveRecord is an ORM (Object Relational Mapper), a pattern created by Martin Fowler
+which describes how to abstract data from a database into code. Prior to this, using
+PHP, you would write sql code directly in the views.</p>
+
+<p>In console, using &quot;= _&quot; is equivalent to your last returned item.</p>
+
+<p>Rails is good for simple, applications with quick builds that aren&#39;t for existing
+application is analytics.</p>
+
+<p>Setting up 1:M b/w posts and users (Posts were previously created)</p>
+
+<ol>
+<li><p>Create user table
+Terminal: rails g migration create_users</p></li>
+<li><p>Create Users model
+Create model - singular, snack_case of Class name</p></li>
+<li><p>Need to add foreign key to the many side (the Posts table)
+Terminal: rails g migration add<em>user</em>id<em>to</em>posts</p></li>
+</ol>
+
+<p>Inside migration file:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">change</span>
+    <span class="n">add_column</span> <span class="ss">:table_name</span> <span class="ss">:foreign_key</span> <span class="p">(</span><span class="n">which</span> <span class="n">is</span> <span class="n">normally</span> <span class="n">the</span> <span class="n">resource</span><span class="o">+</span><span class="n">primary_key</span><span class="p">),</span> <span class="ss">:datatype</span> <span class="p">(</span><span class="n">always</span> <span class="n">will</span> <span class="n">be</span> <span class="n">integer</span><span class="p">)</span>
+
+    <span class="n">add_column</span> <span class="ss">:posts</span><span class="p">,</span> <span class="ss">:user_id</span><span class="p">,</span> <span class="ss">:integer</span>
+  <span class="k">end</span></code></pre></div>
+
+<ol>
+<li>Write in has<em>many and belongs</em>to on the models</li>
+</ol>
+
+<h3>Virtual Attribute</h3>
+
+<p>attributes that are not columns, are given through associations</p>
+
+<h2>Mass Assignment</h2>
+
+<p>The ability create/update AR obj through a hash where the keys match the attirbute
+or virtual attribute.
+example:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Post</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;some title&quot;</span><span class="p">,</span> <span class="ss">url</span><span class="p">:</span> <span class="s2">&quot;some url&quot;</span><span class="p">,</span> <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">first</span><span class="p">)</span></code></pre></div>
+
+<h3>Post.new &amp; Post.create</h3>
+
+<p>Both can be used for mass assignment. Post.new is in memory (no user id assigned)
+while Post.create will update to the database immediately.</p>
+
+<p>Post.build and Post.new are the same.</p>
+
+<h3>When in the console:</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">You</span> <span class="n">can</span> <span class="n">run</span> <span class="n">the</span> <span class="n">following</span> <span class="ss">commands</span><span class="p">:</span>
+  <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">first</span>
+  <span class="n">post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">first</span>
+  <span class="n">post</span><span class="o">.</span><span class="n">user</span> <span class="o">****</span> <span class="n">virtual</span> <span class="n">attribute</span>
+  <span class="n">post</span><span class="o">.</span><span class="n">title</span>
+  <span class="n">post</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">user</span> <span class="o">***</span><span class="no">NO</span><span class="p">,</span> <span class="n">you</span> <span class="n">can</span> <span class="n">only</span> <span class="n">set</span> <span class="n">objects</span> <span class="n">to</span> <span class="n">object</span> <span class="ow">and</span> <span class="n">integers</span> <span class="n">to</span> <span class="n">integers</span>
+  <span class="n">post</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span></code></pre></div>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2014/09/25/blackjack-oo-game/">
+        Intro to Ruby & Web Dev: Blackjack OO Game
+      </a>
+    </h1>
+
+    <span class="post-date">25 Sep 2014</span>
+
+    <h2>Object Oriented Blackjack Game</h2>
+
+<ol>
+<li>Abstraction - the interaction of objects (keeping track of state and behaviors</li>
+<li>Encapsulation - encapsulates certain behaviors</li>
+</ol>
+
+<h3>Steps</h3>
+
+<ol>
+<li>Look at the Requirements</li>
+<li>Pick nouns</li>
+<li>Think off all actions you want the object to perform and write down method calls (i.e. player.deal) as though the methods already exists.</li>
+<li>Do this for each class.</li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Card</span>
+  <span class="kp">attr_accessor</span> <span class="ss">:suit</span><span class="p">,</span> <span class="ss">:face_value</span>
+
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">fv</span><span class="p">)</span>
+    <span class="vi">@suit</span> <span class="o">=</span> <span class="n">s</span>
+    <span class="vi">@face_value</span> <span class="o">=</span> <span class="n">fv</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">pretty_output</span>
+    <span class="s2">&quot;The </span><span class="si">#{</span><span class="n">face_value</span><span class="si">}</span><span class="s2"> of </span><span class="si">#{</span><span class="n">find_suit</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">to_s</span>
+    <span class="n">pretty_output</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">find_suit</span>
+    <span class="n">ret_val</span> <span class="o">=</span> <span class="k">case</span> <span class="n">suit</span>
+                <span class="k">when</span> <span class="s1">&#39;H&#39;</span> <span class="k">then</span> <span class="s1">&#39;Hearts&#39;</span>
+                <span class="k">when</span> <span class="s1">&#39;D&#39;</span> <span class="k">then</span> <span class="s1">&#39;Diamonds&#39;</span>
+                <span class="k">when</span> <span class="s1">&#39;S&#39;</span> <span class="k">then</span> <span class="s1">&#39;Spades&#39;</span>
+                <span class="k">when</span> <span class="s1">&#39;C&#39;</span> <span class="k">then</span> <span class="s1">&#39;Clubs&#39;</span>
+              <span class="k">end</span>
+    <span class="n">ret_val</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Deck</span>
+  <span class="kp">attr_accessor</span> <span class="ss">:cards</span>
+
+  <span class="k">def</span> <span class="nf">initialize</span>
+    <span class="vi">@cards</span> <span class="o">=</span> <span class="o">[]</span>
+    <span class="o">[</span><span class="s1">&#39;H&#39;</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">suit</span><span class="o">|</span>
+      <span class="o">[</span><span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">,</span> <span class="s1">&#39;6&#39;</span><span class="p">,</span> <span class="s1">&#39;7&#39;</span><span class="p">,</span> <span class="s1">&#39;8&#39;</span><span class="p">,</span> <span class="s1">&#39;9&#39;</span><span class="p">,</span> <span class="s1">&#39;10&#39;</span><span class="p">,</span> <span class="s1">&#39;J&#39;</span><span class="p">,</span> <span class="s1">&#39;Q&#39;</span><span class="p">,</span> <span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">face_value</span><span class="o">|</span>
+        <span class="vi">@cards</span> <span class="o">&lt;&lt;</span> <span class="no">Card</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">suit</span><span class="p">,</span> <span class="n">face_value</span><span class="p">)</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="n">scramble!</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">scramble!</span>
+    <span class="n">cards</span><span class="o">.</span><span class="n">shuffle!</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">deal_one</span>
+    <span class="n">cards</span><span class="o">.</span><span class="n">pop</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">size</span>
+    <span class="n">cards</span><span class="o">.</span><span class="n">size</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">module</span> <span class="nn">Hand</span>
+  <span class="k">def</span> <span class="nf">show_hand</span>
+    <span class="nb">puts</span> <span class="s2">&quot;---- </span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2">&#39;s Hand ----&quot;</span>
+    <span class="n">cards</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span><span class="o">|</span><span class="n">card</span><span class="o">|</span>
+      <span class="nb">puts</span> <span class="s2">&quot;=&gt; </span><span class="si">#{</span><span class="n">card</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">end</span>
+    <span class="nb">puts</span> <span class="s2">&quot;=&gt; Total: </span><span class="si">#{</span><span class="n">total</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">total</span>
+    <span class="n">face_values</span> <span class="o">=</span> <span class="n">cards</span><span class="o">.</span><span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="n">card</span><span class="o">|</span> <span class="n">card</span><span class="o">.</span><span class="n">face_value</span> <span class="p">}</span>
+
+    <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">face_values</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">val</span><span class="o">|</span>
+      <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="s2">&quot;A&quot;</span>
+        <span class="n">total</span> <span class="o">+=</span> <span class="mi">11</span>
+      <span class="k">else</span>
+        <span class="n">total</span> <span class="o">+=</span> <span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">to_i</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">?</span> <span class="mi">10</span> <span class="p">:</span> <span class="n">val</span><span class="o">.</span><span class="n">to_i</span><span class="p">)</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="c1">#correct for Aces</span>
+    <span class="n">face_values</span><span class="o">.</span><span class="n">select</span><span class="p">{</span><span class="o">|</span><span class="n">val</span><span class="o">|</span> <span class="n">val</span> <span class="o">==</span> <span class="s2">&quot;A&quot;</span><span class="p">}</span><span class="o">.</span><span class="n">count</span><span class="o">.</span><span class="n">times</span> <span class="k">do</span>
+      <span class="k">break</span> <span class="k">if</span> <span class="n">total</span> <span class="o">&lt;=</span> <span class="mi">21</span>
+      <span class="n">total</span> <span class="o">-=</span> <span class="mi">10</span>
+    <span class="k">end</span>
+
+    <span class="n">total</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">add_card</span><span class="p">(</span><span class="n">new_card</span><span class="p">)</span>
+    <span class="n">cards</span> <span class="o">&lt;&lt;</span> <span class="n">new_card</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">is_busted?</span>
+    <span class="n">total</span> <span class="o">&gt;</span> <span class="no">Blackjack</span><span class="o">::</span><span class="no">BLACKJACK_AMOUNT</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Player</span>
+  <span class="kp">include</span> <span class="no">Hand</span>
+
+  <span class="kp">attr_accessor</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:cards</span>
+
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="vi">@name</span> <span class="o">=</span> <span class="n">n</span>
+    <span class="vi">@cards</span> <span class="o">=</span> <span class="o">[]</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">show_flop</span>
+    <span class="n">show_hand</span>
+  <span class="k">end</span>
+
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Dealer</span>
+  <span class="kp">include</span> <span class="no">Hand</span>
+
+  <span class="kp">attr_accessor</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:cards</span>
+
+  <span class="k">def</span> <span class="nf">initialize</span>
+    <span class="vi">@name</span> <span class="o">=</span> <span class="s2">&quot;Dealer&quot;</span>
+    <span class="vi">@cards</span> <span class="o">=</span> <span class="o">[]</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">show_flop</span>
+    <span class="nb">puts</span> <span class="s2">&quot;---- Dealer&#39;s Hand ----&quot;</span>
+    <span class="nb">puts</span> <span class="s2">&quot;=&gt; First card is hidden&quot;</span>
+    <span class="nb">puts</span> <span class="s2">&quot;=&gt; Second card is </span><span class="si">#{</span><span class="n">cards</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Blackjack</span>
+  <span class="kp">attr_accessor</span> <span class="ss">:deck</span><span class="p">,</span> <span class="ss">:player</span><span class="p">,</span> <span class="ss">:dealer</span>
+
+  <span class="no">BLACKJACK_AMOUNT</span> <span class="o">=</span> <span class="mi">21</span>
+  <span class="no">DEALER_HIT_MIN</span> <span class="o">=</span> <span class="mi">17</span>
+
+  <span class="k">def</span> <span class="nf">initialize</span>
+    <span class="vi">@deck</span> <span class="o">=</span> <span class="no">Deck</span><span class="o">.</span><span class="n">new</span>
+    <span class="vi">@player</span> <span class="o">=</span> <span class="no">Player</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;Player1&quot;</span><span class="p">)</span>
+    <span class="vi">@dealer</span> <span class="o">=</span> <span class="no">Dealer</span><span class="o">.</span><span class="n">new</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">set_player_name</span>
+    <span class="nb">puts</span> <span class="s2">&quot;What&#39;s your name?&quot;</span>
+    <span class="n">player</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="nb">gets</span><span class="o">.</span><span class="n">chomp</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">deal_cards</span>
+    <span class="n">player</span><span class="o">.</span><span class="n">add_card</span><span class="p">(</span><span class="n">deck</span><span class="o">.</span><span class="n">deal_one</span><span class="p">)</span>
+    <span class="n">dealer</span><span class="o">.</span><span class="n">add_card</span><span class="p">(</span><span class="n">deck</span><span class="o">.</span><span class="n">deal_one</span><span class="p">)</span>
+    <span class="n">player</span><span class="o">.</span><span class="n">add_card</span><span class="p">(</span><span class="n">deck</span><span class="o">.</span><span class="n">deal_one</span><span class="p">)</span>
+    <span class="n">dealer</span><span class="o">.</span><span class="n">add_card</span><span class="p">(</span><span class="n">deck</span><span class="o">.</span><span class="n">deal_one</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">show_flop</span>
+    <span class="n">player</span><span class="o">.</span><span class="n">show_flop</span>
+    <span class="n">dealer</span><span class="o">.</span><span class="n">show_flop</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">blackjack_or_bust?</span><span class="p">(</span><span class="n">player_or_dealer</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">player_or_dealer</span><span class="o">.</span><span class="n">total</span> <span class="o">==</span> <span class="no">BLACKJACK_AMOUNT</span>
+      <span class="k">if</span> <span class="n">player_or_dealer</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Dealer</span><span class="p">)</span>
+        <span class="nb">puts</span> <span class="s2">&quot;Sorry, dealer hit blackjack. </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> loses.&quot;</span>
+      <span class="k">else</span>
+        <span class="nb">puts</span> <span class="s2">&quot;Congratulations, you hit blackjack! </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> win!&quot;</span>
+      <span class="k">end</span>
+      <span class="n">play_again?</span>
+    <span class="k">elsif</span> <span class="n">player_or_dealer</span><span class="o">.</span><span class="n">is_busted?</span>
+      <span class="k">if</span> <span class="n">player_or_dealer</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Dealer</span><span class="p">)</span>
+        <span class="nb">puts</span> <span class="s2">&quot;Congratulations, dealer busted. </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> win!&quot;</span>
+      <span class="k">else</span>
+        <span class="nb">puts</span> <span class="s2">&quot;Sorry, </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> busted. </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> loses.&quot;</span>
+      <span class="k">end</span>
+      <span class="n">play_again?</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">player_turn</span>
+    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;s turn.&quot;</span>
+
+    <span class="n">blackjack_or_bust?</span><span class="p">(</span><span class="n">player</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="o">!</span><span class="n">player</span><span class="o">.</span><span class="n">is_busted?</span>
+      <span class="nb">puts</span> <span class="s2">&quot;What would you like to do? 1) hit 2) stay&quot;</span>
+      <span class="n">response</span> <span class="o">=</span> <span class="nb">gets</span><span class="o">.</span><span class="n">chomp</span>
+
+      <span class="k">if</span> <span class="o">![</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="o">].</span><span class="n">include?</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="nb">puts</span> <span class="s2">&quot;Error: you must enter 1 or 2&quot;</span>
+        <span class="k">next</span>
+      <span class="k">end</span>
+
+      <span class="k">if</span> <span class="n">response</span> <span class="o">==</span> <span class="s1">&#39;2&#39;</span>
+        <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> chose to stay.&quot;</span>
+        <span class="k">break</span>
+      <span class="k">end</span>
+
+      <span class="c1">#hit</span>
+      <span class="n">new_card</span> <span class="o">=</span> <span class="n">deck</span><span class="o">.</span><span class="n">deal_one</span>
+      <span class="nb">puts</span> <span class="s2">&quot;Dealing card to </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="n">new_card</span><span class="si">}</span><span class="s2">&quot;</span>
+      <span class="n">player</span><span class="o">.</span><span class="n">add_card</span><span class="p">(</span><span class="n">new_card</span><span class="p">)</span>
+      <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;s total is now: </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">total</span><span class="si">}</span><span class="s2">&quot;</span>
+
+      <span class="n">blackjack_or_bust?</span><span class="p">(</span><span class="n">player</span><span class="p">)</span>
+    <span class="k">end</span>
+    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> stays at </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">total</span><span class="si">}</span><span class="s2">.&quot;</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">dealer_turn</span>
+    <span class="nb">puts</span> <span class="s2">&quot;Dealer&#39;s turn.&quot;</span>
+
+    <span class="n">blackjack_or_bust?</span><span class="p">(</span><span class="n">dealer</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">dealer</span><span class="o">.</span><span class="n">total</span> <span class="o">&lt;</span> <span class="no">DEALER_HIT_MIN</span>
+      <span class="n">new_card</span> <span class="o">=</span> <span class="n">deck</span><span class="o">.</span><span class="n">deal_one</span>
+      <span class="nb">puts</span> <span class="s2">&quot;Dealing card to dealer: </span><span class="si">#{</span><span class="n">new_card</span><span class="si">}</span><span class="s2">&quot;</span>
+      <span class="n">dealer</span><span class="o">.</span><span class="n">add_card</span><span class="p">(</span><span class="n">new_card</span><span class="p">)</span>
+      <span class="nb">puts</span> <span class="s2">&quot;Dealer total is now: </span><span class="si">#{</span><span class="n">dealer</span><span class="o">.</span><span class="n">total</span><span class="si">}</span><span class="s2">&quot;</span>
+
+      <span class="n">blackjack_or_bust?</span><span class="p">(</span><span class="n">dealer</span><span class="p">)</span>
+    <span class="k">end</span>
+    <span class="nb">puts</span> <span class="s2">&quot;Dealer stays at </span><span class="si">#{</span><span class="n">dealer</span><span class="o">.</span><span class="n">total</span><span class="si">}</span><span class="s2">.&quot;</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">who_won?</span>
+    <span class="k">if</span> <span class="n">player</span><span class="o">.</span><span class="n">total</span> <span class="o">&gt;</span> <span class="n">dealer</span><span class="o">.</span><span class="n">total</span>
+      <span class="nb">puts</span> <span class="s2">&quot;Congratulations, </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> wins!&quot;</span>
+    <span class="k">elsif</span> <span class="n">player</span><span class="o">.</span><span class="n">total</span> <span class="o">&lt;</span> <span class="n">dealer</span><span class="o">.</span><span class="n">total</span>
+      <span class="nb">puts</span> <span class="s2">&quot;Sorry, </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> loses.&quot;</span>
+    <span class="k">else</span>
+      <span class="nb">puts</span> <span class="s2">&quot;It&#39;s a tie!&quot;</span>
+    <span class="k">end</span>
+    <span class="n">play_again?</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">play_again?</span>
+    <span class="nb">puts</span> <span class="s2">&quot;&quot;</span>
+    <span class="nb">puts</span> <span class="s2">&quot;Would you like to play again? 1) yes 2) no, exit&quot;</span>
+    <span class="k">if</span> <span class="nb">gets</span><span class="o">.</span><span class="n">chomp</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span>
+      <span class="nb">puts</span> <span class="s2">&quot;Starting new game...&quot;</span>
+      <span class="nb">puts</span> <span class="s2">&quot;&quot;</span>
+      <span class="n">deck</span> <span class="o">=</span> <span class="no">Deck</span><span class="o">.</span><span class="n">new</span>
+      <span class="n">player</span><span class="o">.</span><span class="n">cards</span> <span class="o">=</span> <span class="o">[]</span>
+      <span class="n">dealer</span><span class="o">.</span><span class="n">cards</span> <span class="o">=</span> <span class="o">[]</span>
+      <span class="n">start</span>
+    <span class="k">else</span>
+      <span class="nb">puts</span> <span class="s2">&quot;Goodbye!&quot;</span>
+      <span class="nb">exit</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">start</span>
+    <span class="n">set_player_name</span>
+    <span class="n">deal_cards</span>
+    <span class="n">show_flop</span>
+    <span class="n">player_turn</span>
+    <span class="n">dealer_turn</span>
+    <span class="n">who_won?</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">game</span> <span class="o">=</span> <span class="no">Blackjack</span><span class="o">.</span><span class="n">new</span>
+<span class="n">game</span><span class="o">.</span><span class="n">start</span></code></pre></div>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2014/09/22/tic-tac-toe-oo/">
+        Intro to Ruby & Web Dev: Tic-Tac-Toe OO Game
+      </a>
+    </h1>
+
+    <span class="post-date">22 Sep 2014</span>
+
+    <h1>Goal</h1>
+
+<p>Build a tic-tac-toe game with object oriented programming.</p>
+
+<h2>There are 2 Approaches</h2>
+
+<ol>
+<li>Look at Procedural Code and extract classes and objects (more experienced)</li>
+<li>Write out psuedo code (put rules into words describing the game, list nouns and common verbs</li>
+</ol>
+
+<h2>Start with an empty 3x3 board.</h2>
+
+<p>Board with two players
+One player is &quot;x&quot;, the other is &quot;o&quot;, and player &quot;x&quot; goes first. Then they alternate until 3 of x/o in a row or
+all cells are ful, which means its a tie.</p>
+
+<h2>Extract Classes</h2>
+
+<h3>Board</h3>
+
+<ul>
+<li>squares</li>
+<li>Are all squares marked?</li>
+<li>Find all empty squares
+###Player</li>
+<li>name</li>
+<li>marker</li>
+</ul>
+
+<h3>Square</h3>
+
+<p>you wouldn&#39;t want to say square is aware of position, b/c the square is no longer reusable
+  - occupied?
+  - mark(marker)</p>
+
+<h3>Game_engine</h3>
+
+<p>is the procedural peice to the game that will orchestrate the game
+Sequence of steps</p>
+
+<ol>
+<li>Draw a board</li>
+<li>Assign Player to &quot;x&quot;</li>
+<li>Assign Computer to &quot;o&quot;
+Loop until a winner or all squares are taken</li>
+<li>Player 1 picks an empty square
+Check for winner</li>
+<li>Player 2 picks an empty square</li>
+<li>Check for winner</li>
+<li>If there is a winner, show winner; else &quot;It&#39;s a tie&quot;</li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Board</span>
+  <span class="no">WINNING_LINES</span> <span class="o">=</span> <span class="o">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">8</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">9</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">9</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="o">]]</span>
+
+  <span class="k">def</span> <span class="nf">initialize</span>
+    <span class="vi">@data</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="p">(</span><span class="mi">1</span><span class="o">.</span><span class="n">.</span><span class="mi">9</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span><span class="o">|</span><span class="n">position</span><span class="o">|</span> <span class="vi">@data</span><span class="o">[</span><span class="n">position</span><span class="o">]</span> <span class="o">=</span> <span class="no">Square</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="p">}</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">empty_squares</span>
+    <span class="vi">@data</span><span class="o">.</span><span class="n">select</span> <span class="p">{</span><span class="o">|</span><span class="n">_</span><span class="p">,</span> <span class="n">square</span><span class="o">|</span> <span class="n">square</span><span class="o">.</span><span class="n">empty?</span><span class="p">}</span><span class="o">.</span><span class="n">values</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">empty_positions</span>
+    <span class="vi">@data</span><span class="o">.</span><span class="n">select</span> <span class="p">{</span><span class="o">|</span><span class="n">_</span><span class="p">,</span> <span class="n">square</span><span class="o">|</span> <span class="n">square</span><span class="o">.</span><span class="n">empty?</span><span class="p">}</span><span class="o">.</span><span class="n">keys</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">all_squares_marked?</span>
+    <span class="n">empty_squares</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">three_squares_in_a_row?</span><span class="p">(</span><span class="n">marker</span><span class="p">)</span>
+    <span class="no">WINNING_LINES</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span>
+      <span class="k">return</span> <span class="kp">true</span> <span class="k">if</span> <span class="vi">@data</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">0</span><span class="o">]].</span><span class="n">value</span> <span class="o">==</span> <span class="n">marker</span> <span class="o">&amp;&amp;</span> <span class="vi">@data</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">1</span><span class="o">]].</span><span class="n">value</span>  <span class="o">==</span> <span class="n">marker</span> <span class="o">&amp;&amp;</span> <span class="vi">@data</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">2</span><span class="o">]].</span><span class="n">value</span> <span class="o">==</span> <span class="n">marker</span>
+    <span class="k">end</span>
+    <span class="kp">false</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">mark_square</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">marker</span><span class="p">)</span>
+    <span class="vi">@data</span><span class="o">[</span><span class="n">position</span><span class="o">].</span><span class="n">mark</span><span class="p">(</span><span class="n">marker</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">draw</span>
+    <span class="nb">system</span> <span class="s1">&#39;clear&#39;</span>
+    <span class="nb">puts</span>
+    <span class="nb">puts</span> <span class="s2">&quot;     |     |&quot;</span>
+    <span class="nb">puts</span> <span class="s2">&quot;  </span><span class="si">#{</span><span class="vi">@data</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="si">}</span><span class="s2">  |  </span><span class="si">#{</span><span class="vi">@data</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span><span class="si">}</span><span class="s2">  |  </span><span class="si">#{</span><span class="vi">@data</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nb">puts</span> <span class="s2">&quot;     |     |&quot;</span>
+    <span class="nb">puts</span> <span class="s2">&quot;-----+-----+-----&quot;</span>
+    <span class="nb">puts</span> <span class="s2">&quot;     |     |&quot;</span>
+    <span class="nb">puts</span> <span class="s2">&quot;  </span><span class="si">#{</span><span class="vi">@data</span><span class="o">[</span><span class="mi">4</span><span class="o">]</span><span class="si">}</span><span class="s2">  |  </span><span class="si">#{</span><span class="vi">@data</span><span class="o">[</span><span class="mi">5</span><span class="o">]</span><span class="si">}</span><span class="s2">  |  </span><span class="si">#{</span><span class="vi">@data</span><span class="o">[</span><span class="mi">6</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nb">puts</span> <span class="s2">&quot;     |     |&quot;</span>
+    <span class="nb">puts</span> <span class="s2">&quot;-----+-----+-----&quot;</span>
+    <span class="nb">puts</span> <span class="s2">&quot;     |     |&quot;</span>
+    <span class="nb">puts</span> <span class="s2">&quot;  </span><span class="si">#{</span><span class="vi">@data</span><span class="o">[</span><span class="mi">7</span><span class="o">]</span><span class="si">}</span><span class="s2">  |  </span><span class="si">#{</span><span class="vi">@data</span><span class="o">[</span><span class="mi">8</span><span class="o">]</span><span class="si">}</span><span class="s2">  |  </span><span class="si">#{</span><span class="vi">@data</span><span class="o">[</span><span class="mi">9</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nb">puts</span> <span class="s2">&quot;     |     |&quot;</span>
+    <span class="nb">puts</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Player</span>
+  <span class="kp">attr_reader</span> <span class="ss">:marker</span><span class="p">,</span> <span class="ss">:name</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">marker</span><span class="p">)</span>
+    <span class="vi">@name</span> <span class="o">=</span> <span class="nb">name</span>
+    <span class="vi">@marker</span> <span class="o">=</span> <span class="n">marker</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Square</span>
+  <span class="kp">attr_reader</span> <span class="ss">:value</span>
+
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="vi">@value</span> <span class="o">=</span> <span class="n">value</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">empty?</span>
+    <span class="vi">@value</span> <span class="o">==</span> <span class="s1">&#39; &#39;</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">mark</span><span class="p">(</span><span class="n">marker</span><span class="p">)</span>
+    <span class="vi">@value</span> <span class="o">=</span> <span class="n">marker</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">to_s</span>
+    <span class="vi">@value</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Game</span>
+  <span class="k">def</span> <span class="nf">initialize</span>
+    <span class="vi">@board</span> <span class="o">=</span> <span class="no">Board</span><span class="o">.</span><span class="n">new</span>
+    <span class="vi">@human</span> <span class="o">=</span> <span class="no">Player</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;James&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">)</span>
+    <span class="vi">@computer</span> <span class="o">=</span> <span class="no">Player</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;R2D2&quot;</span><span class="p">,</span> <span class="s2">&quot;O&quot;</span><span class="p">)</span>
+    <span class="vi">@current_player</span> <span class="o">=</span> <span class="vi">@human</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">current_player_marks_square</span>
+    <span class="k">if</span> <span class="vi">@current_player</span> <span class="o">==</span> <span class="vi">@human</span>
+      <span class="k">begin</span>
+        <span class="nb">puts</span> <span class="s2">&quot;Choose a position </span><span class="si">#{</span><span class="vi">@board</span><span class="o">.</span><span class="n">empty_positions</span><span class="si">}</span><span class="s2"> to place a piece:&quot;</span>
+        <span class="n">position</span> <span class="o">=</span> <span class="nb">gets</span><span class="o">.</span><span class="n">chomp</span><span class="o">.</span><span class="n">to_i</span>
+      <span class="k">end</span> <span class="k">until</span> <span class="vi">@board</span><span class="o">.</span><span class="n">empty_positions</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
+    <span class="k">else</span>
+      <span class="n">position</span> <span class="o">=</span> <span class="vi">@board</span><span class="o">.</span><span class="n">empty_positions</span><span class="o">.</span><span class="n">sample</span>
+    <span class="k">end</span>
+    <span class="vi">@board</span><span class="o">.</span><span class="n">mark_square</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="vi">@current_player</span><span class="o">.</span><span class="n">marker</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">alternate_player</span>
+    <span class="k">if</span> <span class="vi">@current_player</span> <span class="o">==</span> <span class="vi">@human</span>
+      <span class="vi">@current_player</span> <span class="o">=</span> <span class="vi">@computer</span>
+    <span class="k">else</span>
+      <span class="vi">@current_player</span> <span class="o">=</span> <span class="vi">@human</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">current_player_wins?</span>
+    <span class="vi">@board</span><span class="o">.</span><span class="n">three_squares_in_a_row?</span><span class="p">(</span><span class="vi">@current_player</span><span class="o">.</span><span class="n">marker</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">play</span>
+    <span class="vi">@board</span><span class="o">.</span><span class="n">draw</span>
+    <span class="kp">loop</span> <span class="k">do</span>
+      <span class="n">current_player_marks_square</span>
+      <span class="vi">@board</span><span class="o">.</span><span class="n">draw</span>
+      <span class="k">if</span> <span class="n">current_player_wins?</span>
+        <span class="nb">puts</span> <span class="s2">&quot;The winner is </span><span class="si">#{</span><span class="vi">@current_player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">!&quot;</span>
+        <span class="k">break</span>
+      <span class="k">elsif</span> <span class="vi">@board</span><span class="o">.</span><span class="n">all_squares_marked?</span>
+        <span class="nb">puts</span> <span class="s2">&quot;It&#39;s a tie.&quot;</span>
+        <span class="k">break</span>
+      <span class="k">else</span>
+        <span class="n">alternate_player</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="nb">puts</span> <span class="s2">&quot;Bye&quot;</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="no">Game</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">play</span></code></pre></div>
+
+  </div>
   
   <div class="post">
     <h1 class="post-title">
@@ -253,456 +1127,6 @@ So more like dashes and sprinkles of Jquery rather than overload of JQuery</p>
 <li><p>Google App Engine</p></li>
 <li><p>Ninefold</p></li>
 </ol>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/09/14/course1-lesson3/">
-        Intro to Ruby & Web Dev: Lesson 3
-      </a>
-    </h1>
-
-    <span class="post-date">14 Sep 2014</span>
-
-    <h1>Items covered</h1>
-
-<ol>
-<li>HTTP Request/Response Cycle</li>
-<li>MVC</li>
-<li>Sinatra(Shotgun)</li>
-<li>Erb</li>
-<li>Persistence</li>
-</ol>
-
-<h1>Difference b/w websites and web applications</h1>
-
-<ol>
-<li>Websites - static HTML, web server</li>
-<li>Web Applications - Actual server</li>
-</ol>
-
-<h2>HTTP</h2>
-
-<p>is broken up into 2 actions:</p>
-
-<ol>
-<li>Request
-
-<ul>
-<li>HTTP Verbs/Method</li>
-<li>URL</li>
-<li>Parameters</li>
-</ul></li>
-<li><p>Response</p>
-
-<ul>
-<li>Status Code</li>
-<li>Payload (not necessarily HTML all the time... could be JSON, XML)
-HTTP is also stateless. B/w every request, the browser must reconsitute the world to resemeble that current state.
-__________________</li>
-</ul></li>
-<li><p>Request - any interaction that you have with a web application</p>
-
-<ul>
-<li>2 Types of Requests - this is how a user interacts with the website</li>
-<li>HTTP Verbs</li>
-<li>GET
-
-<ul>
-<li>Link or type into address bar</li>
-<li>smaller payload (there is a size limit)</li>
-<li>parameters are a apart of the URL</li>
-</ul></li>
-<li>POST
-
-<ul>
-<li>forms</li>
-<li>larger payload</li>
-<li>parameters are submitted in the body</li>
-</ul></li>
-<li>parameters are submitted as apart of a form</li>
-<li>HTTP Methods</li>
-</ul></li>
-<li><p>Response</p>
-
-<ul>
-<li>Status Code</li>
-<li>200: ok</li>
-<li>301: redirect</li>
-<li>404: File not found</li>
-<li>500: general error</li>
-</ul></li>
-</ol>
-
-<h2>MVC</h2>
-
-<p>Person visits site and a request is to the controller/actions.
-Depending on the HTTP Verb, URL, and parameters passed - the controller will reference the model for the logic
-and the model, in turn will potentially reach to the database. Once retrieved, the controller render a view.</p>
-
-<p>We are foregoing the model and focusing on the request and render features, using a cookie as our sessions.</p>
-
-<h2>Sinatra App</h2>
-
-<p>Sinatra uses localhost:4567</p>
-
-<p>Sinatra doesn&#39;t automatically reload - for this, install shotgun and run &#39;ruby main.rb&#39; =&gt; localhost:9393</p>
-
-<h3>Shotgun</h3>
-
-<p>Allows your browser to refresh and updates with changes without stopping the server.</p>
-
-<p>Install in terminal: gem install Shotgun.</p>
-
-<p>Launched via port:9393 by running &quot;shotgun main.rb&quot;</p>
-
-<p>Link is loaded at &#39;/&#39;</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">In</span> <span class="n">main</span><span class="o">.</span><span class="n">rb</span><span class="p">:</span>
-
-<span class="n">get</span> <span class="s1">&#39;/&#39;</span> <span class="k">do</span>
-  <span class="s2">&quot;Hello World&quot;</span> <span class="o">+</span><span class="n">params</span><span class="o">[</span><span class="ss">:some</span><span class="o">].</span><span class="n">to_s</span>
-<span class="k">end</span></code></pre></div>
-
-<h2>Erb</h2>
-
-<p>Instead of working with code directly - HTML, etc , we want to work with templates (.erb)</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">  get &#39;test/&#39; do
-    erb :test
-  end
-</code></pre></div>
-<ul>
-<li>Create test.erb (layout: false) - to remove layout</li>
-</ul>
-
-<p>Instance variables setup in the action are available in the template, but only the template is being rendered</p>
-
-<p>Erb =&gt; Embedded Ruby</p>
-
-<p>&lt;% %&gt; Ruby code that doesn&#39;t need to be printed to HTML
-&lt;%= %&gt; Ruby code that should be printed out to HTML</p>
-
-<hr>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">main</span><span class="o">.</span><span class="n">rb</span>
-<span class="n">get</span> <span class="s1">&#39;/test&#39;</span> <span class="k">do</span>
-  <span class="vi">@error</span> <span class="o">=</span> <span class="s2">&quot;We&#39;ve got a problem&quot;</span>
-  <span class="n">erb</span> <span class="ss">:test</span> <span class="o">***</span> <span class="n">points</span> <span class="n">to</span> <span class="n">the</span> <span class="nb">test</span><span class="o">.</span><span class="n">erb</span> <span class="n">template</span> <span class="n">under</span> <span class="n">the</span> <span class="n">views</span><span class="o">***</span>
-<span class="k">end</span></code></pre></div>
-
-<hr>
-
-<h2>Persistance</h2>
-
-<p>The problem is that accessing the instance variable is only available upon request.
-To display form:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#main.rb</span>
-<span class="n">get</span> <span class="s1">&#39;/&#39;</span> <span class="k">do</span>
-  <span class="n">erb</span> <span class="ss">:set_name</span>
-<span class="k">end</span></code></pre></div>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#set_name.erb (Handles the display of data)</span>
-<span class="o">&lt;</span><span class="n">h4</span><span class="o">&gt;</span> <span class="no">Set</span> <span class="no">Player</span> <span class="no">Name</span> <span class="o">&lt;</span><span class="sr">/h4&gt;</span>
-
-<span class="sr">&lt;form action=&#39;/se</span><span class="n">t_name</span><span class="s1">&#39; method=&#39;</span><span class="n">post</span><span class="s1">&#39;</span>
-<span class="s1">  Name: &lt;input type=&#39;</span><span class="n">text</span><span class="s1">&#39; name=&#39;</span><span class="n">player_name</span><span class="s1">&#39; /&gt;</span>
-<span class="s1">  &lt;/br&gt;</span>
-<span class="s1">  &lt;input type =&#39;</span><span class="n">submit</span><span class="s1">&#39; class=&#39;</span><span class="n">btn</span><span class="err">&#39;</span><span class="o">/&gt;</span>
-<span class="o">&lt;</span><span class="sr">/form&gt;</span></code></pre></div>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#main.rb (handle the submission of the data)</span>
-
-<span class="n">post</span> <span class="s1">&#39;set_name&#39;</span> <span class="k">do</span>
-<span class="k">end</span></code></pre></div>
-
-<p>Whenever making changes to the HTML, you must refresh the browser to take effect.</p>
-
-<p>In order to fix persistence problem, you must use session instead of an instance variable. This allows use to work with cookies( has a limit of 4 kilobytes instead of dealing with relational databases. Can&#39;t deal with more than one decks.:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">post</span> <span class="s1">&#39;/set_name&#39;</span> <span class="k">do</span>
-  <span class="n">session</span><span class="o">[</span><span class="ss">:player_name</span><span class="o">]</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:player_name</span><span class="o">]</span>
-<span class="k">end</span></code></pre></div>
-
-<p>Sessions can be referenced directly because of the use of cookies.
-We know that cookies have tied to the session because we did not reference an instance variables.</p>
-
-<p>You can use the following to reference in your templates in order to display content dynamically and reconstitute all the states you expect.
-1. Instance variables
-2. Sessions
-3. helper methods</p>
-
-<p>The key is to figure out when you will redirect or render:</p>
-
-<ul>
-<li>Post - typically redirect</li>
-<li>Get - typically render</li>
-</ul>
-
-<p>Sinatra is typically very much to the metal and handles much less than Rails.</p>
-
-<p><strong>NOTES FROM BLACKJACK GAME</strong></p>
-
-<ol>
-<li><p>main.rb is the game engine.</p></li>
-<li><p>Constants: use constants when numbers are consistent through out the the game. This will allow you to be able the rules of the game in the future without having to comb through the code to find where to make the change.</p></li>
-<li><p>&quot;set :sessions, true&quot; facilitates some level of persistency, reconstitutes state and allows for your player info to tracked for that session.</p></li>
-<li><p>Helpers - &quot;helpers do .... end&quot; any methods within this block will be accessible in both the game engine (main.rb) and the (.erb) templates.</p></li>
-<li><p>Used @error and @success bootstrap instance variables to communicate special messages</p></li>
-<li><p>Require new player to enter in name:
-  post &#39;/new<em>player&#39; do
-    if params[:player</em>name].empty?
-      @error = &quot;Name is required.&quot;
-      halt erb(:new<em>player) #stop, don&#39;t execute anything below this, render template instead.
-    end
-    session[:player</em>name] = params[:player_name]
-    redirect &#39;/game&#39;
-  end</p></li>
-<li><p>Keep track of who&#39;s turn it is with:</p></li>
-</ol>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">session</span><span class="o">[</span><span class="ss">:turn</span><span class="o">]</span> <span class="o">=</span> <span class="n">session</span><span class="o">[</span><span class="ss">:player_name</span><span class="o">]</span>
-      <span class="ow">or</span>
-    <span class="n">session</span><span class="o">[</span><span class="ss">:turn</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;dealer&quot;</span></code></pre></div>
-
-<ol>
-<li><p>Instance Variables: using instance variables allow your game engine to communicate to your layout template and the data is erased as soon as another request comes in.</p></li>
-<li><p>halt erb(:new_player) #means stop, don&#39;t execute anything below this, render template instead.</p></li>
-<li><p>Always include &quot;erb :game&quot; to render the desired template rather than creating a redirect loop.</p></li>
-<li><p>When using post in main.rb and forms in .erb, you must specify the method as &quot;post&quot; in erb becasue the default is GET if you don&#39;t specify.</p></li>
-</ol>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">form</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;/new_player&#39;</span> <span class="nb">method</span><span class="o">=</span><span class="s2">&quot;post&quot;</span><span class="o">&gt;</span>
-      <span class="o">&lt;</span><span class="n">input</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;player_name&quot;</span> <span class="sr">/&gt;</span>
-<span class="sr">      &lt;br/</span><span class="o">&gt;</span>
-      <span class="o">&lt;</span><span class="n">input</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;submit&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;btn btn-inverse&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;Let&#39;s Play!&quot;</span><span class="o">/&gt;</span>
-    <span class="o">&lt;</span><span class="sr">/form&gt;</span></code></pre></div>
-
-<ol>
-<li>You must designate method=&quot;post&quot;, the default is &quot;get&quot;.</li>
-<li>Must give the input &quot;text&quot; an arbitrary name, in this instance, we chose &quot;player_name&quot;</li>
-<li><p>main.rb: under post, params is reset everytime you call it, so we must set the params[:player<em>name] = session[:player</em>name]</p></li>
-<li><p>There are different input types for forms including:</p></li>
-</ol>
-
-<p>input type = submit
-  input type = text, name = :player_name (must specify a name to track the value)</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/09/13/model-def-vs-invocation/">
-        Intro to Ruby & Web Dev: Method Definition vs. Method Invocation
-      </a>
-    </h1>
-
-    <span class="post-date">13 Sep 2014</span>
-
-    <h2>Method Definition</h2>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">method</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
-  <span class="vi">@name</span> <span class="o">=</span> <span class="nb">name</span>
-<span class="k">end</span></code></pre></div>
-
-<h2>Method Invocation using self.</h2>
-
-<p>If you call a method that does not have a caller, ruby will append self. the caller
-When calling the self. inside an instance method =&gt; the instance variable itself is returned.</p>
-
-<p>=&gt; self is an object from within the instance method, self changeses depending on what instance method is calling it.
-Self being called outside of an instance method refers to the class.</p>
-
-<ul>
-<li>Use .inspect to see what self is.</li>
-</ul>
-
-<ol>
-<li>Singleton (ghost) class shadows a particular object, only
-=&gt; will not show up in ancestors
-+&gt; you can declare methods on objects and is only callable/accessible by that object.</li>
-<li>All classes are objects also.</li>
-<li>DSL - Doman Specific Language =&gt; example Rails is a DSL for Ruby, which gives you colligiual sytanx to work with.</li>
-<li>Abtractions - all abstractions leak, not every code base is going fit 100% to a Specific way of writing.</li>
-</ol>
-
-<p>All Classes are Objects also.
-=&gt; All classes are objects of the Class class
-=&gt; Everything that starts with a capital letter is a constant, including classes =&gt; that&#39;s why we can store methods in them.</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/09/12/inheritance/">
-        Intro to Ruby & Web Dev: Inheritance
-      </a>
-    </h1>
-
-    <span class="post-date">12 Sep 2014</span>
-
-    <h1>Inheritance</h1>
-
-<p>Subclasses inherit attributes and behaviors of superclasses.</p>
-
-<p>When in cases of subclasses and superclass with the same class methods, the subclass will overide the superclass because ruby checks an object class before moving to the superclass.
-n the GoodDog class, we&#39;re overriding the speak method in the Animal class because Ruby checks the object&#39;s class first for the method before it looks in the superclass. So, that means when we wrote the code sparky.speak, it first looked at sparky&#39;s class, which is GoodDog. It found the speak method there and used it.</p>
-
-<h2>DRY</h2>
-
-<p>Inheritance can be a great way to remove duplication in your code base. There is an acronym that you&#39;ll see often in the Ruby community, &quot;DRY&quot;. This stands for &quot;Don&#39;t Repeat Yourself&quot;. It means that if you find yourself writing the same logic over and over again in your programs, there are ways to extract that logic to one place for reuse.</p>
-
-<h2>Mixing in Modules</h2>
-
-<p>Another way to DRY up your code in Ruby is to use modules. We&#39;ve already seen a little bit of how to use modules, but we&#39;ll give a few more examples here.</p>
-
-<p>Extracting common methods to a superclass, like we did in the previous lesson, is a great way to model concepts that are naturally hierarchical.</p>
-
-<h2>Inheritance vs Modules</h2>
-
-<p>Now that you know the two primary ways that Ruby implements inheritance, class inheritance and mixing in modules, you may wonder when to use one vs the other. Here are a couple of things to remember when evaluating those two choices.</p>
-
-<p>You can only subclass from one class. But you can mix in as many modules as you&#39;d like.
-If it&#39;s an &quot;is-a&quot; relationship, choose class inheritance. If it&#39;s a &quot;has-a relationship, choose modules. Example: a dog &quot;is an&quot; animal; a dog &quot;has an ability to swim.
-You cannot instantiate modules (i.e., no object can be created from a module) Modules are used only for namespacing and grouping common methods together.</p>
-
-<h2>Method Lookup Path</h2>
-
-<p>Now that you have a grasp on both inheritance and mixins. Let&#39;s put them both together to see how that affects the method lookup path. Recall the method lookup path is the order in which classes are inspected when you call a method.</p>
-
-<p>There are several interesting things about the above output. First, this tells us that the order in which we include modules is important. Ruby actually looks at the last module we included first. This means that in the rare ocurrance that the modules we mix in contain a method with the same name, the last module included will be consulted first. The second interesting thing is that the module included in the superclass made it on to the method lookup path. That means that all GoodDog objects will have access to not only Animal methods, but also methods defined in the Walkable module, as well as all other modules mixed in to any of its superclasses.</p>
-
-<h2>Private, Public, and Protected Methods</h2>
-
-<p>Public Methods are available to all
-Non-callable inside or outside a class but can be interpolated
-Protected methods act as public methods inside the class, therefore can be called but act as private methods outside of the class.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="kp">private</span>
-
-<span class="k">def</span> <span class="nf">human_years</span>
-    <span class="nb">self</span><span class="o">.</span><span class="n">age</span> <span class="o">/</span> <span class="no">DOG_YEARS</span>
-<span class="k">end</span>
-
-<span class="n">sparky</span> <span class="o">=</span> <span class="no">GoodDog</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;Sparky&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-<span class="n">sparky</span><span class="o">.</span><span class="n">human_years</span></code></pre></div>
-
-<p>We get the error message:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="ss">NoMethodError</span><span class="p">:</span> <span class="kp">private</span> <span class="nb">method</span> <span class="sb">`human_years&#39; called for</span>
-<span class="sb">  #&lt;GoodDog:0x007f8f431441f8 @name=&quot;Sparky&quot;, @age=28&gt;</span></code></pre></div>
-
-<p>We have made the human_years method private by placing it under the private reserved word. So what is it good for if we can&#39;t call it? private methods are only accessible from other methods in the class. For example, given the above code, the following would be allowed:</p>
-
-<p>Assume the method definition below is above the &quot;private&quot; keyword</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">public_disclosure</span>
-  <span class="s2">&quot;</span><span class="si">#{</span><span class="nb">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> in human years is </span><span class="si">#{</span><span class="n">human_years</span><span class="si">}</span><span class="s2">&quot;</span>
-<span class="k">end</span></code></pre></div>
-
-<p>Note that in this case, we can not use self.human<em>years, because the human</em>years method is private. Remember that self.human<em>years is equivalent to sparky.human</em>years, which is not allowed for private methods. Therefore, we have to just use human_years. In summary, private methods are not accessible outside of the class definition at all, and are only accessible from inside the class when called without self.</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/09/11/tic-tac-toe-procedural/">
-        Intro to Ruby & Web Dev: Tic-Tac-Toe Procedural Game
-      </a>
-    </h1>
-
-    <span class="post-date">11 Sep 2014</span>
-
-    <ol>
-<li>Come up with requirements/specifications - that will determine your own scope.</li>
-<li>Application logic, sequence of steps.</li>
-<li>Translation of those steps into code.</li>
-<li>Run code to verfiy logic.=end</li>
-</ol>
-
-<h1>Sequence of steps</h1>
-
-<ol>
-<li>Draw a board</li>
-<li>Assign Player to &quot;x&quot;</li>
-<li>Assign Computer to &quot;o&quot;
-Loop until a winner or all squares are taken</li>
-<li>Player 1 picks an empty square
-Check for winner</li>
-<li>Player 2 picks an empty square</li>
-<li>Check for winner</li>
-<li>If there is a winner, show winner; else &quot;It&#39;s a tie&quot;</li>
-</ol>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;pry&#39;</span>
-
-<span class="c1">#create a way to allow players to input choice on tictactoe board, hash</span>
-<span class="k">def</span> <span class="nf">initialize_board</span>
-  <span class="n">b</span> <span class="o">=</span> <span class="p">{}</span>
-  <span class="p">(</span><span class="mi">1</span><span class="o">.</span><span class="n">.</span><span class="mi">9</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span><span class="o">|</span><span class="n">position</span><span class="o">|</span> <span class="n">b</span><span class="o">[</span><span class="n">position</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;  &#39;</span><span class="p">}</span>
-  <span class="n">b</span>
-<span class="k">end</span>
-
-<span class="c1">#define board position where player/computer choice will go</span>
-<span class="k">def</span> <span class="nf">draw_board</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-  <span class="nb">system</span> <span class="s1">&#39;clear&#39;</span>
-  <span class="nb">puts</span> <span class="s2">&quot; </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span><span class="si">}</span><span class="s2"> &quot;</span>
-  <span class="nb">puts</span> <span class="s2">&quot;--------------&quot;</span>
-  <span class="nb">puts</span> <span class="s2">&quot; </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">4</span><span class="o">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">5</span><span class="o">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">6</span><span class="o">]</span><span class="si">}</span><span class="s2"> &quot;</span>
-  <span class="nb">puts</span> <span class="s2">&quot;--------------&quot;</span>
-  <span class="nb">puts</span> <span class="s2">&quot; </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">7</span><span class="o">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">8</span><span class="o">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">9</span><span class="o">]</span><span class="si">}</span><span class="s2"> &quot;</span>
-<span class="k">end</span>
-
-<span class="k">def</span> <span class="nf">empty_position</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-  <span class="n">b</span><span class="o">.</span><span class="n">select</span> <span class="p">{</span><span class="o">|</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="o">|</span> <span class="n">v</span> <span class="o">==</span> <span class="s1">&#39;  &#39;</span><span class="p">}</span><span class="o">.</span><span class="n">keys</span>
-
-<span class="k">end</span>
-
-<span class="k">def</span> <span class="nf">player_picks_square</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-  <span class="nb">puts</span> <span class="s2">&quot;Pick a square (1 - 9):&quot;</span>
-  <span class="c1">#make sure your gets.chomp is getting the state that your hash key is</span>
-  <span class="n">position</span> <span class="o">=</span> <span class="nb">gets</span><span class="o">.</span><span class="n">chomp</span><span class="o">.</span><span class="n">to_i</span>
-  <span class="n">b</span><span class="o">[</span><span class="n">position</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;x&#39;</span>
-  <span class="c1">#binding.pry</span>
-<span class="k">end</span>
-
-<span class="k">def</span> <span class="nf">computer_picks_square</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-  <span class="n">position</span> <span class="o">=</span> <span class="n">empty_position</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span>
-  <span class="n">b</span><span class="o">[</span><span class="n">position</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;o&#39;</span>
-<span class="k">end</span>
-
-<span class="k">def</span> <span class="nf">check_winner</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-<span class="n">winning_lines</span> <span class="o">=</span> <span class="o">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">8</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">9</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">9</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="o">]]</span>
-<span class="n">winning_lines</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span>
-    <span class="k">if</span> <span class="n">b</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">0</span><span class="o">]]</span> <span class="o">==</span> <span class="s1">&#39;x&#39;</span> <span class="ow">and</span> <span class="n">b</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">1</span><span class="o">]]</span> <span class="o">==</span> <span class="s1">&#39;x&#39;</span> <span class="ow">and</span> <span class="n">b</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">2</span><span class="o">]]</span> <span class="o">==</span> <span class="s1">&#39;x&#39;</span>
-      <span class="k">return</span> <span class="s1">&#39;Player&#39;</span>
-    <span class="k">elsif</span> <span class="n">b</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">0</span><span class="o">]]</span> <span class="o">==</span> <span class="s1">&#39;o&#39;</span> <span class="ow">and</span> <span class="n">b</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">1</span><span class="o">]]</span> <span class="o">==</span> <span class="s1">&#39;o&#39;</span> <span class="ow">and</span> <span class="n">b</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">2</span><span class="o">]]</span> <span class="o">==</span> <span class="s1">&#39;o&#39;</span>
-      <span class="k">return</span> <span class="s1">&#39;Computer&#39;</span>
-    <span class="k">else</span>
-      <span class="k">return</span> <span class="kp">nil</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-
-<span class="c1">#sets local variable b from the initialize method (inner_scope) equal to board, a variable defined in the outter scope</span>
-<span class="n">board</span> <span class="o">=</span> <span class="n">initialize_board</span>
-<span class="n">draw_board</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
-
-
-<span class="c1">#loop until</span>
-<span class="k">begin</span>
-  <span class="n">player_picks_square</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
-  <span class="n">computer_picks_square</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
-  <span class="n">draw_board</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
-  <span class="n">winner</span> <span class="o">=</span> <span class="n">check_winner</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
-<span class="k">end</span> <span class="k">until</span> <span class="n">winner</span> <span class="o">||</span> <span class="n">empty_position</span><span class="p">(</span><span class="n">board</span><span class="p">)</span><span class="o">.</span><span class="n">empty?</span>
-
-<span class="k">if</span> <span class="n">winner</span>
-  <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">winner</span><span class="si">}</span><span class="s2"> won!&quot;</span>
-<span class="k">else</span>
-  <span class="nb">puts</span> <span class="s2">&quot;It&#39;s a tie!&quot;</span>
-<span class="k">end</span></code></pre></div>
 
   </div>
   

@@ -43,6 +43,8 @@
       <p class="lead">daily learnings as a ruby dev</p>
     </div>
 
+
+
     <nav class="sidebar-nav">
       <a class="sidebar-nav-item" href="/">Home</a>
 
@@ -56,10 +58,26 @@
       
         
           
+            <a class="sidebar-nav-item" href=""></a>
+
             <a class="sidebar-nav-item" href="/about/">About</a>
+
           
         
       
+        
+          
+            <a class="sidebar-nav-item" href=""></a>
+
+            <a class="sidebar-nav-item" href="/archive/">Archive</a>
+
+          
+        
+      
+        
+      
+        
+          
         
       
         
@@ -149,6 +167,456 @@
   
   <div class="post">
     <h1 class="post-title">
+      <a href="/2014/09/14/course1-lesson3/">
+        Intro to Ruby & Web Dev: Lesson 3
+      </a>
+    </h1>
+
+    <span class="post-date">14 Sep 2014</span>
+
+    <h1>Items covered</h1>
+
+<ol>
+<li>HTTP Request/Response Cycle</li>
+<li>MVC</li>
+<li>Sinatra(Shotgun)</li>
+<li>Erb</li>
+<li>Persistence</li>
+</ol>
+
+<h1>Difference b/w websites and web applications</h1>
+
+<ol>
+<li>Websites - static HTML, web server</li>
+<li>Web Applications - Actual server</li>
+</ol>
+
+<h2>HTTP</h2>
+
+<p>is broken up into 2 actions:</p>
+
+<ol>
+<li>Request
+
+<ul>
+<li>HTTP Verbs/Method</li>
+<li>URL</li>
+<li>Parameters</li>
+</ul></li>
+<li><p>Response</p>
+
+<ul>
+<li>Status Code</li>
+<li>Payload (not necessarily HTML all the time... could be JSON, XML)
+HTTP is also stateless. B/w every request, the browser must reconsitute the world to resemeble that current state.
+__________________</li>
+</ul></li>
+<li><p>Request - any interaction that you have with a web application</p>
+
+<ul>
+<li>2 Types of Requests - this is how a user interacts with the website</li>
+<li>HTTP Verbs</li>
+<li>GET
+
+<ul>
+<li>Link or type into address bar</li>
+<li>smaller payload (there is a size limit)</li>
+<li>parameters are a apart of the URL</li>
+</ul></li>
+<li>POST
+
+<ul>
+<li>forms</li>
+<li>larger payload</li>
+<li>parameters are submitted in the body</li>
+</ul></li>
+<li>parameters are submitted as apart of a form</li>
+<li>HTTP Methods</li>
+</ul></li>
+<li><p>Response</p>
+
+<ul>
+<li>Status Code</li>
+<li>200: ok</li>
+<li>301: redirect</li>
+<li>404: File not found</li>
+<li>500: general error</li>
+</ul></li>
+</ol>
+
+<h2>MVC</h2>
+
+<p>Person visits site and a request is to the controller/actions.
+Depending on the HTTP Verb, URL, and parameters passed - the controller will reference the model for the logic
+and the model, in turn will potentially reach to the database. Once retrieved, the controller render a view.</p>
+
+<p>We are foregoing the model and focusing on the request and render features, using a cookie as our sessions.</p>
+
+<h2>Sinatra App</h2>
+
+<p>Sinatra uses localhost:4567</p>
+
+<p>Sinatra doesn&#39;t automatically reload - for this, install shotgun and run &#39;ruby main.rb&#39; =&gt; localhost:9393</p>
+
+<h3>Shotgun</h3>
+
+<p>Allows your browser to refresh and updates with changes without stopping the server.</p>
+
+<p>Install in terminal: gem install Shotgun.</p>
+
+<p>Launched via port:9393 by running &quot;shotgun main.rb&quot;</p>
+
+<p>Link is loaded at &#39;/&#39;</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">In</span> <span class="n">main</span><span class="o">.</span><span class="n">rb</span><span class="p">:</span>
+
+<span class="n">get</span> <span class="s1">&#39;/&#39;</span> <span class="k">do</span>
+  <span class="s2">&quot;Hello World&quot;</span> <span class="o">+</span><span class="n">params</span><span class="o">[</span><span class="ss">:some</span><span class="o">].</span><span class="n">to_s</span>
+<span class="k">end</span></code></pre></div>
+
+<h2>Erb</h2>
+
+<p>Instead of working with code directly - HTML, etc , we want to work with templates (.erb)</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">  get &#39;test/&#39; do
+    erb :test
+  end
+</code></pre></div>
+<ul>
+<li>Create test.erb (layout: false) - to remove layout</li>
+</ul>
+
+<p>Instance variables setup in the action are available in the template, but only the template is being rendered</p>
+
+<p>Erb =&gt; Embedded Ruby</p>
+
+<p>&lt;% %&gt; Ruby code that doesn&#39;t need to be printed to HTML
+&lt;%= %&gt; Ruby code that should be printed out to HTML</p>
+
+<hr>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">main</span><span class="o">.</span><span class="n">rb</span>
+<span class="n">get</span> <span class="s1">&#39;/test&#39;</span> <span class="k">do</span>
+  <span class="vi">@error</span> <span class="o">=</span> <span class="s2">&quot;We&#39;ve got a problem&quot;</span>
+  <span class="n">erb</span> <span class="ss">:test</span> <span class="o">***</span> <span class="n">points</span> <span class="n">to</span> <span class="n">the</span> <span class="nb">test</span><span class="o">.</span><span class="n">erb</span> <span class="n">template</span> <span class="n">under</span> <span class="n">the</span> <span class="n">views</span><span class="o">***</span>
+<span class="k">end</span></code></pre></div>
+
+<hr>
+
+<h2>Persistance</h2>
+
+<p>The problem is that accessing the instance variable is only available upon request.
+To display form:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#main.rb</span>
+<span class="n">get</span> <span class="s1">&#39;/&#39;</span> <span class="k">do</span>
+  <span class="n">erb</span> <span class="ss">:set_name</span>
+<span class="k">end</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#set_name.erb (Handles the display of data)</span>
+<span class="o">&lt;</span><span class="n">h4</span><span class="o">&gt;</span> <span class="no">Set</span> <span class="no">Player</span> <span class="no">Name</span> <span class="o">&lt;</span><span class="sr">/h4&gt;</span>
+
+<span class="sr">&lt;form action=&#39;/se</span><span class="n">t_name</span><span class="s1">&#39; method=&#39;</span><span class="n">post</span><span class="s1">&#39;</span>
+<span class="s1">  Name: &lt;input type=&#39;</span><span class="n">text</span><span class="s1">&#39; name=&#39;</span><span class="n">player_name</span><span class="s1">&#39; /&gt;</span>
+<span class="s1">  &lt;/br&gt;</span>
+<span class="s1">  &lt;input type =&#39;</span><span class="n">submit</span><span class="s1">&#39; class=&#39;</span><span class="n">btn</span><span class="err">&#39;</span><span class="o">/&gt;</span>
+<span class="o">&lt;</span><span class="sr">/form&gt;</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#main.rb (handle the submission of the data)</span>
+
+<span class="n">post</span> <span class="s1">&#39;set_name&#39;</span> <span class="k">do</span>
+<span class="k">end</span></code></pre></div>
+
+<p>Whenever making changes to the HTML, you must refresh the browser to take effect.</p>
+
+<p>In order to fix persistence problem, you must use session instead of an instance variable. This allows use to work with cookies( has a limit of 4 kilobytes instead of dealing with relational databases. Can&#39;t deal with more than one decks.:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">post</span> <span class="s1">&#39;/set_name&#39;</span> <span class="k">do</span>
+  <span class="n">session</span><span class="o">[</span><span class="ss">:player_name</span><span class="o">]</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:player_name</span><span class="o">]</span>
+<span class="k">end</span></code></pre></div>
+
+<p>Sessions can be referenced directly because of the use of cookies.
+We know that cookies have tied to the session because we did not reference an instance variables.</p>
+
+<p>You can use the following to reference in your templates in order to display content dynamically and reconstitute all the states you expect.
+1. Instance variables
+2. Sessions
+3. helper methods</p>
+
+<p>The key is to figure out when you will redirect or render:</p>
+
+<ul>
+<li>Post - typically redirect</li>
+<li>Get - typically render</li>
+</ul>
+
+<p>Sinatra is typically very much to the metal and handles much less than Rails.</p>
+
+<p><strong>NOTES FROM BLACKJACK GAME</strong></p>
+
+<ol>
+<li><p>main.rb is the game engine.</p></li>
+<li><p>Constants: use constants when numbers are consistent through out the the game. This will allow you to be able the rules of the game in the future without having to comb through the code to find where to make the change.</p></li>
+<li><p>&quot;set :sessions, true&quot; facilitates some level of persistency, reconstitutes state and allows for your player info to tracked for that session.</p></li>
+<li><p>Helpers - &quot;helpers do .... end&quot; any methods within this block will be accessible in both the game engine (main.rb) and the (.erb) templates.</p></li>
+<li><p>Used @error and @success bootstrap instance variables to communicate special messages</p></li>
+<li><p>Require new player to enter in name:
+  post &#39;/new<em>player&#39; do
+    if params[:player</em>name].empty?
+      @error = &quot;Name is required.&quot;
+      halt erb(:new<em>player) #stop, don&#39;t execute anything below this, render template instead.
+    end
+    session[:player</em>name] = params[:player_name]
+    redirect &#39;/game&#39;
+  end</p></li>
+<li><p>Keep track of who&#39;s turn it is with:</p></li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">session</span><span class="o">[</span><span class="ss">:turn</span><span class="o">]</span> <span class="o">=</span> <span class="n">session</span><span class="o">[</span><span class="ss">:player_name</span><span class="o">]</span>
+      <span class="ow">or</span>
+    <span class="n">session</span><span class="o">[</span><span class="ss">:turn</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;dealer&quot;</span></code></pre></div>
+
+<ol>
+<li><p>Instance Variables: using instance variables allow your game engine to communicate to your layout template and the data is erased as soon as another request comes in.</p></li>
+<li><p>halt erb(:new_player) #means stop, don&#39;t execute anything below this, render template instead.</p></li>
+<li><p>Always include &quot;erb :game&quot; to render the desired template rather than creating a redirect loop.</p></li>
+<li><p>When using post in main.rb and forms in .erb, you must specify the method as &quot;post&quot; in erb becasue the default is GET if you don&#39;t specify.</p></li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">form</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;/new_player&#39;</span> <span class="nb">method</span><span class="o">=</span><span class="s2">&quot;post&quot;</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">input</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;player_name&quot;</span> <span class="sr">/&gt;</span>
+<span class="sr">      &lt;br/</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">input</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;submit&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;btn btn-inverse&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;Let&#39;s Play!&quot;</span><span class="o">/&gt;</span>
+    <span class="o">&lt;</span><span class="sr">/form&gt;</span></code></pre></div>
+
+<ol>
+<li>You must designate method=&quot;post&quot;, the default is &quot;get&quot;.</li>
+<li>Must give the input &quot;text&quot; an arbitrary name, in this instance, we chose &quot;player_name&quot;</li>
+<li><p>main.rb: under post, params is reset everytime you call it, so we must set the params[:player<em>name] = session[:player</em>name]</p></li>
+<li><p>There are different input types for forms including:</p></li>
+</ol>
+
+<p>input type = submit
+  input type = text, name = :player_name (must specify a name to track the value)</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2014/09/13/model-def-vs-invocation/">
+        Intro to Ruby & Web Dev: Method Definition vs. Method Invocation
+      </a>
+    </h1>
+
+    <span class="post-date">13 Sep 2014</span>
+
+    <h2>Method Definition</h2>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">method</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+  <span class="vi">@name</span> <span class="o">=</span> <span class="nb">name</span>
+<span class="k">end</span></code></pre></div>
+
+<h2>Method Invocation using self.</h2>
+
+<p>If you call a method that does not have a caller, ruby will append self. the caller
+When calling the self. inside an instance method =&gt; the instance variable itself is returned.</p>
+
+<p>=&gt; self is an object from within the instance method, self changeses depending on what instance method is calling it.
+Self being called outside of an instance method refers to the class.</p>
+
+<ul>
+<li>Use .inspect to see what self is.</li>
+</ul>
+
+<ol>
+<li>Singleton (ghost) class shadows a particular object, only
+=&gt; will not show up in ancestors
++&gt; you can declare methods on objects and is only callable/accessible by that object.</li>
+<li>All classes are objects also.</li>
+<li>DSL - Doman Specific Language =&gt; example Rails is a DSL for Ruby, which gives you colligiual sytanx to work with.</li>
+<li>Abtractions - all abstractions leak, not every code base is going fit 100% to a Specific way of writing.</li>
+</ol>
+
+<p>All Classes are Objects also.
+=&gt; All classes are objects of the Class class
+=&gt; Everything that starts with a capital letter is a constant, including classes =&gt; that&#39;s why we can store methods in them.</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2014/09/12/inheritance/">
+        Intro to Ruby & Web Dev: Inheritance
+      </a>
+    </h1>
+
+    <span class="post-date">12 Sep 2014</span>
+
+    <h1>Inheritance</h1>
+
+<p>Subclasses inherit attributes and behaviors of superclasses.</p>
+
+<p>When in cases of subclasses and superclass with the same class methods, the subclass will overide the superclass because ruby checks an object class before moving to the superclass.
+n the GoodDog class, we&#39;re overriding the speak method in the Animal class because Ruby checks the object&#39;s class first for the method before it looks in the superclass. So, that means when we wrote the code sparky.speak, it first looked at sparky&#39;s class, which is GoodDog. It found the speak method there and used it.</p>
+
+<h2>DRY</h2>
+
+<p>Inheritance can be a great way to remove duplication in your code base. There is an acronym that you&#39;ll see often in the Ruby community, &quot;DRY&quot;. This stands for &quot;Don&#39;t Repeat Yourself&quot;. It means that if you find yourself writing the same logic over and over again in your programs, there are ways to extract that logic to one place for reuse.</p>
+
+<h2>Mixing in Modules</h2>
+
+<p>Another way to DRY up your code in Ruby is to use modules. We&#39;ve already seen a little bit of how to use modules, but we&#39;ll give a few more examples here.</p>
+
+<p>Extracting common methods to a superclass, like we did in the previous lesson, is a great way to model concepts that are naturally hierarchical.</p>
+
+<h2>Inheritance vs Modules</h2>
+
+<p>Now that you know the two primary ways that Ruby implements inheritance, class inheritance and mixing in modules, you may wonder when to use one vs the other. Here are a couple of things to remember when evaluating those two choices.</p>
+
+<p>You can only subclass from one class. But you can mix in as many modules as you&#39;d like.
+If it&#39;s an &quot;is-a&quot; relationship, choose class inheritance. If it&#39;s a &quot;has-a relationship, choose modules. Example: a dog &quot;is an&quot; animal; a dog &quot;has an ability to swim.
+You cannot instantiate modules (i.e., no object can be created from a module) Modules are used only for namespacing and grouping common methods together.</p>
+
+<h2>Method Lookup Path</h2>
+
+<p>Now that you have a grasp on both inheritance and mixins. Let&#39;s put them both together to see how that affects the method lookup path. Recall the method lookup path is the order in which classes are inspected when you call a method.</p>
+
+<p>There are several interesting things about the above output. First, this tells us that the order in which we include modules is important. Ruby actually looks at the last module we included first. This means that in the rare ocurrance that the modules we mix in contain a method with the same name, the last module included will be consulted first. The second interesting thing is that the module included in the superclass made it on to the method lookup path. That means that all GoodDog objects will have access to not only Animal methods, but also methods defined in the Walkable module, as well as all other modules mixed in to any of its superclasses.</p>
+
+<h2>Private, Public, and Protected Methods</h2>
+
+<p>Public Methods are available to all
+Non-callable inside or outside a class but can be interpolated
+Protected methods act as public methods inside the class, therefore can be called but act as private methods outside of the class.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="kp">private</span>
+
+<span class="k">def</span> <span class="nf">human_years</span>
+    <span class="nb">self</span><span class="o">.</span><span class="n">age</span> <span class="o">/</span> <span class="no">DOG_YEARS</span>
+<span class="k">end</span>
+
+<span class="n">sparky</span> <span class="o">=</span> <span class="no">GoodDog</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;Sparky&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">sparky</span><span class="o">.</span><span class="n">human_years</span></code></pre></div>
+
+<p>We get the error message:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="ss">NoMethodError</span><span class="p">:</span> <span class="kp">private</span> <span class="nb">method</span> <span class="sb">`human_years&#39; called for</span>
+<span class="sb">  #&lt;GoodDog:0x007f8f431441f8 @name=&quot;Sparky&quot;, @age=28&gt;</span></code></pre></div>
+
+<p>We have made the human_years method private by placing it under the private reserved word. So what is it good for if we can&#39;t call it? private methods are only accessible from other methods in the class. For example, given the above code, the following would be allowed:</p>
+
+<p>Assume the method definition below is above the &quot;private&quot; keyword</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">public_disclosure</span>
+  <span class="s2">&quot;</span><span class="si">#{</span><span class="nb">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> in human years is </span><span class="si">#{</span><span class="n">human_years</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="k">end</span></code></pre></div>
+
+<p>Note that in this case, we can not use self.human<em>years, because the human</em>years method is private. Remember that self.human<em>years is equivalent to sparky.human</em>years, which is not allowed for private methods. Therefore, we have to just use human_years. In summary, private methods are not accessible outside of the class definition at all, and are only accessible from inside the class when called without self.</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2014/09/11/tic-tac-toe-procedural/">
+        Intro to Ruby & Web Dev: Tic-Tac-Toe Procedural Game
+      </a>
+    </h1>
+
+    <span class="post-date">11 Sep 2014</span>
+
+    <ol>
+<li>Come up with requirements/specifications - that will determine your own scope.</li>
+<li>Application logic, sequence of steps.</li>
+<li>Translation of those steps into code.</li>
+<li>Run code to verfiy logic.=end</li>
+</ol>
+
+<h1>Sequence of steps</h1>
+
+<ol>
+<li>Draw a board</li>
+<li>Assign Player to &quot;x&quot;</li>
+<li>Assign Computer to &quot;o&quot;
+Loop until a winner or all squares are taken</li>
+<li>Player 1 picks an empty square
+Check for winner</li>
+<li>Player 2 picks an empty square</li>
+<li>Check for winner</li>
+<li>If there is a winner, show winner; else &quot;It&#39;s a tie&quot;</li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;pry&#39;</span>
+
+<span class="c1">#create a way to allow players to input choice on tictactoe board, hash</span>
+<span class="k">def</span> <span class="nf">initialize_board</span>
+  <span class="n">b</span> <span class="o">=</span> <span class="p">{}</span>
+  <span class="p">(</span><span class="mi">1</span><span class="o">.</span><span class="n">.</span><span class="mi">9</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span><span class="o">|</span><span class="n">position</span><span class="o">|</span> <span class="n">b</span><span class="o">[</span><span class="n">position</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;  &#39;</span><span class="p">}</span>
+  <span class="n">b</span>
+<span class="k">end</span>
+
+<span class="c1">#define board position where player/computer choice will go</span>
+<span class="k">def</span> <span class="nf">draw_board</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+  <span class="nb">system</span> <span class="s1">&#39;clear&#39;</span>
+  <span class="nb">puts</span> <span class="s2">&quot; </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span><span class="si">}</span><span class="s2"> &quot;</span>
+  <span class="nb">puts</span> <span class="s2">&quot;--------------&quot;</span>
+  <span class="nb">puts</span> <span class="s2">&quot; </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">4</span><span class="o">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">5</span><span class="o">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">6</span><span class="o">]</span><span class="si">}</span><span class="s2"> &quot;</span>
+  <span class="nb">puts</span> <span class="s2">&quot;--------------&quot;</span>
+  <span class="nb">puts</span> <span class="s2">&quot; </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">7</span><span class="o">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">8</span><span class="o">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">#{</span><span class="n">b</span><span class="o">[</span><span class="mi">9</span><span class="o">]</span><span class="si">}</span><span class="s2"> &quot;</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">empty_position</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+  <span class="n">b</span><span class="o">.</span><span class="n">select</span> <span class="p">{</span><span class="o">|</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="o">|</span> <span class="n">v</span> <span class="o">==</span> <span class="s1">&#39;  &#39;</span><span class="p">}</span><span class="o">.</span><span class="n">keys</span>
+
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">player_picks_square</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+  <span class="nb">puts</span> <span class="s2">&quot;Pick a square (1 - 9):&quot;</span>
+  <span class="c1">#make sure your gets.chomp is getting the state that your hash key is</span>
+  <span class="n">position</span> <span class="o">=</span> <span class="nb">gets</span><span class="o">.</span><span class="n">chomp</span><span class="o">.</span><span class="n">to_i</span>
+  <span class="n">b</span><span class="o">[</span><span class="n">position</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;x&#39;</span>
+  <span class="c1">#binding.pry</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">computer_picks_square</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+  <span class="n">position</span> <span class="o">=</span> <span class="n">empty_position</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span>
+  <span class="n">b</span><span class="o">[</span><span class="n">position</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;o&#39;</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">check_winner</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="n">winning_lines</span> <span class="o">=</span> <span class="o">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">8</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">9</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">9</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="o">]]</span>
+<span class="n">winning_lines</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span>
+    <span class="k">if</span> <span class="n">b</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">0</span><span class="o">]]</span> <span class="o">==</span> <span class="s1">&#39;x&#39;</span> <span class="ow">and</span> <span class="n">b</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">1</span><span class="o">]]</span> <span class="o">==</span> <span class="s1">&#39;x&#39;</span> <span class="ow">and</span> <span class="n">b</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">2</span><span class="o">]]</span> <span class="o">==</span> <span class="s1">&#39;x&#39;</span>
+      <span class="k">return</span> <span class="s1">&#39;Player&#39;</span>
+    <span class="k">elsif</span> <span class="n">b</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">0</span><span class="o">]]</span> <span class="o">==</span> <span class="s1">&#39;o&#39;</span> <span class="ow">and</span> <span class="n">b</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">1</span><span class="o">]]</span> <span class="o">==</span> <span class="s1">&#39;o&#39;</span> <span class="ow">and</span> <span class="n">b</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">2</span><span class="o">]]</span> <span class="o">==</span> <span class="s1">&#39;o&#39;</span>
+      <span class="k">return</span> <span class="s1">&#39;Computer&#39;</span>
+    <span class="k">else</span>
+      <span class="k">return</span> <span class="kp">nil</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1">#sets local variable b from the initialize method (inner_scope) equal to board, a variable defined in the outter scope</span>
+<span class="n">board</span> <span class="o">=</span> <span class="n">initialize_board</span>
+<span class="n">draw_board</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
+
+
+<span class="c1">#loop until</span>
+<span class="k">begin</span>
+  <span class="n">player_picks_square</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
+  <span class="n">computer_picks_square</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
+  <span class="n">draw_board</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
+  <span class="n">winner</span> <span class="o">=</span> <span class="n">check_winner</span><span class="p">(</span><span class="n">board</span><span class="p">)</span>
+<span class="k">end</span> <span class="k">until</span> <span class="n">winner</span> <span class="o">||</span> <span class="n">empty_position</span><span class="p">(</span><span class="n">board</span><span class="p">)</span><span class="o">.</span><span class="n">empty?</span>
+
+<span class="k">if</span> <span class="n">winner</span>
+  <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">winner</span><span class="si">}</span><span class="s2"> won!&quot;</span>
+<span class="k">else</span>
+  <span class="nb">puts</span> <span class="s2">&quot;It&#39;s a tie!&quot;</span>
+<span class="k">end</span></code></pre></div>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
       <a href="/2014/09/10/the-object-model/">
         Intro to Ruby & Web Dev: The Object Model
       </a>
@@ -216,225 +684,11 @@ Create a class, create an object, use a mixin.</p>
 
   </div>
   
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/09/07/course1-lesson2/">
-        Intro to Ruby & Web Dev: Lesson 2
-      </a>
-    </h1>
-
-    <span class="post-date">07 Sep 2014</span>
-
-    <h1>Items covered:</h1>
-
-<ol>
-<li>Classes, Instances, &amp; Objects</li>
-<li>Modules</li>
-<li>Inheritance</li>
-<li>Method Lookup Chain</li>
-<li>Procedural vs OOP</li>
-</ol>
-
-<h2>Classes &amp; Objects</h2>
-
-<ul>
-<li>Objects are instantized through classes and contant states and behaviors</li>
-<li>Classes are the cookie cutters</li>
-<li>Instance methods encapsulate behaviors and are defined in classes.</li>
-<li>Instance variables = state</li>
-<li>Instance methods = behaviors
-Interesting syntax when using equals, setter:</li>
-</ul>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">set_name</span><span class="o">=</span><span class="p">(</span><span class="n">new_name</span><span class="p">)</span>
-  <span class="vi">@name</span> <span class="o">=</span> <span class="nb">name</span>
-<span class="k">end</span>
-
-<span class="n">jamela</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">new</span>
-
-<span class="n">jamela</span><span class="o">.</span><span class="n">set_name</span> <span class="o">=</span> <span class="s2">&quot;Jam&quot;</span></code></pre></div>
-
-<p>or</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">set_name</span><span class="p">(</span><span class="n">new_name</span><span class="p">)</span>
-  <span class="vi">@name</span> <span class="o">=</span> <span class="nb">name</span>
-<span class="k">end</span>
-
-<span class="n">jamela</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="s2">&quot;Jam&quot;</span><span class="p">)</span></code></pre></div>
-
-<p>Setters:</p>
-
-<p>You have to use .self when using the setter method within an instance method of the same class.
-Instance methods are like raw data and you can access them but in general, you always want to use the getters and setters when available for encapsulation and santization.</p>
-
-<h3>Class Variables:</h3>
-
-<p>Track states that are common across all instances within a class.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#To keep track of number of objects</span>
-<span class="vc">@@class</span> <span class="o">=</span> <span class="mi">0</span>
-
-<span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
-  <span class="vi">@name</span> <span class="o">=</span> <span class="n">n</span>
-  <span class="vi">@height</span> <span class="o">=</span> <span class="n">h</span>
-  <span class="vi">@weight</span> <span class="o">=</span> <span class="n">w</span>
-  <span class="vc">@@count</span> <span class="o">+=</span> <span class="mi">1</span>
-<span class="k">end</span>
-
-<span class="vc">@@class_variable</span> <span class="o">+=</span><span class="mi">1</span></code></pre></div>
-
-<h3>Class Methods:</h3>
-
-<p>Performs behaviors at the class level</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">total_count</span>
-<span class="s2">&quot;The total number of dogs is </span><span class="si">#{</span><span class="vc">@@count</span><span class="si">}</span><span class="s2">&quot;</span>
-<span class="k">end</span>
-
-<span class="nb">puts</span> <span class="no">Dog</span><span class="o">.</span><span class="n">total_count</span></code></pre></div>
-
-<h2>Inheritance</h2>
-
-<p>SubClass &lt; SuperClass</p>
-
-<p>object.ancestors shows you the method look-up chain</p>
-
-<h2>Namespace</h2>
-
-<p>class User &lt; ActiveRecord::Base
-refers to the inheritance of the Base class inside the ActiveRecord module
-Just like with Cms::User - refers to the User class in the CMS module.</p>
-
-<h2>Modules</h2>
-
-<p>Allows you to mixin in behavior. The difference between modules and classes are that modules cannot be instantiated.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">module</span> <span class="nn">Swimmable</span>
-  <span class="k">def</span> <span class="nf">swim</span>
-  <span class="nb">puts</span> <span class="s2">&quot;I&#39;m swimming!&quot;</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<p>In method, you can mixin in the module by typing &quot;include Swimmable&quot;.
-When creating modules you simply add &quot;-able&quot; to the end of your method name and then type &quot;include swimmable&quot; in the method you want to add that behavior.</p>
-
-<p>-In method lookups, a module that is mixin will superecede (be listed first) super classes. This means that if a module and a superclass has the same method, the module method will have precedence. When mixin two modules, the method lookup chain will be effected based on reverse inclusion, meanging the last module included will be looked at first.</p>
-
-<p>The point of modules is extract code that is non-specific to a class... and make it reusable.</p>
-
-<p>Some modules can require methods or behaviors:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">module</span> <span class="nn">Fetchable</span>
-  <span class="k">def</span> <span class="nf">fetch</span>
-  <span class="c1">#{name} is fetching!</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<p>The above module requires the name getter method look up chain</p>
-
-<h2>OOP vs Procedural</h2>
-
-<p>Procedural thinks about &quot;what happens next...&quot; and small changes can have big impacts throughout your code.</p>
-
-<p>OOP thinks in terms of objects and how they behave Generally consider classes to be nouns and verbs to be methods. Start by first writing out requirements in pseudo-code.</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/09/01/course1-lesson1/">
-        Intro to Ruby & Web Dev: Lesson 1
-      </a>
-    </h1>
-
-    <span class="post-date">01 Sep 2014</span>
-
-    <h1>Items covered:</h1>
-
-<ol>
-<li>Hashes vs. Arrays</li>
-<li>Debugging</li>
-<li>Pass by Reference vs. Pass by Value</li>
-<li>Enumerables</li>
-</ol>
-
-<h2>Hashes vs. Arrays</h2>
-
-<h2>Debugging</h2>
-
-<p>How to debug?
- - Tips on how to work through bugs in your code or large problems where you don&#39;t know where to start.</p>
-
-<ol>
-<li>Google - copy and paste error into Google. Someone has had your issue before.</li>
-<li>Write out pseudocode - write what you are attempting to do in code in plain engish</li>
-<li>Break problems into small, numerical steps - start with what looks familiar ( or you know how to do)</li>
-<li>Ask questions in the forum (Tealeaf)</li>
-<li>Use binding.pry</li>
-<li>Paste Errors or problems in Gist - take issue to IRC chat</li>
-<li>Rubberduck debugging.
-When you come across a problem - explain how to came to that problem to your (fictitious) coworker - Ms. Rubberduck. Even better, explain the problem to someone who has no programming experience at all.</li>
-<li>Step away from the problem.</li>
-</ol>
-
-<h2>Pass by Value va. Pass by Reference</h2>
-
-<p>Some methods mutuate the caller, while others do not. To better understand this fact, let&#39;s look at:
-Pass by Value vs Pass by Reference:
-  Pass by Value - when a method is called on an object, the variable is just representation of the value and not the actual object (the reference), itself. When called, the method can never change the object itself. To effect change to the object, you must reassign the variable.</p>
-
-<p>In this case below, outter_str remains unchanged as a result of the method being called.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">some_method</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
-  <span class="n">str</span><span class="o">.</span><span class="n">changeit</span>
-<span class="k">end</span>
-
-<span class="n">outter_str</span> <span class="o">=</span> <span class="s2">&quot;hi&quot;</span>
-<span class="n">some_method</span><span class="p">(</span><span class="n">outter_str</span><span class="p">)</span></code></pre></div>
-
-<hr>
-
-<p>Pass by Reference - When a method is called, the object acts a pointer and a modification is actually made to an actual space in memory.</p>
-
-<p>In the case below, outter_str is just a reference (pointer) to str, therefore any mutations to str will be reflected in the value of str</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">some_method</span><span class="p">(</span><span class="n">str</span><span class="p">)</span>
-  <span class="n">str</span><span class="o">.</span><span class="n">changeit</span>
-<span class="k">end</span>
-
-<span class="n">outter_str</span> <span class="o">=</span> <span class="s2">&quot;hi&quot;</span>
-<span class="n">some_method</span><span class="p">(</span><span class="n">outter_str</span><span class="p">)</span></code></pre></div>
-
-<p>Ruby is Passing by the Reference of the Caller: Whether or not the method creates a pass by reference or pass by reference scenario depends on whether the method mutates the caller or not</p>
-
-<h2>Enumerables</h2>
-
-<p>Tags:  <a href="tealeaf"> tealeaf </a></p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/08/30/path-to-becoming-a-ruby-dev/">
-        Welcome to my Dev blog
-      </a>
-    </h1>
-
-    <span class="post-date">30 Aug 2014</span>
-
-    <p>My name is Jam. I&#39;m a recovering project manager with a creative knack for design, dance, and creating things. For the longest time, I&#39;ve wanted a career to be super passionate about. I&#39;d watch some of my favorite reality shows, like Project Runway, Top Chef.. etc. and be so inspired, maye even envious that they had something that they loved to do.. could do it hours on end. Rails Girls made learning to code accessible to me. . I had the pleasure of hearing<a href="http://www.sandimetz.com/">Sandi Metz</a> gave a talk on <a href="http://en.wikipedia%20org/wiki/Grit_%28personality_trait%29">grit</a> - which gave me some hope that I too, if I worked hard enough, that I could approach my life&#39;s work with that same passion and creativity.</p>
-
-<p>These are my daily takeways along my journey to becoming a rails dev. Hope you enjoy!</p>
-
-<p>Tags:  <a href="thoughts"> thoughts </a></p>
-
-  </div>
-  
 </div>
 
 <div class="pagination">
   
-    <span class="pagination-item older">Older</span>
+    <a class="pagination-item older" href="/page20">Older</a>
   
   
     

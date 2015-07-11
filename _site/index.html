@@ -43,6 +43,8 @@
       <p class="lead">daily learnings as a ruby dev</p>
     </div>
 
+
+
     <nav class="sidebar-nav">
       <a class="sidebar-nav-item active" href="/">Home</a>
 
@@ -56,10 +58,26 @@
       
         
           
+            <a class="sidebar-nav-item" href=""></a>
+
             <a class="sidebar-nav-item" href="/about/">About</a>
+
           
         
       
+        
+          
+            <a class="sidebar-nav-item" href=""></a>
+
+            <a class="sidebar-nav-item" href="/archive/">Archive</a>
+
+          
+        
+      
+        
+      
+        
+          
         
       
         
@@ -149,6 +167,323 @@
   
   <div class="post">
     <h1 class="post-title">
+      <a href="/2015/07/04/course3-isolated-api-tests/">
+        Build Robust & Production Quality Applications - Lesson 8: Fully Integrated API Tests
+      </a>
+    </h1>
+
+    <span class="post-date">04 Jul 2015</span>
+
+    <h2>Isolated API Tests Stubbing Out the Internet</h2>
+
+<p>Hitting the Stripe server takes alot of time approximently 22 seconds sicnce we are hitting the server twice, once to grab the token. The answer to this is pre-script a response for a given request.</p>
+
+<h3>Webmock</h3>
+
+<p><a href="https://github.com/bblimke/webmock">Webmock</a> allows us to do this by stubbing the HTTP client at the Library level and we can tell exactly what the response is. So we can stub the response using Webmock, always setting the response to a given value, but we would have to do this for every spec. It would be great to have something that gave us this fuctionality automatically and we also don&#39;t have to change our test code...</p>
+
+<h3>VCR</h3>
+
+<p><a href="http://www.relishapp.com/vcr/vcr/v/2-9-3/docs">VCR</a> integrates with Rspec and helps you to record your test suite&#39;s HTTP interactions and play them back automatically when you run future tests. Meaning, the first time the spec is run, the request will actually hit the TPA server, record the interaction and store it in a data file. The next time its run again... it will just play back the recorded file.</p>
+
+<h2>Getting  Started</h2>
+
+<h3>Step 1: Install both VCR &amp; Webmock Gems</h3>
+
+<h3>Step 2: Add Rspec Metadata (for VCR set up) to spec helper.rb</h3>
+
+<p><a href="http://www.relishapp.com/vcr/vcr/v/2-9-3/docs/test-frameworks/usage-with-rspec-metadata">Metadata</a></p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;vcr&#39;</span>
+
+<span class="no">VCR</span><span class="o">.</span><span class="n">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">c</span><span class="o">|</span>
+  <span class="n">c</span><span class="o">.</span><span class="n">cassette_library_dir</span> <span class="o">=</span> <span class="s1">&#39;spec/cassettes&#39;</span>
+  <span class="n">c</span><span class="o">.</span><span class="n">hook_into</span> <span class="ss">:webmock</span>
+  <span class="n">c</span><span class="o">.</span><span class="n">configure_rspec_metadata!</span>
+<span class="k">end</span>
+
+<span class="no">RSpec</span><span class="o">.</span><span class="n">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">c</span><span class="o">|</span>
+  <span class="c1"># so we can use :vcr rather than :vcr =&gt; true;</span>
+  <span class="c1"># in RSpec 3 this will no longer be necessary.</span>
+  <span class="n">config</span> <span class="n">treat_symbols_as_metadata_keys_with_true_values</span> <span class="o">=</span> <span class="kp">true</span> <span class="p">(</span><span class="n">add</span> <span class="n">to</span> <span class="no">Rspec</span> <span class="n">config</span> <span class="n">block</span><span class="p">)</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>Step 3: Add :vcr to the transactions you want to record</h3>
+<div class="highlight"><pre><code class="language-text" data-lang="text">it &quot;charges the card successfully&quot;, :vcr do
+response = StripeWapper::Charge.create(amount: 300, card: token)
+expect(response).to be_successful
+end
+</code></pre></div>
+<h3>Step 4: Cassettes &amp; Configs</h3>
+
+<p>As default, spec/cassettes holds all recordings and a creates data files for each spec ran. VCR allows for extensive customization. Including how many recordings per spec whether it be once or all.</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/07/03/course3-integrated-API-tests/">
+        Build Robust & Production Quality Applications - Lesson 8: Fully Integrated API Tests
+      </a>
+    </h1>
+
+    <span class="post-date">03 Jul 2015</span>
+
+    <p>The are generally two options when testing third party API wrappers. We could only go to the where the TPA is and call the API and create fake response data - so what  we are testing is given the generated response, can your application interpret the response and generate the desired result. On the other hand, we can go all the way to the extent to hit the TPA server and hit their server, getting the real response and intergrate our wrapper code with that data to test it.</p>
+
+<p>In this instance, we are writing fully intergrated API specs
+require &#39;spec_helper&#39;</p>
+
+<p>describe StripeWrapper::Charge do</p>
+
+<p>before do
+    StripeWrapper.set<em>api</em>key
+  end</p>
+
+<p>let(:token) do
+    Stripe::Token.create(
+      :card =&gt; {
+      :number =&gt; card<em>number,
+      :exp</em>month =&gt; 7,
+      :exp_year =&gt; 2016,
+      :cvc =&gt; 390
+        }
+      ).id
+  end</p>
+
+<p>context &quot;with a valid card&quot; do
+  let(:card_number) { &#39;4242424242424242&#39; }</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">it &quot;charges the card successfully&quot; do
+response = StripeWapper::Charge.create(amount: 300, card: token)
+expect(response).to be_successful
+end
+</code></pre></div>
+<p>end</p>
+
+<p>context &quot;with invalid card&quot; do
+  let(:card_number) { &#39;4000000000000002&#39; }
+  let(:response) {StripeWrapper::Charge.create(amount: 300, card: token) }</p>
+
+<p>it &quot;does not charge the card successfully&quot; do
+    expect(response).not<em>to be</em>successful
+  end</p>
+
+<p>it &quot;contains an error message&quot; do
+    expect(response).to eq(&#39;Your card was declined&#39;)
+    end
+  end</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/07/02/course3-API-wrappers/">
+        Build Robust & Production Quality Applications - Lesson 8: How to Build API Wrappers
+      </a>
+    </h1>
+
+    <span class="post-date">02 Jul 2015</span>
+
+    <p>Since we are going to be using Stripe alot, it may be smart to put the API in something called an API Wrapper, which becomed a centralized place for the API, rather than spread through-out your application.</p>
+
+<p>Create a Wrapper called Stripe Wrapper</p>
+
+<h1>models/stripe_wrapper.rb</h1>
+
+<p>module StripeWrapper
+  class Charge
+    def self.create(options={})
+      Stripe::Charge.create(amount: options[:amount], currency: &#39;usd&#39;, card: options[:card])
+    end
+  end
+end</p>
+
+<p>Then we want to create a seperate method within the Charge class for the Stripe API Key because there may be other processes that need rely on the key. We want want to write a conditional that would show the write key according to right env we are in, production, dev, test. etc.</p>
+
+<p>module StripeWrapper
+  class Charge
+    def self.create(options={})
+      StripeWrapper.api_key
+      Stripe::Charge.create(amount: options[:amount], currency: &#39;usd&#39;, card: options[:card])
+    end</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">def self.set_stripe_api_key
+  Stripe.api_key = Rails.env.production? ? ENV[&#39;STRIPE_PUBLISHABLE_KEY&#39;] : &quot;pk_test_Xxzh18R0rGLpYys1rVT4KHLH&quot;
+end
+</code></pre></div>
+<p>end
+end</p>
+
+<p>This handles the first part of the API request, but we also need to address the response:</p>
+
+<p>Now we can update the PaymentsController to:
+class PaymentsController &lt; ApplicationController
+def create
+  token  = params[:stripeToken]</p>
+
+<p>charge = StripeWrapper::Charge.create9:smount =&gt; 3000, :card =&gt; token)</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">if charge.successful?
+  flash[:success] = &quot;Thank you for your generous support!&quot;
+  redirect_to new_payments_path
+else
+  flash[:error] = charge.error_message
+  redirect_to new_payment_path
+end
+</code></pre></div>
+<p>end
+end</p>
+
+<p>Update the StripeWrapper</p>
+
+<p>module StripeWrapper
+  class Charge
+    attr_reader :response, :status</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">def initialize(response, status)
+  @response = response
+  @status = status
+end
+
+def self.create(options={})
+  StripeWrapper.api_key
+  begin
+    response = Stripe::Charge.create(amount: options[:amount], currency: &#39;usd&#39;, card: options[:card])
+    new(response, :success)
+  resuce Stripe::CaredError =&gt; e
+    new(e, :error)
+  end
+end
+
+def successful?
+  status == :success
+end
+
+def error_message
+  response.error_message
+end
+
+def self.set_stripe_api_key
+  Stripe.api_key = Rails.env.production? ? ENV[&#39;STRIPE_PUBLISHABLE_KEY&#39;] : &quot;pk_test_Xxzh18R0rGLpYys1rVT4KHLH&quot;
+end
+</code></pre></div>
+<p>end
+end</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/07/01/course3-credit-card-payments/">
+        Build Robust & Production Quality Applications - Lesson 7: Processing Credit Card Payments Online with Stripe
+      </a>
+    </h1>
+
+    <span class="post-date">01 Jul 2015</span>
+
+    <h2>Processing Credit Card Payments Online</h2>
+
+<p>Back in the day, processing credit cards online was intense as told by 37Signals in their <a href="https://signalvnoise.com/posts/753-ask-37signals-how-do-you-process-credit-cards">blogpost</a> back in 2007. If merchants didn&#39;t want to connect their customers to Paypal to checkout, they had create a Merchant Account, followed by having an account with Authorize.net, and then an engine called ActiveMarchant with is Ruby gem for reoccuring billing - which required alot of custom code and an intense daily business process.
+One thing that was&#39;nt mentioned was security - Payment Card Industry Security Standard (PCI Compliance). This means that if you do take credit card information via your website, your site must be sercured, for example. And if you store credit card data, it must be encrypted, etc.</p>
+
+<h3>Stripe</h3>
+
+<p><a href="https://stripe.com">Stripe</a>, luckily has changed all that as one of the first pioneers in this line of payment processing. You don&#39;t need a merchant account or gateway - which is a huge advantage.</p>
+
+<p>Stripe also has the advantage of having a test mode that will allow you to test the payment pipeline while in the prototyping phase. Stripe will connect to your bank account and submit funds recieved on a 7 day rolling basis.</p>
+
+<h4>Stripe.js</h4>
+
+<p>If you incorporate Stripe.js in your payment processing, the clients credit card info is never touches your website, it goes straight to Stripe and token is returned. This also allows us to bypass the PCI Compliance standards. The cost is also pretty negligible to have a robust, reliable, safe payment processing system for your online business.</p>
+
+<h2>How to create a payment with Stripe</h2>
+
+<p>Select Test mode, once signing up</p>
+
+<p>Include Stripe gem and bundle install</p>
+
+<p>Specify your API key, use your Test Secret Key and set it a local variable in your rails console.</p>
+
+<p>&quot;Stripe.api_key = &#39;4uhsvjfudjpsdf0u fvpdapo&#39; &quot;</p>
+
+<p>Grab Fake Charge Data from Stripe API docks:
+Copy code block and enter in Rails console
+The Charge object, along with attributes will be returned once process.</p>
+
+<p>Remember: currency is always in cents and you don&#39;t have to collect address information from customers when using Stripe</p>
+
+<p>Refresh and you should see the charge that was just submitted in your console.</p>
+
+<h2>Accept Payments with Checkout</h2>
+
+<p>How to get the credit card information from customers to the web application</p>
+
+<h3>Using Stripe Checkout Buttom</h3>
+
+<p>is simply done with a button and you can add text, as well.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#views/payments/new.html.haml</span>
+<span class="o">%</span><span class="nb">p</span> <span class="no">Thank</span> <span class="n">you</span> <span class="k">for</span> <span class="n">you</span> <span class="n">support</span><span class="o">.</span>
+<span class="o">=</span> <span class="n">form_tag</span> <span class="n">payments_path</span> <span class="k">do</span>
+  <span class="o">%</span><span class="n">script</span><span class="o">.</span><span class="n">stripe</span><span class="o">-</span><span class="n">button</span><span class="p">{</span><span class="s2">&quot;data-amount&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;2000&quot;</span><span class="p">,</span> <span class="s2">&quot;data-description&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;2 widgets ($20.00)&quot;</span><span class="p">,</span> <span class="s2">&quot;data-image&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;/128x128.png&quot;</span><span class="p">,</span> <span class="s2">&quot;data-key&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;pk_test_------------------------&quot;</span><span class="p">,</span> <span class="s2">&quot;data-name&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;Demo Site&quot;</span><span class="p">,</span> <span class="ss">:src</span> <span class="o">=&gt;</span> <span class="s2">&quot;https://checkout.stripe.com/checkout.js&quot;</span><span class="p">}</span></code></pre></div>
+
+<p>Update the following fields:
+Data amount, Data-name, Description, and remove logo</p>
+
+<h4>Create routes</h4>
+
+<p>Create &#39;/payements&#39;, new and create routes and grab code from API docs</p>
+
+<h4>If you run binding.pry in the payments#create action</h4>
+
+<p>You will see that one of the params submitted to your server is the stripe token - which is the only indication that credit card info has been submitted.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">PaymentsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+
+<span class="k">def</span> <span class="nf">create</span>
+  <span class="no">Stripe</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="s2">&quot;sk_test_FKBLHWUFHPWHFO29793772&quot;</span>
+
+  <span class="n">token</span> <span class="o">=</span> <span class="n">paramns</span><span class="o">[</span><span class="ss">:stripeToken</span><span class="o">]</span>
+
+  <span class="k">begin</span>
+    <span class="n">charge</span> <span class="o">=</span> <span class="no">Stripe</span><span class="o">::</span><span class="no">Charge</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+      <span class="ss">:amount</span> <span class="o">=&gt;</span> <span class="mi">3000</span><span class="p">,</span>
+      <span class="ss">:currency</span> <span class="o">=&gt;</span> <span class="s2">&quot;usd&quot;</span>
+      <span class="ss">:card</span> <span class="o">=&gt;</span> <span class="n">token</span>
+    <span class="p">)</span>
+    <span class="n">flash</span><span class="o">[</span><span class="ss">:success</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Thank you for your payment&quot;</span>
+    <span class="n">redirect_to</span> <span class="n">new_payment_path</span>
+
+  <span class="k">rescue</span> <span class="no">Stripe</span><span class="o">::</span><span class="no">CardError</span> <span class="o">=&gt;</span> <span class="n">e</span>
+    <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span>
+    <span class="n">redirect_to</span> <span class="n">new_payment_path</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<h2>Accept Payments with Custom Form using Stripe.js</h2>
+
+<p>Sometimes using the Stripe Checkout button is not seamless enough and you want submit payments through a custom form, where the payment form is apart of the UI:</p>
+
+<h3>1. Add Stripe at the top of the views template and set publishable key</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">script</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text/javascript&quot;</span> <span class="n">src</span><span class="o">=</span><span class="s2">&quot;https://js.stripe.com/v2/&quot;</span><span class="o">&gt;&lt;</span><span class="sr">/script&gt;</span>
+
+<span class="sr">&lt;script type=&quot;text/</span><span class="n">javascript</span><span class="s2">&quot;&gt;Stripe.setPublishableKey(&quot;</span><span class="c1">#{ENV[&#39;STRIPE_PUBLISHABLE_KEY&#39;]}&quot;);</span>
+<span class="o">&lt;</span><span class="sr">/script&gt;</span>
+
+<span class="sr">= javascript_include_tag &#39;payment&#39;</span></code></pre></div>
+
+<p>The above code also includes a turns off the submit button once its clicked to disable multiple submissions and then submit the custom form data to stripe for the stripe token and name attributes are set to nil, which means the data being submit will not be posted to the database. A hidden field for the StripeToken is generated and then submited to our server.</p>
+
+<p>You should also create a file config/initializers/assets.rb with the following content (assuming your javascript file is called payments.js):</p>
+
+<p>Rails.application.config.assets.precompile += [&#39;payments.js&#39;]
+This file will help to make sure that you add the payments.js file in the asset pipeline for all environments (dev, test and production), although in the development environment it doesn&#39;t really compress the assets for you.</p>
+
+<p>Note: If you are using CircleCI at this point, your build may fail and you may need to set your stripe key environment variable on the CircleCI server as well, so it&#39;ll have access to it. (Project Settings -&gt; Environment Variables)</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
       <a href="/2015/06/30/Metz-5-Rules/">
         Sandi Metz - The Rules
       </a>
@@ -171,272 +506,14 @@
 
 <p>**2. Changes in color signify different levels of abstraction means that it be hard to follow</p>
 
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/06/26/Refactoring-Generalization/">
-        Refactoring - Dealing wihth Generalization
-      </a>
-    </h1>
+<p>Duplication is far cheaper than the wrong abstraction</p>
 
-    <span class="post-date">26 Jun 2015</span>
+<p>When code can know less, we can do more. Inheritance is okay when the subclasses
+- shallow, narrow hiearchry
+- subclasses to be at the leaf nodes of the object graph
+- subclasses use all the behavior of the superclass</p>
 
-    <h3>1. Pull Up Method</h3>
-
-<p>You have methods with identical results on subclasses. Move them to the superclass.</p>
-
-<h3>2.Push Down Method</h3>
-
-<p>Behavior on a superclass is relevant only for some of its subclasses. Move it to those subclasses</p>
-
-<h3>3. Extract Module</h3>
-
-<p>You have duplicated behavior in two or more classes.
-Create a new module and move the relevant behavior from the old class into the module, and include the module in the class.</p>
-
-<h3>4. Inline Module</h3>
-
-<p>The resultant indirection of the included module is no longer worth the duplication it is preventing.
-Merge the module into the including class.</p>
-
-<h3>5. Extract Subclass</h3>
-
-<p>A class has features that are used only in some instances.
-Create a subclass for that subset of features.</p>
-
-<h3>6. Introduce Inheritance</h3>
-
-<p>You have two classes with similar features.
-Make one of the classes a superclass and move the common features to the superclass.</p>
-
-<h3>7. Collapse Hierarchy</h3>
-
-<p>A superclass and subclass (or module and the class that includes the module) are not very different.
-￼￼Merge them together</p>
-
-<h3>8. Form Template Method</h3>
-
-<p>You have two methods in subclasses that perform similar steps in the same order, yet the steps are different.
-Get the steps into methods with the same signature, so that the original methods become the same. Then you can pull them up.</p>
-
-<h3>9. Replace Inheritance with Delegation</h3>
-
-<p>A subclass uses only part of a superclass interface or does not want to inherit data.
-Create a field for the superclass, adjust methods to delegate to the superclass, and remove the subclassing.
-￼Replace Inheritance with Delegation</p>
-
-<h3>10. Replace Abstract Superclass with Module</h3>
-
-<p>You have an inheritance hierarchy, but never intend to explicitly instantiate an instance of the superclass.
-Replace the superclass with a module to better communicate your intention.</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/06/25/Refactoring-conditionals/">
-        Refactoring - Simplifying Conditional Expressions
-      </a>
-    </h1>
-
-    <span class="post-date">25 Jun 2015</span>
-
-    <h3>1. Decompose Condtional</h3>
-
-<p>You have a complicated conditional (if-then-else) statement.
-Extract methods from the condition, “then” part, and “else” parts.
-Mechanics
-*<em>1. Extract the condition into its own method.
-*</em>2. Extract the “then” part and the “else” part into their own methods.</p>
-
-<h3>2. Recompose Conditional</h3>
-
-<p>You have conditional code that is unnecessarily verbose and does not use the most readable Ruby construct.
-Replace the conditional code with the more idiomatic Ruby construct.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="ss">before</span><span class="p">:</span>
-<span class="n">parameters</span> <span class="o">=</span> <span class="n">params</span> <span class="p">?</span> <span class="n">params</span> <span class="p">:</span> <span class="o">[]</span>
-
-<span class="ss">after</span><span class="p">:</span>
-<span class="n">parameters</span> <span class="o">=</span> <span class="n">params</span> <span class="o">||</span> <span class="o">[]</span></code></pre></div>
-
-<h3>3. Consolidate Conditional Expression</h3>
-
-<p>You have a sequence of conditional tests with the same result.
-Combine them into a single conditional expression and extract it.</p>
-
-<h3>4. Consolidate Duplicate Conditional Fragments</h3>
-
-<p>The same fragment of code is in all branches of a conditional expression.
-Move it outside the expression.</p>
-
-<h3>5. Replace Condtional with Polymorphism</h3>
-
-<p>Motivation
-One of the grandest sounding words in object jargon is polymorphism. The essence of polymorphsim is that it allows you to avoid writing an explicit con- ditional when you have objects whose behavior varies depending on their types.
-As a result you find that case statements or if-then-else statements that switch on type codes are much less common in an Object-Oriented program.</p>
-
-<p>Polymorphism gives you many advantages. The biggest gain occurs when this same set of conditions appears in many places in the program. If you want to add a new type, you have to find and update all the conditionals. But with polymorphism you just create a new class and provide the appropriate methods. Clients of the class don’t need to know about the polymorphism, which reduces the dependencies in your system and makes it easier to update.</p>
-
-<p>Ruby’s duck typing makes it easy to introduce polymorphism. In a statically typed language like Java, you need inheritance or implementation of an inter- face to be able to call a method polymorphically. But in Ruby, an object’s cur- rent set of methods—not its inheritance from a particular class—determines its valid semantics. So long as objects A and B have the same method, you can call them in the same way.</p>
-
-<h2>Mechanics</h2>
-
-<p>Polymorphism in Ruby can be achieved in a couple of ways. In its simplest form, you can implement the same method signature on multiple objects and call these methods polymorphically. You can introduce a module hierarchy and have the method that is to be called polymorphically on the module. Or you can introduce an inheritance hierarchy and have the method that is to be called polymorphically on the subclasses. In each case, the mechanics are the same.
-The code you target may be a case statement or an if statement.</p>
-
-<p>*<em>1. If the conditional statement is one part of a larger method, take apart the
-conditional statement and use Extract Method.
-*</em>2. If necessary use Move Method to place the conditional at the appropriate place in the object structure.
-**3. Pick one of the polymorphic objects. Create a method on the polymor- phic object that will override the conditional statement method. Copy the body of that leg of the conditional statement into the polymorphic method and adjust it to fit.</p>
-
-<h3>6. Introuduce a Null Object</h3>
-
-<p>You have repeated checks for a nil value.
-Replace the nil value with a null object.</p>
-
-<p>The essence of polymorphism is that instead of asking an object what type it is and then invoking some behavior based on the answer, you just invoke the behavior. The object, depending on its type, does the right thing. One of the less intuitive places to do this is where you have a null value in a field.</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/06/25/Refactoring-Simple-Method-Calls/">
-        Refactoring - Simple Method Calls
-      </a>
-    </h1>
-
-    <span class="post-date">25 Jun 2015</span>
-
-    <h3>1.. Rename Method</h3>
-
-<p>The name of a method does not reveal its purpose.
-Change the name of the method.</p>
-
-<h3>2. Add Parameter</h3>
-
-<p>A method needs more information from its caller.
-Add a parameter for an object that can pass on this information.</p>
-
-<h3>3. Remove Parameter</h3>
-
-<p>A parameter is no longer used by the method body.
-Remove it.</p>
-
-<h3>4. Seperate Query from Modifier</h3>
-
-<p>You have a method that returns a value and also changes the state of an object.
-Create two methods, one for the query and one for the modification.</p>
-
-<h3>4. Parameterize Method</h3>
-
-<p>You have a method that returns a value and also changes the state of an object.
-Create two methods, one for the query and one for the modification.</p>
-
-<p>Motivation
-You may see a couple of methods that do similar things but vary depending on a few values. In this case you can simplify matters by replacing the separate methods with a single method that handles the variations by parameters. Such a change removes duplicate code and increases flexibility, because you can deal with other variations by adding parameters.</p>
-
-<h3>5. Perserve Whole Object</h3>
-
-<p>You are getting several values from an object and passing these values as param- eters in a method call.
-Send the whole object instead.</p>
-
-<h3>6. Replace Parameter with Method</h3>
-
-<p>An object invokes a method, then passes the result as a parameter for a method. The receiver can also invoke this method.
-Remove the parameter and let the receiver invoke the method.</p>
-
-<h3>7. Introduce Parameter Object</h3>
-
-<p>You have a group of parameters that naturally go together.
-Replace them with an object.</p>
-
-<h3>8. Remove Setting Method</h3>
-
-<p>A field should be set at creation time and never altered.
-Remove any setting method for that field.
-Providing a setting method indicates that a field may be changed. If you don’t want that field to change once the object is created, don’t provide a setting method. That way your intention is clear and you often remove the possibility that the field will change.</p>
-
-<h3>9. Hide Method</h3>
-
-<p>A method is not used by any other class.
-Make the method private.</p>
-
-<h3>10. Replace Constructor with Factory Method</h3>
-
-<p>You want to do more than simple construction when you create an object.
-Replace the constructor with a factory method.
-The most obvious motivation for Replace Constructor with Factory Method is when you have conditional logic to determine the kind of object to create. If you need to do this conditional logic in more than one place, it’s time for a Factory Method.</p>
-
-<h3>11.Replace Error Code with Exception</h3>
-
-<p>A method returns a special code to indicate an error.
-Raise an exception instead.</p>
-
-<h3>12. Replace Exception with Test</h3>
-
-<p>You are raising an exception on a condition the caller could have checked first.
-Change the caller to make the test first.
-Exceptions are an important advance in programming languages. They allow us to avoid complex codes by use of Replace Error Code with Exception. Like so many pleasures, exceptions can be used to excess, and they cease to be pleasur- able. Exceptions should be used for exceptional behavior: behavior that is an unexpected error. They should not act as a substitute for conditional tests. If you can reasonably expect the caller to check the condition before calling the operation, you should provide a test, and the caller should use it.</p>
-
-<h3>13. Introduce Gateway</h3>
-
-<p>You want to interact with a complex API of an external system or resource in a simplified way.
-Introduce a Gateway that encapsulates access to an external system or resource.</p>
-
-<h3>14. Introduce Expression Builder</h3>
-
-<p>You want to interact with a public interface in a more fluent manner and not muddy the interface of an existing object.
-Introduce an Expression Builder and create an interface specific to your application.
-￼Introduce Expression Builder
-￼￼</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/06/23/Refactoring-Organizing-Data/">
-        Refactoring - Organizng Data
-      </a>
-    </h1>
-
-    <span class="post-date">23 Jun 2015</span>
-
-    <h3>1. Self Encapsulated Field</h3>
-
-<p>You are accessing a field directly, but the coupling to the field is becoming awkward.
-Create getting and setting methods for the field and use only those to access the field.</p>
-
-<h3>2. Replace Data Value with Object</h3>
-
-<p>You have a data item that needs additional data or behavior.
-Turn the data item into an object:
-*<em>1. Create the class for the value. Give it an equivalent field to the field in the source class. Add an attribute reader and a constructor that takes the field as an argument.
-*</em>2. Change the attribute reader in the source class to call the reader in the new class.</p>
-
-<h3>3. Change Value to Reference</h3>
-
-<p>You have a class with many equal instances that you want to replace with a single object.
-Turn the object into a reference object.</p>
-
-<h3>4. Change Reference to Value</h3>
-
-<p>You have a reference object that is small, immutable, and awkward to manage. Turn it into a value object.</p>
-
-<h3>5. Replace Array with Object</h3>
-
-<p>You have an Array in which certain elements mean different things. Replace the Array with an object that has a field for each element.
-*<em>1. Create a new class to represent the information in the Array. Give it a method called [] so that callers that read the Array can be changed one by one. Give it a method called []= so that callers that write to the Array can be changed one by one.
-*</em>2. Construct the new object wherever the Array was instantiated.</p>
-
-<h3>6. Replace Hash with Object</h3>
-
-<p>You have a Hash that stores several different types of objects, and is passed around and used for more than one purpose.
-Replace the Hash with an object that has a field for each key.</p>
-
-<p>*<em>1. Create a new class to represent the information in the Hash. Give it a method called [] so that callers that read the Hash can be changed one by one. Give it a method called []= so that callers that write to the Hash can be changed one by one.
-*</em>2. Construct the new object wherever the Hash was instantiated.</p>
+<p>Case Statements are made for business logic and not configuration - extract configuration into a hash.</p>
 
   </div>
   

@@ -4,13 +4,314 @@
  <title>grit| commit</title>
  <link href="http://jamelablack.github.io/atom.xml" rel="self"/>
  <link href="http://jamelablack.github.io/"/>
- <updated>2015-07-07T09:02:07-04:00</updated>
+ <updated>2015-07-11T02:54:54-04:00</updated>
  <id>http://jamelablack.github.io</id>
  <author>
    <name>Jam Black</name>
    <email></email>
  </author>
 
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 8: Fully Integrated API Tests</title>
+   <link href="http://jamelablack.github.io/2015/07/04/course3-isolated-api-tests/"/>
+   <updated>2015-07-04T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/07/04/course3-isolated-api-tests</id>
+   <content type="html">&lt;h2&gt;Isolated API Tests Stubbing Out the Internet&lt;/h2&gt;
+
+&lt;p&gt;Hitting the Stripe server takes alot of time approximently 22 seconds sicnce we are hitting the server twice, once to grab the token. The answer to this is pre-script a response for a given request.&lt;/p&gt;
+
+&lt;h3&gt;Webmock&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/bblimke/webmock&quot;&gt;Webmock&lt;/a&gt; allows us to do this by stubbing the HTTP client at the Library level and we can tell exactly what the response is. So we can stub the response using Webmock, always setting the response to a given value, but we would have to do this for every spec. It would be great to have something that gave us this fuctionality automatically and we also don&amp;#39;t have to change our test code...&lt;/p&gt;
+
+&lt;h3&gt;VCR&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://www.relishapp.com/vcr/vcr/v/2-9-3/docs&quot;&gt;VCR&lt;/a&gt; integrates with Rspec and helps you to record your test suite&amp;#39;s HTTP interactions and play them back automatically when you run future tests. Meaning, the first time the spec is run, the request will actually hit the TPA server, record the interaction and store it in a data file. The next time its run again... it will just play back the recorded file.&lt;/p&gt;
+
+&lt;h2&gt;Getting  Started&lt;/h2&gt;
+
+&lt;h3&gt;Step 1: Install both VCR &amp;amp; Webmock Gems&lt;/h3&gt;
+
+&lt;h3&gt;Step 2: Add Rspec Metadata (for VCR set up) to spec helper.rb&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://www.relishapp.com/vcr/vcr/v/2-9-3/docs/test-frameworks/usage-with-rspec-metadata&quot;&gt;Metadata&lt;/a&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;nb&quot;&gt;require&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;vcr&amp;#39;&lt;/span&gt;
+
+&lt;span class=&quot;no&quot;&gt;VCR&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;configure&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cassette_library_dir&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;spec/cassettes&amp;#39;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hook_into&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:webmock&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;configure_rspec_metadata!&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;no&quot;&gt;RSpec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;configure&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# so we can use :vcr rather than :vcr =&amp;gt; true;&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# in RSpec 3 this will no longer be necessary.&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;treat_symbols_as_metadata_keys_with_true_values&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;true&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Rspec&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;block&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;Step 3: Add :vcr to the transactions you want to record&lt;/h3&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;it &amp;quot;charges the card successfully&amp;quot;, :vcr do
+response = StripeWapper::Charge.create(amount: 300, card: token)
+expect(response).to be_successful
+end
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;Step 4: Cassettes &amp;amp; Configs&lt;/h3&gt;
+
+&lt;p&gt;As default, spec/cassettes holds all recordings and a creates data files for each spec ran. VCR allows for extensive customization. Including how many recordings per spec whether it be once or all.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 8: Fully Integrated API Tests</title>
+   <link href="http://jamelablack.github.io/2015/07/03/course3-integrated-API-tests/"/>
+   <updated>2015-07-03T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/07/03/course3-integrated-API-tests</id>
+   <content type="html">&lt;p&gt;The are generally two options when testing third party API wrappers. We could only go to the where the TPA is and call the API and create fake response data - so what  we are testing is given the generated response, can your application interpret the response and generate the desired result. On the other hand, we can go all the way to the extent to hit the TPA server and hit their server, getting the real response and intergrate our wrapper code with that data to test it.&lt;/p&gt;
+
+&lt;p&gt;In this instance, we are writing fully intergrated API specs
+require &amp;#39;spec_helper&amp;#39;&lt;/p&gt;
+
+&lt;p&gt;describe StripeWrapper::Charge do&lt;/p&gt;
+
+&lt;p&gt;before do
+    StripeWrapper.set&lt;em&gt;api&lt;/em&gt;key
+  end&lt;/p&gt;
+
+&lt;p&gt;let(:token) do
+    Stripe::Token.create(
+      :card =&amp;gt; {
+      :number =&amp;gt; card&lt;em&gt;number,
+      :exp&lt;/em&gt;month =&amp;gt; 7,
+      :exp_year =&amp;gt; 2016,
+      :cvc =&amp;gt; 390
+        }
+      ).id
+  end&lt;/p&gt;
+
+&lt;p&gt;context &amp;quot;with a valid card&amp;quot; do
+  let(:card_number) { &amp;#39;4242424242424242&amp;#39; }&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;it &amp;quot;charges the card successfully&amp;quot; do
+response = StripeWapper::Charge.create(amount: 300, card: token)
+expect(response).to be_successful
+end
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;end&lt;/p&gt;
+
+&lt;p&gt;context &amp;quot;with invalid card&amp;quot; do
+  let(:card_number) { &amp;#39;4000000000000002&amp;#39; }
+  let(:response) {StripeWrapper::Charge.create(amount: 300, card: token) }&lt;/p&gt;
+
+&lt;p&gt;it &amp;quot;does not charge the card successfully&amp;quot; do
+    expect(response).not&lt;em&gt;to be&lt;/em&gt;successful
+  end&lt;/p&gt;
+
+&lt;p&gt;it &amp;quot;contains an error message&amp;quot; do
+    expect(response).to eq(&amp;#39;Your card was declined&amp;#39;)
+    end
+  end&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 8: How to Build API Wrappers</title>
+   <link href="http://jamelablack.github.io/2015/07/02/course3-API-wrappers/"/>
+   <updated>2015-07-02T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/07/02/course3-API-wrappers</id>
+   <content type="html">&lt;p&gt;Since we are going to be using Stripe alot, it may be smart to put the API in something called an API Wrapper, which becomed a centralized place for the API, rather than spread through-out your application.&lt;/p&gt;
+
+&lt;p&gt;Create a Wrapper called Stripe Wrapper&lt;/p&gt;
+
+&lt;h1&gt;models/stripe_wrapper.rb&lt;/h1&gt;
+
+&lt;p&gt;module StripeWrapper
+  class Charge
+    def self.create(options={})
+      Stripe::Charge.create(amount: options[:amount], currency: &amp;#39;usd&amp;#39;, card: options[:card])
+    end
+  end
+end&lt;/p&gt;
+
+&lt;p&gt;Then we want to create a seperate method within the Charge class for the Stripe API Key because there may be other processes that need rely on the key. We want want to write a conditional that would show the write key according to right env we are in, production, dev, test. etc.&lt;/p&gt;
+
+&lt;p&gt;module StripeWrapper
+  class Charge
+    def self.create(options={})
+      StripeWrapper.api_key
+      Stripe::Charge.create(amount: options[:amount], currency: &amp;#39;usd&amp;#39;, card: options[:card])
+    end&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;def self.set_stripe_api_key
+  Stripe.api_key = Rails.env.production? ? ENV[&amp;#39;STRIPE_PUBLISHABLE_KEY&amp;#39;] : &amp;quot;pk_test_Xxzh18R0rGLpYys1rVT4KHLH&amp;quot;
+end
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;end
+end&lt;/p&gt;
+
+&lt;p&gt;This handles the first part of the API request, but we also need to address the response:&lt;/p&gt;
+
+&lt;p&gt;Now we can update the PaymentsController to:
+class PaymentsController &amp;lt; ApplicationController
+def create
+  token  = params[:stripeToken]&lt;/p&gt;
+
+&lt;p&gt;charge = StripeWrapper::Charge.create9:smount =&amp;gt; 3000, :card =&amp;gt; token)&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;if charge.successful?
+  flash[:success] = &amp;quot;Thank you for your generous support!&amp;quot;
+  redirect_to new_payments_path
+else
+  flash[:error] = charge.error_message
+  redirect_to new_payment_path
+end
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;end
+end&lt;/p&gt;
+
+&lt;p&gt;Update the StripeWrapper&lt;/p&gt;
+
+&lt;p&gt;module StripeWrapper
+  class Charge
+    attr_reader :response, :status&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;def initialize(response, status)
+  @response = response
+  @status = status
+end
+
+def self.create(options={})
+  StripeWrapper.api_key
+  begin
+    response = Stripe::Charge.create(amount: options[:amount], currency: &amp;#39;usd&amp;#39;, card: options[:card])
+    new(response, :success)
+  resuce Stripe::CaredError =&amp;gt; e
+    new(e, :error)
+  end
+end
+
+def successful?
+  status == :success
+end
+
+def error_message
+  response.error_message
+end
+
+def self.set_stripe_api_key
+  Stripe.api_key = Rails.env.production? ? ENV[&amp;#39;STRIPE_PUBLISHABLE_KEY&amp;#39;] : &amp;quot;pk_test_Xxzh18R0rGLpYys1rVT4KHLH&amp;quot;
+end
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;end
+end&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 7: Processing Credit Card Payments Online with Stripe</title>
+   <link href="http://jamelablack.github.io/2015/07/01/course3-credit-card-payments/"/>
+   <updated>2015-07-01T00:00:00-04:00</updated>
+   <id>http://jamelablack.github.io/2015/07/01/course3-credit-card-payments</id>
+   <content type="html">&lt;h2&gt;Processing Credit Card Payments Online&lt;/h2&gt;
+
+&lt;p&gt;Back in the day, processing credit cards online was intense as told by 37Signals in their &lt;a href=&quot;https://signalvnoise.com/posts/753-ask-37signals-how-do-you-process-credit-cards&quot;&gt;blogpost&lt;/a&gt; back in 2007. If merchants didn&amp;#39;t want to connect their customers to Paypal to checkout, they had create a Merchant Account, followed by having an account with Authorize.net, and then an engine called ActiveMarchant with is Ruby gem for reoccuring billing - which required alot of custom code and an intense daily business process.
+One thing that was&amp;#39;nt mentioned was security - Payment Card Industry Security Standard (PCI Compliance). This means that if you do take credit card information via your website, your site must be sercured, for example. And if you store credit card data, it must be encrypted, etc.&lt;/p&gt;
+
+&lt;h3&gt;Stripe&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://stripe.com&quot;&gt;Stripe&lt;/a&gt;, luckily has changed all that as one of the first pioneers in this line of payment processing. You don&amp;#39;t need a merchant account or gateway - which is a huge advantage.&lt;/p&gt;
+
+&lt;p&gt;Stripe also has the advantage of having a test mode that will allow you to test the payment pipeline while in the prototyping phase. Stripe will connect to your bank account and submit funds recieved on a 7 day rolling basis.&lt;/p&gt;
+
+&lt;h4&gt;Stripe.js&lt;/h4&gt;
+
+&lt;p&gt;If you incorporate Stripe.js in your payment processing, the clients credit card info is never touches your website, it goes straight to Stripe and token is returned. This also allows us to bypass the PCI Compliance standards. The cost is also pretty negligible to have a robust, reliable, safe payment processing system for your online business.&lt;/p&gt;
+
+&lt;h2&gt;How to create a payment with Stripe&lt;/h2&gt;
+
+&lt;p&gt;Select Test mode, once signing up&lt;/p&gt;
+
+&lt;p&gt;Include Stripe gem and bundle install&lt;/p&gt;
+
+&lt;p&gt;Specify your API key, use your Test Secret Key and set it a local variable in your rails console.&lt;/p&gt;
+
+&lt;p&gt;&amp;quot;Stripe.api_key = &amp;#39;4uhsvjfudjpsdf0u fvpdapo&amp;#39; &amp;quot;&lt;/p&gt;
+
+&lt;p&gt;Grab Fake Charge Data from Stripe API docks:
+Copy code block and enter in Rails console
+The Charge object, along with attributes will be returned once process.&lt;/p&gt;
+
+&lt;p&gt;Remember: currency is always in cents and you don&amp;#39;t have to collect address information from customers when using Stripe&lt;/p&gt;
+
+&lt;p&gt;Refresh and you should see the charge that was just submitted in your console.&lt;/p&gt;
+
+&lt;h2&gt;Accept Payments with Checkout&lt;/h2&gt;
+
+&lt;p&gt;How to get the credit card information from customers to the web application&lt;/p&gt;
+
+&lt;h3&gt;Using Stripe Checkout Buttom&lt;/h3&gt;
+
+&lt;p&gt;is simply done with a button and you can add text, as well.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#views/payments/new.html.haml&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Thank&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;you&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;you&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;support&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;form_tag&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;payments_path&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;script&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stripe&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;button&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;data-amount&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;2000&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;data-description&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;2 widgets ($20.00)&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;data-image&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;/128x128.png&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;data-key&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;pk_test_------------------------&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;data-name&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Demo Site&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:src&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;https://checkout.stripe.com/checkout.js&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Update the following fields:
+Data amount, Data-name, Description, and remove logo&lt;/p&gt;
+
+&lt;h4&gt;Create routes&lt;/h4&gt;
+
+&lt;p&gt;Create &amp;#39;/payements&amp;#39;, new and create routes and grab code from API docs&lt;/p&gt;
+
+&lt;h4&gt;If you run binding.pry in the payments#create action&lt;/h4&gt;
+
+&lt;p&gt;You will see that one of the params submitted to your server is the stripe token - which is the only indication that credit card info has been submitted.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;PaymentsController&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ApplicationController&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;create&lt;/span&gt;
+  &lt;span class=&quot;no&quot;&gt;Stripe&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;api_key&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;sk_test_FKBLHWUFHPWHFO29793772&amp;quot;&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;token&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;paramns&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:stripeToken&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;begin&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;charge&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Stripe&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Charge&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+      &lt;span class=&quot;ss&quot;&gt;:amount&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;ss&quot;&gt;:currency&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;usd&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;ss&quot;&gt;:card&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;token&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;flash&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:success&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Thank you for your payment&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;redirect_to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;new_payment_path&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;rescue&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Stripe&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;CardError&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;flash&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:error&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;message&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;redirect_to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;new_payment_path&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;Accept Payments with Custom Form using Stripe.js&lt;/h2&gt;
+
+&lt;p&gt;Sometimes using the Stripe Checkout button is not seamless enough and you want submit payments through a custom form, where the payment form is apart of the UI:&lt;/p&gt;
+
+&lt;h3&gt;1. Add Stripe at the top of the views template and set publishable key&lt;/h3&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;script&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;text/javascript&amp;quot;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;src&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;https://js.stripe.com/v2/&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;sr&quot;&gt;/script&amp;gt;&lt;/span&gt;
+
+&lt;span class=&quot;sr&quot;&gt;&amp;lt;script type=&amp;quot;text/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;javascript&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;gt;Stripe.setPublishableKey(&amp;quot;&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;#{ENV[&amp;#39;STRIPE_PUBLISHABLE_KEY&amp;#39;]}&amp;quot;);&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;sr&quot;&gt;/script&amp;gt;&lt;/span&gt;
+
+&lt;span class=&quot;sr&quot;&gt;= javascript_include_tag &amp;#39;payment&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The above code also includes a turns off the submit button once its clicked to disable multiple submissions and then submit the custom form data to stripe for the stripe token and name attributes are set to nil, which means the data being submit will not be posted to the database. A hidden field for the StripeToken is generated and then submited to our server.&lt;/p&gt;
+
+&lt;p&gt;You should also create a file config/initializers/assets.rb with the following content (assuming your javascript file is called payments.js):&lt;/p&gt;
+
+&lt;p&gt;Rails.application.config.assets.precompile += [&amp;#39;payments.js&amp;#39;]
+This file will help to make sure that you add the payments.js file in the asset pipeline for all environments (dev, test and production), although in the development environment it doesn&amp;#39;t really compress the assets for you.&lt;/p&gt;
+
+&lt;p&gt;Note: If you are using CircleCI at this point, your build may fail and you may need to set your stripe key environment variable on the CircleCI server as well, so it&amp;#39;ll have access to it. (Project Settings -&amp;gt; Environment Variables)&lt;/p&gt;
+</content>
+ </entry>
  
  <entry>
    <title>Sandi Metz - The Rules</title>
@@ -31,6 +332,15 @@
 **1. Changes in shape means you have nested conditionals and it will be very hard to reason about&lt;/p&gt;
 
 &lt;p&gt;**2. Changes in color signify different levels of abstraction means that it be hard to follow&lt;/p&gt;
+
+&lt;p&gt;Duplication is far cheaper than the wrong abstraction&lt;/p&gt;
+
+&lt;p&gt;When code can know less, we can do more. Inheritance is okay when the subclasses
+- shallow, narrow hiearchry
+- subclasses to be at the leaf nodes of the object graph
+- subclasses use all the behavior of the superclass&lt;/p&gt;
+
+&lt;p&gt;Case Statements are made for business logic and not configuration - extract configuration into a hash.&lt;/p&gt;
 </content>
  </entry>
  
@@ -539,11 +849,24 @@ Tip When you feel the need to write a comment, first try to refactor the code so
 &lt;h4&gt;5. Create app/uploaders directory, add uploaders to folder:&lt;/h4&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#app/uploaders/large_cover_uploader.rb&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;LargeCoverUploader&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;CarrierWave&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Uploader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Base&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;LargeCoverUploader&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;LargeCoverUploader&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;CarrierWave&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Uploader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Base&lt;/span&gt;
   &lt;span class=&quot;kp&quot;&gt;include&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;CarrierWave&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;MiniMagick&lt;/span&gt;
 
-  &lt;span class=&quot;n&quot;&gt;process&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:resize_to_fill&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;665&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;375&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;version&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:large_version&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;process&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;resize_to_fill&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;665&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;375&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Note: That specifiying version is required since uploading the same file, although it is being resized for the large or small cover photo will cause it to be overidden.&lt;/p&gt;
+
+&lt;p&gt;You will also need to specificy the version in the views:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#videos/show.html.haml&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;article&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;video&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;container&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;row&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;video_large_cover&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;col&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;col&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;offset&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;image_tag&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@video&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;large_cover&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;large_version&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;url&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;alt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;large video&amp;quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#app/uploaders/small_cover_uploader.rb&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;SmallCoverUploader&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;CarrierWave&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Uploader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Base&lt;/span&gt;

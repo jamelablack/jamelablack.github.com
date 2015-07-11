@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications - Lesson 8: Fully Integrated API Tests &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href=""></a>
+
+            <a class="sidebar-nav-item" href="/about/">About</a>
+
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href=""></a>
+
+            <a class="sidebar-nav-item" href="/archive/">Archive</a>
+
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 8: Fully Integrated API Tests</h1>
+  <span class="post-date">03 Jul 2015</span>
+  <p>The are generally two options when testing third party API wrappers. We could only go to the where the TPA is and call the API and create fake response data - so what  we are testing is given the generated response, can your application interpret the response and generate the desired result. On the other hand, we can go all the way to the extent to hit the TPA server and hit their server, getting the real response and intergrate our wrapper code with that data to test it.</p>
+
+<p>In this instance, we are writing fully intergrated API specs
+require &#39;spec_helper&#39;</p>
+
+<p>describe StripeWrapper::Charge do</p>
+
+<p>before do
+    StripeWrapper.set<em>api</em>key
+  end</p>
+
+<p>let(:token) do
+    Stripe::Token.create(
+      :card =&gt; {
+      :number =&gt; card<em>number,
+      :exp</em>month =&gt; 7,
+      :exp_year =&gt; 2016,
+      :cvc =&gt; 390
+        }
+      ).id
+  end</p>
+
+<p>context &quot;with a valid card&quot; do
+  let(:card_number) { &#39;4242424242424242&#39; }</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">it &quot;charges the card successfully&quot; do
+response = StripeWapper::Charge.create(amount: 300, card: token)
+expect(response).to be_successful
+end
+</code></pre></div>
+<p>end</p>
+
+<p>context &quot;with invalid card&quot; do
+  let(:card_number) { &#39;4000000000000002&#39; }
+  let(:response) {StripeWrapper::Charge.create(amount: 300, card: token) }</p>
+
+<p>it &quot;does not charge the card successfully&quot; do
+    expect(response).not<em>to be</em>successful
+  end</p>
+
+<p>it &quot;contains an error message&quot; do
+    expect(response).to eq(&#39;Your card was declined&#39;)
+    end
+  end</p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/07/04/course3-isolated-api-tests/">
+            Build Robust & Production Quality Applications - Lesson 8: Fully Integrated API Tests
+            <small>04 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/07/02/course3-API-wrappers/">
+            Build Robust & Production Quality Applications - Lesson 8: How to Build API Wrappers
+            <small>02 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/07/01/course3-credit-card-payments/">
+            Build Robust & Production Quality Applications - Lesson 7: Processing Credit Card Payments Online with Stripe
+            <small>01 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>
