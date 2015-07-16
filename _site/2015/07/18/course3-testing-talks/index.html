@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications - Lesson 8: - Mocks & Stubs &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href=""></a>
+
+            <a class="sidebar-nav-item" href="/about/">About</a>
+
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href=""></a>
+
+            <a class="sidebar-nav-item" href="/archive/">Archive</a>
+
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 8: - Mocks & Stubs</h1>
+  <span class="post-date">18 Jul 2015</span>
+  <h2>Magic Tricks of Testing</h2>
+
+<p>We want unit tests to be
+*Thorough
+*Stable
+*Fast
+*Few</p>
+
+<p>Focus on Messages
+Objects are simple-minded.</p>
+
+<p>Message Origin
+Objects under test have three message origin options:
+*1. Incoming Messages
+*2. Outgoing Messages
+*3. Messages sent to self (messages that are completely contained inside the object and are unknown to the outside)</p>
+
+<p>Message Type
+*1. Query - returns something, changes nothing (addition method)
+*2. Command - returns something, changes something (save method)</p>
+
+<p>We often times conflate commands and queries (like .(pop))</p>
+
+<p>Rules of the Unit Test Minimalist
+INCOMING QUERY MESSAGES</p>
+
+<ol>
+<li>Test Incoming Query Messages by making assetions about what the send back. Makes an assertion about a value (state). Here we want to test the interface and not the implementation. If we just care about what value is returned and not how we get there... then I can change the code without breaking it.</li>
+</ol>
+
+<p>INCOMING COMMAND MESSAGES
+2. Test incoming command messages by making assertions about direct public side effects. Direct means its the responsibility of the last ruby class invloved. You&#39;re making an assertion on the new value as result of calling that command.</p>
+
+<p>Key Takeway - The receiver of incoming messages has the sole responsibility of asserting the result direct public side effect. This is the sole place where we are making an assertions about values, testing the value of the thing returned</p>
+
+<p>MESSAGES SENT TO SELF</p>
+
+<p>Private Methods - Don&#39;t test private methods. Don&#39;t make assertiond about their result. Do not expect to send them. Doing so will add no value to your tests and will make it impossible to change in the future wihthout breaking something. They also discourage other devs from touching your code so you may want to add the comment &quot;if these tests fail, delete them.&quot;</p>
+
+<p>Caveat: Break rule if itk saves $$$ during development.</p>
+
+<p>Key Takeway - Ignore them.</p>
+
+<p>OUTGOING QUERY MESSAGES
+Making assertions on query messages is the job of the reciever. Therefore making an assertion on outgoing messages is redundant and should be avoided. It makes your tests are break when there is a change and it is very combersome to understand what going on. It adds no value.</p>
+
+<p>Rule: Do not test outgoing query messages. Do not make assertions about their result. Do not epxect to send them.</p>
+
+<p>You will notice that both tests made to self and tech on outgoing query messages have the same rule, don&#39;t do them. This is because they have no visbible side effects, they are invisible to the rest of your application and their tests add no value.</p>
+
+<p>Rule: If a message has no visible side-effects, the sender should not test it.</p>
+
+<p>OUTGOING COMMAND MESSAGES
+Outgoing command messages must be sent, they have to be sent or the app will not be correct. Testing, however the distant side effects of sending the message is an integration test. Asserting that the state of a thing changed in the database is not job of the outgoing command message. It&#39;s job is ensure that a message is sent. Asserting that some change has occured or making an assertion about the state of the DB will forever connect you to that result and the objects.. even those distant involved.</p>
+
+<p>Testing that a message was sent requires a mock. Testing this way makes a bet that the edge (the API...the message sent) is more stable than the distant side effect and the path to it.</p>
+
+<p>Rule: Test outgoing command messages by setting expectations on them being sent. Caveat: Break Rule if ide effects are stable and cheap... and close. The further away - the worse.</p>
+
+<p>Rule: It is our job to ensure that mocks honor their contract. Ensure test doubles stay insync with the API</p>
+
+<p>Gems that help you manage your mocks:
+*Bogus
+*Quacky
+*Rspec-Fire
+*Minitest-Firemock</p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/07/17/course3-mocks-and-stubs/">
+            Build Robust & Production Quality Applications - Lesson 8: - Mocks & Stubs
+            <small>17 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/07/16/course3-mocking/">
+            Build Robust & Production Quality Applications - Lesson 8: - Mocking
+            <small>16 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/07/15/course3-message-expecations/">
+            Build Robust & Production Quality Applications - Lesson 8: Message Expectations
+            <small>15 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

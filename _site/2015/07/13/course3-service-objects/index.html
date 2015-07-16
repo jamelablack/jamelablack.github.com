@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications - Lesson 8: Beyond MVC - Service Objects &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href=""></a>
+
+            <a class="sidebar-nav-item" href="/about/">About</a>
+
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href=""></a>
+
+            <a class="sidebar-nav-item" href="/archive/">Archive</a>
+
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 8: Beyond MVC - Service Objects</h1>
+  <span class="post-date">13 Jul 2015</span>
+  <h2>Service Objects</h2>
+
+<p>Just like we can extract domain logic into domain objects, we can extract business level logic into service objects.  Currently, the below process is modeling the Credit Deduction Business Process. Let&#39;s extract that into a Service Object called CreditDeduction.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#apps/controllers/todos_controller.rb</span>
+<span class="k">def</span> <span class="nf">create</span>
+  <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:todo</span><span class="p">)</span><span class="o">]</span>
+  <span class="n">credit</span> <span class="o">=</span> <span class="no">Credit</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">current_user</span><span class="p">)</span>
+
+  <span class="k">if</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">save_with_tags</span>
+    <span class="k">if</span> <span class="no">UserLevelPoicy</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">ccurent_user</span><span class="p">)</span><span class="o">.</span><span class="n">premium?</span>
+    <span class="n">credit</span> <span class="o">=</span> <span class="n">credit</span> <span class="o">-</span> <span class="mi">1</span>
+  <span class="k">else</span>
+    <span class="n">credit</span> <span class="o">=</span> <span class="n">credit</span> <span class="o">-</span> <span class="mi">2</span>
+  <span class="k">end</span>
+
+  <span class="n">credit</span><span class="o">.</span><span class="n">save</span>
+
+  <span class="k">if</span> <span class="n">credit</span><span class="o">.</span><span class="n">depleted?</span> <span class="o">&lt;</span> <span class="mi">0</span>
+    <span class="no">AppMailer</span><span class="o">.</span><span class="n">notify</span><span class="o">.</span><span class="n">insufficient_funds</span>
+  <span class="k">elsif</span> <span class="n">credit</span><span class="o">.</span><span class="n">low_balance?</span>
+    <span class="no">AppMailer</span><span class="o">.</span><span class="n">notify_low_balance</span>
+  <span class="k">end</span>
+    <span class="n">redirect_to</span> <span class="n">root_path</span>
+  <span class="k">else</span>
+    <span class="n">render</span> <span class="ss">:new</span>
+  <span class="k">end</span></code></pre></div>
+
+<h3>Create the Service Policy called CreditDeduction</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/services/credit_deduction.rb</span>
+<span class="no">Class</span> <span class="no">CreditDeduction</span>
+
+
+<span class="k">end</span></code></pre></div>
+
+<h4>Extract business process related Code</h4>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/services/credit_deduction.rb</span>
+<span class="no">Class</span> <span class="no">CreditDeduction</span>
+  <span class="kp">attr_accessor</span> <span class="ss">:user</span>
+
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+    <span class="vi">@user</span> <span class="o">=</span> <span class="n">user</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">deduct_credit</span>
+    <span class="k">if</span> <span class="no">UserLevelPoicy</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">ccurent_user</span><span class="p">)</span><span class="o">.</span><span class="n">premium?</span>
+      <span class="n">credit</span> <span class="o">=</span> <span class="n">credit</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">else</span>
+      <span class="n">credit</span> <span class="o">=</span> <span class="n">credit</span> <span class="o">-</span> <span class="mi">2</span>
+    <span class="k">end</span>
+
+    <span class="n">credit</span><span class="o">.</span><span class="n">save</span>
+
+    <span class="k">if</span> <span class="n">credit</span><span class="o">.</span><span class="n">depleted?</span> <span class="o">&lt;</span> <span class="mi">0</span>
+      <span class="no">AppMailer</span><span class="o">.</span><span class="n">notify</span><span class="o">.</span><span class="n">insufficient_funds</span>
+    <span class="k">elsif</span> <span class="n">credit</span><span class="o">.</span><span class="n">low_balance?</span>
+      <span class="no">AppMailer</span><span class="o">.</span><span class="n">notify_low_balance</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<h4>Update the TodoController</h4>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#apps/controllers/todos_controller</span>
+<span class="k">def</span> <span class="nf">create</span>
+  <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:todo</span><span class="p">)</span><span class="o">]</span>
+  <span class="n">credit</span> <span class="o">=</span> <span class="no">Credit</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">current_user</span><span class="p">)</span>
+
+  <span class="k">if</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">save_with_tags</span>
+    <span class="no">CreditDeduction</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">credit</span><span class="p">,</span> <span class="n">current_user</span><span class="p">)</span><span class="o">.</span><span class="n">deduct_credit</span>
+
+    <span class="n">redirect_to</span> <span class="n">root_path</span>
+  <span class="k">else</span>
+    <span class="n">render</span> <span class="ss">:new</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<h4>Move instatiating a new Credit Object to your Service Policy</h4>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/services/credit_deduction.rb</span>
+<span class="no">Class</span> <span class="no">CreditDeduction</span>
+  <span class="kp">attr_accessor</span> <span class="ss">:credit</span><span class="p">,</span> <span class="ss">:user</span>
+
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">credit</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
+    <span class="vi">@credit</span> <span class="o">=</span> <span class="no">Credit</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+    <span class="vi">@user</span> <span class="o">=</span> <span class="n">user</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">deduct_credit</span>
+    <span class="k">if</span> <span class="no">UserLevelPoicy</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">ccurent_user</span><span class="p">)</span><span class="o">.</span><span class="n">premium?</span>
+      <span class="n">credit</span> <span class="o">=</span> <span class="n">credit</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">else</span>
+      <span class="n">credit</span> <span class="o">=</span> <span class="n">credit</span> <span class="o">-</span> <span class="mi">2</span>
+    <span class="k">end</span>
+
+    <span class="n">credit</span><span class="o">.</span><span class="n">save</span>
+
+    <span class="k">if</span> <span class="n">credit</span><span class="o">.</span><span class="n">depleted?</span> <span class="o">&lt;</span> <span class="mi">0</span>
+      <span class="no">AppMailer</span><span class="o">.</span><span class="n">notify</span><span class="o">.</span><span class="n">insufficient_funds</span>
+    <span class="k">elsif</span> <span class="n">credit</span><span class="o">.</span><span class="n">low_balance?</span>
+      <span class="no">AppMailer</span><span class="o">.</span><span class="n">notify_low_balance</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#apps/controllers/todos_controller</span>
+<span class="k">def</span> <span class="nf">create</span>
+  <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:todo</span><span class="p">)</span><span class="o">]</span>
+
+  <span class="k">if</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">save_with_tags</span>
+    <span class="no">CreditDeduction</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">current_user</span><span class="p">)</span><span class="o">.</span><span class="n">deduct_credit</span>
+
+    <span class="n">redirect_to</span> <span class="n">root_path</span>
+  <span class="k">else</span>
+    <span class="n">render</span> <span class="ss">:new</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/07/18/course3-testing-talks/">
+            Build Robust & Production Quality Applications - Lesson 8: - Mocks & Stubs
+            <small>18 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/07/17/course3-mocks-and-stubs/">
+            Build Robust & Production Quality Applications - Lesson 8: - Mocks & Stubs
+            <small>17 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/07/16/course3-mocking/">
+            Build Robust & Production Quality Applications - Lesson 8: - Mocking
+            <small>16 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

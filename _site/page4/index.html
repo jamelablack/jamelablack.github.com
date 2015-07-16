@@ -156,6 +156,14 @@
           
         
       
+        
+          
+        
+      
+        
+          
+        
+      
 
     <p>&copy; 2015. All rights reserved.</p>
   </div>
@@ -167,260 +175,370 @@
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/06/05/course3-seperating-actors/">
-        Build Robust & Production Quality Applications - Lesson 6: Continuous Delivery
+      <a href="/2015/07/01/course3-credit-card-payments/">
+        Build Robust & Production Quality Applications - Lesson 7: Processing Credit Card Payments Online with Stripe
       </a>
     </h1>
 
-    <span class="post-date">05 Jun 2015</span>
+    <span class="post-date">01 Jul 2015</span>
 
-    <h2>Actors</h2>
+    <h2>Processing Credit Card Payments Online</h2>
 
-<p>Actors are different types of users, most likely referred to as admins, becasue they act differently within your application.</p>
+<p>Back in the day, processing credit cards online was intense as told by 37Signals in their <a href="https://signalvnoise.com/posts/753-ask-37signals-how-do-you-process-credit-cards">blogpost</a> back in 2007. If merchants didn&#39;t want to connect their customers to Paypal to checkout, they had create a Merchant Account, followed by having an account with Authorize.net, and then an engine called ActiveMarchant with is Ruby gem for reoccuring billing - which required alot of custom code and an intense daily business process.
+One thing that was&#39;nt mentioned was security - Payment Card Industry Security Standard (PCI Compliance). This means that if you do take credit card information via your website, your site must be sercured, for example. And if you store credit card data, it must be encrypted, etc.</p>
 
-<p>In some instances, you could:</p>
+<h3>Stripe</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">index</span>
-  <span class="k">if</span> <span class="n">current_user</span><span class="o">.</span><span class="n">admin?</span>
-    <span class="no">Todo</span><span class="o">.</span><span class="n">all</span>
-    <span class="k">else</span> <span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="n">.</span>
-  <span class="k">end</span></code></pre></div>
+<p><a href="https://stripe.com">Stripe</a>, luckily has changed all that as one of the first pioneers in this line of payment processing. You don&#39;t need a merchant account or gateway - which is a huge advantage.</p>
 
-<p>But dependeing on the size, this could be quite cumbersome.</p>
+<p>Stripe also has the advantage of having a test mode that will allow you to test the payment pipeline while in the prototyping phase. Stripe will connect to your bank account and submit funds recieved on a 7 day rolling basis.</p>
 
-<p>Another alternative, is we can create a seperate action:</p>
+<h4>Stripe.js</h4>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">admin_index</span>
-  <span class="vi">@todos</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">all</span>
-<span class="k">end</span></code></pre></div>
+<p>If you incorporate Stripe.js in your payment processing, the clients credit card info is never touches your website, it goes straight to Stripe and token is returned. This also allows us to bypass the PCI Compliance standards. The cost is also pretty negligible to have a robust, reliable, safe payment processing system for your online business.</p>
 
-<p>The advatange is that everything the admin can do is seperate from the other actors. But this is also cumbersome b/c if we have multiple actors, before each action, we have to check the users role.</p>
+<h2>How to create a payment with Stripe</h2>
 
-<h2>Namespace</h2>
+<p>Select Test mode, once signing up</p>
 
-<p>So instead, we are going to work with Namespaces.</p>
+<p>Include Stripe gem and bundle install</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#routes.rb</span>
-<span class="n">resources</span> <span class="ss">:todos</span><span class="p">,</span> <span class="ss">only</span><span class="p">:</span> <span class="o">[</span><span class="ss">:index</span><span class="p">,</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">:new</span><span class="p">,</span> <span class="ss">:show</span><span class="o">]</span>
-<span class="n">namespace</span> <span class="ss">:admin</span> <span class="k">do</span>
-  <span class="n">resources</span> <span class="ss">:todos</span><span class="p">,</span> <span class="ss">only</span><span class="p">:</span> <span class="o">[</span><span class="ss">:index</span><span class="o">]</span>
-<span class="k">end</span></code></pre></div>
+<p>Specify your API key, use your Test Secret Key and set it a local variable in your rails console.</p>
 
-<p>The above route would give us:</p>
+<p>&quot;Stripe.api_key = &#39;4uhsvjfudjpsdf0u fvpdapo&#39; &quot;</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="ss">http</span><span class="p">:</span><span class="sr">//</span><span class="ss">localhost</span><span class="p">:</span><span class="mi">3000</span><span class="o">/</span><span class="n">admin</span><span class="o">/</span><span class="n">todos</span></code></pre></div>
+<p>Grab Fake Charge Data from Stripe API docks:
+Copy code block and enter in Rails console
+The Charge object, along with attributes will be returned once process.</p>
 
-<p>So, therefore your controller would be in app/controllers/admin/todos<em>controller, rather than app/controllers/todos</em>controller</p>
+<p>Remember: currency is always in cents and you don&#39;t have to collect address information from customers when using Stripe</p>
 
-<p>Add when created, our class name is prefixed with the module Admin</p>
+<p>Refresh and you should see the charge that was just submitted in your console.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Admin</span><span class="o">::</span><span class="no">TodosController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
-<span class="k">end</span></code></pre></div>
+<h2>Accept Payments with Checkout</h2>
 
-<p>We also need to run a migration to add the admin column to the users table</p>
+<p>How to get the credit card information from customers to the web application</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">rails</span> <span class="n">g</span> <span class="n">migration</span> <span class="n">add_admin_to_users</span></code></pre></div>
+<h3>Using Stripe Checkout Buttom</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">AddAdminToUsers</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span>
-  <span class="k">def</span> <span class="nf">change</span>
-    <span class="n">add_column</span> <span class="ss">:users</span><span class="p">,</span> <span class="ss">:admin</span><span class="p">,</span> <span class="ss">:boolean</span>
+<p>is simply done with a button and you can add text, as well.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#views/payments/new.html.haml</span>
+<span class="o">%</span><span class="nb">p</span> <span class="no">Thank</span> <span class="n">you</span> <span class="k">for</span> <span class="n">you</span> <span class="n">support</span><span class="o">.</span>
+<span class="o">=</span> <span class="n">form_tag</span> <span class="n">payments_path</span> <span class="k">do</span>
+  <span class="o">%</span><span class="n">script</span><span class="o">.</span><span class="n">stripe</span><span class="o">-</span><span class="n">button</span><span class="p">{</span><span class="s2">&quot;data-amount&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;2000&quot;</span><span class="p">,</span> <span class="s2">&quot;data-description&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;2 widgets ($20.00)&quot;</span><span class="p">,</span> <span class="s2">&quot;data-image&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;/128x128.png&quot;</span><span class="p">,</span> <span class="s2">&quot;data-key&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;pk_test_------------------------&quot;</span><span class="p">,</span> <span class="s2">&quot;data-name&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;Demo Site&quot;</span><span class="p">,</span> <span class="ss">:src</span> <span class="o">=&gt;</span> <span class="s2">&quot;https://checkout.stripe.com/checkout.js&quot;</span><span class="p">}</span></code></pre></div>
+
+<p>Update the following fields:
+Data amount, Data-name, Description, and remove logo</p>
+
+<h4>Create routes</h4>
+
+<p>Create &#39;/payements&#39;, new and create routes and grab code from API docs</p>
+
+<h4>If you run binding.pry in the payments#create action</h4>
+
+<p>You will see that one of the params submitted to your server is the stripe token - which is the only indication that credit card info has been submitted.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">PaymentsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+
+<span class="k">def</span> <span class="nf">create</span>
+  <span class="no">Stripe</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="s2">&quot;sk_test_FKBLHWUFHPWHFO29793772&quot;</span>
+
+  <span class="n">token</span> <span class="o">=</span> <span class="n">paramns</span><span class="o">[</span><span class="ss">:stripeToken</span><span class="o">]</span>
+
+  <span class="k">begin</span>
+    <span class="n">charge</span> <span class="o">=</span> <span class="no">Stripe</span><span class="o">::</span><span class="no">Charge</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+      <span class="ss">:amount</span> <span class="o">=&gt;</span> <span class="mi">3000</span><span class="p">,</span>
+      <span class="ss">:currency</span> <span class="o">=&gt;</span> <span class="s2">&quot;usd&quot;</span>
+      <span class="ss">:card</span> <span class="o">=&gt;</span> <span class="n">token</span>
+    <span class="p">)</span>
+    <span class="n">flash</span><span class="o">[</span><span class="ss">:success</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Thank you for your payment&quot;</span>
+    <span class="n">redirect_to</span> <span class="n">new_payment_path</span>
+
+  <span class="k">rescue</span> <span class="no">Stripe</span><span class="o">::</span><span class="no">CardError</span> <span class="o">=&gt;</span> <span class="n">e</span>
+    <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span>
+    <span class="n">redirect_to</span> <span class="n">new_payment_path</span>
+    <span class="k">end</span>
   <span class="k">end</span>
 <span class="k">end</span></code></pre></div>
 
-<p>Our viewv template in this case would be in:</p>
+<h2>Accept Payments with Custom Form using Stripe.js</h2>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">app</span><span class="o">/</span><span class="n">views</span><span class="o">/</span><span class="n">admin</span><span class="o">/</span><span class="n">index</span><span class="o">.</span><span class="n">html</span><span class="o">.</span><span class="n">haml</span></code></pre></div>
+<p>Sometimes using the Stripe Checkout button is not seamless enough and you want submit payments through a custom form, where the payment form is apart of the UI:</p>
 
-<p>This layout allows us to add things like an admin dashboard</p>
+<h3>1. Add Stripe at the top of the views template and set publishable key</h3>
 
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/06/03/course3-Continuous-Delivery/">
-        Build Robust & Production Quality Applications - Lesson 6: Continuous Delivery
-      </a>
-    </h1>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">script</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text/javascript&quot;</span> <span class="n">src</span><span class="o">=</span><span class="s2">&quot;https://js.stripe.com/v2/&quot;</span><span class="o">&gt;&lt;</span><span class="sr">/script&gt;</span>
 
-    <span class="post-date">03 Jun 2015</span>
+<span class="sr">&lt;script type=&quot;text/</span><span class="n">javascript</span><span class="s2">&quot;&gt;Stripe.setPublishableKey(&quot;</span><span class="c1">#{ENV[&#39;STRIPE_PUBLISHABLE_KEY&#39;]}&quot;);</span>
+<span class="o">&lt;</span><span class="sr">/script&gt;</span>
 
-    <h2>Continuous Delivery</h2>
+<span class="sr">= javascript_include_tag &#39;payment&#39;</span></code></pre></div>
 
-<h4>Excerpt from Tealeaf:</h4>
+<p>The above code also includes a turns off the submit button once its clicked to disable multiple submissions and then submit the custom form data to stripe for the stripe token and name attributes are set to nil, which means the data being submit will not be posted to the database. A hidden field for the StripeToken is generated and then submited to our server.</p>
 
-<p>Continuous Delivery (CD) or sometimes known as Continuous Deployment goes one step beyond CI to automatically deploy features when the new code passes the continuous integration phase. Continuous Delivery encourages small and incremental software updates over big and infrequent releases to shorten the feedback loop and fix bugs earlier.</p>
+<p>You should also create a file config/initializers/assets.rb with the following content (assuming your javascript file is called payments.js):</p>
 
-<p>Let&#39;s look at an example development workflow that has both CI and CD enabled, based on the Github Flow process:</p>
+<p>Rails.application.config.assets.precompile += [&#39;payments.js&#39;]
+This file will help to make sure that you add the payments.js file in the asset pipeline for all environments (dev, test and production), although in the development environment it doesn&#39;t really compress the assets for you.</p>
 
-<p>** we pull the latest code from Github
-** we create a new feature branch and develop a new feature
-** after we finish the feature, we push it to a branch with the same name on Github
-** we create a PR from this branch to the staging branch.
-** we wait for the the CI server to ensure all tests pass.
-** we allow the CI server to automatically deploy the code from the staging branch to our staging server
-** we perform sanity tests on our staging server
-** we create a PR from the staging branch to the master branch on Github
-** this will trigger another round of integration and if it passes, the CI server will automatically deploy the code to the production server.</p>
-
-<p>If adopted by everyone in the development team, this process will make sure our master branch is always in sync with the production server and new features are also always build on top of what&#39;s on the production server.</p>
-
-<p>Assignment: Set up Continuous Delivery with Circle CI</p>
-
-<p>For this assignment, you are going to enable Continuous Delivery with Circle CI.</p>
-
-<p>Here are the steps:</p>
-
-<p>create a staging branch locally if you don&#39;t have it yet.
-in Circle CI, follow Project settings for your project and select Heroku Deployment under Continuous Deployment
-configure the Heroku API key. (Get it from your Heroku account page)
-associate Heroku SSH key with your Circle account so Circle can have the authority to deploy to Heroku on your behalf.
-create a circle.yml file in your projects root directory and make sure your adjust production<em>app</em>name &amp; staging<em>app</em>name to your own app name.
-Here is an example of a circle.yml file that you can use:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="ss">machine</span><span class="p">:</span>
-  <span class="ss">ruby</span><span class="p">:</span>
-    <span class="ss">version</span><span class="p">:</span> <span class="mi">2</span><span class="o">.</span><span class="mi">1</span><span class="o">.</span><span class="mi">5</span>
-<span class="ss">deployment</span><span class="p">:</span>
-  <span class="ss">production</span><span class="p">:</span>
-    <span class="ss">branch</span><span class="p">:</span> <span class="n">master</span>
-    <span class="ss">commands</span><span class="p">:</span>
-      <span class="o">-</span> <span class="n">heroku</span> <span class="ss">maintenance</span><span class="p">:</span><span class="n">on</span> <span class="o">--</span><span class="n">app</span> <span class="n">production_app_name</span>
-      <span class="o">-</span> <span class="n">heroku</span> <span class="ss">pg</span><span class="p">:</span><span class="n">backups</span> <span class="n">capture</span> <span class="o">--</span><span class="n">app</span> <span class="n">production_app_name</span>
-      <span class="o">-</span> <span class="n">git</span> <span class="n">push</span> <span class="n">git</span><span class="vi">@heroku</span><span class="o">.</span><span class="n">com</span><span class="ss">:production_app_name</span><span class="o">.</span><span class="n">git</span> <span class="vg">$CIRCLE_SHA1</span><span class="ss">:refs</span><span class="o">/</span><span class="n">heads</span><span class="o">/</span><span class="n">master</span>
-      <span class="o">-</span> <span class="n">heroku</span> <span class="n">run</span> <span class="n">rake</span> <span class="ss">db</span><span class="p">:</span><span class="n">migrate</span> <span class="o">--</span><span class="n">app</span> <span class="n">production_app_name</span>
-      <span class="o">-</span> <span class="n">heroku</span> <span class="ss">maintenance</span><span class="p">:</span><span class="n">off</span> <span class="o">--</span><span class="n">app</span> <span class="n">production_app_name</span>
-  <span class="ss">staging</span><span class="p">:</span>
-    <span class="ss">branch</span><span class="p">:</span> <span class="n">staging</span>
-    <span class="ss">commands</span><span class="p">:</span>
-      <span class="o">-</span> <span class="n">heroku</span> <span class="ss">maintenance</span><span class="p">:</span><span class="n">on</span> <span class="o">--</span><span class="n">app</span> <span class="n">staging_app_name</span>
-      <span class="o">-</span> <span class="n">git</span> <span class="n">push</span> <span class="n">git</span><span class="vi">@heroku</span><span class="o">.</span><span class="n">com</span><span class="ss">:staging_app_name</span><span class="o">.</span><span class="n">git</span> <span class="vg">$CIRCLE_SHA1</span><span class="ss">:refs</span><span class="o">/</span><span class="n">heads</span><span class="o">/</span><span class="n">master</span>
-      <span class="o">-</span> <span class="n">heroku</span> <span class="n">run</span> <span class="n">rake</span> <span class="ss">db</span><span class="p">:</span><span class="n">migrate</span> <span class="o">--</span><span class="n">app</span> <span class="n">staging_app_name</span>
-      <span class="o">-</span> <span class="n">heroku</span> <span class="ss">maintenance</span><span class="p">:</span><span class="n">off</span> <span class="o">--</span><span class="n">app</span> <span class="n">staging_app_name</span>
-<span class="ss">Note</span><span class="p">:</span> <span class="n">you</span> <span class="n">should</span> <span class="n">change</span> <span class="n">the</span> <span class="no">Ruby</span> <span class="n">version</span> <span class="n">to</span> <span class="n">the</span> <span class="n">version</span> <span class="n">you</span><span class="err">&#39;</span><span class="n">re</span> <span class="n">using</span> <span class="k">for</span> <span class="n">this</span> <span class="n">project</span><span class="o">.</span></code></pre></div>
-
-<p>This code should be pretty self explanatory - this allows Circle to monitor your staging branch and deploy to the staging server, and monitor your master branch to deploy to the production server. It&#39;ll run migrations for you and for the production server, it also automatically backs up the database before a deploy.</p>
-
-<p>Notifications Options</p>
-
-<p>By default we will be notified by email on every status change of our builds. But receiving emails all the time build fails or passes might be cumbersome and there are also good alternatives.</p>
-
-<p>For Mac users - there is a free application CCMenu by ThoughtWorks which we install and it will stick to our upper bar. In order to make it fully run - we will need to generate a CircleCI API key (Project settings -&gt; API keys) and http address of build. See the setup info guide here. Great feature of this app is that it can play sounds based on build&#39;s status and we are able to customize it to our needs.</p>
-
-<p>Another great feature most CIs offer are Embedded Status Badges. These are especially useful for open source projects. They look nice in README.md usually placed in GitHub repo page giving out the information about build being successful or not.</p>
+<p>Note: If you are using CircleCI at this point, your build may fail and you may need to set your stripe key environment variable on the CircleCI server as well, so it&#39;ll have access to it. (Project Settings -&gt; Environment Variables)</p>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/05/30/course3-CI/">
-        Build Robust & Production Quality Applications - Lesson 6: Continuous Intgeration
+      <a href="/2015/06/30/Metz-5-Rules/">
+        Sandi Metz - The Rules
       </a>
     </h1>
 
-    <span class="post-date">30 May 2015</span>
+    <span class="post-date">30 Jun 2015</span>
 
-    <h2>Continuous Integration</h2>
+    <ol>
+<li><p>Class can have no more than 100 lines</p></li>
+<li><p>A method can contain no more than 5 lines</p></li>
+<li><p>Can be passed no more than 4, more like 3 parameters</p></li>
+<li><p>A controller action can only pass one instance variable</p></li>
+<li><p>No more than 2 class names per controller action</p></li>
+</ol>
 
-<p>According to Martin Fowler&#39;s <a href="http://martinfowler.com/articles/continuousIntegration.html">blog</a>, Continuous Integration is
-Continuous Integration is a software development practice where members of a team integrate their work frequently, usually each person integrates at least daily - leading to multiple integrations per day. Each integration is verified by an automated build (including test) to detect integration errors as quickly as possible. Many teams find that this approach leads to significantly reduced integration problems and allows a team to develop cohesive software more rapidly. This article is a quick overview of Continuous Integration summarizing the technique and its current usage.</p>
+<p>Make smaller things and they should know as little about each other as possible</p>
 
-<h4>According to Tealeaf...</h4>
+<p>When looking at large chucks of code, its okay to do the &quot;squint method&quot;
+**1. Changes in shape means you have nested conditionals and it will be very hard to reason about</p>
 
-<p>The problem that CI solves is to force integration on a regular basis. For example, you may have just finished a feature on my_feature branch and have had all the tests pass locally. You open a PR and your fellow coworkers are happy with the way the code looks. Github shows the PR can be automatically merged without conflict - so you do that, merge it back to the master branch and ready to deploy the feature!</p>
+<p>**2. Changes in color signify different levels of abstraction means that it be hard to follow</p>
 
-<p>The danger of this workflow is that while you are working on your feature, someone else could have just finished their feature and pushed to the master branch to Github, and your new feature never integrated with this new piece of code.</p>
+<p>Duplication is far cheaper than the wrong abstraction</p>
 
-<p>A Continuous Integration solution would watch your repository and force integration (running the entire test suite on the CI server) whenever necessary.</p>
+<p>When code can know less, we can do more. Inheritance is okay when the subclasses
+- shallow, narrow hiearchry
+- subclasses to be at the leaf nodes of the object graph
+- subclasses use all the behavior of the superclass</p>
 
-<p>Once we have our CI server set up to monitor our repository, it&#39;ll pull the latest code and run the entire test suite every time we push code to any branch on Github (when you work with a CI server, you want to make sure that every push should always make the tests pass) and notify you on the results. The CI server also runs every time we merge our pull request to the master branch to ensure integration.</p>
-
-<p>CI server helps us catch integration errors before they reach to production, and the earlier we catch errors, the less costly we can fix them.</p>
-
-<p>A CI solution doesn&#39;t eliminate the necessity to run your tests locally - your will lose friends quickly if you constantly push code that &quot;breaks the build&quot; and have everyone notified. However, in cases of long running test suites, it is acceptable to run only the tests pertaining to the new feature built, and have the CI server to run the entire test suite to catch any potential regression. Most modern CI services allow you to run the tests in parallel (with a paid plan, typically) so it could run your tests several times faster.</p>
-
-<h3>Circle CI</h3>
-
-<h3>Set Up Continuous Integration with Circle CI</h3>
-
-<p><a href="http://circleci.com">Circle CI</a> is a popular Continuous Integration service. Set up your project with Circle CI is pretty simple - link and authorize your Github account, then add the repository that you want to enable CI. By default, Circle CI runs on every push and PR merge.</p>
+<p>Case Statements are made for business logic and not configuration - extract configuration into a hash.</p>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/05/28/course3-production-error-monitoring/">
-        Build Robust & Production Quality Applications - Lesson 6: Simple Deployment Pipeline
+      <a href="/2015/06/26/Refactoring-Generalization/">
+        Refactoring - Dealing wihth Generalization
       </a>
     </h1>
 
-    <span class="post-date">28 May 2015</span>
+    <span class="post-date">26 Jun 2015</span>
 
-    <h2>Set-up Production Error Monitoring</h2>
+    <h3>1. Pull Up Method</h3>
 
-<p>Regardless how well we have tested our application, there will always be errors on the production server. To get notified of production errors so you can respond to them, you need to set up an error monitoring service in production.</p>
+<p>You have methods with identical results on subclasses. Move them to the superclass.</p>
 
-<p>Install <a href="https://getsentry.com/welcome/">Sentry</a>.</p>
+<h3>2.Push Down Method</h3>
 
-<p>You also need to install the <a href="https://github.com/getsentry/raven-ruby">&quot;sentry-raven&quot;</a> gem in your app.</p>
+<p>Behavior on a superclass is relevant only for some of its subclasses. Move it to those subclasses</p>
 
-<h3>Setup</h3>
+<h3>3. Extract Module</h3>
 
-<p>After creating an account online and adding your project to Sentry, you will be given a DSN that should go into your config/initializers folder.</p>
+<p>You have duplicated behavior in two or more classes.
+Create a new module and move the relevant behavior from the old class into the module, and include the module in the class.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1"># in Rails, this might be in config/initializers/sentry.rb</span>
-<span class="no">Raven</span><span class="o">.</span><span class="n">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
-  <span class="n">config</span><span class="o">.</span><span class="n">dsn</span> <span class="o">=</span> <span class="s1">&#39;http://public:secret@example.com/project-id&#39;</span>
-<span class="k">end</span></code></pre></div>
+<h3>4. Inline Module</h3>
+
+<p>The resultant indirection of the included module is no longer worth the duplication it is preventing.
+Merge the module into the including class.</p>
+
+<h3>5. Extract Subclass</h3>
+
+<p>A class has features that are used only in some instances.
+Create a subclass for that subset of features.</p>
+
+<h3>6. Introduce Inheritance</h3>
+
+<p>You have two classes with similar features.
+Make one of the classes a superclass and move the common features to the superclass.</p>
+
+<h3>7. Collapse Hierarchy</h3>
+
+<p>A superclass and subclass (or module and the class that includes the module) are not very different.
+￼￼Merge them together</p>
+
+<h3>8. Form Template Method</h3>
+
+<p>You have two methods in subclasses that perform similar steps in the same order, yet the steps are different.
+Get the steps into methods with the same signature, so that the original methods become the same. Then you can pull them up.</p>
+
+<h3>9. Replace Inheritance with Delegation</h3>
+
+<p>A subclass uses only part of a superclass interface or does not want to inherit data.
+Create a field for the superclass, adjust methods to delegate to the superclass, and remove the subclassing.
+￼Replace Inheritance with Delegation</p>
+
+<h3>10. Replace Abstract Superclass with Module</h3>
+
+<p>You have an inheritance hierarchy, but never intend to explicitly instantiate an instance of the superclass.
+Replace the superclass with a module to better communicate your intention.</p>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/05/26/course3-simple-deploy-pipeline/">
-        Build Robust & Production Quality Applications - Lesson 6: Simple Deployment Pipeline
+      <a href="/2015/06/25/Refactoring-conditionals/">
+        Refactoring - Simplifying Conditional Expressions
       </a>
     </h1>
 
-    <span class="post-date">26 May 2015</span>
+    <span class="post-date">25 Jun 2015</span>
 
-    <h2><a href="http://martinfowler.com/bliki/ContinuousDelivery.html">Continuous Delivery</a></h2>
+    <h3>1. Decompose Condtional</h3>
 
-<p>Usually the first stage of a deployment pipeline will do any compilation and provide binaries for later stages. Later stages may include manual checks, such as any tests that can&#39;t be automated. Stages can be automatic, or require human authorization to proceed, they may be parallelized over many machines to speed up the build. Deploying into production is usually the final stage in a pipeline.</p>
+<p>You have a complicated conditional (if-then-else) statement.
+Extract methods from the condition, “then” part, and “else” parts.
+Mechanics
+*<em>1. Extract the condition into its own method.
+*</em>2. Extract the “then” part and the “else” part into their own methods.</p>
 
-<p>Continuous Delivery is a software development discipline where you build software in such a way that the software can be released to production at any time.</p>
+<h3>2. Recompose Conditional</h3>
 
-<p>You’re doing continuous delivery when: [1]</p>
+<p>You have conditional code that is unnecessarily verbose and does not use the most readable Ruby construct.
+Replace the conditional code with the more idiomatic Ruby construct.</p>
 
-<p>*<em>Your software is deployable throughout its lifecycle
-*</em>Your team prioritizes keeping the software deployable over working on new features
-*<em>Anybody can get fast, automated feedback on the production readiness of their systems any time somebody makes a change to them
-*</em>You can perform push-button deployments of any version of the software to any environment on demand</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="ss">before</span><span class="p">:</span>
+<span class="n">parameters</span> <span class="o">=</span> <span class="n">params</span> <span class="p">?</span> <span class="n">params</span> <span class="p">:</span> <span class="o">[]</span>
 
-<h2>Deployment Pipeline</h2>
+<span class="ss">after</span><span class="p">:</span>
+<span class="n">parameters</span> <span class="o">=</span> <span class="n">params</span> <span class="o">||</span> <span class="o">[]</span></code></pre></div>
 
-<p>A deployment pipeline is a way to deal with this by breaking up your build into stages. Each stage provides increasing confidence, usually at the cost of extra time. Early stages can find most problems yielding faster feedback, while later stages provide slower and more through probing.</p>
+<h3>3. Consolidate Conditional Expression</h3>
 
-<p>More broadly the deployment pipeline&#39;s job is to detect any changes that will lead to problems in production.</p>
+<p>You have a sequence of conditional tests with the same result.
+Combine them into a single conditional expression and extract it.</p>
 
-<h3>Simple Approach to the Deployment Pipeline</h3>
+<h3>4. Consolidate Duplicate Conditional Fragments</h3>
 
-<p>Deployment pipelines can become very complex - typically the larger the project is and the more teams are involved, the more complicated the automatic deployment process is. For our purpose, we are going to adopt a simple but effective deployment pipeline for solo dev or small team situations.</p>
+<p>The same fragment of code is in all branches of a conditional expression.
+Move it outside the expression.</p>
 
-<p>1) Follow the Github Flow process, and after you complete a feature, merge the pull request back to the master branch.</p>
+<h3>5. Replace Condtional with Polymorphism</h3>
 
-<p>2) Run your entire test suite. This is very important and you should always do this before pushing code to Github. The master branch should always have working code. Developers call this &quot;don&#39;t break the build&quot;.</p>
+<p>Motivation
+One of the grandest sounding words in object jargon is polymorphism. The essence of polymorphsim is that it allows you to avoid writing an explicit con- ditional when you have objects whose behavior varies depending on their types.
+As a result you find that case statements or if-then-else statements that switch on type codes are much less common in an Object-Oriented program.</p>
 
-<p>3) Deploy your code to the staging environment and test on your staging server manually to make sure that the new feature works. Again, your staging server should be as close to your production server as possible.</p>
+<p>Polymorphism gives you many advantages. The biggest gain occurs when this same set of conditions appears in many places in the program. If you want to add a new type, you have to find and update all the conditionals. But with polymorphism you just create a new class and provide the appropriate methods. Clients of the class don’t need to know about the polymorphism, which reduces the dependencies in your system and makes it easier to update.</p>
 
-<p>4) Deploy code to production. You want to deploy code to production as often as possible to get feedback as fast as possible. If something breaks, it&#39;s much easier to fix it with your mind still fresh with the feature you worked on. In some teams this step is out of your control and there are strict production deployment times. In that situation you&#39;d go back to step 1 and build your next feature.</p>
+<p>Ruby’s duck typing makes it easy to introduce polymorphism. In a statically typed language like Java, you need inheritance or implementation of an inter- face to be able to call a method polymorphically. But in Ruby, an object’s cur- rent set of methods—not its inheritance from a particular class—determines its valid semantics. So long as objects A and B have the same method, you can call them in the same way.</p>
 
-<p>When you deploy to the staging server or the production server, effectively what you are doing is to push code from your local master branch to the corresponding Heroku server&#39;s master branch.</p>
+<h2>Mechanics</h2>
 
-<p>Why is it important to also push/deploy from your local master branch? The problem with deploy from a feature branch is that you miss the step of integration with other developers. For example, while you work on your feature, I might have push out my feature as well. If you deploy from your branch even if it does work you didn’t test if your feature would integrate with the feature that I just deployed, AFTER you branched off. By forcing everyone to integrate with master first, now every time you push, you HAVE to integrate with everyone else’ push at that moment. If someone pushed code after you branched off, this would force you to do a pull first on master, then integrate with it, otherwise you can’t push.</p>
+<p>Polymorphism in Ruby can be achieved in a couple of ways. In its simplest form, you can implement the same method signature on multiple objects and call these methods polymorphically. You can introduce a module hierarchy and have the method that is to be called polymorphically on the module. Or you can introduce an inheritance hierarchy and have the method that is to be called polymorphically on the subclasses. In each case, the mechanics are the same.
+The code you target may be a case statement or an if statement.</p>
 
-<p>Note that you should never deploy to production before you go back home or go to sleep. Make sure you can be around your computer for some time to fix anything that could happen after a production deploy. Your error monitoring app will alert you with emails if they do happen.</p>
+<p>*<em>1. If the conditional statement is one part of a larger method, take apart the
+conditional statement and use Extract Method.
+*</em>2. If necessary use Move Method to place the conditional at the appropriate place in the object structure.
+**3. Pick one of the polymorphic objects. Create a method on the polymor- phic object that will override the conditional statement method. Copy the body of that leg of the conditional statement into the polymorphic method and adjust it to fit.</p>
 
-<p>In summary, our simple deployment pipeline process is run entire test suite locally -&gt; deploy to staging and test -&gt; deploy to production. This is probably good enough for solo developers or small teams. We&#39;ll talk about Continuous Integration and Continuous Deployment with more automation in the next several topics.</p>
+<h3>6. Introuduce a Null Object</h3>
+
+<p>You have repeated checks for a nil value.
+Replace the nil value with a null object.</p>
+
+<p>The essence of polymorphism is that instead of asking an object what type it is and then invoking some behavior based on the answer, you just invoke the behavior. The object, depending on its type, does the right thing. One of the less intuitive places to do this is where you have a null value in a field.</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/06/25/Refactoring-Simple-Method-Calls/">
+        Refactoring - Simple Method Calls
+      </a>
+    </h1>
+
+    <span class="post-date">25 Jun 2015</span>
+
+    <h3>1.. Rename Method</h3>
+
+<p>The name of a method does not reveal its purpose.
+Change the name of the method.</p>
+
+<h3>2. Add Parameter</h3>
+
+<p>A method needs more information from its caller.
+Add a parameter for an object that can pass on this information.</p>
+
+<h3>3. Remove Parameter</h3>
+
+<p>A parameter is no longer used by the method body.
+Remove it.</p>
+
+<h3>4. Seperate Query from Modifier</h3>
+
+<p>You have a method that returns a value and also changes the state of an object.
+Create two methods, one for the query and one for the modification.</p>
+
+<h3>4. Parameterize Method</h3>
+
+<p>You have a method that returns a value and also changes the state of an object.
+Create two methods, one for the query and one for the modification.</p>
+
+<p>Motivation
+You may see a couple of methods that do similar things but vary depending on a few values. In this case you can simplify matters by replacing the separate methods with a single method that handles the variations by parameters. Such a change removes duplicate code and increases flexibility, because you can deal with other variations by adding parameters.</p>
+
+<h3>5. Perserve Whole Object</h3>
+
+<p>You are getting several values from an object and passing these values as param- eters in a method call.
+Send the whole object instead.</p>
+
+<h3>6. Replace Parameter with Method</h3>
+
+<p>An object invokes a method, then passes the result as a parameter for a method. The receiver can also invoke this method.
+Remove the parameter and let the receiver invoke the method.</p>
+
+<h3>7. Introduce Parameter Object</h3>
+
+<p>You have a group of parameters that naturally go together.
+Replace them with an object.</p>
+
+<h3>8. Remove Setting Method</h3>
+
+<p>A field should be set at creation time and never altered.
+Remove any setting method for that field.
+Providing a setting method indicates that a field may be changed. If you don’t want that field to change once the object is created, don’t provide a setting method. That way your intention is clear and you often remove the possibility that the field will change.</p>
+
+<h3>9. Hide Method</h3>
+
+<p>A method is not used by any other class.
+Make the method private.</p>
+
+<h3>10. Replace Constructor with Factory Method</h3>
+
+<p>You want to do more than simple construction when you create an object.
+Replace the constructor with a factory method.
+The most obvious motivation for Replace Constructor with Factory Method is when you have conditional logic to determine the kind of object to create. If you need to do this conditional logic in more than one place, it’s time for a Factory Method.</p>
+
+<h3>11.Replace Error Code with Exception</h3>
+
+<p>A method returns a special code to indicate an error.
+Raise an exception instead.</p>
+
+<h3>12. Replace Exception with Test</h3>
+
+<p>You are raising an exception on a condition the caller could have checked first.
+Change the caller to make the test first.
+Exceptions are an important advance in programming languages. They allow us to avoid complex codes by use of Replace Error Code with Exception. Like so many pleasures, exceptions can be used to excess, and they cease to be pleasur- able. Exceptions should be used for exceptional behavior: behavior that is an unexpected error. They should not act as a substitute for conditional tests. If you can reasonably expect the caller to check the condition before calling the operation, you should provide a test, and the caller should use it.</p>
+
+<h3>13. Introduce Gateway</h3>
+
+<p>You want to interact with a complex API of an external system or resource in a simplified way.
+Introduce a Gateway that encapsulates access to an external system or resource.</p>
+
+<h3>14. Introduce Expression Builder</h3>
+
+<p>You want to interact with a public interface in a more fluent manner and not muddy the interface of an existing object.
+Introduce an Expression Builder and create an interface specific to your application.
+￼Introduce Expression Builder
+￼￼</p>
 
   </div>
   

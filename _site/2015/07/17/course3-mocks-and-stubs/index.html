@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications - Lesson 8: - Mocks & Stubs &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href=""></a>
+
+            <a class="sidebar-nav-item" href="/about/">About</a>
+
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href=""></a>
+
+            <a class="sidebar-nav-item" href="/archive/">Archive</a>
+
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 8: - Mocks & Stubs</h1>
+  <span class="post-date">17 Jul 2015</span>
+  <h2>Further Reading</h2>
+
+<p>Check out this <a href="http://martinfowler.com/articles/mocksArentStubs.html">blog post</a> by Martin Fowler. Here is an excert I found valuable:</p>
+
+<p>Meszaros uses the term Test Double as the generic term for any kind of pretend object used in place of a real object for testing purposes. The name comes from the notion of a Stunt Double in movies. (One of his aims was to avoid using any name that was already widely used.) Meszaros then defined four particular kinds of double:</p>
+
+<p>Dummy objects are passed around but never actually used. Usually they are just used to fill parameter lists.
+*Fake objects actually have working implementations, but usually take some shortcut which makes them not suitable for production (an in memory database is a good example).
+*Stubs provide canned answers to calls made during the test, usually not responding at all to anything outside what&#39;s programmed in for the test. Stubs may also record information about calls, such as an email gateway stub that remembers the messages it &#39;sent&#39;, or maybe only how many messages it &#39;sent&#39;.
+*Mocks are what we are talking about here: objects pre-programmed with expectations which form a specification of the calls they are expected to receive.
+Of these kinds of doubles, only mocks insist upon behavior verification. The other doubles can, and usually do, use state verification.</p>
+
+<p>Also, check out this <a href="http://confreaks.tv/videos/rubyconf2011-why-you-don-t-get-mock-objects">talk </a> on Mocks</p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/07/18/course3-testing-talks/">
+            Build Robust & Production Quality Applications - Lesson 8: - Mocks & Stubs
+            <small>18 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/07/16/course3-mocking/">
+            Build Robust & Production Quality Applications - Lesson 8: - Mocking
+            <small>16 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/07/15/course3-message-expecations/">
+            Build Robust & Production Quality Applications - Lesson 8: Message Expectations
+            <small>15 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

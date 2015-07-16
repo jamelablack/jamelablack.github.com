@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications - Lesson 8: - Mocking &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href=""></a>
+
+            <a class="sidebar-nav-item" href="/about/">About</a>
+
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href=""></a>
+
+            <a class="sidebar-nav-item" href="/archive/">Archive</a>
+
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 8: - Mocking</h1>
+  <span class="post-date">16 Jul 2015</span>
+  <p>In previous lessons, extracted some of our logic into policy, domain and service objects. We can now update our TodosController spec to reflect these new objects, but we don&#39;t have to test the functionality of the service level object, for example - we just to make sure that the object can respond to the actions extracted to the Service Level process. We can accomplish this with mocking &amp; stubbing. Ensuring that a message has been sent and the object can respond to that message. We are not concerned with the response for that message.</p>
+
+<p>So far with stubbing (which is all we have done up until this point), we have always been asserting on values or the state of the system. With mocking, we asserting on communication. Mocks will always be in unit testing becasue you ar stubbing out your collaborators. If you have to create too many mocks, then you know that you are missing another layer of abstraction. Limiting your spec to focusing on one object allows you code smells like these.</p>
+
+<p>Picking up from our last example, we would create a mock with the following. Please note that the trigger is after the assertion:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">it</span> <span class="s2">&quot;delegates to CreditDeduction to deduct credit&quot;</span> <span class="k">do</span>
+  <span class="n">credit_deduction</span> <span class="o">=</span> <span class="n">double</span><span class="p">(</span><span class="s2">&quot;credit deduction&quot;</span><span class="p">)</span>
+  <span class="no">CreditDeduction</span><span class="o">.</span><span class="n">stub</span><span class="p">(</span><span class="ss">:new</span><span class="p">)</span><span class="o">.</span><span class="p">(</span><span class="n">alice</span><span class="p">)</span><span class="o">.</span><span class="n">and_return</span><span class="p">(</span><span class="n">credit_deduction</span><span class="p">)</span>
+
+  <span class="n">expect</span><span class="p">(</span><span class="n">credit_deduction</span><span class="p">)</span><span class="o">.</span><span class="n">to_recieve</span><span class="p">(</span><span class="ss">:deduct_credit</span><span class="p">)</span>
+  <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">todo</span><span class="p">:</span> <span class="p">{</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook&quot;</span><span class="p">,</span> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;I like cooking!&quot;</span> <span class="p">}</span>
+
+<span class="k">end</span></code></pre></div>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/07/18/course3-testing-talks/">
+            Build Robust & Production Quality Applications - Lesson 8: - Mocks & Stubs
+            <small>18 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/07/17/course3-mocks-and-stubs/">
+            Build Robust & Production Quality Applications - Lesson 8: - Mocks & Stubs
+            <small>17 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/07/15/course3-message-expecations/">
+            Build Robust & Production Quality Applications - Lesson 8: Message Expectations
+            <small>15 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

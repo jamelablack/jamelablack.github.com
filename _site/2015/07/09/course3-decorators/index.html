@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications - Lesson 8: Beyond MVC - Decorators &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href=""></a>
+
+            <a class="sidebar-nav-item" href="/about/">About</a>
+
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href=""></a>
+
+            <a class="sidebar-nav-item" href="/archive/">Archive</a>
+
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 8: Beyond MVC - Decorators</h1>
+  <span class="post-date">09 Jul 2015</span>
+  <p>Let&#39;s say we have a Todo model. The methods name<em>only? and display</em>text is purely presentational logic.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Class</span> <span class="no">Todo</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="n">has_many</span> <span class="ss">:taggings</span>
+  <span class="n">has_many</span> <span class="ss">:tags</span><span class="p">,</span> <span class="n">through</span> <span class="ss">:taggigngs</span>
+
+  <span class="k">def</span> <span class="nf">name_only?</span>
+    <span class="n">description</span><span class="o">.</span><span class="n">blank?</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">display_text</span>
+    <span class="nb">name</span> <span class="o">+</span> <span class="n">tag_text</span>
+  <span class="k">end</span>
+
+  <span class="kp">private</span>
+  <span class="k">def</span> <span class="nf">tag_text</span>
+    <span class="c1">#some complicated regex code</span>
+  <span class="k">end</span></code></pre></div>
+
+<p>We decide to move those two methods to a decorator:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/decorators/todo_decorator.rb</span>
+
+<span class="no">Class</span> <span class="no">TodoDecorator</span>
+  <span class="kp">attr_reader</span> <span class="ss">:todo</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">todo</span><span class="p">)</span>
+    <span class="vi">@todo</span> <span class="o">=</span> <span class="n">todo</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">display_text</span>
+    <span class="n">todo</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="n">tag_text</span>
+  <span class="k">end</span>
+
+  <span class="kp">private</span>
+  <span class="k">def</span> <span class="nf">tag_text</span>
+  <span class="k">if</span> <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">any?</span>
+    <span class="c1">#some complicated regex code</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>Now we can remove the extracted code from the Todo model and update the way its called in the views:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/views/todos/new.html/haml</span>
+<span class="o">%</span><span class="n">ul</span>
+  <span class="o">-</span> <span class="vi">@todos</span><span class="o">.</span><span class="n">each</span><span class="o">.</span><span class="n">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+    <span class="o">%</span><span class="n">li</span>
+      <span class="o">=</span> <span class="n">link_to</span> <span class="no">TodoDecorator</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">todo</span><span class="p">)</span><span class="o">.</span><span class="n">display_text</span><span class="p">,</span> <span class="n">todo</span></code></pre></div>
+
+<p>If we find ourselves using the decorator alot, we could create a decorator method on the Todo model:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/models/todo.rb</span>
+
+<span class="k">def</span> <span class="nf">decorator</span>
+  <span class="no">TodoDecorator</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">self</span><span class="p">)</span>
+<span class="k">end</span></code></pre></div>
+
+<p>We may in the future also want to call methods on the decorator and the original model and we don&#39;t want the views to be concerned with this level of logic (when to instantiate the decorator vs the model)</p>
+
+<p>In the Todos controller, we could pass an array of decorators in addition to an array of Todos:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/controllers/todos_controller.rb</span>
+<span class="k">def</span> <span class="nf">index</span>
+  <span class="vi">@todos</span> <span class="o">=</span> <span class="n">current_user</span><span class="o">.</span><span class="n">todos</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:decorator</span><span class="p">)</span>
+<span class="k">end</span></code></pre></div>
+
+<p>But then our decorator has to respond to the methods within the decorator and within the model itself. To allow this we must extend  Ruby the Forwardable module and create a delegator method:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/decorators/todo_decorator.rb</span>
+
+<span class="no">Class</span> <span class="no">TodoDecorator</span>
+
+  <span class="kp">extend</span> <span class="no">Forwardable</span>
+  <span class="k">def</span> <span class="nf">delegators</span> <span class="ss">:todo</span><span class="p">,</span> <span class="ss">:name_only?</span>
+
+  <span class="kp">attr_reader</span> <span class="ss">:todo</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">todo</span><span class="p">)</span>
+    <span class="vi">@todo</span> <span class="o">=</span> <span class="n">todo</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">display_text</span>
+    <span class="n">todo</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="n">tag_text</span>
+  <span class="k">end</span>
+
+  <span class="kp">private</span>
+  <span class="k">def</span> <span class="nf">tag_text</span>
+  <span class="k">if</span> <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">any?</span>
+    <span class="c1">#some complicated regex code</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>Delegators are valuable when we present models one way in the database and differently in the browser - we use decorators to bridge this gap. When we seperate the domain logic from presentation logic, we can also test them seperately, creating decorator specs.</p>
+
+<h2>Draper</h2>
+
+<p>If you like decorators, you should check out <a href="http://github.com/drapergem/draper">Draper</a>. Instead adding extendeding the Fowardable module, etc. All you have to do is create the decorator, make sure add &#39;delegae_all&#39; and update the videos controller:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">VideoDecorator</span> <span class="o">&lt;</span> <span class="no">Draper</span><span class="o">::</span><span class="no">Decorator</span>
+  <span class="n">delegate_all</span>
+
+  <span class="k">def</span> <span class="nf">rating</span>
+    <span class="n">object</span><span class="o">.</span><span class="n">rating</span><span class="o">.</span><span class="n">present?</span> <span class="p">?</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">object</span><span class="o">.</span><span class="n">rating</span><span class="si">}</span><span class="s2">/5.0&quot;</span> <span class="p">:</span> <span class="s2">&quot;N/A&quot;</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">VideosController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="n">before_filter</span> <span class="ss">:require_user</span>
+
+  <span class="k">def</span> <span class="nf">index</span>
+    <span class="vi">@videos</span> <span class="o">=</span> <span class="no">Video</span><span class="o">.</span><span class="n">all</span>
+    <span class="vi">@categories</span> <span class="o">=</span> <span class="no">Category</span><span class="o">.</span><span class="n">all</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">show</span>
+    <span class="vi">@video</span> <span class="o">=</span> <span class="no">VideoDecorator</span><span class="o">.</span><span class="n">decorate</span><span class="p">(</span><span class="no">Video</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">))</span>
+    <span class="vi">@reviews</span> <span class="o">=</span> <span class="vi">@video</span><span class="o">.</span><span class="n">reviews</span>
+  <span class="k">end</span></code></pre></div>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/07/18/course3-testing-talks/">
+            Build Robust & Production Quality Applications - Lesson 8: - Mocks & Stubs
+            <small>18 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/07/17/course3-mocks-and-stubs/">
+            Build Robust & Production Quality Applications - Lesson 8: - Mocks & Stubs
+            <small>17 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/07/16/course3-mocking/">
+            Build Robust & Production Quality Applications - Lesson 8: - Mocking
+            <small>16 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

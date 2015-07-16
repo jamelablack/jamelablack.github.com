@@ -156,6 +156,14 @@
           
         
       
+        
+          
+        
+      
+        
+          
+        
+      
 
     <p>&copy; 2015. All rights reserved.</p>
   </div>
@@ -167,630 +175,291 @@
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2014/11/12/course2-lesson4/">
-        Rapid Prototyping with Rails: Lesson 4, part 2
+      <a href="/2015/01/20/course3-unit-functional-integration-tests/">
+        Build Robust & Production Quality Applications - Lesson 1: Unit vs. Functional vs. Integration Tests
       </a>
     </h1>
 
-    <span class="post-date">12 Nov 2014</span>
+    <span class="post-date">20 Jan 2015</span>
 
-    <h2>Items covered:</h2>
-
-<ol>
-<li>Slugging</li>
-<li>Single Admin Role</li>
-<li>Timezones</li>
-<li>Users select their own timezone</li>
-</ol>
-
-<h2>Slugging</h2>
-
-<p>a custom URL generated based off of some characteristic of the page being viewed.</p>
-
-<h3>In our case, we care about from a slugging perspective:</h3>
+    <h3>There are 3 types of tests:</h3>
 
 <ol>
-<li>Posts</li>
-<li>Categories</li>
-<li>Users</li>
+<li>Unit</li>
+<li>Functional</li>
+<li>Integration</li>
 </ol>
 
-<h3>What are the benefits of Slugging:</h3>
+<h3>Ranking according to:</h3>
 
-<ol>
-<li>SEO friendly/user ease</li>
-<li>Security (exposing primary key ids)</li>
-<li>Prevent those from knowing how many users you have</li>
-</ol>
+<h4>Coverage:</h4>
 
-<p>To set up a slug:</p>
+<p>Unit &gt; Functional &gt; Integration</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#posts/_post.html.erb</span>
+<h4>Speed:</h4>
 
-<span class="o">&lt;</span><span class="n">span</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="sx">%= link_to(&#39;</span><span class="si">#{</span><span class="n">post</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="sx"> comments&#39;, post_path(post))</span>
-<span class="sx">&lt;/span&gt;</span>
+<p>Unit &gt; Functional &gt; Integration</p>
 
-<span class="sx">* the post_path(post) is actually calling the to_params method on the post object:</span>
+<h4>Realistic:</h4>
 
-<span class="sx">&lt;span&gt;</span>
-<span class="sx">&lt;%=</span> <span class="n">link_to</span> <span class="p">(</span><span class="s1">&#39;#{post.comments.size} comments&#39;</span><span class="p">,</span> <span class="n">post_path</span><span class="p">(</span><span class="n">post</span><span class="o">.</span><span class="n">to_params</span><span class="p">))</span> <span class="sx">%&gt;</span>
-<span class="sx">&lt;/span&gt;</span></code></pre></div>
+<p>Integration &gt; Functional &gt; Unit</p>
 
-<h3>1. So how can we change the to_params method?</h3>
-
-<p>Within our model, we can declare an instance method where the to_params method
-will go to our slug instead of the params id.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">to_param</span>
-  <span class="nb">self</span><span class="o">.</span><span class="n">slug</span>
-<span class="k">end</span></code></pre></div>
-
-<h3>2. We must also create a migration to add our slug column to our existing table:</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">rails</span> <span class="n">g</span> <span class="n">migration</span> <span class="n">add_slug_to_posts</span></code></pre></div>
-
-<h3>3. Open Migration File</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">change</span> <span class="ss">:posts</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span> <span class="k">do</span>
-    <span class="n">add_column</span> <span class="ss">:posts</span><span class="p">,</span> <span class="ss">:slug</span><span class="p">,</span> <span class="ss">:string</span>
-  <span class="k">end</span></code></pre></div>
-
-<h3>4. In Model, we must create a method to generate the slug.</h3>
-
-<p>Take time to create a method using gsub/regex (for edge cases)</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">test</span> <span class="n">out</span> <span class="n">regex</span> <span class="n">on</span> <span class="n">rubylur</span><span class="o">.</span><span class="n">com</span></code></pre></div>
-
-<p>One example:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">generate_slug</span>
-  <span class="nb">self</span><span class="o">.</span><span class="n">slug</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">downcase</span>
-  <span class="nb">self</span><span class="o">.</span><span class="n">save</span> <span class="c1"># we hate calling .save explicitly, maybe we can add it a callback.</span>
-<span class="k">end</span></code></pre></div>
-
-<h3>5. ActiveRecord Callbacks (look up online, listed in order of workflow)</h3>
-
-<p>Methods the are exposed to use as a apart of the lifecycle of an ActiveRecord object,
-so we can insert or make changes to any of the callbacks.</p>
-
-<p>A couple things to consider - do we want to generate the slug after created only,
-or after the post is created and updated?</p>
-
-<p>We call insert add generate_slug method after @post.save:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">after_save</span> <span class="ss">:generate_slug</span></code></pre></div>
-
-<p>But we dont want to create slugs off of bad urls!</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">So</span> <span class="n">how</span> <span class="ss">about</span><span class="p">:</span>
-    <span class="n">after_validations</span> <span class="ss">:generate_slug</span>
-    <span class="ow">or</span>
-    <span class="n">before_save</span> <span class="ss">:generate_slug</span></code></pre></div>
+<h3>1) Unit Tests</h3>
 
 <ul>
-<li>This code goes in the model</li>
-<li>Know the difference between</li>
+<li>testing a component in isolation, focusing on 1 thing and making sure all cases are covered</li>
+<li>isolated components tested: routes, models, views, helpers</li>
+<li>allow you to thoroughly test all components.. as it is the closest to the code.</li>
+<li>is the fastest and gives you the best coverage</li>
 </ul>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">before_save</span>  <span class="o">-</span> <span class="n">update</span> <span class="n">slug</span> <span class="n">whenever</span> <span class="n">title</span> <span class="n">changes</span>
-<span class="n">before_create</span></code></pre></div>
-
-<h3>6. So if I go with before_save and then all my existing posts will blow up.</h3>
-
-<p>Why? because they do not have slugs. So I must go into to the Rails console and run
-Posts.all.each {|post| post.save}
-This is will trigger the before_save action and create slugs for all existing posts before saving.</p>
-
-<p>The above console command is not good for when in production, better to run a migration.</p>
-
-<h3>7. Now when visiting the link:</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">span</span><span class="o">&gt;</span>
-  <span class="n">link_to</span><span class="p">(</span><span class="s1">&#39;#{post.comments.size} comments&#39;</span><span class="p">,</span> <span class="n">post_path</span><span class="p">(</span><span class="n">post</span><span class="p">))</span>
-<span class="o">&lt;</span><span class="sr">/span&gt;</span></code></pre></div>
-
-<p>When using named routes, always use objects instead of hard-coding,
-bc on objects you can call to_params and its useful in case you want to sluggify.</p>
-
-<p>Now we must update the set<em>post method in our posts</em>controller since
-we&#39;ve changed the to_param method:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="ss">OLD</span><span class="p">:</span>
-  <span class="k">def</span> <span class="nf">set_post</span>
-    <span class="vi">@post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">)</span>
-  <span class="k">end</span></code></pre></div>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="ss">NEW</span><span class="p">:</span>
-
-<span class="k">def</span> <span class="nf">set_post</span>
-  <span class="vi">@post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">find_by</span><span class="p">(</span><span class="ss">slug</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">)</span>
-<span class="k">end</span></code></pre></div>
-
-<h3>8. Same thing goes for our comment which uses @post</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#comments_controller</span>
-
-  <span class="k">def</span> <span class="nf">create</span>
-    <span class="vi">@post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">find_by</span><span class="p">(</span><span class="ss">slug</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:post_id</span><span class="o">]</span><span class="p">)</span>
-  <span class="k">end</span></code></pre></div>
+<h3>2) Functional Tests</h3>
 
 <ul>
-<li>One of the best slugging gems is friendly_id</li>
+<li>testing components in collaboration, making sure not only they work but that they play nicely with each other</li>
+<li>components tested: controllers (where everything interacts), typically once request/response cycle</li>
 </ul>
 
-<h3>9. Update the span id</h3>
+<h3>3) Integration Tests</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">span</span> <span class="nb">id</span><span class="o">=</span><span class="s1">&#39;post_&lt;%=post.id%&gt;_votes&gt;&#39;</span> <span class="n">to</span> <span class="n">be</span>
-
-<span class="o">&lt;</span><span class="n">span</span> <span class="nb">id</span><span class="o">=</span><span class="s1">&#39;post_&lt;%=post.slug&#39;</span><span class="sx">%&gt;_votes&#39;&gt;</span> <span class="k">in</span> <span class="n">your</span> <span class="n">_post</span><span class="o">.</span><span class="n">html</span><span class="o">.</span><span class="n">erb</span> <span class="n">partial</span> <span class="ow">and</span> <span class="n">your</span>
-  <span class="n">vote</span><span class="o">.</span><span class="n">js</span><span class="o">.</span><span class="n">erb</span></code></pre></div>
-
-<h2>Single Admin Role</h2>
-
-<p>Define a number of roles and each roles has a set of permissions
-User has many roles, A Role has many permissions.</p>
-
-<p>You must create has_many through association. Over all, having various roles with permissions is
-discouraged because every action is required to be checked against a set of permissions and this will
-not only greatly complicate development and slow the application down.</p>
-
-<p>For simple apps, a single admin role is typically best
-This requires having a role column on users that takes a string as free form text, which allows you to
-specify whatever role you want. This doesnt allow for the most flexiiblity but will give you keep you
-from having to create a roles table and permissions table.</p>
-
-<h3>1. Create migration to add roles to users table:</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">rails</span> <span class="n">g</span> <span class="n">migration</span> <span class="n">add_roles_to_users</span></code></pre></div>
-
-<h3>2. Open migration file, add syntax</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">change</span>
-    <span class="n">add_column</span> <span class="ss">:users</span><span class="p">,</span> <span class="ss">:role</span><span class="p">,</span> <span class="ss">:string</span>
-
-  <span class="k">end</span></code></pre></div>
-
-<h3>3. Create roles in user model</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">admin?</span>
-    <span class="nb">self</span><span class="o">.</span><span class="n">admin</span> <span class="o">==</span> <span class="s1">&#39;admin&#39;</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">moderator?</span>
-    <span class="nb">self</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="s1">&#39;moderator?&#39;</span>
-  <span class="k">end</span></code></pre></div>
+<p>Builds upon functional tests in the sense that not only must play nicely together but they must achieve a desired business objective.</p>
 
 <ul>
-<li>Or you can use a symbol for performance optimization</li>
+<li>Components tested: Goal is to emulate the user, typically occurs in browser and follows the entire business process and
+that the business objective is achieved</li>
 </ul>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">admin?</span>
-    <span class="nb">self</span><span class="o">.</span><span class="n">role</span><span class="o">.</span><span class="n">to_sym</span> <span class="o">==</span> <span class="ss">:admin</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">moderator?</span>
-    <span class="nb">self</span><span class="o">.</span><span class="n">role</span><span class="o">.</span><span class="n">to_sym</span> <span class="o">==</span> <span class="ss">:moderator</span>
-  <span class="k">end</span></code></pre></div>
-
-<h3>4. So what if we said &quot;In order to create a category, you must be an admin&quot;</h3>
-
-<p>We could create a before<em>action :require</em>admin in the categories_controller</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">CategoriesController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
-    <span class="n">before_action</span> <span class="ss">:require_user</span>
-    <span class="n">before_action</span> <span class="ss">:require_admin</span>
-  <span class="k">end</span></code></pre></div>
-
-<h3>5. We want to create the require<em>admin method in the application</em>controller as</h3>
-
-<p>we did with require<em>user. We want to make sure that the user is logged</em>in? .
-If the current<em>user is an an admin but not logged</em>in, an exception will be thrown
-because you must consider nil condition.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">require_admin</span>
-  <span class="n">access_denied</span> <span class="k">unless</span> <span class="n">logged_in?</span> <span class="ow">and</span> <span class="n">current_user</span><span class="o">.</span><span class="n">admin?</span>
-<span class="k">end</span>
-
-<span class="k">def</span> <span class="nf">access_denied</span>
-  <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Sawry.. you can&#39;t do that.&quot;</span>
-  <span class="n">redirect_to</span> <span class="n">root_path</span>
-<span class="k">end</span></code></pre></div>
-
-<h3>6. Move New Category Link (and New Post Link) under if logged<em>in? under _navigation.html</em>erb</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#layout/_navigation.html.erb</span>
-
-<span class="o">&lt;</span><span class="sx">% if </span><span class="n">logged_in?</span> <span class="ow">and</span> <span class="n">current_user</span><span class="o">.</span><span class="n">admin?</span>
-  <span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="sx">%= link_to &quot;New Post&quot;, new_post_path %&gt;</span>
-<span class="sx">  &lt;/li&gt;</span>
-<span class="sx">  &lt;li&gt;</span>
-<span class="sx">    &lt;%=</span> <span class="n">link_to</span> <span class="s2">&quot;New Category&quot;</span><span class="p">,</span> <span class="n">new_category_path</span> <span class="sx">%&gt;</span>
-<span class="sx">  &lt;/li&gt;</span>
-  <span class="o">&lt;</span><span class="sx">% end %&gt;</span>
-<span class="sx">&lt;% end %&gt;</span></code></pre></div>
-
-<hr>
-
-<h2>Timezones</h2>
-
-<h3>1. We have an existing helper<em>method in our application</em>helper.rb that displays timezone,</h3>
-
-<p>we can just add %Z to include timezone:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">display_datetime</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
-    <span class="n">dt</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%m%d%Y %1:%M%P %Z&quot;</span><span class="p">)</span>
-  <span class="k">end</span></code></pre></div>
-
-<h3>2. In your application.rb file, uncomment out:</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">config</span><span class="o">-</span><span class="n">time_sone</span> <span class="o">=</span> <span class="s1">&#39;Central Time (US &amp; Canada)&#39;</span></code></pre></div>
-
-<h3>3. Now we need to find the string for setting the default time to Eastern Standard Time</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">-</span> <span class="n">run</span> <span class="n">rake</span> <span class="o">-</span><span class="n">T</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">time</span> <span class="o">=&gt;</span> <span class="n">rake</span> <span class="ss">time</span><span class="p">:</span><span class="ss">zones</span><span class="p">:</span><span class="n">all</span>
-  <span class="o">-</span> <span class="n">run</span> <span class="n">rake</span> <span class="ss">time</span><span class="p">:</span><span class="ss">zones</span><span class="p">:</span><span class="n">all</span> <span class="o">=&gt;</span> <span class="n">displays</span> <span class="n">all</span> <span class="n">timezones</span> <span class="n">available</span> <span class="k">for</span> <span class="n">rails</span>
-  <span class="o">-</span> <span class="n">run</span> <span class="n">rake</span> <span class="ss">time</span><span class="p">:</span><span class="ss">zones</span><span class="p">:</span><span class="n">all</span> <span class="o">|</span> <span class="n">grep</span> <span class="no">US</span> <span class="o">=&gt;</span> <span class="s1">&#39;Eastern Time (US &amp; Canada)&#39;</span></code></pre></div>
-
-<h3>4. Anytime you make changes to the application.rb file, you must restart the server</h3>
-
-<hr>
-
-<h2>Users select their own timezone</h2>
-
-<p>This is great, but what if we want users to select their own timezone:</p>
-
-<h3>1. Create Rails migration add timezone column to users</h3>
-
-<p>rails g migration add<em>timezones</em>to_users</p>
-
-<h3>2. class AddTimeZonesToUsers &lt; ActiveRecord::Migration</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">change</span>
-      <span class="n">add_column</span> <span class="ss">:users</span><span class="p">,</span> <span class="ss">:time_zones</span><span class="p">,</span> <span class="ss">:string</span>
-    <span class="k">end</span>
-  <span class="k">end</span></code></pre></div>
-
-<h3>3. We want to add the ability for users to select their timezone upon registration:</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s1">&#39;control-group&#39;</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="sx">%= f.label :time_zone %&gt;</span>
-<span class="sx">  &lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">time_zone_select</span> <span class="ss">:time_zone</span><span class="p">,</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">TimeZone</span><span class="o">.</span><span class="n">us_zones</span> <span class="sx">%&gt;</span>
-<span class="sx">&lt;/div&gt;</span></code></pre></div>
-
-<p>This time<em>zone</em>select comes with Rails 4 only and newer. The ActiveSupport::TimeZone.us.zones will display all US timezones at the top. Reference documentation for more option</p>
-
-<h3>4. Check what data can be submitted by adding a binding.pry to the user#create</h3>
-
-<p>action and running params in rails console</p>
-
-<h3>5. user<em>params will show what params have been submitted, and we can see that timezone was not saved because we need to add it to strong</em>params</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">user_params</span>
-      <span class="n">params</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span><span class="o">.</span><span class="n">permit</span><span class="p">(</span><span class="ss">:username</span><span class="p">,</span> <span class="ss">:password</span><span class="p">,</span> <span class="ss">:time_zone</span><span class="p">)</span>
-    <span class="k">end</span></code></pre></div>
-
-<h3>6. Once logged in, we want the users timezone to be displayed, we must edit the display_datetime method</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">in</span> <span class="n">the</span> <span class="ss">ApplicationHelper</span><span class="p">:</span>
-
-  <span class="k">module</span> <span class="nn">ApplicationHelper</span>
-    <span class="k">def</span> <span class="nf">display_datetime</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
-      <span class="k">if</span> <span class="n">logged_in?</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">current_user</span><span class="o">.</span><span class="n">time_zone</span><span class="o">.</span><span class="n">blank?</span>
-        <span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">in_time_zone</span><span class="p">(</span><span class="n">current_user</span><span class="o">.</span><span class="n">time_zone</span><span class="p">)</span>
-      <span class="k">end</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-
-<span class="no">Time_zone</span> <span class="nb">method</span> <span class="n">will</span> <span class="nb">display</span> <span class="n">the</span> <span class="n">object</span><span class="err">&#39;</span><span class="n">s</span> <span class="n">time</span> <span class="k">if</span> <span class="n">its</span> <span class="n">passed</span> <span class="n">a</span> <span class="n">string</span><span class="o">.</span> <span class="no">So</span> <span class="k">in</span> <span class="n">rails</span> <span class="n">console</span><span class="p">,</span><span class="k">if</span> <span class="n">you</span> <span class="n">run</span> <span class="n">post</span><span class="o">.</span><span class="n">created_at</span><span class="o">.</span><span class="n">in_time_zone</span><span class="p">(</span><span class="s2">&quot;Arizona&quot;</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">will</span> <span class="k">return</span> <span class="n">the</span> <span class="n">datetime</span> <span class="n">object</span></code></pre></div>
-
-<p>To understand more about the time<em>zone</em>select or the in<em>time</em>zone method, look up the documentation.</p>
-
-<h3>7. If we wanted to specify the default time in our drop down</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s1">&#39;control-group&#39;</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="sx">%= f.label :time_zone %&gt;</span>
-<span class="sx">    &lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">time_zone_select</span> <span class="ss">:time_zone</span><span class="p">,</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">TimeZone</span><span class="o">.</span><span class="n">us_zones</span><span class="p">,</span> <span class="ss">default</span><span class="p">:</span> <span class="no">Time</span><span class="o">.</span><span class="n">zone</span><span class="o">.</span><span class="n">name</span><span class="sx">%&gt;</span>
-<span class="sx">  &lt;/div&gt;</span></code></pre></div>
+<p>There are multiple styles of testing.. it has become very much like an &quot;art&quot; as devs often times develop a taste of styles for what to test, when, etc. In this course, we will primarily write unit and functional tests leaving integration tests for important business workflows.</p>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2014/11/10/course2-lesson4/">
-        Rapid Prototyping with Rails: Lesson 4, part 1
+      <a href="/2015/01/17/coures3-technical-debt/">
+        Build Robust & Production Quality Applications - Lesson 1: Technical Debt
       </a>
     </h1>
 
-    <span class="post-date">10 Nov 2014</span>
+    <span class="post-date">17 Jan 2015</span>
 
-    <h2>Items Covered</h2>
+    <p>A typically response to testing is &quot;I don&#39;t have time, I have to meet my deadline&quot;
+As your project size increases, you technical debt increases to the nth degree as time passes.</p>
 
-<ol>
-<li>Ajax</li>
-<li>Slugs</li>
-<li>Simple Admin Role</li>
-<li>Time Zones</li>
-<li>Exposing APIs</li>
-</ol>
+<p>The problem is that devs don&#39;t remember the code the wrote 3 months ago, so they have to do a &quot;context switch&quot;
+and recall why they wrote the code they did. This often times can have a cascading effect of issues.</p>
 
-<h2>Ajax</h2>
+<h3>Rescue Projects:</h3>
 
-<p>There are two forms of Javascript,
-1. (UJR) Unobstursive Js - which seperates the behavior layer from the websites content
-structure and presentation
-2. (SJR) Server Generated Responses (The Rails Way)</p>
-
-<p>Ajax is good for reloading only part of a page when all else stays the same.
-Really helpful when you have an expensive page that has alot of aggregate information.
-JQuery sits on top of Javascript to resolve the browser-specific qwerks</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">An</span> <span class="n">example</span> <span class="n">of</span> <span class="n">an</span> <span class="no">Ajax</span> <span class="n">request</span> <span class="k">in</span> <span class="n">jQuery</span> <span class="ss">code</span><span class="p">:</span>
-    <span class="err">$</span><span class="p">(</span><span class="n">document</span><span class="p">)</span><span class="o">.</span><span class="n">ready</span><span class="p">(</span><span class="n">function</span><span class="p">()</span> <span class="p">{</span>
-      <span class="err">$</span><span class="p">(</span><span class="s1">&#39;#hit_form input&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">click</span><span class="p">(</span><span class="n">function</span><span class="p">()</span> <span class="p">{</span> <span class="o">**</span> <span class="mi">1</span><span class="o">.</span> <span class="no">Unobstrusive</span> <span class="n">javascript</span> <span class="n">event</span> <span class="n">listener</span>
-        <span class="vg">$.</span><span class="n">ajax</span><span class="p">({</span><span class="o">**</span> <span class="mi">2</span><span class="o">.</span> <span class="no">Trigger</span> <span class="n">ajax</span>  <span class="n">request</span>
-        <span class="ss">type</span><span class="p">:</span> <span class="s1">&#39;POST&#39;</span>
-        <span class="ss">url</span><span class="p">:</span> <span class="s1">&#39;player/hit&#39;</span>
-        <span class="ss">data</span><span class="p">:</span> <span class="p">{</span><span class="ss">param1</span><span class="p">:</span> <span class="s2">&quot;hi&quot;</span><span class="p">,</span> <span class="ss">param2</span><span class="p">:</span> <span class="s2">&quot;There&quot;</span><span class="p">}</span>
-      <span class="p">})</span><span class="o">.</span><span class="n">done</span><span class="p">(</span><span class="n">function</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="p">{</span> <span class="o">**</span> <span class="mi">3</span><span class="o">.</span> <span class="no">Handle</span> <span class="n">the</span> <span class="no">Response</span>
-        <span class="err">$</span><span class="p">(</span><span class="s1">&#39;#some_element&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">html</span><span class="p">(</span><span class="n">msg</span><span class="p">);</span>
-      <span class="p">})</span>
-    <span class="p">});</span>
-  <span class="p">)};</span></code></pre></div>
-
-<p>So the steps to an ajax request are:
-  1. Unobstrusive Javascript Event Listener
-  2. Trigger ajax request
-  3. Handle the response</p>
-
-<h3>Step 1. Unobstrusive Javascript Event Listener</h3>
-
-<ol>
-<li>To add the ajax call to your up vote in your postit app, add remote: true:
-&lt;%= link<em>to vote</em>post_path(post, vote:&#39;true&#39;), method: &#39;post&#39;, remote: true do %&gt;
-<i class='icon-arrow-down'></i>
-&lt;% end %&gt;
-&lt;% end %&gt;</li>
-</ol>
-
-<p>*This will add a data-remote=&quot;true&quot;, similar to the data-method=&quot;post&quot;
-so similarly, just as with the data-method=&#39;post&#39; looks for data-method
-and applies javascript that turns the anchor tag into &#39;get&#39; link to &#39;post&#39; form,
-the same occurs when remote: true is identified, it turns those anchor tags
-into an ajax call(as seen above)</p>
-
-<p>In terminal, when clicking the up link, you should see:
-Processing by PostsController#vote as JS, but normally its as html,
-this let&#39;s you know that its an ajax call.</p>
-
-<h3>Step 2. Trigger ajax request</h3>
-
-<p>We have to be able to handle this response in the PostsController#vote:
-2. We have add code to handle the js request in vote controller action:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">vote</span>
-    <span class="n">vote</span> <span class="o">=</span> <span class="no">Vote</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">voteable</span><span class="p">:</span> <span class="vi">@post</span><span class="p">,</span> <span class="ss">creator</span><span class="p">:</span> <span class="n">current_user</span><span class="p">,</span> <span class="ss">vote</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:vote</span><span class="o">]</span><span class="p">)</span>
-
-    <span class="n">respond_to</span> <span class="k">do</span> <span class="o">|</span><span class="nb">format</span><span class="o">|</span>
-      <span class="nb">format</span><span class="o">.</span><span class="n">html</span> <span class="k">do</span>
-        <span class="k">if</span> <span class="n">vote</span><span class="o">.</span><span class="n">valid?</span>
-          <span class="n">flash</span><span class="o">[</span><span class="ss">:notice</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Your vote was counted!&quot;</span>
-        <span class="k">else</span>
-          <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Your vote was &lt;strong&gt;not&lt;/strong&gt; recorded!&quot;</span><span class="o">.</span><span class="n">html_safe</span>
-        <span class="k">end</span>
-        <span class="n">redirect_to</span> <span class="ss">:back</span>
-      <span class="k">end</span>
-      <span class="nb">format</span><span class="o">.</span><span class="n">js</span>
-    <span class="k">end</span>
-  <span class="k">end</span></code></pre></div>
-
-<p>We add format.js becasue instead of adding unobstrusive js, format.js will
-cause rails to render a js.erb template under the same name as the controller action name.
-The method determines if it can take a block. You can only render a template and redirect_to a url, the default is to render a template</p>
-
-<h3>Step 3. Testing out vote.js.erb</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#posts/vote.js.erb</span>
-<span class="o">**</span> <span class="no">You</span> <span class="n">have</span> <span class="n">access</span> <span class="n">to</span> <span class="n">the</span> <span class="n">instance</span> <span class="n">variables</span> <span class="n">created</span> <span class="k">in</span> <span class="n">the</span> <span class="n">action</span>
-
-<span class="n">alert</span><span class="p">(</span><span class="s1">&#39;total votes for &lt;%= @post.title %&gt; is &lt;%= @post.total_votes %&gt;&#39;</span><span class="p">);</span></code></pre></div>
-
-<p>The above action creates a pop up alert but does not change the number of votes on the main page.
-When inspecting the element, it shows that this is just an empty span in the html. Js needs away to
-identify the empty span to change to the number, that is accomplished through an  html id class:</p>
-
-<h3>Step 4. Changing the number of votes</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#posts/_post.html.erb</span>
-
-<span class="o">&lt;</span><span class="n">span</span> <span class="nb">id</span><span class="o">=</span><span class="s1">&#39;post_&lt;%=post.id%&gt;_votes&#39;</span><span class="o">&gt;&lt;%=</span> <span class="n">post</span><span class="o">.</span><span class="n">total_votes</span> <span class="sx">%&gt;&lt;/span&gt;</span></code></pre></div>
-
-<p>Rails gives you the ability to use js and parse out active record objects
-which isnt possible with normal js.
-So now, we can update the vote.js.erb file:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="err">$</span><span class="p">(</span><span class="s1">&#39;#post_&lt;%= @post.id %&gt;&#39;</span><span class="n">_votes</span><span class="p">)</span><span class="o">.</span><span class="n">html</span> <span class="p">(</span><span class="s1">&#39;&lt;%= post.total_votes %&gt;&#39;</span><span class="p">);</span></code></pre></div>
-
-<p>You can now also add remote: true to the down vote also.</p>
-
-<h3>Step 5. Limiting the number of votes</h3>
-
-<p>So when add the ajax request, we now do not get an error if we try to vote
- on a post we&#39;ve already voted on.
- 5a) We need to turn the local variable &#39;vote&#39; into an instance variable under
- the vote action:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">vote</span>
-    <span class="vi">@vote</span> <span class="o">=</span> <span class="no">Vote</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">voteable</span><span class="p">:</span> <span class="vi">@post</span><span class="p">,</span> <span class="ss">creator</span><span class="p">:</span> <span class="n">current_user</span><span class="p">,</span> <span class="ss">vote</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:vote</span><span class="o">]</span><span class="p">)</span>
-
-    <span class="n">respond_to</span> <span class="k">do</span> <span class="o">|</span><span class="nb">format</span><span class="o">|</span>
-      <span class="nb">format</span><span class="o">.</span><span class="n">html</span> <span class="k">do</span>
-        <span class="k">if</span> <span class="n">vote</span><span class="o">.</span><span class="n">valid?</span>
-          <span class="n">flash</span><span class="o">[</span><span class="ss">:notice</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Your vote was counted!&quot;</span>
-        <span class="k">else</span>
-          <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Your vote was &lt;strong&gt;not&lt;/strong&gt; recorded!&quot;</span><span class="o">.</span><span class="n">html_safe</span>
-        <span class="k">end</span>
-        <span class="n">redirect_to</span> <span class="ss">:back</span>
-      <span class="k">end</span>
-      <span class="nb">format</span><span class="o">.</span><span class="n">js</span>
-    <span class="k">end</span>
-  <span class="k">end</span></code></pre></div>
-
-<p>5b) Write an if statement in the vote.js.erb file:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="sx">% if </span><span class="vi">@vote</span><span class="o">.</span><span class="n">valid?</span> <span class="sx">%&gt;</span>
-<span class="sx">      $(&quot;#post_&lt;%= @post.id %&gt;</span><span class="n">_votes</span><span class="s2">&quot;).html(&quot;</span><span class="o">&lt;%=</span> <span class="vi">@post</span><span class="o">.</span><span class="n">total_votes</span> <span class="sx">%&gt; votes&quot;)</span>
-<span class="sx">    &lt;% else %&gt;</span>
-      <span class="n">alert</span><span class="p">(</span><span class="s2">&quot;You can only vote on a post once.&quot;</span><span class="p">);</span>
-    <span class="o">&lt;</span><span class="sx">% end </span><span class="o">%&gt;</span></code></pre></div>
-
-<p>So in summary, Rails Core Developers wrote jQuery library that converts remote= true
-into data-remote= true, which converts to an ajax request.
-In turn, we told ajax how to respond via html and js</p>
+<p>That is why projects in this case are called rescue projects, bc they have to call in outside help to
+fix their project. One of the first steps an outside company does to save rescue projects is create a test suite.
+This is the pay off for the technical debt.</p>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2014/11/05/course2-has_secured_password/">
-        Rapid Prototyping with Rails: Lesson 3, Working with has_secured_password
+      <a href="/2015/01/15/course3-rationale-for-testing/">
+        Build Robust & Production Quality Applications - Lesson 1: Rational for Testing
       </a>
     </h1>
 
-    <span class="post-date">05 Nov 2014</span>
+    <span class="post-date">15 Jan 2015</span>
 
-    <h2>Steps:</h2>
+    <h2>Why Do we test our software?</h2>
 
-<ol>
-<li>Install bcrypt-ruby gem</li>
-<li>Add password_digest column to users table</li>
-<li>Add has<em>secured</em>password to user model</li>
-<li>Turned off validations for has<em>secured</em>password</li>
-</ol>
+<p>Here, we are referring to automated testing:
+What would be our alternatives:</p>
 
-<h2>Creating password in console:</h2>
+<h3>Option 1. No tests at all:</h3>
 
-<ol>
-<li>bob = User.first</li>
-<li>bob.password = &quot;password&quot;</li>
-<li>bob.password_confirmation = &quot;password&quot;</li>
-<li>bob.save</li>
-</ol>
+<p>this doesn&#39;t exist. This means that customers will do the testing for you. All software has bugs, so bugs encountered by your customers will make them aggravated and then you will lose them as customers, support costs will sky rocket</p>
 
-<h2>To check what password is in console:</h2>
+<h3>Option 2. Rely on QA Team - When we have a clear division b/w development</h3>
 
-<p>You can never retrieve the password directly, but you can verify using the authenticate</p>
+<p>Typically for larger companies. Code is thrown over the wall to the QA team according feature scope or some other arbitrary milestone, for example.
+ * The QA Team writes design test cases according to code base and file bugs with the dev team.
+ * The code is authorized for release once everything is fixed.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">bob</span><span class="o">.</span><span class="n">authenticate</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">)</span></code></pre></div>
+<p>This could create:</p>
+
+<h4>1. Organizational Trust Problems</h4>
+
+<p>communication b/w the teams typically is not very good. Including finger pointing, etc.</p>
+
+<h4>2. QA Team</h4>
 
 <ul>
-<li>will return False, if guess is incorrect or retrieve the user object if True.</li>
+<li>nobody likes them and they get blamed for everything. When everything works, devs take the credit
+and when they don&#39;t work, the QA Team is blamed because their purpose is to catch things like that.</li>
+<li>Also, when deadlines, ship dates are missed, the dev team will often blame the QA Team for all the bugs or requirements
+they have to work through. They complain that they don&#39;t have time to work on features bc of this.</li>
+<li>No one really aspires to be good &quot;testers&quot;, typically its junior devs and there is a high-turnover bc no one typically wants to
+stay there... therefore knowledge is lost.</li>
+<li>Release Cycles - typically both teams are competing for the same time bc each wants to a good job. This pushes back the deadlines.</li>
 </ul>
 
-<p>Password Digest column includes salts to prevent against rainbow attacks.
-Salts adds a small chunk of random data to password to prevent those attacks.</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/11/03/course2-authentication/">
-        Rapid Prototyping with Rails: Lesson 3, Authentication
-      </a>
-    </h1>
-
-    <span class="post-date">03 Nov 2014</span>
-
-    <h2>Steps</h2>
-
-<h3>Step 1: Create routes</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#routes.rb</span>
-<span class="n">add</span> <span class="n">sessions</span><span class="c1">#new, sessions#create, sessions#destory routes</span></code></pre></div>
-
-<h3>Step 2: Create sessions template</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#sessions/new.html.erb</span>
-<span class="no">Add</span> <span class="n">html</span></code></pre></div>
-
-<h3>Step 3: Sessions_Controller.rb</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">SessionsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
-  <span class="k">def</span> <span class="nf">create</span>
-  <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">username</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:username</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
-    <span class="ow">or</span>
-  <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">find_by</span><span class="p">(</span><span class="ss">username</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:username</span><span class="o">]</span><span class="p">)</span>
-
-<span class="no">Alternative</span> <span class="no">Flash</span> <span class="n">syntax</span>
-
-  <span class="n">flash</span><span class="o">.</span><span class="n">now</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;There is something wrong with your username or password.&quot;</span>
-  <span class="n">render</span> <span class="ss">:new</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<h3>Step 4: Helpers</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#application_helper.rb</span>
-  <span class="mi">1</span><span class="o">.</span> <span class="n">create</span> <span class="n">current_user</span> <span class="ow">and</span> <span class="n">logged_in?</span> <span class="nb">methods</span>
-
-<span class="o">*</span> <span class="ss">Memoization</span><span class="p">:</span> <span class="n">allows</span> <span class="n">you</span> <span class="n">to</span> <span class="n">only</span> <span class="n">hit</span> <span class="n">the</span> <span class="n">database</span> <span class="n">once</span> <span class="k">when</span> <span class="n">being</span> <span class="n">called</span> <span class="n">multiple</span> <span class="n">times</span> <span class="n">on</span> <span class="n">a</span> <span class="n">template</span>
-
-  <span class="mi">2</span><span class="o">.</span> <span class="n">add</span> <span class="n">helper_method</span> <span class="n">syntax</span> <span class="n">to</span> <span class="n">make</span> <span class="n">accessible</span> <span class="k">in</span> <span class="n">views</span></code></pre></div>
-
-<h3>Step 5. _navigation.html.erb</h3>
-
-<p>Two ways to protect the fuctionality of your application for non-logged in users:
-1. Links on User Interface (using &#39;if logged<em>in? method&#39;)
-2. Urls/Controller actions (using before</em>action)</p>
-
-<p>We want to keep those who aren&#39;t logged in from creating a post.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="sx">% if </span><span class="n">logged_in?</span> <span class="sx">%&gt;</span>
-<span class="sx">&lt;div class=&#39;nav item&#39;&gt;</span>
-  <span class="o">&lt;%=</span> <span class="n">link_to</span> <span class="s2">&quot;New Post&quot;</span><span class="p">,</span> <span class="n">new_post_path</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;btn btn-success btn-small&#39;</span> <span class="sx">%&gt;</span>
-<span class="sx">&lt;/div&gt;</span>
-<span class="o">&lt;</span><span class="sx">% end </span><span class="o">%&gt;</span></code></pre></div>
-
-<h3>Step 6. Add before action to prevent navigation to certain links</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">posts_controller</span><span class="o">.</span><span class="n">rb</span>
-  <span class="n">add</span> <span class="n">before_action</span> <span class="ss">:require_user</span><span class="p">,</span> <span class="ss">except</span><span class="p">:</span> <span class="o">[</span><span class="ss">:index</span><span class="p">,</span> <span class="ss">:show</span><span class="o">]</span></code></pre></div>
-
-<h3>Step 7. require_user method</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Create</span> <span class="n">require_user</span> <span class="nb">method</span> <span class="k">in</span> <span class="n">application_controller</span><span class="o">.</span><span class="n">rb</span></code></pre></div>
-
-<h3>Step 8. Add current_user</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Remove</span> <span class="no">User</span><span class="o">.</span><span class="n">first</span> <span class="ow">and</span> <span class="n">add</span> <span class="n">current_user</span> <span class="k">for</span> <span class="n">post</span><span class="o">.</span><span class="n">creator</span> <span class="ow">and</span> <span class="n">comment</span><span class="o">.</span><span class="n">creator</span></code></pre></div>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/11/01/course2-features/">
-        Rapid Prototyping with Rails: Lesson 3, Feature Building
-      </a>
-    </h1>
-
-    <span class="post-date">01 Nov 2014</span>
-
-    <h2>Review of Building Out a Feature</h2>
+<h3>Impact of having not automated tests</h3>
 
 <ol>
-<li>Bulid out html link in parital or html.erb</li>
-<li>Build necessary routes
-
-<ul>
-<li>run grep routes to determine which routes are needed</li>
-</ul></li>
-<li>Write code for action in controller
-
-<ul>
-<li>run binding pry to see what parameters are being submitted</li>
-</ul></li>
+<li>Code quality - QA Team, developers, stakeholders, customers don&#39;t care as much</li>
+<li>Isolated Knowledge - only the developer can maintain that code, sometimes a form of job security</li>
+<li>How do you know the implemented feature works</li>
+<li>How do you know that things did not break as a result of this new feature - called regression problems</li>
 </ol>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2014/12/25/course3-link_to/">
+        Build Robust & Production Quality Applications: Precourse, Link_to Review
+      </a>
+    </h1>
+
+    <span class="post-date">25 Dec 2014</span>
+
+    <p>This is a quick reivew of how to list all a catgories videos:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">-</span> <span class="vi">@category</span><span class="o">.</span><span class="n">videos</span><span class="o">.</span><span class="n">each</span> <span class="o">|</span><span class="n">video</span><span class="o">|</span> <span class="k">do</span>
+    <span class="n">link_to</span> <span class="n">video</span><span class="p">,</span> <span class="k">do</span>
+      <span class="o">%</span><span class="n">img</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">video</span><span class="o">.</span><span class="n">small_cover_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="o">-</span> <span class="vi">@category</span><span class="o">.</span><span class="n">videos</span><span class="o">.</span><span class="n">each</span> <span class="o">|</span><span class="n">video</span><span class="o">|</span> <span class="k">do</span>
+    <span class="n">link_to</span> <span class="n">video_path</span><span class="p">(</span><span class="n">video</span><span class="p">),</span> <span class="k">do</span>
+      <span class="o">%</span><span class="n">img</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">video</span><span class="o">.</span><span class="n">small_cover_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="o">-</span> <span class="vi">@category</span><span class="o">.</span><span class="n">videos</span><span class="o">.</span><span class="n">each</span> <span class="o">|</span><span class="n">video</span><span class="o">|</span> <span class="k">do</span>
+  <span class="n">link_to</span> <span class="n">image_tag</span><span class="p">(</span><span class="n">video</span><span class="o">.</span><span class="n">small_cover_url</span><span class="p">),</span> <span class="n">video_path</span><span class="p">(</span><span class="n">video</span><span class="p">)</span>
+
+<span class="o">-</span> <span class="vi">@category</span><span class="o">.</span><span class="n">videos</span><span class="o">.</span><span class="n">each</span> <span class="o">|</span><span class="n">video</span><span class="o">|</span> <span class="k">do</span>
+  <span class="n">link_to</span> <span class="n">image_tag</span><span class="p">(</span><span class="n">video</span><span class="o">.</span><span class="n">small_cover_url</span><span class="p">),</span> <span class="n">video</span></code></pre></div>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2014/12/20/course3-haml/">
+        Build Robust & Production Quality Applications: Precourse, Haml
+      </a>
+    </h1>
+
+    <span class="post-date">20 Dec 2014</span>
+
+    <p>Writing Basic Haml
+1. No closing tags
+2. Nesting controlled via strict white-spacing and indenting
+3. Nesting tags must be indented on a new line
+4. Use spaces or tabs to nest tags within other tags
+5. Tabs must be consistent</p>
+
+<p>Examples:</p>
+
+<h3>Haml:</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">h2</span>
+<span class="o">%</span><span class="n">ul</span>
+  <span class="o">%</span><span class="n">li</span>
+  <span class="o">%</span><span class="n">li</span>
+  <span class="o">%</span><span class="n">li</span></code></pre></div>
+
+<h3>Links:</h3>
+
+<p>Haml:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">a</span><span class="p">{</span><span class="ss">href</span><span class="p">:</span> <span class="s1">&#39;/courses&#39;</span><span class="p">,</span> <span class="ss">title</span><span class="p">:</span> <span class="s1">&#39;Courses&#39;</span><span class="p">}</span> <span class="no">Courses</span></code></pre></div>
+
+<p>or</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">a</span><span class="p">(</span><span class="n">href</span><span class="o">=</span><span class="s2">&quot;/courses&quot;</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Courses&quot;</span><span class="p">)</span> <span class="no">Courses</span></code></pre></div>
+
+<p>HTML:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;courses&#39;</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Courses&#39;</span><span class="o">&gt;</span><span class="no">Courses</span><span class="o">&lt;</span><span class="sr">/a&gt;</span></code></pre></div>
+
+<h3>Divs:</h3>
+
+<p>Haml:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">section</span><span class="c1">#content.container</span>
+  <span class="o">%</span><span class="n">div</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">container</span></code></pre></div>
+
+<p>HTML:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">section</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;content&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;container&quot;</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;stats container&quot;</span><span class="o">&gt;&lt;</span><span class="sr">/div&gt;</span>
+<span class="sr">    &lt;/se</span><span class="n">ction</span><span class="o">&gt;</span></code></pre></div>
+
+<h3>Haml will insert a div if no HTML tag is explicitly defined:</h3>
+
+<p>Haml:</p>
+
+<h4>Note: stats.container is the same as %div.stats.container</h4>
+
+<p>HTML</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;stats container&quot;</span><span class="o">&gt;&lt;</span><span class="sr">/div&gt;</span></code></pre></div>
+
+<h2>Adding Ruby:</h2>
+
+<ul>
+<li>Lines to evaluated begin with a hyphen (-) instead of erb (&lt;%  %&gt;)</li>
+<li>Lines to be output begin with an equals sign (=) instead of erb (&lt;%=  %&gt;)</li>
+</ul>
+
+<p>Haml:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">-</span> <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Rails for Zombies&#39;</span>
+<span class="o">%</span><span class="n">h1</span><span class="o">=</span> <span class="n">title</span></code></pre></div>
+
+<p>Erb:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="sx">% title </span><span class="o">=</span> <span class="s1">&#39;Rails for Zombies&#39;</span> <span class="sx">%&gt;</span>
+<span class="sx">&lt;h1&gt;</span><span class="o">&lt;%=</span> <span class="n">title</span><span class="sx">%&gt;&lt;/h1&gt;</span></code></pre></div>
+
+<p>HTML output:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span> <span class="no">Rails</span> <span class="k">for</span> <span class="no">Zombies</span> <span class="o">&lt;</span><span class="sr">/h1&gt;</span></code></pre></div>
+
+<h3>Loops:</h3>
+
+<p>Haml:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">-</span> <span class="n">zombies</span> <span class="o">=</span> <span class="sx">%w{Ash Bob Jim}</span>
+<span class="o">%</span><span class="n">section</span><span class="c1">#zombies</span>
+  <span class="o">%</span><span class="n">ul</span>
+    <span class="o">-</span> <span class="n">zombies</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">zombie</span><span class="o">|</span>
+    <span class="o">%</span><span class="n">li</span><span class="o">=</span> <span class="n">zombie</span></code></pre></div>
+
+<p>HTML:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">section</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;zombies&quot;</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">ul</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;</span><span class="no">Ash</span><span class="o">&lt;</span><span class="sr">/li&gt;</span>
+<span class="sr">   &lt;li&gt;Bob&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;</span><span class="no">Jim</span><span class="o">&lt;</span><span class="sr">/li&gt;</span>
+<span class="sr">  &lt;/se</span><span class="n">ction</span><span class="o">&gt;</span></code></pre></div>
+
+<h4>You can use the same view helpers as before:</h4>
+
+<p>Haml:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">=</span><span class="n">link_to</span> <span class="s2">&quot;Check us out on twitter&quot;</span><span class="p">,</span> <span class="s2">&quot;http://twitter.com/codeschool&quot;</span></code></pre></div>
+
+<p>HTML:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;http://&quot;</span><span class="n">twitter</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">codeschool</span><span class="s2">&quot;&gt;&lt;Check us out on twitter&lt;/a&gt;</span></code></pre></div>
+
+<h2>Interpolation:</h2>
+
+<h3>You can also use #{} interpolation to insert Ruby expressions</h3>
+
+<p>Haml:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="nb">p</span> <span class="no">Hi</span><span class="p">,</span> <span class="no">My</span> <span class="nb">name</span> <span class="n">is</span> <span class="c1">#{@user.name}</span></code></pre></div>
+
+<p>HTML:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span> <span class="no">Hi</span><span class="p">,</span> <span class="no">My</span> <span class="nb">name</span> <span class="n">is</span> <span class="no">Casey</span><span class="o">&lt;</span><span class="sr">/p&gt;</span></code></pre></div>
 
   </div>
   

@@ -39,11 +39,15 @@ end
 
 ###Step 3: Add :vcr to the transactions you want to record
 
-    it "charges the card successfully", :vcr do
-    response = StripeWapper::Charge.create(amount: 300, card: token)
-    expect(response).to be_successful
-    end
+{%highlight ruby%}
+it "charges the card successfully", :vcr do
+  response = StripeWapper::Charge.create(amount: 300, card: token)
+  expect(response).to be_successful
+end
+{%endhighlight%}
 
 ###Step 4: Cassettes & Configs
 As default, spec/cassettes holds all recordings and a creates data files for each spec ran. VCR allows for extensive customization. Including how many recordings per spec whether it be once or all.
 
+###Refactor
+You can add Stripe.api_key = ENV['STRIPE_SECRET_KEY'] to your initializers (config/initializers/stripe.rb), rather than including in each test.

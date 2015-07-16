@@ -156,6 +156,14 @@
           
         
       
+        
+          
+        
+      
+        
+          
+        
+      
 
     <p>&copy; 2015. All rights reserved.</p>
   </div>
@@ -167,399 +175,166 @@
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/04/16/course3-mailgun/">
-        Build Robust & Production Quality Applications - Lesson 6: Mailgun
+      <a href="/2015/05/28/course3-production-error-monitoring/">
+        Build Robust & Production Quality Applications - Lesson 6: Simple Deployment Pipeline
       </a>
     </h1>
 
-    <span class="post-date">16 Apr 2015</span>
+    <span class="post-date">28 May 2015</span>
 
-    <h2>Mailgun</h2>
+    <h2>Set-up Production Error Monitoring</h2>
 
-<p>Mailgun is an email service for developers - which is clear in its interface. It has a ver low-level design that is easy for tweaking and has alot of options.</p>
+<p>Regardless how well we have tested our application, there will always be errors on the production server. To get notified of production errors so you can respond to them, you need to set up an error monitoring service in production.</p>
 
-<ul>
-<li>It focuses on transaction emails and it optimized for deliverability.</li>
-<li>It also allows for the receipt of emails.</li>
-<li>You can specify an email address that you want mailgun to listen. Mailgun can pre-process the message and parse out parts of the email and send to your app for processing.</li>
-<li>It can handle campaign emails, number of clicks, etc.</li>
-</ul>
+<p>Install <a href="https://getsentry.com/welcome/">Sentry</a>.</p>
 
-<h2>How to Integrate Mailgun into our Server</h2>
+<p>You also need to install the <a href="https://github.com/getsentry/raven-ruby">&quot;sentry-raven&quot;</a> gem in your app.</p>
 
-<p>We are using Heroku and there is a <a href="https://addons.heroku.com/mailgun">Mailgun/Heroku add-on</a>. There is a free option that limits to 300 emails/day.</p>
+<h3>Setup</h3>
 
-<p>It&#39;s pretty simple beyond that. You just log into Heroku, select your app, and run the command:</p>
+<p>After creating an account online and adding your project to Sentry, you will be given a DSN that should go into your config/initializers folder.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">heroku</span> <span class="ss">addons</span><span class="p">:</span><span class="n">create</span> <span class="n">mailgun</span></code></pre></div>
-
-<h3>Read Documentation on Sending Emails via SMTP</h3>
-
-<p>Go to your configuation for your production env, and change the setting to those listed. Make sure you keep stmp as the delivery method. Env variables will be set by Heroku, so you don&#39;t have to worry about that.</p>
-
-<p>Mailgun supports two delivery methods. The reason we can use smtp is becasue ActionMailer will help us to prepare to proper map format. But HTTP is also an option. You don&#39;t have to rely on Rails to do that. You can just use REST client that will use an HTTP POST. Check the API documentation to see what other headers can be sent.</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/04/13/course3-email-service-providers/">
-        Build Robust & Production Quality Applications - Lesson 6: Email Service Providers
-      </a>
-    </h1>
-
-    <span class="post-date">13 Apr 2015</span>
-
-    <p>With Gmail, there are clear sending <a href="https://support.google.com/a/answer/166852?hl=en">limitations</a>.</p>
-
-<p>Sending out emails is something that you should offload onto a third-party provider as it is a critical business process. You want to ensure emails are recieved right away and not in the recipients email folder.</p>
-
-<p>Mailgun &amp; Postmark are the recommended email service providers. When considering vendors, you want to focus on devliverability.</p>
-
-<p>Check out the is <a href="http://www.quora.com/Why-are-Mailgun-and-Postmark-so-much-more-expensive-than-Sendgrid-and-AWS-SES">Quora article</a> on comparing well-known email service providers. In this course, we will use Mailgun.</p>
-
-<p>Good <a href="http://www.gotealeaf.com/blog/handling-emails-in-rails">blogpost</a> for getting set up with Gmail.</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/04/07/couse3-concerns/">
-        Build Robust & Production Quality Applications - Lesson 6: ActiveSupport::Concerns
-      </a>
-    </h1>
-
-    <span class="post-date">07 Apr 2015</span>
-
-    <p>In our Todos example, we created a method</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">before_create</span> <span class="ss">:generate_token</span></code></pre></div>
-
-<p>for and then defined the generate_ token method under private,
-within the Todos model.</p>
-
-<p>But what if you want to include this in several models?
-DRY does not only mean &quot;Dont Repeat Yourself&quot;, but it also means to have
-one authoritative source for method calls</p>
-
-<p>That&#39;s where ActiveSupport::Concerns can help by basically extracting the common code into a module</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">lib</span><span class="o">/</span><span class="n">tokenable</span><span class="o">.</span><span class="n">rb</span>
-<span class="k">module</span> <span class="nn">Tokenable</span>
-<span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
-
-  <span class="n">included</span> <span class="k">do</span>
-    <span class="n">before_create</span> <span class="ss">:generate_token</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">generate_token</span>
-    <span class="nb">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="no">SecureRandom</span><span class="o">.</span><span class="n">urlsafe_base64</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<p>Then in the Todo model:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Todo</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
-  <span class="kp">include</span> <span class="no">Tokenable</span></code></pre></div>
-
-<p>With Rails 3 or later, the lib directory is no longer automatically loaded
-You instead have to:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">require_relative</span> <span class="s1">&#39;../..lib/tokenable&#39;</span>
-
-<span class="k">class</span> <span class="nc">Todo</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
-  <span class="kp">include</span> <span class="no">Tokenable</span>
-
-<span class="k">end</span></code></pre></div>
-
-<p>Now if you dont want to require_relative everytime:
-You can do one of the two:</p>
-
-<ol>
-<li>move the Tokenable file to your models folder</li>
-<li>go to /enviornments/application.rb
-config.autoload_paths &lt;&lt; &quot;#{Rails.root}/lib&quot;</li>
-</ol>
-
-<p>then remove require_relative from the model.</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/04/05/course3-invite-users/">
-        Build Robust & Production Quality Applications - Lesson 6: Inviting Users- Part 3
-      </a>
-    </h1>
-
-    <span class="post-date">05 Apr 2015</span>
-
-    <h2>Feature Spec: Inviting Users</h2>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
-
-<span class="n">feature</span> <span class="s2">&quot;User invited friend&quot;</span> <span class="k">do</span>
-  <span class="n">scenario</span> <span class="s2">&quot;User succesfully intvites friend and invitation is accepted&quot;</span> <span class="k">do</span>
-    <span class="n">jam</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
-    <span class="n">sign_in</span><span class="p">(</span><span class="n">jam</span><span class="p">)</span>
-
-    <span class="n">invite_a_friend</span>
-    <span class="n">friend_accepts_invitation</span>
-    <span class="n">friend_signs_in</span>
-
-    <span class="n">friend_should_follow</span><span class="p">(</span><span class="n">jam</span><span class="p">)</span>
-    <span class="n">inviter_should_follow_friend</span><span class="p">(</span><span class="n">jam</span><span class="p">)</span>
-
-    <span class="n">clear_email</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">invite_a_friend</span>
-    <span class="n">visit</span> <span class="n">new_invitation_path</span>
-    <span class="n">fill_in</span> <span class="s2">&quot;Friend&#39;s Name&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s1">&#39;Amber Howard&#39;</span>
-    <span class="n">fill_in</span> <span class="s2">&quot;Friend&#39;s Email Address&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s1">&#39;amberhoward1@gmail.com&#39;</span>
-    <span class="n">fill_in</span> <span class="s2">&quot;Message&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s2">&quot;Hey girl, you gotta check this out!&quot;</span>
-    <span class="n">click_button</span> <span class="s2">&quot;Send Invitation&quot;</span>
-    <span class="n">sign_out</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">friend_accepts_invitation</span>
-    <span class="n">open_email</span> <span class="s2">&quot;amberhoward1@gmail.com&quot;</span>
-    <span class="n">current_email</span><span class="o">.</span><span class="n">click_link</span> <span class="s2">&quot;Accept this invitation&quot;</span>
-
-    <span class="n">fill_in</span> <span class="s2">&quot;Password&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s2">&quot;password&quot;</span>
-    <span class="n">fill_in</span> <span class="s2">&quot;Full Name&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s2">&quot;Amber Howard&quot;</span>
-    <span class="n">click_button</span> <span class="s2">&quot;Sign Up&quot;</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">friend_signs_in</span>
-    <span class="n">fill_in</span> <span class="s2">&quot;Email Address&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s1">&#39;amberhoward1@gmail.com&#39;</span>
-    <span class="n">fill_in</span> <span class="s2">&quot;Password&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s1">&#39;password&#39;</span>
-    <span class="n">click_button</span> <span class="s2">&quot;Sign in&quot;</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">friend_should_follow</span><span class="p">(</span><span class="n">inviter</span><span class="p">)</span>
-    <span class="n">click_link</span> <span class="s2">&quot;People&quot;</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_content</span> <span class="n">inviter</span><span class="o">.</span><span class="n">full_name</span>
-    <span class="n">sign_out</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">inviter_should_follow_friend</span><span class="p">(</span><span class="n">inviter</span><span class="p">)</span>
-    <span class="n">sign_in</span><span class="p">(</span><span class="n">inviter</span><span class="p">)</span>
-    <span class="n">click_link</span> <span class="s2">&quot;People&quot;</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_content</span> <span class="s2">&quot;Amber Howard&quot;</span>
-  <span class="k">end</span>
-
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1"># in Rails, this might be in config/initializers/sentry.rb</span>
+<span class="no">Raven</span><span class="o">.</span><span class="n">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">dsn</span> <span class="o">=</span> <span class="s1">&#39;http://public:secret@example.com/project-id&#39;</span>
 <span class="k">end</span></code></pre></div>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/04/03/course3-invite-users/">
-        Build Robust & Production Quality Applications - Lesson 6: Inviting Users- Part 2
+      <a href="/2015/05/26/course3-simple-deploy-pipeline/">
+        Build Robust & Production Quality Applications - Lesson 6: Simple Deployment Pipeline
       </a>
     </h1>
 
-    <span class="post-date">03 Apr 2015</span>
+    <span class="post-date">26 May 2015</span>
 
-    <h2>Inviting Users - 2nd part of Workflow:</h2>
+    <h2><a href="http://martinfowler.com/bliki/ContinuousDelivery.html">Continuous Delivery</a></h2>
 
-<ol>
-<li>User gets email and selects the &quot;Accept this invitation&quot; link. URL will contain special token</li>
-<li>Registation form has email prefilled</li>
-<li>Upon sign up, user automatically follows recommender and vice versa</li>
-</ol>
+<p>Usually the first stage of a deployment pipeline will do any compilation and provide binaries for later stages. Later stages may include manual checks, such as any tests that can&#39;t be automated. Stages can be automatic, or require human authorization to proceed, they may be parallelized over many machines to speed up the build. Deploying into production is usually the final stage in a pipeline.</p>
 
-<h3>Step 1. User recieves email:</h3>
+<p>Continuous Delivery is a software development discipline where you build software in such a way that the software can be released to production at any time.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#views/app_mailers/send_invitation_email.html.haml</span>
-<span class="o">!!!</span> <span class="mi">5</span>
-<span class="o">%</span><span class="n">html</span><span class="p">(</span><span class="n">lang</span><span class="o">=</span><span class="s2">&quot;en-US&quot;</span><span class="p">)</span>
-  <span class="o">%</span><span class="n">body</span>
-  <span class="o">%</span><span class="nb">p</span> <span class="no">You</span> <span class="n">are</span> <span class="n">inivited</span> <span class="n">by</span> <span class="c1">#{@invitation.inviter.full_name} to join Myflix!</span>
-  <span class="o">%</span><span class="nb">p</span><span class="o">=</span> <span class="vi">@invitation</span><span class="o">.</span><span class="n">message</span>
-  <span class="o">%</span><span class="nb">p</span><span class="o">=</span> <span class="n">link_to</span> <span class="s2">&quot;Accept this invitation&quot;</span><span class="p">,</span> <span class="n">register_with_token_url</span><span class="p">(</span><span class="vi">@invitation</span><span class="o">.</span><span class="n">token</span><span class="p">)</span></code></pre></div>
+<p>You’re doing continuous delivery when: [1]</p>
 
-<h3>Create routes</h3>
+<p>*<em>Your software is deployable throughout its lifecycle
+*</em>Your team prioritizes keeping the software deployable over working on new features
+*<em>Anybody can get fast, automated feedback on the production readiness of their systems any time somebody makes a change to them
+*</em>You can perform push-button deployments of any version of the software to any environment on demand</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">resources</span> <span class="ss">:users</span><span class="p">,</span> <span class="ss">only</span><span class="p">:</span> <span class="o">[</span><span class="ss">:create</span><span class="p">,</span> <span class="ss">:show</span><span class="o">]</span>
-  <span class="n">get</span> <span class="s1">&#39;register/:token&#39;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s2">&quot;users#new_with_invitation_token&quot;</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="s1">&#39;register_with_token&#39;</span></code></pre></div>
+<h2>Deployment Pipeline</h2>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#users_controller_spec.rb</span>
-<span class="n">describe</span> <span class="s2">&quot;GET new_with_invitation_token&quot;</span> <span class="k">do</span>
-  <span class="n">it</span> <span class="s2">&quot;render the :new view template&quot;</span> <span class="k">do</span>
-    <span class="n">invitation</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">)</span>
-    <span class="n">get</span> <span class="ss">:new_with_invitation_token</span><span class="p">,</span> <span class="ss">token</span><span class="p">:</span> <span class="n">invitation</span><span class="o">.</span><span class="n">token</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">response</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">render_template</span> <span class="ss">:new</span>
-  <span class="k">end</span>
+<p>A deployment pipeline is a way to deal with this by breaking up your build into stages. Each stage provides increasing confidence, usually at the cost of extra time. Early stages can find most problems yielding faster feedback, while later stages provide slower and more through probing.</p>
 
-  <span class="n">it</span> <span class="s2">&quot;sets @user with recipient&#39;s email&quot;</span> <span class="k">do</span>
-    <span class="n">invitation</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">)</span>
-    <span class="n">get</span> <span class="ss">:new_with_invitation_token</span><span class="p">,</span> <span class="ss">token</span><span class="p">:</span> <span class="n">invitation</span><span class="o">.</span><span class="n">token</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">assigns</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span><span class="o">.</span><span class="n">email</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">eq</span><span class="p">(</span><span class="n">invitation</span><span class="o">.</span><span class="n">recipient_email</span><span class="p">)</span>
-  <span class="k">end</span>
+<p>More broadly the deployment pipeline&#39;s job is to detect any changes that will lead to problems in production.</p>
 
-  <span class="n">it</span> <span class="s2">&quot;sets @invitation_token&quot;</span> <span class="k">do</span>
-    <span class="n">invitation</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">)</span>
-    <span class="n">get</span> <span class="ss">:new_with_invitation_token</span><span class="p">,</span> <span class="ss">token</span><span class="p">:</span> <span class="n">invitation</span><span class="o">.</span><span class="n">token</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">assigns</span><span class="p">(</span><span class="ss">:invitation_token</span><span class="p">))</span><span class="o">.</span><span class="n">to</span> <span class="n">eq</span><span class="p">(</span><span class="n">invitation</span><span class="o">.</span><span class="n">token</span><span class="p">)</span>
-  <span class="k">end</span>
+<h3>Simple Approach to the Deployment Pipeline</h3>
 
-  <span class="n">it</span> <span class="s2">&quot;redirects to expired token page for invalid tokens&quot;</span> <span class="k">do</span>
-    <span class="n">get</span> <span class="ss">:new_with_invitation_token</span><span class="p">,</span> <span class="ss">token</span><span class="p">:</span> <span class="s1">&#39;asdffdhh&#39;</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">response</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">redirect_to</span> <span class="n">expired_token_path</span>
-  <span class="k">end</span></code></pre></div>
+<p>Deployment pipelines can become very complex - typically the larger the project is and the more teams are involved, the more complicated the automatic deployment process is. For our purpose, we are going to adopt a simple but effective deployment pipeline for solo dev or small team situations.</p>
 
-<h3>We need to fabricate an invitation:</h3>
+<p>1) Follow the Github Flow process, and after you complete a feature, merge the pull request back to the master branch.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#fabricators/invitation_fabricators.rb</span>
-<span class="no">Fabricator</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">)</span> <span class="k">do</span>
-  <span class="n">recipient_name</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Name</span><span class="o">.</span><span class="n">name</span> <span class="p">}</span>
-  <span class="n">recipient_email</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Internet</span><span class="o">.</span><span class="n">email</span> <span class="p">}</span>
-  <span class="n">message</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Lorem</span><span class="o">.</span><span class="n">paragraphs</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="p">}</span>
-<span class="k">end</span></code></pre></div>
+<p>2) Run your entire test suite. This is very important and you should always do this before pushing code to Github. The master branch should always have working code. Developers call this &quot;don&#39;t break the build&quot;.</p>
 
-<h3>Add Tokens Column to Invitations:</h3>
+<p>3) Deploy your code to the staging environment and test on your staging server manually to make sure that the new feature works. Again, your staging server should be as close to your production server as possible.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">AddTokenToInvitations</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span>
-  <span class="k">def</span> <span class="nf">change</span>
-    <span class="n">add_column</span> <span class="ss">:invitations</span><span class="p">,</span> <span class="ss">:token</span><span class="p">,</span> <span class="ss">:string</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
+<p>4) Deploy code to production. You want to deploy code to production as often as possible to get feedback as fast as possible. If something breaks, it&#39;s much easier to fix it with your mind still fresh with the feature you worked on. In some teams this step is out of your control and there are strict production deployment times. In that situation you&#39;d go back to step 1 and build your next feature.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#users_controller.rb</span>
-  <span class="k">def</span> <span class="nf">new_with_invitation_token</span>
-    <span class="n">invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">token</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:token</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
-    <span class="k">if</span> <span class="n">invitation</span>
-      <span class="vi">@user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">email</span><span class="p">:</span> <span class="n">invitation</span><span class="o">.</span><span class="n">recipient_email</span><span class="p">)</span>
-      <span class="vi">@invitation_token</span> <span class="o">=</span> <span class="n">invitation</span><span class="o">.</span><span class="n">token</span>
-      <span class="n">render</span> <span class="ss">:new</span>
-    <span class="k">else</span>
-      <span class="n">redirect_to</span> <span class="n">expired_token_path</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
+<p>When you deploy to the staging server or the production server, effectively what you are doing is to push code from your local master branch to the corresponding Heroku server&#39;s master branch.</p>
 
-  <span class="kp">private</span>
-  <span class="k">def</span> <span class="nf">user_params</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span><span class="o">.</span><span class="n">permit!</span>
-  <span class="k">end</span>
+<p>Why is it important to also push/deploy from your local master branch? The problem with deploy from a feature branch is that you miss the step of integration with other developers. For example, while you work on your feature, I might have push out my feature as well. If you deploy from your branch even if it does work you didn’t test if your feature would integrate with the feature that I just deployed, AFTER you branched off. By forcing everyone to integrate with master first, now every time you push, you HAVE to integrate with everyone else’ push at that moment. If someone pushed code after you branched off, this would force you to do a pull first on master, then integrate with it, otherwise you can’t push.</p>
 
-  <span class="k">def</span> <span class="nf">handle_invitations</span>
-    <span class="k">if</span> <span class="n">params</span><span class="o">[</span><span class="ss">:invitation_token</span><span class="o">].</span><span class="n">present?</span>
-      <span class="n">invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">token</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:invitation_token</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
-      <span class="vi">@user</span><span class="o">.</span><span class="n">follow</span><span class="p">(</span><span class="n">invitation</span><span class="o">.</span><span class="n">inviter</span><span class="p">)</span>
-      <span class="n">invitation</span><span class="o">.</span><span class="n">inviter</span><span class="o">.</span><span class="n">follow</span><span class="p">(</span><span class="vi">@user</span><span class="p">)</span>
-      <span class="n">invitation</span><span class="o">.</span><span class="n">update_column</span><span class="p">(</span><span class="ss">:token</span><span class="p">,</span> <span class="kp">nil</span><span class="p">)</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
+<p>Note that you should never deploy to production before you go back home or go to sleep. Make sure you can be around your computer for some time to fix anything that could happen after a production deploy. Your error monitoring app will alert you with emails if they do happen.</p>
 
-<h3>User registers upon clicking link</h3>
+<p>In summary, our simple deployment pipeline process is run entire test suite locally -&gt; deploy to staging and test -&gt; deploy to production. This is probably good enough for solo developers or small teams. We&#39;ll talk about Continuous Integration and Continuous Deployment with more automation in the next several topics.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#users/new.html.haml</span>
-<span class="o">%</span><span class="n">section</span><span class="o">.</span><span class="n">register</span><span class="o">.</span><span class="n">container</span>
-  <span class="o">.</span><span class="n">row</span>
-    <span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">10</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="n">offset</span><span class="o">-</span><span class="mi">1</span>
-      <span class="o">=</span> <span class="n">bootstrap_form_for</span> <span class="vi">@user</span><span class="p">,</span> <span class="ss">html</span><span class="p">:</span> <span class="p">{</span> <span class="ss">class</span><span class="p">:</span> <span class="s2">&quot;form-horizontal&quot;</span><span class="p">}</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
-        <span class="o">%</span><span class="n">header</span>
-          <span class="o">%</span><span class="n">h1</span> <span class="no">Register</span>
-        <span class="o">%</span><span class="n">fieldset</span>
-          <span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">6</span>
-            <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">email_field</span> <span class="ss">:email</span><span class="p">,</span> <span class="ss">label</span><span class="p">:</span> <span class="s2">&quot;Email Address&quot;</span>
-            <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">password_field</span> <span class="ss">:password</span>
-            <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:full_name</span><span class="p">,</span> <span class="ss">label</span><span class="p">:</span> <span class="s2">&quot;Full Name&quot;</span>
-            <span class="o">=</span> <span class="n">hidden_field_tag</span> <span class="ss">:invitation_token</span><span class="p">,</span> <span class="vi">@invitation_token</span>
-        <span class="o">%</span><span class="n">fieldset</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">control</span><span class="o">-</span><span class="n">group</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="n">offset</span><span class="o">-</span><span class="mi">0</span>
-          <span class="o">.</span><span class="n">controls</span>
-            <span class="o">%</span><span class="n">input</span><span class="p">(</span><span class="n">type</span><span class="o">=</span><span class="s2">&quot;submit&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;Sign Up&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;btn btn-default&quot;</span><span class="p">)</span></code></pre></div>
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/05/24/course3-staging-prod-server/">
+        Build Robust & Production Quality Applications - Lesson 6: Staging Server & Production Servers
+      </a>
+    </h1>
 
-<h3>Gotchas</h3>
+    <span class="post-date">24 May 2015</span>
 
-<p>Another issue with the current form is when the invitee signs up, we lose the
- lose inviter&#39;s info and they are not not following the inviter. To fix this, we need a hidden field on the invitee registration form. This hidden field is a field tag, rather than model backed becasue we don&#39;t want this token to be stored under the user&#39;s token.</p>
+    <p>Follow this tutorial on <a href="https://devcenter.heroku.com/articles/multiple-environments">Heroku</a> to understand the difference between staging and prodcution</p>
 
-<h3>Step 3: Inviter/Invitee automatically follow each other after being invited:</h3>
+<p>A few things I&#39;d like to add:</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#users_controller_spec.rb</span>
-   <span class="n">describe</span> <span class="s2">&quot;POST create&quot;</span> <span class="k">do</span>
-    <span class="n">context</span> <span class="s2">&quot;with valid input&quot;</span> <span class="k">do</span>
-      <span class="n">before</span> <span class="p">{</span> <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">user</span><span class="p">:</span> <span class="no">Fabricate</span><span class="o">.</span><span class="n">attributes_for</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span> <span class="p">}</span>
-      <span class="n">it</span> <span class="s2">&quot;creates the user&quot;</span> <span class="k">do</span>
-        <span class="n">expect</span><span class="p">(</span><span class="no">User</span><span class="o">.</span><span class="n">count</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">eq</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-      <span class="k">end</span>
-      <span class="n">it</span> <span class="s2">&quot;redirects to th sign on page&quot;</span> <span class="k">do</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">response</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">redirect_to</span> <span class="n">sign_in_path</span>
-      <span class="k">end</span>
+<p>1) Make staging server&#39;s configuration and data as close to the production server as possible - after all, the purpose of having the staging server is to be able to test out new features in a &quot;production like&quot; environment.</p>
 
-      <span class="n">it</span> <span class="s2">&quot;makes the user follow the inviter&quot;</span> <span class="k">do</span>
-        <span class="n">alice</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
-        <span class="n">invitation</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">,</span> <span class="ss">inviter</span><span class="p">:</span> <span class="n">alice</span><span class="p">,</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s1">&#39;jam@jamblack.com&#39;</span><span class="p">)</span>
-        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">user</span><span class="p">:</span> <span class="p">{</span><span class="ss">email</span><span class="p">:</span> <span class="s1">&#39;jam@jamblack.com&#39;</span><span class="p">,</span> <span class="ss">password</span><span class="p">:</span> <span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="ss">full_name</span><span class="p">:</span> <span class="s1">&#39;Jam Black&#39;</span><span class="p">},</span> <span class="ss">invitation_token</span><span class="p">:</span> <span class="n">invitation</span><span class="o">.</span><span class="n">token</span>
-        <span class="n">jam</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">email</span><span class="p">:</span> <span class="s1">&#39;jam@jamblack.com&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">jam</span><span class="o">.</span><span class="n">follows?</span><span class="p">(</span><span class="n">alice</span><span class="p">))</span><span class="o">.</span><span class="n">to</span> <span class="n">be_true</span>
-      <span class="k">end</span>
+<p>If you production app is already launched, you can periodically take database dumps from the production server to populate the staging server. You could automate this as well with either a replication service, or if you are on Heroku, use Heroku&#39;s follower DB (comes with a cost) https://devcenter.heroku.com/articles/heroku-postgres-follower-databases</p>
 
-      <span class="n">it</span> <span class="s2">&quot;makes the inviter follow the user&quot;</span> <span class="k">do</span>
-        <span class="n">alice</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
-        <span class="n">invitation</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">,</span> <span class="ss">inviter</span><span class="p">:</span> <span class="n">alice</span><span class="p">,</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s1">&#39;jam@jamblack.com&#39;</span><span class="p">)</span>
-        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">user</span><span class="p">:</span> <span class="p">{</span><span class="ss">email</span><span class="p">:</span> <span class="s1">&#39;jam@jamblack.com&#39;</span><span class="p">,</span> <span class="ss">password</span><span class="p">:</span> <span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="ss">full_name</span><span class="p">:</span> <span class="s1">&#39;Jam Black&#39;</span><span class="p">},</span> <span class="ss">invitation_token</span><span class="p">:</span> <span class="n">invitation</span><span class="o">.</span><span class="n">token</span>
-        <span class="n">jam</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">email</span><span class="p">:</span> <span class="s1">&#39;jam@jamblack.com&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">alice</span><span class="o">.</span><span class="n">follows?</span><span class="p">(</span><span class="n">jam</span><span class="p">))</span><span class="o">.</span><span class="n">to</span> <span class="n">be_true</span>
-      <span class="k">end</span>
-      <span class="n">it</span> <span class="s2">&quot;expires the invitation upon acceptance&quot;</span> <span class="k">do</span>
-        <span class="n">alice</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
-        <span class="n">invitation</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">,</span> <span class="ss">inviter</span><span class="p">:</span> <span class="n">alice</span><span class="p">,</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s1">&#39;jam@jamblack.com&#39;</span><span class="p">)</span>
-        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">user</span><span class="p">:</span> <span class="p">{</span><span class="ss">email</span><span class="p">:</span> <span class="s1">&#39;jam@jamblack.com&#39;</span><span class="p">,</span> <span class="ss">password</span><span class="p">:</span> <span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="ss">full_name</span><span class="p">:</span> <span class="s1">&#39;Jam Black&#39;</span><span class="p">},</span> <span class="ss">invitation_token</span><span class="p">:</span> <span class="n">invitation</span><span class="o">.</span><span class="n">token</span>
-        <span class="n">jam</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">email</span><span class="p">:</span> <span class="s1">&#39;jam@jamblack.com&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
-        <span class="n">expect</span><span class="p">(</span><span class="no">Invitation</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">token</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">be_nil</span>
-      <span class="k">end</span>
-    <span class="k">end</span></code></pre></div>
+<p>2) You want to be mindful on email sending on staging - staging server will actually send out emails. You want to make sure that you do not spam your users while testing out features on the staging server. This can be achieved by adding a conditional in your mailer to see if the environment is staging, and if it is, set email recipients to administrators (such as yourself). This way, you can still test and verify that emails are sent out, but you don&#39;t spam users.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;#follows?&quot;</span> <span class="k">do</span>
-    <span class="n">it</span> <span class="s2">&quot;returns true if the user has a following relationship with another user&quot;</span> <span class="k">do</span>
-      <span class="n">alice</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
-      <span class="n">bob</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
-      <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:relationship</span><span class="p">,</span> <span class="ss">leader</span><span class="p">:</span> <span class="n">bob</span><span class="p">,</span> <span class="ss">follower</span><span class="p">:</span> <span class="n">alice</span><span class="p">)</span>
-      <span class="n">expect</span><span class="p">(</span><span class="n">alice</span><span class="o">.</span><span class="n">follows?</span><span class="p">(</span><span class="n">bob</span><span class="p">))</span><span class="o">.</span><span class="n">to</span> <span class="n">be_true</span>
-    <span class="k">end</span>
+<p>3) Your staging server can (and typically should) have a different config itself - you just need to create a staging.rb file in config/environments directory, and with it you can specify the exact settings you want on there (for example, turning on asset pipeline or not, sending out email or not, charging credit card for real or not, etc). On your Heroku staging server, make sure to set RACK<em>ENV and RAILS</em>ENV to staging, then it&#39;ll use that config instead.</p>
 
-    <span class="n">it</span> <span class="s2">&quot;returns false if the user does not have a following relationship with another user&quot;</span> <span class="k">do</span>
-      <span class="n">alice</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
-      <span class="n">bob</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
-      <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:relationship</span><span class="p">,</span> <span class="ss">leader</span><span class="p">:</span> <span class="n">alice</span><span class="p">,</span> <span class="ss">follower</span><span class="p">:</span> <span class="n">bob</span><span class="p">)</span>
-      <span class="n">expect</span><span class="p">(</span><span class="n">alice</span><span class="o">.</span><span class="n">follows?</span><span class="p">(</span><span class="n">bob</span><span class="p">))</span><span class="o">.</span><span class="n">to</span> <span class="n">be_false</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/05/22/course3-staging-vs-production/">
+        Course3 Staging Vs Production
+      </a>
+    </h1>
 
-  <span class="n">describe</span> <span class="s2">&quot;#follow&quot;</span> <span class="k">do</span>
-    <span class="n">it</span> <span class="s2">&quot;follows another user&quot;</span> <span class="k">do</span>
-      <span class="n">alice</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
-      <span class="n">bob</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
-      <span class="n">alice</span><span class="o">.</span><span class="n">follow</span><span class="p">(</span><span class="n">bob</span><span class="p">)</span>
-      <span class="n">expect</span><span class="p">(</span><span class="n">alice</span><span class="o">.</span><span class="n">follows?</span><span class="p">(</span><span class="n">bob</span><span class="p">))</span><span class="o">.</span><span class="n">to</span> <span class="n">be_true</span>
-    <span class="k">end</span>
+    <span class="post-date">22 May 2015</span>
 
-    <span class="n">it</span> <span class="s2">&quot;does not follow one self&quot;</span> <span class="k">do</span>
-      <span class="n">alice</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
-      <span class="n">alice</span><span class="o">.</span><span class="n">follow</span><span class="p">(</span><span class="n">alice</span><span class="p">)</span>
-      <span class="n">expect</span><span class="p">(</span><span class="n">alice</span><span class="o">.</span><span class="n">follows?</span><span class="p">(</span><span class="n">alice</span><span class="p">))</span><span class="o">.</span><span class="n">to</span> <span class="n">be_false</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
+    
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/05/20/course3-riding_unicorns/">
+        Build Robust & Production Quality Applications - Lesson 6: Riding Unicorns
+      </a>
+    </h1>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#users.rb</span>
-  <span class="k">def</span> <span class="nf">follows?</span><span class="p">(</span><span class="n">another_user</span><span class="p">)</span>
-    <span class="n">following_relationships</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:leader</span><span class="p">)</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="n">another_user</span><span class="p">)</span>
-  <span class="k">end</span>
+    <span class="post-date">20 May 2015</span>
 
-  <span class="k">def</span> <span class="nf">can_follow?</span><span class="p">(</span><span class="n">another_user</span><span class="p">)</span>
-    <span class="o">!</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">follows?</span><span class="p">(</span><span class="n">another_user</span><span class="p">)</span> <span class="o">||</span> <span class="nb">self</span> <span class="o">==</span> <span class="n">another_user</span><span class="p">)</span>
-  <span class="k">end</span>
+    <h2>Using Unicorn as a Production Server</h2>
 
-  <span class="k">def</span> <span class="nf">follow</span><span class="p">(</span><span class="n">another_user</span><span class="p">)</span>
-    <span class="n">following_relationships</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">leader</span><span class="p">:</span> <span class="n">another_user</span><span class="p">)</span> <span class="k">if</span> <span class="n">can_follow?</span><span class="p">(</span><span class="n">another_user</span><span class="p">)</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
+<p>Visit http://devcenter.heroku.com/articles/rails-unicorn</p>
+
+<p>The issue with the rails server, is that it only allows for one web process at a time. Unicorn allows you to add additional servers, which can be specified in your config/unicorn.rb file</p>
+
+<h3>1. Add the Unicorn gem to your gemfile</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">gem</span> <span class="s1">&#39;unicorn&#39;</span></code></pre></div>
+
+<p>then, run bundle install</p>
+
+<h3>2. Config</h3>
+
+<p>This is where you define the number worker processes. Worker processes in this context is all processes not just background processes. Below indicates that we want three worker processes running at once.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#config/unicorn.rb</span>
+<span class="n">worker_processes</span> <span class="nb">Integer</span><span class="p">(</span><span class="no">ENV</span><span class="o">[</span><span class="s2">&quot;WEB_CONCURRENCY&quot;</span><span class="o">]</span> <span class="o">||</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">timeout</span> <span class="mi">15</span>
+<span class="n">preload_app</span> <span class="kp">true</span></code></pre></div>
+
+<h3>Update your Procfile</h3>
+
+<p>Set Unicorn as the server for the web process in your Procfile:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="ss">web</span><span class="p">:</span> <span class="n">bundle</span> <span class="nb">exec</span> <span class="n">unicorn</span> <span class="o">-</span><span class="nb">p</span> <span class="vg">$PORT</span> <span class="o">-</span><span class="n">c</span> <span class="o">.</span><span class="n">/config</span><span class="o">/</span><span class="n">unicorn</span><span class="o">.</span><span class="n">rb</span></code></pre></div>
+
+<h2>Adding Unicorn to your Heroku App</h2>
+
+<h3>1. Add Redis to go</h3>
+
+<p>heroku addons:create redistogo</p>
+
+<h3>2. Run the following for Sidekiq version 3.0 or later:</h3>
+
+<p>heroku config:set REDIS<em>PROVIDER=REDISTOGO</em>URL</p>
+
+<h3>3 <a href="https://coderwall.com/p/fprnhg/free-background-jobs-on-heroku">Free background job on Heroku</a></h3>
+
+<p>Running more than 1 dyno (server) on Heroku costs, and ain&#39;t nobody got time for that. Coderwall has created a hack:</p>
 
   </div>
   

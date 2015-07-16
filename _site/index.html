@@ -156,6 +156,14 @@
           
         
       
+        
+          
+        
+      
+        
+          
+        
+      
 
     <p>&copy; 2015. All rights reserved.</p>
   </div>
@@ -167,353 +175,172 @@
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/07/04/course3-isolated-api-tests/">
-        Build Robust & Production Quality Applications - Lesson 8: Fully Integrated API Tests
+      <a href="/2015/07/18/course3-testing-talks/">
+        Build Robust & Production Quality Applications - Lesson 8: - Mocks & Stubs
       </a>
     </h1>
 
-    <span class="post-date">04 Jul 2015</span>
+    <span class="post-date">18 Jul 2015</span>
 
-    <h2>Isolated API Tests Stubbing Out the Internet</h2>
+    <h2>Magic Tricks of Testing</h2>
 
-<p>Hitting the Stripe server takes alot of time approximently 22 seconds sicnce we are hitting the server twice, once to grab the token. The answer to this is pre-script a response for a given request.</p>
+<p>We want unit tests to be
+*Thorough
+*Stable
+*Fast
+*Few</p>
 
-<h3>Webmock</h3>
+<p>Focus on Messages
+Objects are simple-minded.</p>
 
-<p><a href="https://github.com/bblimke/webmock">Webmock</a> allows us to do this by stubbing the HTTP client at the Library level and we can tell exactly what the response is. So we can stub the response using Webmock, always setting the response to a given value, but we would have to do this for every spec. It would be great to have something that gave us this fuctionality automatically and we also don&#39;t have to change our test code...</p>
+<p>Message Origin
+Objects under test have three message origin options:
+*1. Incoming Messages
+*2. Outgoing Messages
+*3. Messages sent to self (messages that are completely contained inside the object and are unknown to the outside)</p>
 
-<h3>VCR</h3>
+<p>Message Type
+*1. Query - returns something, changes nothing (addition method)
+*2. Command - returns something, changes something (save method)</p>
 
-<p><a href="http://www.relishapp.com/vcr/vcr/v/2-9-3/docs">VCR</a> integrates with Rspec and helps you to record your test suite&#39;s HTTP interactions and play them back automatically when you run future tests. Meaning, the first time the spec is run, the request will actually hit the TPA server, record the interaction and store it in a data file. The next time its run again... it will just play back the recorded file.</p>
+<p>We often times conflate commands and queries (like .(pop))</p>
 
-<h2>Getting  Started</h2>
+<p>Rules of the Unit Test Minimalist
+INCOMING QUERY MESSAGES</p>
 
-<h3>Step 1: Install both VCR &amp; Webmock Gems</h3>
-
-<h3>Step 2: Add Rspec Metadata (for VCR set up) to spec helper.rb</h3>
-
-<p><a href="http://www.relishapp.com/vcr/vcr/v/2-9-3/docs/test-frameworks/usage-with-rspec-metadata">Metadata</a></p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;vcr&#39;</span>
-
-<span class="no">VCR</span><span class="o">.</span><span class="n">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">c</span><span class="o">|</span>
-  <span class="n">c</span><span class="o">.</span><span class="n">cassette_library_dir</span> <span class="o">=</span> <span class="s1">&#39;spec/cassettes&#39;</span>
-  <span class="n">c</span><span class="o">.</span><span class="n">hook_into</span> <span class="ss">:webmock</span>
-  <span class="n">c</span><span class="o">.</span><span class="n">configure_rspec_metadata!</span>
-<span class="k">end</span>
-
-<span class="no">RSpec</span><span class="o">.</span><span class="n">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">c</span><span class="o">|</span>
-  <span class="c1"># so we can use :vcr rather than :vcr =&gt; true;</span>
-  <span class="c1"># in RSpec 3 this will no longer be necessary.</span>
-  <span class="n">config</span> <span class="n">treat_symbols_as_metadata_keys_with_true_values</span> <span class="o">=</span> <span class="kp">true</span> <span class="p">(</span><span class="n">add</span> <span class="n">to</span> <span class="no">Rspec</span> <span class="n">config</span> <span class="n">block</span><span class="p">)</span>
-<span class="k">end</span></code></pre></div>
-
-<h3>Step 3: Add :vcr to the transactions you want to record</h3>
-<div class="highlight"><pre><code class="language-text" data-lang="text">it &quot;charges the card successfully&quot;, :vcr do
-response = StripeWapper::Charge.create(amount: 300, card: token)
-expect(response).to be_successful
-end
-</code></pre></div>
-<h3>Step 4: Cassettes &amp; Configs</h3>
-
-<p>As default, spec/cassettes holds all recordings and a creates data files for each spec ran. VCR allows for extensive customization. Including how many recordings per spec whether it be once or all.</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/07/03/course3-integrated-API-tests/">
-        Build Robust & Production Quality Applications - Lesson 8: Fully Integrated API Tests
-      </a>
-    </h1>
-
-    <span class="post-date">03 Jul 2015</span>
-
-    <p>The are generally two options when testing third party API wrappers. We could only go to the where the TPA is and call the API and create fake response data - so what  we are testing is given the generated response, can your application interpret the response and generate the desired result. On the other hand, we can go all the way to the extent to hit the TPA server and hit their server, getting the real response and intergrate our wrapper code with that data to test it.</p>
-
-<p>In this instance, we are writing fully intergrated API specs
-require &#39;spec_helper&#39;</p>
-
-<p>describe StripeWrapper::Charge do</p>
-
-<p>before do
-    StripeWrapper.set<em>api</em>key
-  end</p>
-
-<p>let(:token) do
-    Stripe::Token.create(
-      :card =&gt; {
-      :number =&gt; card<em>number,
-      :exp</em>month =&gt; 7,
-      :exp_year =&gt; 2016,
-      :cvc =&gt; 390
-        }
-      ).id
-  end</p>
-
-<p>context &quot;with a valid card&quot; do
-  let(:card_number) { &#39;4242424242424242&#39; }</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">it &quot;charges the card successfully&quot; do
-response = StripeWapper::Charge.create(amount: 300, card: token)
-expect(response).to be_successful
-end
-</code></pre></div>
-<p>end</p>
-
-<p>context &quot;with invalid card&quot; do
-  let(:card_number) { &#39;4000000000000002&#39; }
-  let(:response) {StripeWrapper::Charge.create(amount: 300, card: token) }</p>
-
-<p>it &quot;does not charge the card successfully&quot; do
-    expect(response).not<em>to be</em>successful
-  end</p>
-
-<p>it &quot;contains an error message&quot; do
-    expect(response).to eq(&#39;Your card was declined&#39;)
-    end
-  end</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/07/02/course3-API-wrappers/">
-        Build Robust & Production Quality Applications - Lesson 8: How to Build API Wrappers
-      </a>
-    </h1>
-
-    <span class="post-date">02 Jul 2015</span>
-
-    <p>Since we are going to be using Stripe alot, it may be smart to put the API in something called an API Wrapper, which becomed a centralized place for the API, rather than spread through-out your application.</p>
-
-<p>Create a Wrapper called Stripe Wrapper</p>
-
-<h1>models/stripe_wrapper.rb</h1>
-
-<p>module StripeWrapper
-  class Charge
-    def self.create(options={})
-      Stripe::Charge.create(amount: options[:amount], currency: &#39;usd&#39;, card: options[:card])
-    end
-  end
-end</p>
-
-<p>Then we want to create a seperate method within the Charge class for the Stripe API Key because there may be other processes that need rely on the key. We want want to write a conditional that would show the write key according to right env we are in, production, dev, test. etc.</p>
-
-<p>module StripeWrapper
-  class Charge
-    def self.create(options={})
-      StripeWrapper.api_key
-      Stripe::Charge.create(amount: options[:amount], currency: &#39;usd&#39;, card: options[:card])
-    end</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">def self.set_stripe_api_key
-  Stripe.api_key = Rails.env.production? ? ENV[&#39;STRIPE_PUBLISHABLE_KEY&#39;] : &quot;pk_test_Xxzh18R0rGLpYys1rVT4KHLH&quot;
-end
-</code></pre></div>
-<p>end
-end</p>
-
-<p>This handles the first part of the API request, but we also need to address the response:</p>
-
-<p>Now we can update the PaymentsController to:
-class PaymentsController &lt; ApplicationController
-def create
-  token  = params[:stripeToken]</p>
-
-<p>charge = StripeWrapper::Charge.create9:smount =&gt; 3000, :card =&gt; token)</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">if charge.successful?
-  flash[:success] = &quot;Thank you for your generous support!&quot;
-  redirect_to new_payments_path
-else
-  flash[:error] = charge.error_message
-  redirect_to new_payment_path
-end
-</code></pre></div>
-<p>end
-end</p>
-
-<p>Update the StripeWrapper</p>
-
-<p>module StripeWrapper
-  class Charge
-    attr_reader :response, :status</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">def initialize(response, status)
-  @response = response
-  @status = status
-end
-
-def self.create(options={})
-  StripeWrapper.api_key
-  begin
-    response = Stripe::Charge.create(amount: options[:amount], currency: &#39;usd&#39;, card: options[:card])
-    new(response, :success)
-  resuce Stripe::CaredError =&gt; e
-    new(e, :error)
-  end
-end
-
-def successful?
-  status == :success
-end
-
-def error_message
-  response.error_message
-end
-
-def self.set_stripe_api_key
-  Stripe.api_key = Rails.env.production? ? ENV[&#39;STRIPE_PUBLISHABLE_KEY&#39;] : &quot;pk_test_Xxzh18R0rGLpYys1rVT4KHLH&quot;
-end
-</code></pre></div>
-<p>end
-end</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/07/01/course3-credit-card-payments/">
-        Build Robust & Production Quality Applications - Lesson 7: Processing Credit Card Payments Online with Stripe
-      </a>
-    </h1>
-
-    <span class="post-date">01 Jul 2015</span>
-
-    <h2>Processing Credit Card Payments Online</h2>
-
-<p>Back in the day, processing credit cards online was intense as told by 37Signals in their <a href="https://signalvnoise.com/posts/753-ask-37signals-how-do-you-process-credit-cards">blogpost</a> back in 2007. If merchants didn&#39;t want to connect their customers to Paypal to checkout, they had create a Merchant Account, followed by having an account with Authorize.net, and then an engine called ActiveMarchant with is Ruby gem for reoccuring billing - which required alot of custom code and an intense daily business process.
-One thing that was&#39;nt mentioned was security - Payment Card Industry Security Standard (PCI Compliance). This means that if you do take credit card information via your website, your site must be sercured, for example. And if you store credit card data, it must be encrypted, etc.</p>
-
-<h3>Stripe</h3>
-
-<p><a href="https://stripe.com">Stripe</a>, luckily has changed all that as one of the first pioneers in this line of payment processing. You don&#39;t need a merchant account or gateway - which is a huge advantage.</p>
-
-<p>Stripe also has the advantage of having a test mode that will allow you to test the payment pipeline while in the prototyping phase. Stripe will connect to your bank account and submit funds recieved on a 7 day rolling basis.</p>
-
-<h4>Stripe.js</h4>
-
-<p>If you incorporate Stripe.js in your payment processing, the clients credit card info is never touches your website, it goes straight to Stripe and token is returned. This also allows us to bypass the PCI Compliance standards. The cost is also pretty negligible to have a robust, reliable, safe payment processing system for your online business.</p>
-
-<h2>How to create a payment with Stripe</h2>
-
-<p>Select Test mode, once signing up</p>
-
-<p>Include Stripe gem and bundle install</p>
-
-<p>Specify your API key, use your Test Secret Key and set it a local variable in your rails console.</p>
-
-<p>&quot;Stripe.api_key = &#39;4uhsvjfudjpsdf0u fvpdapo&#39; &quot;</p>
-
-<p>Grab Fake Charge Data from Stripe API docks:
-Copy code block and enter in Rails console
-The Charge object, along with attributes will be returned once process.</p>
-
-<p>Remember: currency is always in cents and you don&#39;t have to collect address information from customers when using Stripe</p>
-
-<p>Refresh and you should see the charge that was just submitted in your console.</p>
-
-<h2>Accept Payments with Checkout</h2>
-
-<p>How to get the credit card information from customers to the web application</p>
-
-<h3>Using Stripe Checkout Buttom</h3>
-
-<p>is simply done with a button and you can add text, as well.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#views/payments/new.html.haml</span>
-<span class="o">%</span><span class="nb">p</span> <span class="no">Thank</span> <span class="n">you</span> <span class="k">for</span> <span class="n">you</span> <span class="n">support</span><span class="o">.</span>
-<span class="o">=</span> <span class="n">form_tag</span> <span class="n">payments_path</span> <span class="k">do</span>
-  <span class="o">%</span><span class="n">script</span><span class="o">.</span><span class="n">stripe</span><span class="o">-</span><span class="n">button</span><span class="p">{</span><span class="s2">&quot;data-amount&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;2000&quot;</span><span class="p">,</span> <span class="s2">&quot;data-description&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;2 widgets ($20.00)&quot;</span><span class="p">,</span> <span class="s2">&quot;data-image&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;/128x128.png&quot;</span><span class="p">,</span> <span class="s2">&quot;data-key&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;pk_test_------------------------&quot;</span><span class="p">,</span> <span class="s2">&quot;data-name&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;Demo Site&quot;</span><span class="p">,</span> <span class="ss">:src</span> <span class="o">=&gt;</span> <span class="s2">&quot;https://checkout.stripe.com/checkout.js&quot;</span><span class="p">}</span></code></pre></div>
-
-<p>Update the following fields:
-Data amount, Data-name, Description, and remove logo</p>
-
-<h4>Create routes</h4>
-
-<p>Create &#39;/payements&#39;, new and create routes and grab code from API docs</p>
-
-<h4>If you run binding.pry in the payments#create action</h4>
-
-<p>You will see that one of the params submitted to your server is the stripe token - which is the only indication that credit card info has been submitted.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">PaymentsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
-
-<span class="k">def</span> <span class="nf">create</span>
-  <span class="no">Stripe</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="s2">&quot;sk_test_FKBLHWUFHPWHFO29793772&quot;</span>
-
-  <span class="n">token</span> <span class="o">=</span> <span class="n">paramns</span><span class="o">[</span><span class="ss">:stripeToken</span><span class="o">]</span>
-
-  <span class="k">begin</span>
-    <span class="n">charge</span> <span class="o">=</span> <span class="no">Stripe</span><span class="o">::</span><span class="no">Charge</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
-      <span class="ss">:amount</span> <span class="o">=&gt;</span> <span class="mi">3000</span><span class="p">,</span>
-      <span class="ss">:currency</span> <span class="o">=&gt;</span> <span class="s2">&quot;usd&quot;</span>
-      <span class="ss">:card</span> <span class="o">=&gt;</span> <span class="n">token</span>
-    <span class="p">)</span>
-    <span class="n">flash</span><span class="o">[</span><span class="ss">:success</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Thank you for your payment&quot;</span>
-    <span class="n">redirect_to</span> <span class="n">new_payment_path</span>
-
-  <span class="k">rescue</span> <span class="no">Stripe</span><span class="o">::</span><span class="no">CardError</span> <span class="o">=&gt;</span> <span class="n">e</span>
-    <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span>
-    <span class="n">redirect_to</span> <span class="n">new_payment_path</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<h2>Accept Payments with Custom Form using Stripe.js</h2>
-
-<p>Sometimes using the Stripe Checkout button is not seamless enough and you want submit payments through a custom form, where the payment form is apart of the UI:</p>
-
-<h3>1. Add Stripe at the top of the views template and set publishable key</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">script</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text/javascript&quot;</span> <span class="n">src</span><span class="o">=</span><span class="s2">&quot;https://js.stripe.com/v2/&quot;</span><span class="o">&gt;&lt;</span><span class="sr">/script&gt;</span>
-
-<span class="sr">&lt;script type=&quot;text/</span><span class="n">javascript</span><span class="s2">&quot;&gt;Stripe.setPublishableKey(&quot;</span><span class="c1">#{ENV[&#39;STRIPE_PUBLISHABLE_KEY&#39;]}&quot;);</span>
-<span class="o">&lt;</span><span class="sr">/script&gt;</span>
-
-<span class="sr">= javascript_include_tag &#39;payment&#39;</span></code></pre></div>
-
-<p>The above code also includes a turns off the submit button once its clicked to disable multiple submissions and then submit the custom form data to stripe for the stripe token and name attributes are set to nil, which means the data being submit will not be posted to the database. A hidden field for the StripeToken is generated and then submited to our server.</p>
-
-<p>You should also create a file config/initializers/assets.rb with the following content (assuming your javascript file is called payments.js):</p>
-
-<p>Rails.application.config.assets.precompile += [&#39;payments.js&#39;]
-This file will help to make sure that you add the payments.js file in the asset pipeline for all environments (dev, test and production), although in the development environment it doesn&#39;t really compress the assets for you.</p>
-
-<p>Note: If you are using CircleCI at this point, your build may fail and you may need to set your stripe key environment variable on the CircleCI server as well, so it&#39;ll have access to it. (Project Settings -&gt; Environment Variables)</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/06/30/Metz-5-Rules/">
-        Sandi Metz - The Rules
-      </a>
-    </h1>
-
-    <span class="post-date">30 Jun 2015</span>
-
-    <ol>
-<li><p>Class can have no more than 100 lines</p></li>
-<li><p>A method can contain no more than 5 lines</p></li>
-<li><p>Can be passed no more than 4, more like 3 parameters</p></li>
-<li><p>A controller action can only pass one instance variable</p></li>
-<li><p>No more than 2 class names per controller action</p></li>
+<ol>
+<li>Test Incoming Query Messages by making assetions about what the send back. Makes an assertion about a value (state). Here we want to test the interface and not the implementation. If we just care about what value is returned and not how we get there... then I can change the code without breaking it.</li>
 </ol>
 
-<p>Make smaller things and they should know as little about each other as possible</p>
+<p>INCOMING COMMAND MESSAGES
+2. Test incoming command messages by making assertions about direct public side effects. Direct means its the responsibility of the last ruby class invloved. You&#39;re making an assertion on the new value as result of calling that command.</p>
 
-<p>When looking at large chucks of code, its okay to do the &quot;squint method&quot;
-**1. Changes in shape means you have nested conditionals and it will be very hard to reason about</p>
+<p>Key Takeway - The receiver of incoming messages has the sole responsibility of asserting the result direct public side effect. This is the sole place where we are making an assertions about values, testing the value of the thing returned</p>
 
-<p>**2. Changes in color signify different levels of abstraction means that it be hard to follow</p>
+<p>MESSAGES SENT TO SELF</p>
 
-<p>Duplication is far cheaper than the wrong abstraction</p>
+<p>Private Methods - Don&#39;t test private methods. Don&#39;t make assertiond about their result. Do not expect to send them. Doing so will add no value to your tests and will make it impossible to change in the future wihthout breaking something. They also discourage other devs from touching your code so you may want to add the comment &quot;if these tests fail, delete them.&quot;</p>
 
-<p>When code can know less, we can do more. Inheritance is okay when the subclasses
-- shallow, narrow hiearchry
-- subclasses to be at the leaf nodes of the object graph
-- subclasses use all the behavior of the superclass</p>
+<p>Caveat: Break rule if itk saves $$$ during development.</p>
 
-<p>Case Statements are made for business logic and not configuration - extract configuration into a hash.</p>
+<p>Key Takeway - Ignore them.</p>
+
+<p>OUTGOING QUERY MESSAGES
+Making assertions on query messages is the job of the reciever. Therefore making an assertion on outgoing messages is redundant and should be avoided. It makes your tests are break when there is a change and it is very combersome to understand what going on. It adds no value.</p>
+
+<p>Rule: Do not test outgoing query messages. Do not make assertions about their result. Do not epxect to send them.</p>
+
+<p>You will notice that both tests made to self and tech on outgoing query messages have the same rule, don&#39;t do them. This is because they have no visbible side effects, they are invisible to the rest of your application and their tests add no value.</p>
+
+<p>Rule: If a message has no visible side-effects, the sender should not test it.</p>
+
+<p>OUTGOING COMMAND MESSAGES
+Outgoing command messages must be sent, they have to be sent or the app will not be correct. Testing, however the distant side effects of sending the message is an integration test. Asserting that the state of a thing changed in the database is not job of the outgoing command message. It&#39;s job is ensure that a message is sent. Asserting that some change has occured or making an assertion about the state of the DB will forever connect you to that result and the objects.. even those distant involved.</p>
+
+<p>Testing that a message was sent requires a mock. Testing this way makes a bet that the edge (the API...the message sent) is more stable than the distant side effect and the path to it.</p>
+
+<p>Rule: Test outgoing command messages by setting expectations on them being sent. Caveat: Break Rule if ide effects are stable and cheap... and close. The further away - the worse.</p>
+
+<p>Rule: It is our job to ensure that mocks honor their contract. Ensure test doubles stay insync with the API</p>
+
+<p>Gems that help you manage your mocks:
+*Bogus
+*Quacky
+*Rspec-Fire
+*Minitest-Firemock</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/07/17/course3-mocks-and-stubs/">
+        Build Robust & Production Quality Applications - Lesson 8: - Mocks & Stubs
+      </a>
+    </h1>
+
+    <span class="post-date">17 Jul 2015</span>
+
+    <h2>Further Reading</h2>
+
+<p>Check out this <a href="http://martinfowler.com/articles/mocksArentStubs.html">blog post</a> by Martin Fowler. Here is an excert I found valuable:</p>
+
+<p>Meszaros uses the term Test Double as the generic term for any kind of pretend object used in place of a real object for testing purposes. The name comes from the notion of a Stunt Double in movies. (One of his aims was to avoid using any name that was already widely used.) Meszaros then defined four particular kinds of double:</p>
+
+<p>Dummy objects are passed around but never actually used. Usually they are just used to fill parameter lists.
+*Fake objects actually have working implementations, but usually take some shortcut which makes them not suitable for production (an in memory database is a good example).
+*Stubs provide canned answers to calls made during the test, usually not responding at all to anything outside what&#39;s programmed in for the test. Stubs may also record information about calls, such as an email gateway stub that remembers the messages it &#39;sent&#39;, or maybe only how many messages it &#39;sent&#39;.
+*Mocks are what we are talking about here: objects pre-programmed with expectations which form a specification of the calls they are expected to receive.
+Of these kinds of doubles, only mocks insist upon behavior verification. The other doubles can, and usually do, use state verification.</p>
+
+<p>Also, check out this <a href="http://confreaks.tv/videos/rubyconf2011-why-you-don-t-get-mock-objects">talk </a> on Mocks</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/07/16/course3-mocking/">
+        Build Robust & Production Quality Applications - Lesson 8: - Mocking
+      </a>
+    </h1>
+
+    <span class="post-date">16 Jul 2015</span>
+
+    <p>In previous lessons, extracted some of our logic into policy, domain and service objects. We can now update our TodosController spec to reflect these new objects, but we don&#39;t have to test the functionality of the service level object, for example - we just to make sure that the object can respond to the actions extracted to the Service Level process. We can accomplish this with mocking &amp; stubbing. Ensuring that a message has been sent and the object can respond to that message. We are not concerned with the response for that message.</p>
+
+<p>So far with stubbing (which is all we have done up until this point), we have always been asserting on values or the state of the system. With mocking, we asserting on communication. Mocks will always be in unit testing becasue you ar stubbing out your collaborators. If you have to create too many mocks, then you know that you are missing another layer of abstraction. Limiting your spec to focusing on one object allows you code smells like these.</p>
+
+<p>Picking up from our last example, we would create a mock with the following. Please note that the trigger is after the assertion:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">it</span> <span class="s2">&quot;delegates to CreditDeduction to deduct credit&quot;</span> <span class="k">do</span>
+  <span class="n">credit_deduction</span> <span class="o">=</span> <span class="n">double</span><span class="p">(</span><span class="s2">&quot;credit deduction&quot;</span><span class="p">)</span>
+  <span class="no">CreditDeduction</span><span class="o">.</span><span class="n">stub</span><span class="p">(</span><span class="ss">:new</span><span class="p">)</span><span class="o">.</span><span class="p">(</span><span class="n">alice</span><span class="p">)</span><span class="o">.</span><span class="n">and_return</span><span class="p">(</span><span class="n">credit_deduction</span><span class="p">)</span>
+
+  <span class="n">expect</span><span class="p">(</span><span class="n">credit_deduction</span><span class="p">)</span><span class="o">.</span><span class="n">to_recieve</span><span class="p">(</span><span class="ss">:deduct_credit</span><span class="p">)</span>
+  <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">todo</span><span class="p">:</span> <span class="p">{</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook&quot;</span><span class="p">,</span> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;I like cooking!&quot;</span> <span class="p">}</span>
+
+<span class="k">end</span></code></pre></div>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/07/15/course3-message-expecations/">
+        Build Robust & Production Quality Applications - Lesson 8: Message Expectations
+      </a>
+    </h1>
+
+    <span class="post-date">15 Jul 2015</span>
+
+    <h2>Messgage Expectations</h2>
+
+<p>The best resource for docs on <a href="http://www.relishapp.com/rspec/rspec-mocks/v/2-13/docs/message-expectations">message expectations</a>. Message expectations is what is referred to mocking.</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/07/14/course3-Comp-OOD-YAGNI/">
+        Build Robust & Production Quality Applications - Lesson 8: Beyond MVC - Object Composition, Object Oriented Design, & YAGNI
+      </a>
+    </h1>
+
+    <span class="post-date">14 Jul 2015</span>
+
+    <p>Rails provides an MVC framework - but there is a point where the complexity of your application grows beyong this structure. Typically, when this first happens, devs move the logic from their controllers, to the models (skinny contollers/fat models) - but often we find that we are pushing too much logic into the models, making them bloated. Often times models at the center of your application, that are so large (in complexity and touches so many other objects) that people are afraid to touch it (becasue something bad will happen if you mess up) is called God Objects (God Models).</p>
+
+<h2>Object Composition</h2>
+
+<p>We can take some of the responsibility from those objects however, this does come at a cost.</p>
+
+<h4>In-direction</h4>
+
+<p>When you extract logic to various objects within a process, it can be difficult to chase down what is happening as the process is not all in one view. Well defined names and interfaces.</p>
+
+<p>However - there are some ways to abuse object composition.</p>
+
+<h3>YAGNI (You Aren&#39;t Going to Need It)</h3>
+
+<p>is over-extracting or abstracting to a layer that is not useful at the moment, in hopes that it will be in the future, but you prolly won&#39;t. It is better to wait as you will never know less about the future than you do now.</p>
 
   </div>
   

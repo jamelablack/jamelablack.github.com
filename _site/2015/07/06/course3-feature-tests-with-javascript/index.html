@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications - Lesson 8: Feature Tests with Javascript &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href=""></a>
+
+            <a class="sidebar-nav-item" href="/about/">About</a>
+
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href=""></a>
+
+            <a class="sidebar-nav-item" href="/archive/">Archive</a>
+
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 8: Feature Tests with Javascript</h1>
+  <span class="post-date">06 Jul 2015</span>
+  <h2><a href="https://github.com/jnicklas/capybara#selenium">Selenium Webdriver</a></h2>
+
+<p>To date, our feature tests have been fun using Capybara, which using RackTest. While it is very fast, by default - it does not support javascript. Adding &quot;:js =&gt; true&quot; to your test, will switch to the Capybara.javascript driver (Selenium Webdriver) - which will actually launch a browser to run the feature test.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#features/visitor_makes_payment.rb</span>
+<span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
+
+<span class="n">feature</span> <span class="s1">&#39;Visitor makes payment&#39;</span><span class="p">,</span> <span class="ss">js</span><span class="p">:</span> <span class="kp">true</span> <span class="k">do</span>
+
+<span class="n">background</span> <span class="k">do</span>
+  <span class="n">visit</span> <span class="n">new_payment_path</span>
+<span class="k">end</span>
+
+<span class="n">scenario</span> <span class="s2">&quot;valid card number&quot;</span> <span class="k">do</span>
+  <span class="n">pay_with_credit_card</span><span class="p">(</span><span class="s1">&#39;424242424242424242&#39;</span><span class="p">)</span>
+  <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_content</span><span class="p">(</span><span class="s1">&#39;Thank you for your business!&#39;</span><span class="p">)</span><span class="s1">&#39;</span>
+<span class="s1">end</span>
+
+<span class="s1">scenairo &quot;invalid card number&quot; do</span>
+<span class="s1">  pay_with_credit_card(&#39;</span><span class="mi">400000000000000069</span><span class="s1">&#39;)</span>
+<span class="s1">  expect(page).to have_content(&#39;</span><span class="no">Your</span> <span class="n">card</span> <span class="n">has</span> <span class="n">expired!</span><span class="s1">&#39;)</span>
+<span class="s1">end</span>
+
+<span class="s1">scendario &quot;declined card&quot; do</span>
+<span class="s1">  pay_with_credit_card(&#39;</span><span class="mi">4000000000000000002</span><span class="s1">&#39;)</span>
+<span class="s1">  expect(page).to have_content(&#39;</span><span class="no">Your</span> <span class="n">card</span> <span class="n">was</span> <span class="n">declined!</span><span class="s1">&#39;)</span>
+<span class="s1">  end</span>
+<span class="s1">end</span>
+
+<span class="s1">def pay_with_crdit_card(card_number)</span>
+<span class="s1">  fill_in &quot;Credit Card Number&quot;, with: card_number</span>
+<span class="s1">  fill_in &quot;Security Code&quot;, with: &quot;123&quot;</span>
+<span class="s1">  select &quot;3 - March&quot;, from: &quot;date_month&quot;</span>
+<span class="s1">  select &quot;2015&quot;, from: &#39;</span><span class="n">date_year</span><span class="err">&#39;</span>
+  <span class="n">click_button</span> <span class="s2">&quot;Submit Payment&quot;</span>
+<span class="k">end</span></code></pre></div>
+
+<p>Tips:
+Your Selenium Webdiver must be compatiable with your latest version of Firefox.</p>
+
+<h2><a href="https://github.com/jnicklas/capybara#capybara-webkit">Capybara Webkit</a></h2>
+
+<p>Since Selenium Webdriver is really slow, we will go with Capybara Webkit which is faster. This will require you to install the Capybrara Webkit gem and also install Qt locally (using homebrew). Make it the default js runner by declaring so in your spec_helper:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Capybara</span><span class="o">.</span><span class="n">javascript_driver</span> <span class="o">=</span> <span class="ss">:webkit</span></code></pre></div>
+
+<p>To run tests with Selenium Webdriver so you can see what is happening in the web browser, simply add &quot;driver: selenium&quot; to the spec:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">scenario</span> <span class="s2">&quot;valid card number&quot;</span><span class="p">,</span> <span class="ss">driver</span><span class="p">:</span> <span class="n">selenium</span> <span class="k">do</span></code></pre></div>
+
+<h2><a href="https://github.com/jnicklas/capybara#poltergeist">Poltergeist</a></h2>
+
+<p>Must install PhantomJs locally but it has a very nice feature set and allows for extensive customization.</p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/07/18/course3-testing-talks/">
+            Build Robust & Production Quality Applications - Lesson 8: - Mocks & Stubs
+            <small>18 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/07/17/course3-mocks-and-stubs/">
+            Build Robust & Production Quality Applications - Lesson 8: - Mocks & Stubs
+            <small>17 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/07/16/course3-mocking/">
+            Build Robust & Production Quality Applications - Lesson 8: - Mocking
+            <small>16 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

@@ -156,6 +156,14 @@
           
         
       
+        
+          
+        
+      
+        
+          
+        
+      
 
     <p>&copy; 2015. All rights reserved.</p>
   </div>
@@ -167,233 +175,366 @@
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/05/24/course3-staging-prod-server/">
-        Build Robust & Production Quality Applications - Lesson 6: Staging Server & Production Servers
+      <a href="/2015/06/23/Refactoring-Organizing-Data/">
+        Refactoring - Organizng Data
       </a>
     </h1>
 
-    <span class="post-date">24 May 2015</span>
+    <span class="post-date">23 Jun 2015</span>
 
-    <p>Follow this tutorial on <a href="https://devcenter.heroku.com/articles/multiple-environments">Heroku</a> to understand the difference between staging and prodcution</p>
+    <h3>1. Self Encapsulated Field</h3>
 
-<p>A few things I&#39;d like to add:</p>
+<p>You are accessing a field directly, but the coupling to the field is becoming awkward.
+Create getting and setting methods for the field and use only those to access the field.</p>
 
-<p>1) Make staging server&#39;s configuration and data as close to the production server as possible - after all, the purpose of having the staging server is to be able to test out new features in a &quot;production like&quot; environment.</p>
+<h3>2. Replace Data Value with Object</h3>
 
-<p>If you production app is already launched, you can periodically take database dumps from the production server to populate the staging server. You could automate this as well with either a replication service, or if you are on Heroku, use Heroku&#39;s follower DB (comes with a cost) https://devcenter.heroku.com/articles/heroku-postgres-follower-databases</p>
+<p>You have a data item that needs additional data or behavior.
+Turn the data item into an object:
+*<em>1. Create the class for the value. Give it an equivalent field to the field in the source class. Add an attribute reader and a constructor that takes the field as an argument.
+*</em>2. Change the attribute reader in the source class to call the reader in the new class.</p>
 
-<p>2) You want to be mindful on email sending on staging - staging server will actually send out emails. You want to make sure that you do not spam your users while testing out features on the staging server. This can be achieved by adding a conditional in your mailer to see if the environment is staging, and if it is, set email recipients to administrators (such as yourself). This way, you can still test and verify that emails are sent out, but you don&#39;t spam users.</p>
+<h3>3. Change Value to Reference</h3>
 
-<p>3) Your staging server can (and typically should) have a different config itself - you just need to create a staging.rb file in config/environments directory, and with it you can specify the exact settings you want on there (for example, turning on asset pipeline or not, sending out email or not, charging credit card for real or not, etc). On your Heroku staging server, make sure to set RACK<em>ENV and RAILS</em>ENV to staging, then it&#39;ll use that config instead.</p>
+<p>You have a class with many equal instances that you want to replace with a single object.
+Turn the object into a reference object.</p>
+
+<h3>4. Change Reference to Value</h3>
+
+<p>You have a reference object that is small, immutable, and awkward to manage. Turn it into a value object.</p>
+
+<h3>5. Replace Array with Object</h3>
+
+<p>You have an Array in which certain elements mean different things. Replace the Array with an object that has a field for each element.
+*<em>1. Create a new class to represent the information in the Array. Give it a method called [] so that callers that read the Array can be changed one by one. Give it a method called []= so that callers that write to the Array can be changed one by one.
+*</em>2. Construct the new object wherever the Array was instantiated.</p>
+
+<h3>6. Replace Hash with Object</h3>
+
+<p>You have a Hash that stores several different types of objects, and is passed around and used for more than one purpose.
+Replace the Hash with an object that has a field for each key.</p>
+
+<p>*<em>1. Create a new class to represent the information in the Hash. Give it a method called [] so that callers that read the Hash can be changed one by one. Give it a method called []= so that callers that write to the Hash can be changed one by one.
+*</em>2. Construct the new object wherever the Hash was instantiated.</p>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/05/22/course3-staging-vs-production/">
-        Course3 Staging Vs Production
+      <a href="/2015/06/21/Refactoring-Moving-Features/">
+        Refactoring - Moving Features from Objects
       </a>
     </h1>
 
-    <span class="post-date">22 May 2015</span>
+    <span class="post-date">21 Jun 2015</span>
 
-    
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/05/20/course3-riding_unicorns/">
-        Build Robust & Production Quality Applications - Lesson 6: Riding Unicorns
-      </a>
-    </h1>
+    <p>The most fundamental question in object oriented design is &quot;Where to put responsibilities&quot; Often times issues around these questions resolve these problems simply by using Move Method and Move Field to move the behavior around. If we need to use both, use Move Field first and then Move Method.</p>
 
-    <span class="post-date">20 May 2015</span>
+<h3>Move Method</h3>
 
-    <h2>Using Unicorn as a Production Server</h2>
+<p>A method is, or will be, using or used by more features of another class than the class on which it is defined.
+Create a new method with a similar body in the class it uses most. Either turn the old method into a simple delegation, or remove it altogether. Examine all features used by the source method that are defined on the
+source class. Consider whether they also should be moved.</p>
 
-<p>Visit http://devcenter.heroku.com/articles/rails-unicorn</p>
+<h3>Move Field</h3>
 
-<p>The issue with the rails server, is that it only allows for one web process at a time. Unicorn allows you to add additional servers, which can be specified in your config/unicorn.rb file</p>
+<p>A field is, or will be, used by another class more than the class on which it is defined.
+Create a new attribute reader (and if necessary, a writer) in the target class, and change all its users.</p>
 
-<h3>1. Add the Unicorn gem to your gemfile</h3>
+<h3>Extract Class</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">gem</span> <span class="s1">&#39;unicorn&#39;</span></code></pre></div>
+<p>You have one class doing work that should be done by two. Create a new class and move the relevant fields and methods from the old class into the new class.</p>
 
-<p>then, run bundle install</p>
+<h3>Inline Class</h3>
 
-<h3>2. Config</h3>
+<p>A class isn’t doing very much.
+Move all its features into another class and delete it.</p>
 
-<p>This is where you define the number worker processes. Worker processes in this context is all processes not just background processes. Below indicates that we want three worker processes running at once.</p>
+<h3>Hide Delegate</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#config/unicorn.rb</span>
-<span class="n">worker_processes</span> <span class="nb">Integer</span><span class="p">(</span><span class="no">ENV</span><span class="o">[</span><span class="s2">&quot;WEB_CONCURRENCY&quot;</span><span class="o">]</span> <span class="o">||</span> <span class="mi">3</span><span class="p">)</span>
-<span class="n">timeout</span> <span class="mi">15</span>
-<span class="n">preload_app</span> <span class="kp">true</span></code></pre></div>
+<p>A client is calling a delegate class of an object.
+Create methods on the server to hide the delegate. One of the keys, if not the key, to objects is encapsulation. Encapsulation means that objects need to know less about other parts of the system. Then when things change, fewer objects need to be told about the change—which makes the change easier to make.</p>
 
-<h3>Update your Procfile</h3>
+<h3>Remove the Middle Man</h3>
 
-<p>Set Unicorn as the server for the web process in your Procfile:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="ss">web</span><span class="p">:</span> <span class="n">bundle</span> <span class="nb">exec</span> <span class="n">unicorn</span> <span class="o">-</span><span class="nb">p</span> <span class="vg">$PORT</span> <span class="o">-</span><span class="n">c</span> <span class="o">.</span><span class="n">/config</span><span class="o">/</span><span class="n">unicorn</span><span class="o">.</span><span class="n">rb</span></code></pre></div>
-
-<h2>Adding Unicorn to your Heroku App</h2>
-
-<h3>1. Add Redis to go</h3>
-
-<p>heroku addons:create redistogo</p>
-
-<h3>2. Run the following for Sidekiq version 3.0 or later:</h3>
-
-<p>heroku config:set REDIS<em>PROVIDER=REDISTOGO</em>URL</p>
-
-<h3>3 <a href="https://coderwall.com/p/fprnhg/free-background-jobs-on-heroku">Free background job on Heroku</a></h3>
-
-<p>Running more than 1 dyno (server) on Heroku costs, and ain&#39;t nobody got time for that. Coderwall has created a hack:</p>
+<p>A class is doing too much simple delegation.
+Get the client to call the delegate directly. In the motivation for Hide Delegate, we talked about the advantages of encapsulating the use of a delegated object. There is a price for this. The price is that every time the client wants to use a new feature of the delegate, you have to add a simple delegating method to the server. After adding features for a while, it becomes painful. The server class is just a middle man, and perhaps it’s time for the client to call the delegate directly.</p>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/05/10/course3-procfile-foreman/">
-        Course3 Procfile Foreman
+      <a href="/2015/06/20/refactoring-composing_methods/">
+        Refactoring - Composing Methods
       </a>
     </h1>
 
-    <span class="post-date">10 May 2015</span>
+    <span class="post-date">20 Jun 2015</span>
 
-    <hr>
+    <h3>Extract Method</h3>
 
-<p>layout: post
-  title: &quot;Build Robust &amp; Production Quality Applications - Lesson 6: Procfile &amp; Foreman&quot;
-  tags: tealeaf</p>
+<p>is moving duplicate code into a method. Create a new method, and name it after the intention of the method (name it by what it does, not by how it does it). </p>
 
-<hr>
+<h3>Inline Method</h3>
 
-<p>On your server, you can run both web and worker processes locally - you can also do the same on Heroku, identifiying the processes you would like to run in your Procfile. A procfile is placed in the root of your diretory and declare what types of processes you want run in your app.</p>
+<p>is replacing the caller of the method with the body of the method</p>
 
-<p>In your procfile, you will define:</p>
+<h3>Inline Temp</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">process</span> <span class="n">type</span><span class="o">&gt;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">command</span><span class="o">&gt;</span>
-<span class="ss">web</span><span class="p">:</span> <span class="n">bundle</span> <span class="nb">exec</span> <span class="n">rails</span> <span class="n">server</span> <span class="o">-</span><span class="nb">p</span> <span class="vg">$PORT</span>
-<span class="ss">worker</span><span class="p">:</span> <span class="n">bundle</span> <span class="nb">exec</span> <span class="n">rake</span> <span class="ss">jobs</span><span class="p">:</span><span class="n">work</span> <span class="p">(</span><span class="n">example</span> <span class="n">from</span> <span class="n">delayed</span> <span class="n">jobs</span><span class="p">)</span>
-<span class="ss">worker</span><span class="p">:</span> <span class="n">sidekiq</span></code></pre></div>
+<p>Find all references to the temp and replace them with the right-hand side of the assignment. </p>
 
-<h2>Develop locally with Foreman</h2>
+<h3>Replace Temp with Query</h3>
 
-<p>Instead of having to start both Sidekiq and our Rails server locally, we can use format to initiate both processes by runniong &quot;foreman start&quot; in your app directory.</p>
+<p>Find all references to the temp and replace them with the right-hand side of the assignment. </p>
 
-<h2>Heroku</h2>
+<h3>Replace Temp with Chain</h3>
 
-<p>will parse out the web processes from your Procfile.</p>
+<p>removes unneeded creations of temp (variable assignments for method calling expressions) and chain with the right side of the expression, most likely using .self</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">heroku</span> <span class="n">ps</span></code></pre></div>
+<h4>Introduce Explaining Variable</h4>
 
-<p>will list the processes running</p>
+<p>You have a complicated expression, Put the result of the expression, or parts of the expression, in a temporary variable with a name that explains the purpose.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">heroku</span> <span class="n">logs</span></code></pre></div>
+<h3>Split Temporary Variable</h3>
 
-<p>will list all process types</p>
+<p>You have a temporary variable assigned to more than once, but it is not a loop variable nor a collecting temporary variable.
+Make a separate temporary variable for each assignment.</p>
 
-<p>Heroku will allow you to run one web &amp; worker processes but if you&#39;d like to run more, it may costs.</p>
+<h3>Remove Assignments to Parameters: The code assigns to a parameter. Use a temporary variable instead.</h3>
+
+<h3>Replace Method with Method Object</h3>
+
+<p>You have a long method that uses local variables in such a way that you cannot apply Extract Method. Create a new class, name it after the method. </p>
+
+<h3>Extract Surrounding Methods</h3>
+
+<p>Step 1: Use Extract Method on one piece of duplication. Name it after the duplicated behavior.
+This will become our surrounding method.
+For now the surrounding method will still perform the unique behavior.</p>
+
+<p>Step 2:  Modify the calling method to pass a block to the surrounding method. Copy the unique logic from the surrounding method into the block. </p>
+
+<p>Step 3:  Replace the unique logic in the extracted method with the yield keyword. </p>
+
+<p>Step 4:  Identify any variables in the surrounding method that are needed by the unique logic and pass them as parameters in the call to yield. </p>
+
+<h3>Introduce the Named Parameter</h3>
+
+<p>The parameters in a method call cannot easily be deduced from the name of the method you are calling. Convert the parameter list into a Hash, and use the keys of the Hash as names for the parameters.</p>
+
+<h3>Dynamic Method Definition</h3>
+
+<h4>Example: Using def_each to Define Similar Methods</h4>
+
+<p>Defining several similar methods is verbose and often unnecessary. For example, each of the following methods is simply calling the state method.</p>
+
+<h3>Isolate Dynamic Receptor</h3>
+
+<p>A class utilizing method<em>missing has become painful to alter.
+Introduce a new class and move the method</em>missing logic to that class.</p>
+
+<h3>Move Eval from Runtime to Parse Time</h3>
+
+<p>You need to use eval but want to limit the number of times eval is necessary. Move the use of eval from within the method definition to defining the method
+itself.</p>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/05/05/course3-background-jobs/">
-        Build Robust & Production Quality Applications - Lesson 6: Background Jobs
+      <a href="/2015/06/15/Refactoring-CodeSmells/">
+        Refactoring - Code Smells
       </a>
     </h1>
 
-    <span class="post-date">05 May 2015</span>
+    <span class="post-date">15 Jun 2015</span>
 
-    <h2>Background Jobs</h2>
+    <h2>Code Smells</h2>
 
-<p>Email sending typically is not very fast since we have to rely on some third party application. Waiting can slow up your app and potentially frustrate users so it&#39;s best to put non-essential and non-time-sensitive tasks in background jobs.</p>
+<h3>1. Duplicated Code</h3>
 
-<p>Since you can web processes and background job processes running locally, you need tp run both the rails server and sidekiq servers to process jobs respectively.</p>
+<p>Extract Method
+Extract Module or Extract Class if you have duplicated code in two unrelated classes.</p>
 
-<h3>Resque</h3>
+<h3>2. Long Method</h3>
 
-<p>came out of Github - Resque is our Redis-backed library for creating background jobs, placing those jobs on multiple queues, and processing them later.</p>
+<p>Shorten Method with Extract Method
+If you have a method with too many parameters that when you extract the method, you are passing in too many variables and creating so many temps that the original method was more readable, you can often use Replace Temp with Query or Replace Temp with Chain to eliminate the temps. Long lists of parameters can be slimmed down with Introduce Parameter Object and Preserve Whole Object. If you’ve tried that, and you still have too many temps and parameters, it’s time to get out the heavy artillery: Replace Method with Method Object.</p>
 
-<p>Benefits: has admin interface, is powered by Github
-Delayed Job does not require Redis, both uses a pulling queue
-Beanstalk and Stalker may be better if you care about speed, as they have a pulling mechanism</p>
+<p>Conditionals and loops also give signs for extractions. Use Decompose Conditional to deal with conditional expressions. Replace loops with Collection Closure Methods and consider using Extract Method on the call to the closure method and the closure itself.</p>
 
-<p>Sidekiq is a higher performance background solution than Resque and can even be ported, added on top of resque solution.</p>
+<h3>3. Long Parameter List</h3>
 
-<p>Check out the Railscast on Resque for intro.</p>
+<p>Use Replace Parameter with Method when you can get the data in one parameter by making a request of an object you already know about. Use Pre- serve Whole Object to take a bunch of data gleaned from an object and replace it with the object itself. If you have several data items with no logical object, use Introduce Parameter Object to clump them together, or Introduce Named Parameter to improve the fluency.</p>
 
-<h3>Sidekiq</h3>
+<h3>4. Divergent Change</h3>
 
-<p>In order to use Sidekiq, you must install and run <a href="http://redis.io">Redis</a>. Once downloaded, run the &quot;$ src/redis-server&quot; in the redis-3.0.2 folder.</p>
+<p>Divergent change occurs when one class is commonly changed in different ways for different reasons. If you look at a class and say, “Well, I will have to change these three methods every time I get a new database; I have to change these four methods every time there is a new financial instrument,” you likely have a situation in which two objects are better than one.</p>
 
-<p>You must also gem install sidekiq, and run &quot;bundle exec sidekiq&quot;</p>
+<p>To clean this up you identify everything that changes for a particular cause and use Extract Class to put them all together.</p>
 
-<p>When watching the Railscast on Sidekiq, it talks about the creation of workers:</p>
+<h3>5. Shotgun Surgery</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/controllers/invitations_controller.rb</span>
-<span class="k">class</span> <span class="nc">InvitationsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
-  <span class="n">before_filter</span> <span class="ss">:require_user</span>
-  <span class="k">def</span> <span class="nf">new</span>
-    <span class="vi">@invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">new</span>
-  <span class="k">end</span>
+<p>Divergent change is one class that suffers many kinds of changes, and shotgun surgery is one change that alters many classes.</p>
 
-  <span class="k">def</span> <span class="nf">create</span>
-    <span class="vi">@invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">invitation_params</span><span class="o">.</span><span class="n">merge!</span><span class="p">(</span><span class="ss">inviter_id</span><span class="p">:</span> <span class="n">current_user</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+<p>In this case you want to use Move Method and Move Field to put all the changes into a single class. If no current class looks like a good candidate, create one. Often you can use Inline Class to bring a whole bunch of behavior together. You get a small dose of divergent change, but you can easily deal with that.</p>
 
-    <span class="k">if</span> <span class="vi">@invitation</span><span class="o">.</span><span class="n">save</span>
-      <span class="no">InivtationWorker</span><span class="o">.</span><span class="n">perform_async</span>
-      <span class="n">flash</span><span class="o">[</span><span class="ss">:success</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;You&#39;ve successfully invited </span><span class="si">#{</span><span class="vi">@invitation</span><span class="o">.</span><span class="n">recipient_name</span><span class="si">}</span><span class="s2">.&quot;</span>
-      <span class="n">redirect_to</span> <span class="n">new_invitation_path</span>
-    <span class="k">else</span>
-      <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Please fill in all inputs.&quot;</span>
-      <span class="n">render</span> <span class="ss">:new</span>
-    <span class="k">end</span>
-  <span class="k">end</span></code></pre></div>
+<h3>6. Feature Envy</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/workers</span>
-<span class="k">class</span> <span class="nc">InvitationWorker</span>
-  <span class="kp">include</span> <span class="no">Sidekiq</span><span class="o">::</span><span class="no">Worker</span>
+<p>The most common focus of the envy is the data. We’ve lost count of the times we’ve seen a method that invokes half a dozen getting methods on another object to calculate some value. Fortunately the cure is obvious, the method clearly wants to be elsewhere, so you use Move Method to get it there. The fun- damental rule of thumb is to put things together that change together. Data and the behavior that references that data usually change together, but there are exceptions. When the exceptions occur, we move the behavior to keep changes in one place.</p>
 
-  <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="n">invitation_id</span><span class="p">)</span>
-    <span class="n">invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">invitation_id</span><span class="p">)</span>
-    <span class="no">AppMailer</span><span class="o">.</span><span class="n">send_invitation_email</span><span class="p">(</span><span class="n">invitation</span><span class="p">)</span><span class="o">.</span><span class="n">deliver</span>
+<h3>7. Data Clumps</h3>
+
+<p>Often you’ll see the same three or four data items together in many places: instance variables in a couple of classes, and parameters in many method signatures. Bunches of data that hang around together really ought to be made into their own object. The first step is to look for where the clumps appear as instance variables. Use Extract Class on the instance variables to turn the clumps into an object. Then turn your attention to method signatures using Introduce Parameter Object or Preserve Whole Object to slim them down.</p>
+
+<p>A good test is to consider deleting one of the data values: If you did this, would the others make any sense? If they don’t, it’s a sure sign that you have an object that’s dying to be born.</p>
+
+<h3>8. Primitive Obsession</h3>
+
+<p>Most programming environments have two kinds of data. Record types allow you to structure data into meaningful groups. Primitive types are your building blocks. Records always carry a certain amount of overhead: They may mean tables in a database, or they may be awkward to create when you want them for only one or two things.</p>
+
+<p>You can move out of the cave into the centrally heated world of objects by using Replace Data Value with Object on individual data values. If you have conditionals that depend on a type code, use Replace Type Code with Polymorphism, Replace Type Code with Module Extension, or Replace Type Code with State/Strategy.</p>
+
+<p>If you have a group of instance variables that should go together, use Extract Class. If you see these primitives in parameter lists, try a civilizing dose of Intro- duce Parameter Object. If you find yourself picking apart an array, use Replace Array with Object.</p>
+
+<h3>9. Temporary Field</h3>
+
+<p>Sometimes you see an object in which an instance variable is set only in cer- tain circumstances.
+Use Extract Class to create a home for the poor orphan variables. Put all the code that concerns the variables into the component. You may also be able to eliminate conditional code by using Introduce Null Object to create an alterna- tive component for when the variables aren’t valid.</p>
+
+<h3>10. Message Chain</h3>
+
+<p>You see message chains when a client asks one object for another object, which the client then asks for yet another object, which the client then asks for yet another object, and so on. You may see these as a long line of get_this methods, or as a sequence of temps. Navigating this way means the client is coupled to the structure of the navigation. Any change to the intermediate relationships causes the client to have to change.</p>
+
+<p>The move to use here is Hide Delegate. In principle you can apply Hide Delegate to potentially every object in the chain, but doing this often turns every intermediate object into a middle man. Often a better alternative is to see what the resulting object is used for. See whether you can use Extract Method to take a piece of the code that uses it and then Move Method to push it down the chain. If several clients of one of the objects in the chain want to navigate the rest of the way, add a method to do that.</p>
+
+<p>Some people consider any method chain to be a terrible thing. We are known for our calm, reasoned moderation. Well, at least in this case we are.</p>
+
+<h3>11. Middle Man</h3>
+
+<p>One of the prime features of objects is encapsulation—hiding internal details from the rest of the world. Encapsulation often comes with delegation. You look at a class’s interface and find half the methods are delegating to this other class. After a while it is time to use Remove Middle Man and talk to the object that really knows what’s going on. If only a few methods aren’t doing much, use Inline Method to inline them into the caller. If there is additional behavior, you can use Replace Delegation with Hierarchy to turn the real object into a module and include it in the middle man. That allows you to extend behavior without chasing all that delegation.</p>
+
+<h3>12. Inappropriate Intimacy</h3>
+
+<p>Sometimes classes become far too intimate and spend too much time delving into each other’s private parts. We may not be prudes when it comes to people, but we think our classes should follow strict, puritan rules.</p>
+
+<p>Overly intimate classes need to be broken up as lovers were in ancient days. Use Move Method and Move Field to separate the pieces to reduce the intimacy. See whether you can arrange a Change Bidirectional Association to Unidirec- tional. If the classes do have common interests, use Extract Class to put the commonality in a safe place and make honest classes of them. Or use Hide Del- egate to let another class act as go-between.</p>
+
+<h3>13. Alternative Classes with Different Interfaces</h3>
+
+<p>Use Rename Method on any methods that do the same thing but have different signatures for what they do. Often this doesn’t go far enough. In these cases the classes aren’t yet doing enough. Keep using Move Method to move behavior to the classes until the protocols are the same.</p>
+
+<h3>14. Impossible Library Class</h3>
+
+<p>Reuse is often touted as the purpose of objects. We think reuse is overrated (we just use). However, Ruby’s open classes make this easy to fix using Move Method to move the behavior needed directly to the library class.</p>
+
+<h3>15.  Data Class</h3>
+
+<p>These are classes that have attributes, and nothing else. Such classes are dumb data holders and are almost certainly being manipulated in far too much detail by other classes. Use Remove Setting Method on any instance variable that should not be changed. If you have collection instance variables, check to see whether they are properly encapsulated and apply Encapsulate Collection if they aren’t.</p>
+
+<p>Look for where these getting and setting methods are used by other classes. Try to use Move Method to move behavior into the data class. If you can’t move a whole method, use Extract Method to create a method that can be moved. After a while you can start using Hide Method on the getters and setters.
+Data classes are like children. They are okay as a starting point, but to par- ticipate as a grownup object, they need to take some responsibility.</p>
+
+<h3>16. Refused Bequest</h3>
+
+<p>Subclasses get to inherit the methods and data of their parents. But what if they don’t want or need what they are given? They are given all these great gifts and pick just a few to play with.</p>
+
+<p>The traditional story is that this means the hierarchy is wrong. You need to create a new sibling class and use Push Down Method to push all the unused methods to the sibling. That way the parent holds only what is common.</p>
+
+<h3>17. Comments</h3>
+
+<p>Don’t worry, we aren’t saying that people shouldn’t write comments. In our olfactory analogy, comments aren’t a bad smell; indeed they are a sweet smell. The reason we mention comments here is that comments often are used as a deodorant. It’s surprising how often you look at thickly com
+Tip When you feel the need to write a comment, first try to refactor the code so that any comment becomes superfluous.</p>
+
+<h3>16. Metaprogramming Madness</h3>
+
+<p>While in most cases Ruby’s dynamic nature provides great benefits, it can be misused. Some metaprogramming techniques can result in obfuscated code. The method<em>missing hook, for example, often results in code that is difficult to under- stand. It can be a powerful tool if an object’s interface cannot be determined at coding time, but unless it’s absolutely necessary I use Replace Dynamic Receptor with Dynamic Method Definition or even a simple Extract Method to remove the method</em>missing definition. If the method_missing definition is truly needed, I might use Isolate Dynamic Receptor to separate concerns.</p>
+
+<h3>17. Disjointed API</h3>
+
+<p>Libraries are often written with flexibility as the number one priority. The author needs to build in this flexibility so that her library can be used by many different people in many different ways. This flexibility often presents itself as a relatively fine-grained, disjointed API, with many configuration options.</p>
+
+<p>More often than not, an individual project will not take advantage of all the configuration options. The same configuration options will be used over and over. If this is the case, use Introduce Gateway to interact with the API in a simplified way.</p>
+
+<p>Introduce Expression Builder can be applied to both internal and external APIs to interact with the public interface in a more fluent manner.</p>
+
+<h3>18. Repetitive Boilerplate</h3>
+
+<p>One of the easiest ways to remove duplication is Extract Method. Extract the method and call it from multiple places. Some kinds of methods become so commonplace that we can go even further. Take for example attr<em>reader in Ruby. Implementing attribute readers is so common in object-oriented languages that the author of Ruby decided to provide a succinct way to declare them. Intro- duce Class Annotation involves annotating a class by calling a class method from the class definition in the same way that attr</em>reader is called. Most code isn’t simple enough to declare in this way, but when the purpose of the code can be captured clearly in a declarative statement, Introduce Class Annotation can clarify the intention of your code.</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/06/10/course3-Carrierwave/">
+        Build Robust & Production Quality Applications - Lesson 7: File Uploading with Carrierwave
+      </a>
+    </h1>
+
+    <span class="post-date">10 Jun 2015</span>
+
+    <h2>Adding Carrierwave to your Application</h2>
+
+<h4>1. Install gem Carrierwave-aws</h4>
+
+<h4>2. Make sure you have ImageMagick installed locally</h4>
+
+<h4>3. Run migration to remove current small/large image urls and add columns for images</h4>
+
+<h4>4. Mount uploaders to video model</h4>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">mount_uploader</span> <span class="ss">:large_cover</span><span class="p">,</span> <span class="no">LargeCoverUploader</span>
+<span class="n">mount_uploader</span> <span class="ss">:small_cover</span><span class="p">,</span> <span class="no">SmallCoverUploader</span></code></pre></div>
+
+<h4>5. Create app/uploaders directory, add uploaders to folder:</h4>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/uploaders/large_cover_uploader.rb</span>
+<span class="k">class</span> <span class="nc">LargeCoverUploader</span> <span class="o">&lt;</span> <span class="k">class</span> <span class="nc">LargeCoverUploader</span> <span class="o">&lt;</span> <span class="no">CarrierWave</span><span class="o">::</span><span class="no">Uploader</span><span class="o">::</span><span class="no">Base</span>
+  <span class="kp">include</span> <span class="no">CarrierWave</span><span class="o">::</span><span class="no">MiniMagick</span>
+
+  <span class="n">version</span> <span class="ss">:large_version</span> <span class="k">do</span>
+    <span class="n">process</span> <span class="ss">resize_to_fill</span><span class="p">:</span> <span class="o">[</span><span class="mi">665</span><span class="p">,</span> <span class="mi">375</span><span class="o">]</span>
   <span class="k">end</span>
 <span class="k">end</span></code></pre></div>
 
-<p>But instead of creating workers, we can just use <a href="https://github.com/mperham/sidekiq/wiki/Delayed-extensions#actionmailer">delayed extentions</a></p>
+<p>Note: That specifiying version is required since uploading the same file, although it is being resized for the large or small cover photo will cause it to be overidden.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/controlers/invitations_controller.rb</span>
-  <span class="k">def</span> <span class="nf">create</span>
-    <span class="vi">@invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">invitation_params</span><span class="o">.</span><span class="n">merge!</span><span class="p">(</span><span class="ss">inviter_id</span><span class="p">:</span> <span class="n">current_user</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+<p>You will also need to specificy the version in the views:</p>
 
-    <span class="k">if</span> <span class="vi">@invitation</span><span class="o">.</span><span class="n">save</span>
-      <span class="no">AppMailer</span><span class="o">.</span><span class="n">delay</span><span class="o">.</span><span class="n">send_invitation_email</span><span class="p">(</span><span class="vi">@invitation</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-      <span class="n">flash</span><span class="o">[</span><span class="ss">:success</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;You&#39;ve successfully invited </span><span class="si">#{</span><span class="vi">@invitation</span><span class="o">.</span><span class="n">recipient_name</span><span class="si">}</span><span class="s2">.&quot;</span>
-      <span class="n">redirect_to</span> <span class="n">new_invitation_path</span>
-    <span class="k">else</span>
-      <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Please fill in all inputs.&quot;</span>
-      <span class="n">render</span> <span class="ss">:new</span>
-    <span class="k">end</span>
-  <span class="k">end</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#videos/show.html.haml</span>
+<span class="o">%</span><span class="n">article</span><span class="o">.</span><span class="n">video</span>
+  <span class="o">.</span><span class="n">container</span>
+    <span class="o">.</span><span class="n">row</span>
+      <span class="o">.</span><span class="n">video_large_cover</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">7</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="n">offset</span><span class="o">-</span><span class="mi">1</span>
+        <span class="o">=</span> <span class="n">image_tag</span> <span class="vi">@video</span><span class="o">.</span><span class="n">large_cover</span><span class="o">.</span><span class="n">large_version</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="ss">alt</span><span class="p">:</span> <span class="s2">&quot;large video&quot;</span></code></pre></div>
 
-<p>Since we aren&#39;t running .perform_async on a worker, we need to pass @invitiation.id to the AppMailer:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/uploaders/small_cover_uploader.rb</span>
+<span class="k">class</span> <span class="nc">SmallCoverUploader</span> <span class="o">&lt;</span> <span class="no">CarrierWave</span><span class="o">::</span><span class="no">Uploader</span><span class="o">::</span><span class="no">Base</span>
+  <span class="kp">include</span> <span class="no">CarrierWave</span><span class="o">::</span><span class="no">MiniMagick</span>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/app_mailer.rb</span>
-<span class="k">def</span> <span class="nf">send_invitation_email</span><span class="p">(</span><span class="n">invitation_id</span><span class="p">)</span>
-    <span class="vi">@invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">invitation_id</span><span class="p">)</span>
-    <span class="n">mail</span> <span class="ss">to</span><span class="p">:</span> <span class="vi">@invitation</span><span class="o">.</span><span class="n">recipient_email</span><span class="p">,</span> <span class="ss">from</span><span class="p">:</span> <span class="s2">&quot;info@myflix.com&quot;</span><span class="p">,</span> <span class="ss">subject</span><span class="p">:</span> <span class="s2">&quot;Invitation to join Myflix&quot;</span>
-  <span class="k">end</span>
+  <span class="n">process</span> <span class="ss">:resize_to_fill</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="mi">166</span><span class="p">,</span> <span class="mi">236</span><span class="o">]</span>
 <span class="k">end</span></code></pre></div>
 
-<p>To run tests, you have to add the following to run them <a href="https://github.com/mperham/sidekiq/wiki/Testing">inline</a>:</p>
+<h4>6. Create config/initializers/carrier_wave.rb</h4>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#spec/spec_helper.rb</span>
+<p>Add configuration based on <a href="https://github.com/carrierwaveuploader/carrierwave#using-amazon-s3">docs</a></p>
 
-<span class="nb">require</span> <span class="s1">&#39;sidekiq/testing&#39;</span>
-<span class="no">Sidekiq</span><span class="o">::</span><span class="no">Testing</span><span class="o">.</span><span class="n">inline!</span></code></pre></div>
+<h4>7. Follow this blog using <a href="http://blog.danielle.tuckerlabs.com/post/60491757671/creating-a-simple-aws-s3-bucket-with-iam-access">S3 IAMs</a></h4>
+
+<h4>8. Update the User Policy to include the following configurations:</h4>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="p">{</span>
+  <span class="s2">&quot;Version&quot;</span><span class="p">:</span> <span class="s2">&quot;2012-10-17&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;Statement&quot;</span><span class="p">:</span> <span class="o">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;Effect&quot;</span><span class="p">:</span> <span class="s2">&quot;Allow&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;NotAction&quot;</span><span class="p">:</span> <span class="s2">&quot;iam:*&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;Resource&quot;</span><span class="p">:</span> <span class="s2">&quot;*&quot;</span>
+    <span class="p">}</span>
+  <span class="o">]</span>
+<span class="p">}</span></code></pre></div>
+
+<h4>9. Now you need to store your credentials in Rails Env variables. Follow this <a href="http://www.gotealeaf.com/blog/managing-environment-configuration-variables-in-rails">Tealeaf blogpost</a></h4>
 
   </div>
   

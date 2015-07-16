@@ -156,6 +156,14 @@
           
         
       
+        
+          
+        
+      
+        
+          
+        
+      
 
     <p>&copy; 2015. All rights reserved.</p>
   </div>
@@ -167,311 +175,442 @@
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/06/26/Refactoring-Generalization/">
-        Refactoring - Dealing wihth Generalization
+      <a href="/2015/07/13/course3-service-objects/">
+        Build Robust & Production Quality Applications - Lesson 8: Beyond MVC - Service Objects
       </a>
     </h1>
 
-    <span class="post-date">26 Jun 2015</span>
+    <span class="post-date">13 Jul 2015</span>
 
-    <h3>1. Pull Up Method</h3>
+    <h2>Service Objects</h2>
 
-<p>You have methods with identical results on subclasses. Move them to the superclass.</p>
+<p>Just like we can extract domain logic into domain objects, we can extract business level logic into service objects.  Currently, the below process is modeling the Credit Deduction Business Process. Let&#39;s extract that into a Service Object called CreditDeduction.</p>
 
-<h3>2.Push Down Method</h3>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#apps/controllers/todos_controller.rb</span>
+<span class="k">def</span> <span class="nf">create</span>
+  <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:todo</span><span class="p">)</span><span class="o">]</span>
+  <span class="n">credit</span> <span class="o">=</span> <span class="no">Credit</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">current_user</span><span class="p">)</span>
 
-<p>Behavior on a superclass is relevant only for some of its subclasses. Move it to those subclasses</p>
+  <span class="k">if</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">save_with_tags</span>
+    <span class="k">if</span> <span class="no">UserLevelPoicy</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">ccurent_user</span><span class="p">)</span><span class="o">.</span><span class="n">premium?</span>
+    <span class="n">credit</span> <span class="o">=</span> <span class="n">credit</span> <span class="o">-</span> <span class="mi">1</span>
+  <span class="k">else</span>
+    <span class="n">credit</span> <span class="o">=</span> <span class="n">credit</span> <span class="o">-</span> <span class="mi">2</span>
+  <span class="k">end</span>
 
-<h3>3. Extract Module</h3>
+  <span class="n">credit</span><span class="o">.</span><span class="n">save</span>
 
-<p>You have duplicated behavior in two or more classes.
-Create a new module and move the relevant behavior from the old class into the module, and include the module in the class.</p>
+  <span class="k">if</span> <span class="n">credit</span><span class="o">.</span><span class="n">depleted?</span> <span class="o">&lt;</span> <span class="mi">0</span>
+    <span class="no">AppMailer</span><span class="o">.</span><span class="n">notify</span><span class="o">.</span><span class="n">insufficient_funds</span>
+  <span class="k">elsif</span> <span class="n">credit</span><span class="o">.</span><span class="n">low_balance?</span>
+    <span class="no">AppMailer</span><span class="o">.</span><span class="n">notify_low_balance</span>
+  <span class="k">end</span>
+    <span class="n">redirect_to</span> <span class="n">root_path</span>
+  <span class="k">else</span>
+    <span class="n">render</span> <span class="ss">:new</span>
+  <span class="k">end</span></code></pre></div>
 
-<h3>4. Inline Module</h3>
+<h3>Create the Service Policy called CreditDeduction</h3>
 
-<p>The resultant indirection of the included module is no longer worth the duplication it is preventing.
-Merge the module into the including class.</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/services/credit_deduction.rb</span>
+<span class="no">Class</span> <span class="no">CreditDeduction</span>
 
-<h3>5. Extract Subclass</h3>
 
-<p>A class has features that are used only in some instances.
-Create a subclass for that subset of features.</p>
+<span class="k">end</span></code></pre></div>
 
-<h3>6. Introduce Inheritance</h3>
+<h4>Extract business process related Code</h4>
 
-<p>You have two classes with similar features.
-Make one of the classes a superclass and move the common features to the superclass.</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/services/credit_deduction.rb</span>
+<span class="no">Class</span> <span class="no">CreditDeduction</span>
+  <span class="kp">attr_accessor</span> <span class="ss">:user</span>
 
-<h3>7. Collapse Hierarchy</h3>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+    <span class="vi">@user</span> <span class="o">=</span> <span class="n">user</span>
+  <span class="k">end</span>
 
-<p>A superclass and subclass (or module and the class that includes the module) are not very different.
-￼￼Merge them together</p>
+  <span class="k">def</span> <span class="nf">deduct_credit</span>
+    <span class="k">if</span> <span class="no">UserLevelPoicy</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">ccurent_user</span><span class="p">)</span><span class="o">.</span><span class="n">premium?</span>
+      <span class="n">credit</span> <span class="o">=</span> <span class="n">credit</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">else</span>
+      <span class="n">credit</span> <span class="o">=</span> <span class="n">credit</span> <span class="o">-</span> <span class="mi">2</span>
+    <span class="k">end</span>
 
-<h3>8. Form Template Method</h3>
+    <span class="n">credit</span><span class="o">.</span><span class="n">save</span>
 
-<p>You have two methods in subclasses that perform similar steps in the same order, yet the steps are different.
-Get the steps into methods with the same signature, so that the original methods become the same. Then you can pull them up.</p>
+    <span class="k">if</span> <span class="n">credit</span><span class="o">.</span><span class="n">depleted?</span> <span class="o">&lt;</span> <span class="mi">0</span>
+      <span class="no">AppMailer</span><span class="o">.</span><span class="n">notify</span><span class="o">.</span><span class="n">insufficient_funds</span>
+    <span class="k">elsif</span> <span class="n">credit</span><span class="o">.</span><span class="n">low_balance?</span>
+      <span class="no">AppMailer</span><span class="o">.</span><span class="n">notify_low_balance</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
 
-<h3>9. Replace Inheritance with Delegation</h3>
+<h4>Update the TodoController</h4>
 
-<p>A subclass uses only part of a superclass interface or does not want to inherit data.
-Create a field for the superclass, adjust methods to delegate to the superclass, and remove the subclassing.
-￼Replace Inheritance with Delegation</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#apps/controllers/todos_controller</span>
+<span class="k">def</span> <span class="nf">create</span>
+  <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:todo</span><span class="p">)</span><span class="o">]</span>
+  <span class="n">credit</span> <span class="o">=</span> <span class="no">Credit</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">current_user</span><span class="p">)</span>
 
-<h3>10. Replace Abstract Superclass with Module</h3>
+  <span class="k">if</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">save_with_tags</span>
+    <span class="no">CreditDeduction</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">credit</span><span class="p">,</span> <span class="n">current_user</span><span class="p">)</span><span class="o">.</span><span class="n">deduct_credit</span>
 
-<p>You have an inheritance hierarchy, but never intend to explicitly instantiate an instance of the superclass.
-Replace the superclass with a module to better communicate your intention.</p>
+    <span class="n">redirect_to</span> <span class="n">root_path</span>
+  <span class="k">else</span>
+    <span class="n">render</span> <span class="ss">:new</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<h4>Move instatiating a new Credit Object to your Service Policy</h4>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/services/credit_deduction.rb</span>
+<span class="no">Class</span> <span class="no">CreditDeduction</span>
+  <span class="kp">attr_accessor</span> <span class="ss">:credit</span><span class="p">,</span> <span class="ss">:user</span>
+
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">credit</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
+    <span class="vi">@credit</span> <span class="o">=</span> <span class="no">Credit</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+    <span class="vi">@user</span> <span class="o">=</span> <span class="n">user</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">deduct_credit</span>
+    <span class="k">if</span> <span class="no">UserLevelPoicy</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">ccurent_user</span><span class="p">)</span><span class="o">.</span><span class="n">premium?</span>
+      <span class="n">credit</span> <span class="o">=</span> <span class="n">credit</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">else</span>
+      <span class="n">credit</span> <span class="o">=</span> <span class="n">credit</span> <span class="o">-</span> <span class="mi">2</span>
+    <span class="k">end</span>
+
+    <span class="n">credit</span><span class="o">.</span><span class="n">save</span>
+
+    <span class="k">if</span> <span class="n">credit</span><span class="o">.</span><span class="n">depleted?</span> <span class="o">&lt;</span> <span class="mi">0</span>
+      <span class="no">AppMailer</span><span class="o">.</span><span class="n">notify</span><span class="o">.</span><span class="n">insufficient_funds</span>
+    <span class="k">elsif</span> <span class="n">credit</span><span class="o">.</span><span class="n">low_balance?</span>
+      <span class="no">AppMailer</span><span class="o">.</span><span class="n">notify_low_balance</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#apps/controllers/todos_controller</span>
+<span class="k">def</span> <span class="nf">create</span>
+  <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:todo</span><span class="p">)</span><span class="o">]</span>
+
+  <span class="k">if</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">save_with_tags</span>
+    <span class="no">CreditDeduction</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">current_user</span><span class="p">)</span><span class="o">.</span><span class="n">deduct_credit</span>
+
+    <span class="n">redirect_to</span> <span class="n">root_path</span>
+  <span class="k">else</span>
+    <span class="n">render</span> <span class="ss">:new</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/06/25/Refactoring-conditionals/">
-        Refactoring - Simplifying Conditional Expressions
+      <a href="/2015/07/12/course3-domain-objects/">
+        Build Robust & Production Quality Applications - Lesson 8: Beyond MVC - Domain Objects
       </a>
     </h1>
 
-    <span class="post-date">25 Jun 2015</span>
+    <span class="post-date">12 Jul 2015</span>
 
-    <h3>1. Decompose Condtional</h3>
+    <h2>Policy Objects</h2>
 
-<p>You have a complicated conditional (if-then-else) statement.
-Extract methods from the condition, “then” part, and “else” parts.
-Mechanics
-*<em>1. Extract the condition into its own method.
-*</em>2. Extract the “then” part and the “else” part into their own methods.</p>
+<p>Are objects that are within the domain object model. Not all of them inherit from active record though, often times they do not always map to database tables.</p>
 
-<h3>2. Recompose Conditional</h3>
+<p>For important attributes, it may be worth it to create a seperate domain object rather than calling an object to access that attribute.</p>
 
-<p>You have conditional code that is unnecessarily verbose and does not use the most readable Ruby construct.
-Replace the conditional code with the more idiomatic Ruby construct.</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#apps/controllers/todos_controller.rb</span>
+<span class="k">def</span> <span class="nf">create</span>
+  <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:todo</span><span class="p">)</span><span class="o">]</span>
+  <span class="k">if</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">save_with_tags</span>
+    <span class="n">user</span><span class="o">.</span><span class="n">created_at</span> <span class="o">&lt;</span> <span class="no">Date</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="mi">2013</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">||</span> <span class="n">user</span><span class="o">.</span><span class="n">plan</span><span class="o">.</span><span class="n">premium?</span>
+    <span class="n">new_credit_balance</span> <span class="o">=</span> <span class="n">current_user</span><span class="o">.</span><span class="n">current_credit_balance</span> <span class="o">-</span> <span class="mi">1</span>
+  <span class="k">else</span>
+    <span class="n">new_credit_balance</span> <span class="o">=</span> <span class="n">current_user</span><span class="o">.</span><span class="n">current_credit_balance</span> <span class="o">-</span> <span class="mi">2</span>
+  <span class="k">end</span>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="ss">before</span><span class="p">:</span>
-<span class="n">parameters</span> <span class="o">=</span> <span class="n">params</span> <span class="p">?</span> <span class="n">params</span> <span class="p">:</span> <span class="o">[]</span>
+  <span class="n">current_user</span><span class="o">.</span><span class="n">current_credit_balance</span> <span class="o">=</span> <span class="n">new_credit_balance</span>
+  <span class="n">current_user</span><span class="o">.</span><span class="n">save</span>
 
-<span class="ss">after</span><span class="p">:</span>
-<span class="n">parameters</span> <span class="o">=</span> <span class="n">params</span> <span class="o">||</span> <span class="o">[]</span></code></pre></div>
+  <span class="k">if</span> <span class="n">new_credit_balance</span> <span class="o">&lt;</span> <span class="mi">0</span>
+    <span class="no">AppMailer</span><span class="o">.</span><span class="n">notify</span><span class="o">.</span><span class="n">insufficient_funds</span>
+  <span class="k">elsif</span> <span class="n">current_user</span><span class="o">.</span><span class="n">current_credit_balance</span> <span class="o">&lt;</span> <span class="mi">10</span>
+    <span class="no">AppMailer</span><span class="o">.</span><span class="n">notify_low_balance</span>
+  <span class="k">end</span>
+    <span class="n">redirect_to</span> <span class="n">root_path</span>
+  <span class="k">else</span>
+    <span class="n">render</span> <span class="ss">:new</span>
+  <span class="k">end</span></code></pre></div>
 
-<h3>3. Consolidate Conditional Expression</h3>
+<p>Let&#39;s create a domain called Credit:</p>
 
-<p>You have a sequence of conditional tests with the same result.
-Combine them into a single conditional expression and extract it.</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/models/credit.rb</span>
 
-<h3>4. Consolidate Duplicate Conditional Fragments</h3>
+<span class="k">class</span> <span class="nc">Credit</span>
+  <span class="kp">attr_accessor</span> <span class="ss">:credit_balance</span><span class="p">,</span> <span class="ss">:user</span>
 
-<p>The same fragment of code is in all branches of a conditional expression.
-Move it outside the expression.</p>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+    <span class="vi">@credit_balance</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">current_credit_balance</span>
+    <span class="vi">@user</span> <span class="o">=</span> <span class="n">user</span>
+  <span class="k">end</span>
 
-<h3>5. Replace Condtional with Polymorphism</h3>
+  <span class="k">def</span> <span class="nf">-</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+    <span class="n">credit_balance</span> <span class="o">=</span> <span class="n">credit_balance</span> <span class="o">-</span> <span class="n">number</span>
+  <span class="k">end</span>
 
-<p>Motivation
-One of the grandest sounding words in object jargon is polymorphism. The essence of polymorphsim is that it allows you to avoid writing an explicit con- ditional when you have objects whose behavior varies depending on their types.
-As a result you find that case statements or if-then-else statements that switch on type codes are much less common in an Object-Oriented program.</p>
+  <span class="k">def</span> <span class="nf">save</span>
+    <span class="n">user</span><span class="o">.</span><span class="n">current_credit_balance</span> <span class="o">=</span> <span class="n">credit_balance</span>
+    <span class="n">user</span><span class="o">.</span><span class="n">save</span>
+  <span class="k">end</span>
 
-<p>Polymorphism gives you many advantages. The biggest gain occurs when this same set of conditions appears in many places in the program. If you want to add a new type, you have to find and update all the conditionals. But with polymorphism you just create a new class and provide the appropriate methods. Clients of the class don’t need to know about the polymorphism, which reduces the dependencies in your system and makes it easier to update.</p>
+  <span class="k">def</span> <span class="nf">depleted?</span>
+    <span class="n">credit_balance</span> <span class="o">&lt;</span> <span class="mi">0</span>
+  <span class="k">end</span>
 
-<p>Ruby’s duck typing makes it easy to introduce polymorphism. In a statically typed language like Java, you need inheritance or implementation of an inter- face to be able to call a method polymorphically. But in Ruby, an object’s cur- rent set of methods—not its inheritance from a particular class—determines its valid semantics. So long as objects A and B have the same method, you can call them in the same way.</p>
+  <span class="k">def</span> <span class="nf">low_balance?</span>
+    <span class="n">credit_balance</span> <span class="o">&lt;</span> <span class="mi">10</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
 
-<h2>Mechanics</h2>
+<p>Now let&#39;s update the Todos Controller:</p>
 
-<p>Polymorphism in Ruby can be achieved in a couple of ways. In its simplest form, you can implement the same method signature on multiple objects and call these methods polymorphically. You can introduce a module hierarchy and have the method that is to be called polymorphically on the module. Or you can introduce an inheritance hierarchy and have the method that is to be called polymorphically on the subclasses. In each case, the mechanics are the same.
-The code you target may be a case statement or an if statement.</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#apps/controllers/todos_controller.rb</span>
+<span class="k">def</span> <span class="nf">create</span>
+  <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:todo</span><span class="p">)</span><span class="o">]</span>
+  <span class="n">credit</span> <span class="o">=</span> <span class="no">Credit</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">current_user</span><span class="p">)</span>
 
-<p>*<em>1. If the conditional statement is one part of a larger method, take apart the
-conditional statement and use Extract Method.
-*</em>2. If necessary use Move Method to place the conditional at the appropriate place in the object structure.
-**3. Pick one of the polymorphic objects. Create a method on the polymor- phic object that will override the conditional statement method. Copy the body of that leg of the conditional statement into the polymorphic method and adjust it to fit.</p>
+  <span class="k">if</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">save_with_tags</span>
+    <span class="k">if</span> <span class="no">UserLevelPoicy</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">ccurent_user</span><span class="p">)</span><span class="o">.</span><span class="n">premium?</span>
+    <span class="n">credit</span> <span class="o">=</span> <span class="n">credit</span> <span class="o">-</span> <span class="mi">1</span>
+  <span class="k">else</span>
+    <span class="n">credit</span> <span class="o">=</span> <span class="n">credit</span> <span class="o">-</span> <span class="mi">2</span>
+  <span class="k">end</span>
 
-<h3>6. Introuduce a Null Object</h3>
+  <span class="n">credit</span><span class="o">.</span><span class="n">save</span>
 
-<p>You have repeated checks for a nil value.
-Replace the nil value with a null object.</p>
-
-<p>The essence of polymorphism is that instead of asking an object what type it is and then invoking some behavior based on the answer, you just invoke the behavior. The object, depending on its type, does the right thing. One of the less intuitive places to do this is where you have a null value in a field.</p>
+  <span class="k">if</span> <span class="n">credit</span><span class="o">.</span><span class="n">depleted?</span> <span class="o">&lt;</span> <span class="mi">0</span>
+    <span class="no">AppMailer</span><span class="o">.</span><span class="n">notify</span><span class="o">.</span><span class="n">insufficient_funds</span>
+  <span class="k">elsif</span> <span class="n">credit</span><span class="o">.</span><span class="n">low_balance?</span>
+    <span class="no">AppMailer</span><span class="o">.</span><span class="n">notify_low_balance</span>
+  <span class="k">end</span>
+    <span class="n">redirect_to</span> <span class="n">root_path</span>
+  <span class="k">else</span>
+    <span class="n">render</span> <span class="ss">:new</span>
+  <span class="k">end</span></code></pre></div>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/06/25/Refactoring-Simple-Method-Calls/">
-        Refactoring - Simple Method Calls
+      <a href="/2015/07/11/course3-policy-objects/">
+        Build Robust & Production Quality Applications - Lesson 8: Beyond MVC - Policy Objects
       </a>
     </h1>
 
-    <span class="post-date">25 Jun 2015</span>
+    <span class="post-date">11 Jul 2015</span>
 
-    <h3>1.. Rename Method</h3>
+    <h2>Policy Objects</h2>
 
-<p>The name of a method does not reveal its purpose.
-Change the name of the method.</p>
+<p>Complicated code in your logic - cure that thing with Policy Objects!
+Policy Objects can be used to represent the state of an object:</p>
 
-<h3>2. Add Parameter</h3>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#apps/controllers/todos_controller.rb</span>
+<span class="k">def</span> <span class="nf">create</span>
+  <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:todo</span><span class="p">)</span><span class="o">]</span>
+  <span class="k">if</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">save_with_tags</span>
+    <span class="n">user</span><span class="o">.</span><span class="n">created_at</span> <span class="o">&lt;</span> <span class="no">Date</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="mi">2013</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">||</span> <span class="n">user</span><span class="o">.</span><span class="n">plan</span><span class="o">.</span><span class="n">premium?</span>
+    <span class="n">new_credit_balance</span> <span class="o">=</span> <span class="n">current_user</span><span class="o">.</span><span class="n">current_credit_balance</span> <span class="o">-</span> <span class="mi">1</span>
+  <span class="k">else</span>
+    <span class="n">new_credit_balance</span> <span class="o">=</span> <span class="n">current_user</span><span class="o">.</span><span class="n">current_credit_balance</span> <span class="o">-</span> <span class="mi">2</span>
+  <span class="k">end</span></code></pre></div>
 
-<p>A method needs more information from its caller.
-Add a parameter for an object that can pass on this information.</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/models/user_level_policy</span>
+<span class="k">class</span> <span class="nc">UserLevelPolicy</span>
+<span class="kp">attr_reader</span> <span class="ss">:user</span>
 
-<h3>3. Remove Parameter</h3>
+<span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+  <span class="vi">@user</span> <span class="o">=</span> <span class="n">user</span>
+<span class="k">end</span>
 
-<p>A parameter is no longer used by the method body.
-Remove it.</p>
 
-<h3>4. Seperate Query from Modifier</h3>
+<span class="k">def</span> <span class="nf">premuim?</span>
+  <span class="n">user</span><span class="o">.</span><span class="n">created_at</span> <span class="o">&lt;</span> <span class="no">Date</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="mi">2013</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">||</span> <span class="n">user</span><span class="o">.</span><span class="n">plan</span><span class="o">.</span><span class="n">premium?</span>
+<span class="k">end</span>
 
-<p>You have a method that returns a value and also changes the state of an object.
-Create two methods, one for the query and one for the modification.</p>
+<span class="k">def</span> <span class="nf">silver?</span>
+<span class="k">end</span>
 
-<h3>4. Parameterize Method</h3>
-
-<p>You have a method that returns a value and also changes the state of an object.
-Create two methods, one for the query and one for the modification.</p>
-
-<p>Motivation
-You may see a couple of methods that do similar things but vary depending on a few values. In this case you can simplify matters by replacing the separate methods with a single method that handles the variations by parameters. Such a change removes duplicate code and increases flexibility, because you can deal with other variations by adding parameters.</p>
-
-<h3>5. Perserve Whole Object</h3>
-
-<p>You are getting several values from an object and passing these values as param- eters in a method call.
-Send the whole object instead.</p>
-
-<h3>6. Replace Parameter with Method</h3>
-
-<p>An object invokes a method, then passes the result as a parameter for a method. The receiver can also invoke this method.
-Remove the parameter and let the receiver invoke the method.</p>
-
-<h3>7. Introduce Parameter Object</h3>
-
-<p>You have a group of parameters that naturally go together.
-Replace them with an object.</p>
-
-<h3>8. Remove Setting Method</h3>
-
-<p>A field should be set at creation time and never altered.
-Remove any setting method for that field.
-Providing a setting method indicates that a field may be changed. If you don’t want that field to change once the object is created, don’t provide a setting method. That way your intention is clear and you often remove the possibility that the field will change.</p>
-
-<h3>9. Hide Method</h3>
-
-<p>A method is not used by any other class.
-Make the method private.</p>
-
-<h3>10. Replace Constructor with Factory Method</h3>
-
-<p>You want to do more than simple construction when you create an object.
-Replace the constructor with a factory method.
-The most obvious motivation for Replace Constructor with Factory Method is when you have conditional logic to determine the kind of object to create. If you need to do this conditional logic in more than one place, it’s time for a Factory Method.</p>
-
-<h3>11.Replace Error Code with Exception</h3>
-
-<p>A method returns a special code to indicate an error.
-Raise an exception instead.</p>
-
-<h3>12. Replace Exception with Test</h3>
-
-<p>You are raising an exception on a condition the caller could have checked first.
-Change the caller to make the test first.
-Exceptions are an important advance in programming languages. They allow us to avoid complex codes by use of Replace Error Code with Exception. Like so many pleasures, exceptions can be used to excess, and they cease to be pleasur- able. Exceptions should be used for exceptional behavior: behavior that is an unexpected error. They should not act as a substitute for conditional tests. If you can reasonably expect the caller to check the condition before calling the operation, you should provide a test, and the caller should use it.</p>
-
-<h3>13. Introduce Gateway</h3>
-
-<p>You want to interact with a complex API of an external system or resource in a simplified way.
-Introduce a Gateway that encapsulates access to an external system or resource.</p>
-
-<h3>14. Introduce Expression Builder</h3>
-
-<p>You want to interact with a public interface in a more fluent manner and not muddy the interface of an existing object.
-Introduce an Expression Builder and create an interface specific to your application.
-￼Introduce Expression Builder
-￼￼</p>
+<span class="k">def</span> <span class="nf">bronze?</span>
+<span class="k">end</span></code></pre></div>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/06/23/Refactoring-Organizing-Data/">
-        Refactoring - Organizng Data
+      <a href="/2015/07/09/course3-decorators/">
+        Build Robust & Production Quality Applications - Lesson 8: Beyond MVC - Decorators
       </a>
     </h1>
 
-    <span class="post-date">23 Jun 2015</span>
+    <span class="post-date">09 Jul 2015</span>
 
-    <h3>1. Self Encapsulated Field</h3>
+    <p>Let&#39;s say we have a Todo model. The methods name<em>only? and display</em>text is purely presentational logic.</p>
 
-<p>You are accessing a field directly, but the coupling to the field is becoming awkward.
-Create getting and setting methods for the field and use only those to access the field.</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Class</span> <span class="no">Todo</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="n">has_many</span> <span class="ss">:taggings</span>
+  <span class="n">has_many</span> <span class="ss">:tags</span><span class="p">,</span> <span class="n">through</span> <span class="ss">:taggigngs</span>
 
-<h3>2. Replace Data Value with Object</h3>
+  <span class="k">def</span> <span class="nf">name_only?</span>
+    <span class="n">description</span><span class="o">.</span><span class="n">blank?</span>
+  <span class="k">end</span>
 
-<p>You have a data item that needs additional data or behavior.
-Turn the data item into an object:
-*<em>1. Create the class for the value. Give it an equivalent field to the field in the source class. Add an attribute reader and a constructor that takes the field as an argument.
-*</em>2. Change the attribute reader in the source class to call the reader in the new class.</p>
+  <span class="k">def</span> <span class="nf">display_text</span>
+    <span class="nb">name</span> <span class="o">+</span> <span class="n">tag_text</span>
+  <span class="k">end</span>
 
-<h3>3. Change Value to Reference</h3>
+  <span class="kp">private</span>
+  <span class="k">def</span> <span class="nf">tag_text</span>
+    <span class="c1">#some complicated regex code</span>
+  <span class="k">end</span></code></pre></div>
 
-<p>You have a class with many equal instances that you want to replace with a single object.
-Turn the object into a reference object.</p>
+<p>We decide to move those two methods to a decorator:</p>
 
-<h3>4. Change Reference to Value</h3>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/decorators/todo_decorator.rb</span>
 
-<p>You have a reference object that is small, immutable, and awkward to manage. Turn it into a value object.</p>
+<span class="no">Class</span> <span class="no">TodoDecorator</span>
+  <span class="kp">attr_reader</span> <span class="ss">:todo</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">todo</span><span class="p">)</span>
+    <span class="vi">@todo</span> <span class="o">=</span> <span class="n">todo</span>
+  <span class="k">end</span>
 
-<h3>5. Replace Array with Object</h3>
+  <span class="k">def</span> <span class="nf">display_text</span>
+    <span class="n">todo</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="n">tag_text</span>
+  <span class="k">end</span>
 
-<p>You have an Array in which certain elements mean different things. Replace the Array with an object that has a field for each element.
-*<em>1. Create a new class to represent the information in the Array. Give it a method called [] so that callers that read the Array can be changed one by one. Give it a method called []= so that callers that write to the Array can be changed one by one.
-*</em>2. Construct the new object wherever the Array was instantiated.</p>
+  <span class="kp">private</span>
+  <span class="k">def</span> <span class="nf">tag_text</span>
+  <span class="k">if</span> <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">any?</span>
+    <span class="c1">#some complicated regex code</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
 
-<h3>6. Replace Hash with Object</h3>
+<p>Now we can remove the extracted code from the Todo model and update the way its called in the views:</p>
 
-<p>You have a Hash that stores several different types of objects, and is passed around and used for more than one purpose.
-Replace the Hash with an object that has a field for each key.</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/views/todos/new.html/haml</span>
+<span class="o">%</span><span class="n">ul</span>
+  <span class="o">-</span> <span class="vi">@todos</span><span class="o">.</span><span class="n">each</span><span class="o">.</span><span class="n">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+    <span class="o">%</span><span class="n">li</span>
+      <span class="o">=</span> <span class="n">link_to</span> <span class="no">TodoDecorator</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">todo</span><span class="p">)</span><span class="o">.</span><span class="n">display_text</span><span class="p">,</span> <span class="n">todo</span></code></pre></div>
 
-<p>*<em>1. Create a new class to represent the information in the Hash. Give it a method called [] so that callers that read the Hash can be changed one by one. Give it a method called []= so that callers that write to the Hash can be changed one by one.
-*</em>2. Construct the new object wherever the Hash was instantiated.</p>
+<p>If we find ourselves using the decorator alot, we could create a decorator method on the Todo model:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/models/todo.rb</span>
+
+<span class="k">def</span> <span class="nf">decorator</span>
+  <span class="no">TodoDecorator</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">self</span><span class="p">)</span>
+<span class="k">end</span></code></pre></div>
+
+<p>We may in the future also want to call methods on the decorator and the original model and we don&#39;t want the views to be concerned with this level of logic (when to instantiate the decorator vs the model)</p>
+
+<p>In the Todos controller, we could pass an array of decorators in addition to an array of Todos:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/controllers/todos_controller.rb</span>
+<span class="k">def</span> <span class="nf">index</span>
+  <span class="vi">@todos</span> <span class="o">=</span> <span class="n">current_user</span><span class="o">.</span><span class="n">todos</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:decorator</span><span class="p">)</span>
+<span class="k">end</span></code></pre></div>
+
+<p>But then our decorator has to respond to the methods within the decorator and within the model itself. To allow this we must extend  Ruby the Forwardable module and create a delegator method:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/decorators/todo_decorator.rb</span>
+
+<span class="no">Class</span> <span class="no">TodoDecorator</span>
+
+  <span class="kp">extend</span> <span class="no">Forwardable</span>
+  <span class="k">def</span> <span class="nf">delegators</span> <span class="ss">:todo</span><span class="p">,</span> <span class="ss">:name_only?</span>
+
+  <span class="kp">attr_reader</span> <span class="ss">:todo</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">todo</span><span class="p">)</span>
+    <span class="vi">@todo</span> <span class="o">=</span> <span class="n">todo</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">display_text</span>
+    <span class="n">todo</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="n">tag_text</span>
+  <span class="k">end</span>
+
+  <span class="kp">private</span>
+  <span class="k">def</span> <span class="nf">tag_text</span>
+  <span class="k">if</span> <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">any?</span>
+    <span class="c1">#some complicated regex code</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>Delegators are valuable when we present models one way in the database and differently in the browser - we use decorators to bridge this gap. When we seperate the domain logic from presentation logic, we can also test them seperately, creating decorator specs.</p>
+
+<h2>Draper</h2>
+
+<p>If you like decorators, you should check out <a href="http://github.com/drapergem/draper">Draper</a>. Instead adding extendeding the Fowardable module, etc. All you have to do is create the decorator, make sure add &#39;delegae_all&#39; and update the videos controller:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">VideoDecorator</span> <span class="o">&lt;</span> <span class="no">Draper</span><span class="o">::</span><span class="no">Decorator</span>
+  <span class="n">delegate_all</span>
+
+  <span class="k">def</span> <span class="nf">rating</span>
+    <span class="n">object</span><span class="o">.</span><span class="n">rating</span><span class="o">.</span><span class="n">present?</span> <span class="p">?</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">object</span><span class="o">.</span><span class="n">rating</span><span class="si">}</span><span class="s2">/5.0&quot;</span> <span class="p">:</span> <span class="s2">&quot;N/A&quot;</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">VideosController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="n">before_filter</span> <span class="ss">:require_user</span>
+
+  <span class="k">def</span> <span class="nf">index</span>
+    <span class="vi">@videos</span> <span class="o">=</span> <span class="no">Video</span><span class="o">.</span><span class="n">all</span>
+    <span class="vi">@categories</span> <span class="o">=</span> <span class="no">Category</span><span class="o">.</span><span class="n">all</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">show</span>
+    <span class="vi">@video</span> <span class="o">=</span> <span class="no">VideoDecorator</span><span class="o">.</span><span class="n">decorate</span><span class="p">(</span><span class="no">Video</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">))</span>
+    <span class="vi">@reviews</span> <span class="o">=</span> <span class="vi">@video</span><span class="o">.</span><span class="n">reviews</span>
+  <span class="k">end</span></code></pre></div>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/06/21/Refactoring-Moving-Features/">
-        Refactoring - Moving Features from Objects
+      <a href="/2015/07/08/course3-transcations-test-database-setup/">
+        Build Robust & Production Quality Applications - Lesson 8: Transactions & Test Database Setup
       </a>
     </h1>
 
-    <span class="post-date">21 Jun 2015</span>
+    <span class="post-date">08 Jul 2015</span>
 
-    <p>The most fundamental question in object oriented design is &quot;Where to put responsibilities&quot; Often times issues around these questions resolve these problems simply by using Move Method and Move Field to move the behavior around. If we need to use both, use Move Field first and then Move Method.</p>
+    <h2>Transactions and test database setup</h2>
 
-<h3>Move Method</h3>
+<p>If you look at the instructions for capybara here: https://github.com/jnicklas/capybara</p>
 
-<p>A method is, or will be, using or used by more features of another class than the class on which it is defined.
-Create a new method with a similar body in the class it uses most. Either turn the old method into a simple delegation, or remove it altogether. Examine all features used by the source method that are defined on the
-source class. Consider whether they also should be moved.</p>
+<p>In the &quot;Transactions and database setup&quot; section, it talks about the Selenium driver needs to run against a real HTTP server and that capybara will start one for you but it runs on a different thread. In this case using &quot;transactions&quot; as the strategy to reset the database after each spec can be a problem, and this is where you want to use the &quot;database_cleaner&quot; gem so that you can use the &quot;truncation&quot; strategy, which effectively just goes to your database and delete all the records. It&#39;s a bit slower than transaction rollbacks, but in this case guarantees data will be reset.</p>
 
-<h3>Move Field</h3>
+<p>You can add the &quot;database<em>cleaner&quot; gem in your test group, and use the following configuration in your spec</em>helper file inside of the RSpec.configure do |config| ... end block.</p>
 
-<p>A field is, or will be, used by another class more than the class on which it is defined.
-Create a new attribute reader (and if necessary, a writer) in the target class, and change all its users.</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">config</span><span class="o">.</span><span class="n">before</span><span class="p">(</span><span class="ss">:suite</span><span class="p">)</span> <span class="k">do</span>
+  <span class="no">DatabaseCleaner</span><span class="o">.</span><span class="n">clean_with</span><span class="p">(</span><span class="ss">:truncation</span><span class="p">)</span>
+<span class="k">end</span>
 
-<h3>Extract Class</h3>
+<span class="n">config</span><span class="o">.</span><span class="n">before</span><span class="p">(</span><span class="ss">:each</span><span class="p">)</span> <span class="k">do</span>
+  <span class="no">DatabaseCleaner</span><span class="o">.</span><span class="n">strategy</span> <span class="o">=</span> <span class="ss">:truncation</span>
+<span class="k">end</span>
 
-<p>You have one class doing work that should be done by two. Create a new class and move the relevant fields and methods from the old class into the new class.</p>
+<span class="n">config</span><span class="o">.</span><span class="n">before</span><span class="p">(</span><span class="ss">:each</span><span class="p">,</span> <span class="ss">:js</span> <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">)</span> <span class="k">do</span>
+  <span class="no">DatabaseCleaner</span><span class="o">.</span><span class="n">strategy</span> <span class="o">=</span> <span class="ss">:truncation</span>
+<span class="k">end</span>
 
-<h3>Inline Class</h3>
+<span class="n">config</span><span class="o">.</span><span class="n">before</span><span class="p">(</span><span class="ss">:each</span><span class="p">)</span> <span class="k">do</span>
+  <span class="no">DatabaseCleaner</span><span class="o">.</span><span class="n">start</span>
+<span class="k">end</span>
 
-<p>A class isn’t doing very much.
-Move all its features into another class and delete it.</p>
-
-<h3>Hide Delegate</h3>
-
-<p>A client is calling a delegate class of an object.
-Create methods on the server to hide the delegate. One of the keys, if not the key, to objects is encapsulation. Encapsulation means that objects need to know less about other parts of the system. Then when things change, fewer objects need to be told about the change—which makes the change easier to make.</p>
-
-<h3>Remove the Middle Man</h3>
-
-<p>A class is doing too much simple delegation.
-Get the client to call the delegate directly. In the motivation for Hide Delegate, we talked about the advantages of encapsulating the use of a delegated object. There is a price for this. The price is that every time the client wants to use a new feature of the delegate, you have to add a simple delegating method to the server. After adding features for a while, it becomes painful. The server class is just a middle man, and perhaps it’s time for the client to call the delegate directly.</p>
+<span class="n">config</span><span class="o">.</span><span class="n">after</span><span class="p">(</span><span class="ss">:each</span><span class="p">)</span> <span class="k">do</span>
+  <span class="no">DatabaseCleaner</span><span class="o">.</span><span class="n">clean</span>
+<span class="k">end</span></code></pre></div>
 
   </div>
   

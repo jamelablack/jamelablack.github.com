@@ -156,6 +156,14 @@
           
         
       
+        
+          
+        
+      
+        
+          
+        
+      
 
     <p>&copy; 2015. All rights reserved.</p>
   </div>
@@ -167,342 +175,311 @@
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/01/15/course3-rationale-for-testing/">
-        Build Robust & Production Quality Applications - Lesson 1: Rational for Testing
+      <a href="/2015/02/18/cardinality-boundary-conditions/">
+        Build Robust & Production Quality Applications - Lesson 2: Alternative Style of Rspec
       </a>
     </h1>
 
-    <span class="post-date">15 Jan 2015</span>
-
-    <h2>Why Do we test our software?</h2>
-
-<p>Here, we are referring to automated testing:
-What would be our alternatives:</p>
-
-<h3>Option 1. No tests at all:</h3>
-
-<p>this doesn&#39;t exist. This means that customers will do the testing for you. All software has bugs, so bugs encountered by your customers will make them aggravated and then you will lose them as customers, support costs will sky rocket</p>
-
-<h3>Option 2. Rely on QA Team - When we have a clear division b/w development</h3>
-
-<p>Typically for larger companies. Code is thrown over the wall to the QA team according feature scope or some other arbitrary milestone, for example.
- * The QA Team writes design test cases according to code base and file bugs with the dev team.
- * The code is authorized for release once everything is fixed.</p>
-
-<p>This could create:</p>
-
-<h4>1. Organizational Trust Problems</h4>
-
-<p>communication b/w the teams typically is not very good. Including finger pointing, etc.</p>
-
-<h4>2. QA Team</h4>
-
-<ul>
-<li>nobody likes them and they get blamed for everything. When everything works, devs take the credit
-and when they don&#39;t work, the QA Team is blamed because their purpose is to catch things like that.</li>
-<li>Also, when deadlines, ship dates are missed, the dev team will often blame the QA Team for all the bugs or requirements
-they have to work through. They complain that they don&#39;t have time to work on features bc of this.</li>
-<li>No one really aspires to be good &quot;testers&quot;, typically its junior devs and there is a high-turnover bc no one typically wants to
-stay there... therefore knowledge is lost.</li>
-<li>Release Cycles - typically both teams are competing for the same time bc each wants to a good job. This pushes back the deadlines.</li>
-</ul>
-
-<h3>Impact of having not automated tests</h3>
-
-<ol>
-<li>Code quality - QA Team, developers, stakeholders, customers don&#39;t care as much</li>
-<li>Isolated Knowledge - only the developer can maintain that code, sometimes a form of job security</li>
-<li>How do you know the implemented feature works</li>
-<li>How do you know that things did not break as a result of this new feature - called regression problems</li>
-</ol>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/12/25/course3-link_to/">
-        Build Robust & Production Quality Applications: Precourse, Link_to Review
-      </a>
-    </h1>
-
-    <span class="post-date">25 Dec 2014</span>
-
-    <p>This is a quick reivew of how to list all a catgories videos:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">-</span> <span class="vi">@category</span><span class="o">.</span><span class="n">videos</span><span class="o">.</span><span class="n">each</span> <span class="o">|</span><span class="n">video</span><span class="o">|</span> <span class="k">do</span>
-    <span class="n">link_to</span> <span class="n">video</span><span class="p">,</span> <span class="k">do</span>
-      <span class="o">%</span><span class="n">img</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">video</span><span class="o">.</span><span class="n">small_cover_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-<span class="o">-</span> <span class="vi">@category</span><span class="o">.</span><span class="n">videos</span><span class="o">.</span><span class="n">each</span> <span class="o">|</span><span class="n">video</span><span class="o">|</span> <span class="k">do</span>
-    <span class="n">link_to</span> <span class="n">video_path</span><span class="p">(</span><span class="n">video</span><span class="p">),</span> <span class="k">do</span>
-      <span class="o">%</span><span class="n">img</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">video</span><span class="o">.</span><span class="n">small_cover_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-<span class="o">-</span> <span class="vi">@category</span><span class="o">.</span><span class="n">videos</span><span class="o">.</span><span class="n">each</span> <span class="o">|</span><span class="n">video</span><span class="o">|</span> <span class="k">do</span>
-  <span class="n">link_to</span> <span class="n">image_tag</span><span class="p">(</span><span class="n">video</span><span class="o">.</span><span class="n">small_cover_url</span><span class="p">),</span> <span class="n">video_path</span><span class="p">(</span><span class="n">video</span><span class="p">)</span>
-
-<span class="o">-</span> <span class="vi">@category</span><span class="o">.</span><span class="n">videos</span><span class="o">.</span><span class="n">each</span> <span class="o">|</span><span class="n">video</span><span class="o">|</span> <span class="k">do</span>
-  <span class="n">link_to</span> <span class="n">image_tag</span><span class="p">(</span><span class="n">video</span><span class="o">.</span><span class="n">small_cover_url</span><span class="p">),</span> <span class="n">video</span></code></pre></div>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/12/20/course3-haml/">
-        Build Robust & Production Quality Applications: Precourse, Haml
-      </a>
-    </h1>
-
-    <span class="post-date">20 Dec 2014</span>
-
-    <p>Writing Basic Haml
-1. No closing tags
-2. Nesting controlled via strict white-spacing and indenting
-3. Nesting tags must be indented on a new line
-4. Use spaces or tabs to nest tags within other tags
-5. Tabs must be consistent</p>
-
-<p>Examples:</p>
-
-<h3>Haml:</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">h2</span>
-<span class="o">%</span><span class="n">ul</span>
-  <span class="o">%</span><span class="n">li</span>
-  <span class="o">%</span><span class="n">li</span>
-  <span class="o">%</span><span class="n">li</span></code></pre></div>
-
-<h3>Links:</h3>
-
-<p>Haml:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">a</span><span class="p">{</span><span class="ss">href</span><span class="p">:</span> <span class="s1">&#39;/courses&#39;</span><span class="p">,</span> <span class="ss">title</span><span class="p">:</span> <span class="s1">&#39;Courses&#39;</span><span class="p">}</span> <span class="no">Courses</span></code></pre></div>
-
-<p>or</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">a</span><span class="p">(</span><span class="n">href</span><span class="o">=</span><span class="s2">&quot;/courses&quot;</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Courses&quot;</span><span class="p">)</span> <span class="no">Courses</span></code></pre></div>
-
-<p>HTML:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;courses&#39;</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Courses&#39;</span><span class="o">&gt;</span><span class="no">Courses</span><span class="o">&lt;</span><span class="sr">/a&gt;</span></code></pre></div>
-
-<h3>Divs:</h3>
-
-<p>Haml:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">section</span><span class="c1">#content.container</span>
-  <span class="o">%</span><span class="n">div</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">container</span></code></pre></div>
-
-<p>HTML:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">section</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;content&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;container&quot;</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;stats container&quot;</span><span class="o">&gt;&lt;</span><span class="sr">/div&gt;</span>
-<span class="sr">    &lt;/se</span><span class="n">ction</span><span class="o">&gt;</span></code></pre></div>
-
-<h3>Haml will insert a div if no HTML tag is explicitly defined:</h3>
-
-<p>Haml:</p>
-
-<h4>Note: stats.container is the same as %div.stats.container</h4>
-
-<p>HTML</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;stats container&quot;</span><span class="o">&gt;&lt;</span><span class="sr">/div&gt;</span></code></pre></div>
-
-<h2>Adding Ruby:</h2>
-
-<ul>
-<li>Lines to evaluated begin with a hyphen (-) instead of erb (&lt;%  %&gt;)</li>
-<li>Lines to be output begin with an equals sign (=) instead of erb (&lt;%=  %&gt;)</li>
-</ul>
-
-<p>Haml:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">-</span> <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Rails for Zombies&#39;</span>
-<span class="o">%</span><span class="n">h1</span><span class="o">=</span> <span class="n">title</span></code></pre></div>
-
-<p>Erb:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="sx">% title </span><span class="o">=</span> <span class="s1">&#39;Rails for Zombies&#39;</span> <span class="sx">%&gt;</span>
-<span class="sx">&lt;h1&gt;</span><span class="o">&lt;%=</span> <span class="n">title</span><span class="sx">%&gt;&lt;/h1&gt;</span></code></pre></div>
-
-<p>HTML output:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span> <span class="no">Rails</span> <span class="k">for</span> <span class="no">Zombies</span> <span class="o">&lt;</span><span class="sr">/h1&gt;</span></code></pre></div>
-
-<h3>Loops:</h3>
-
-<p>Haml:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">-</span> <span class="n">zombies</span> <span class="o">=</span> <span class="sx">%w{Ash Bob Jim}</span>
-<span class="o">%</span><span class="n">section</span><span class="c1">#zombies</span>
-  <span class="o">%</span><span class="n">ul</span>
-    <span class="o">-</span> <span class="n">zombies</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">zombie</span><span class="o">|</span>
-    <span class="o">%</span><span class="n">li</span><span class="o">=</span> <span class="n">zombie</span></code></pre></div>
-
-<p>HTML:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">section</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;zombies&quot;</span><span class="o">&gt;</span>
-   <span class="o">&lt;</span><span class="n">ul</span><span class="o">&gt;</span>
-   <span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;</span><span class="no">Ash</span><span class="o">&lt;</span><span class="sr">/li&gt;</span>
-<span class="sr">   &lt;li&gt;Bob&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
-   <span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;</span><span class="no">Jim</span><span class="o">&lt;</span><span class="sr">/li&gt;</span>
-<span class="sr">  &lt;/se</span><span class="n">ction</span><span class="o">&gt;</span></code></pre></div>
-
-<h4>You can use the same view helpers as before:</h4>
-
-<p>Haml:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">=</span><span class="n">link_to</span> <span class="s2">&quot;Check us out on twitter&quot;</span><span class="p">,</span> <span class="s2">&quot;http://twitter.com/codeschool&quot;</span></code></pre></div>
-
-<p>HTML:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;http://&quot;</span><span class="n">twitter</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">codeschool</span><span class="s2">&quot;&gt;&lt;Check us out on twitter&lt;/a&gt;</span></code></pre></div>
-
-<h2>Interpolation:</h2>
-
-<h3>You can also use #{} interpolation to insert Ruby expressions</h3>
-
-<p>Haml:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="nb">p</span> <span class="no">Hi</span><span class="p">,</span> <span class="no">My</span> <span class="nb">name</span> <span class="n">is</span> <span class="c1">#{@user.name}</span></code></pre></div>
-
-<p>HTML:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span> <span class="no">Hi</span><span class="p">,</span> <span class="no">My</span> <span class="nb">name</span> <span class="n">is</span> <span class="no">Casey</span><span class="o">&lt;</span><span class="sr">/p&gt;</span></code></pre></div>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/12/15/course3-from-views-to-mockups/">
-        Build Robust & Production Quality Applications: Precourse, Views to Mockups
-      </a>
-    </h1>
-
-    <span class="post-date">15 Dec 2014</span>
-
-    <h2>The Process of Building Queues from Mockups:</h2>
-
-<h3>Building out the videos page</h3>
-
-<h4>Step 1. Copy layout from the ui videos template</h4>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">article</span><span class="o">.</span><span class="n">video</span>
-  <span class="o">.</span><span class="n">container</span>
-    <span class="o">.</span><span class="n">row</span>
-      <span class="o">.</span><span class="n">video_large_cover</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">7</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="n">offset</span><span class="o">-</span><span class="mi">1</span>
-        <span class="o">%</span><span class="n">img</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s2">&quot;http://dummyimage.com/665x375/000000/00a2ff&quot;</span><span class="p">)</span>
-      <span class="o">.</span><span class="n">video_info</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">3</span>
-        <span class="o">%</span><span class="n">header</span>
-          <span class="o">%</span><span class="n">h3</span> <span class="no">Futurama</span>
-          <span class="o">%</span><span class="n">span</span> <span class="ss">Rating</span><span class="p">:</span> <span class="mi">4</span><span class="o">.</span><span class="mi">5</span><span class="o">/</span><span class="mi">5</span><span class="o">.</span><span class="mi">0</span>
-        <span class="o">%</span><span class="nb">p</span> <span class="no">Pizza</span> <span class="n">boy</span> <span class="no">Philip</span> <span class="n">J</span><span class="o">.</span> <span class="no">Fry</span> <span class="n">awakens</span> <span class="k">in</span> <span class="n">the</span> <span class="mi">31</span><span class="n">st</span> <span class="n">century</span> <span class="n">after</span> <span class="mi">1</span><span class="p">,</span><span class="mo">000</span> <span class="n">years</span> <span class="n">of</span> <span class="n">cryogenic</span> <span class="n">preservation</span> <span class="k">in</span> <span class="n">this</span> <span class="n">animated</span> <span class="n">series</span><span class="o">.</span> <span class="no">After</span> <span class="n">he</span> <span class="nb">gets</span> <span class="n">a</span> <span class="n">job</span> <span class="n">at</span> <span class="n">an</span> <span class="n">interplanetary</span> <span class="n">delivery</span> <span class="n">service</span><span class="p">,</span> <span class="no">Fry</span> <span class="n">embarks</span> <span class="n">on</span> <span class="n">ridiculous</span> <span class="n">escapades</span> <span class="n">to</span> <span class="n">make</span> <span class="n">sense</span> <span class="n">of</span> <span class="n">his</span> <span class="n">predicament</span><span class="o">.</span></code></pre></div>
-
-<h4>Step 2. Change/Remove hardcoded data for future code</h4>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">article</span><span class="o">.</span><span class="n">video</span>
-  <span class="o">.</span><span class="n">container</span>
-    <span class="o">.</span><span class="n">row</span>
-      <span class="o">.</span><span class="n">video_large_cover</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">7</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="n">offset</span><span class="o">-</span><span class="mi">1</span>
-        <span class="o">%</span><span class="n">img</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">#{</span><span class="vi">@video</span><span class="o">.</span><span class="n">large_cover_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-      <span class="o">.</span><span class="n">video_info</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">3</span>
-        <span class="o">%</span><span class="n">header</span>
-          <span class="o">%</span><span class="n">h3</span><span class="o">=</span> <span class="vi">@video</span><span class="o">.</span><span class="n">title</span>
-          <span class="o">%</span><span class="n">span</span> <span class="ss">Rating</span><span class="p">:</span> <span class="mi">4</span><span class="o">.</span><span class="mi">5</span><span class="o">/</span><span class="mi">5</span><span class="o">.</span><span class="mi">0</span>
-        <span class="o">%</span><span class="nb">p</span><span class="o">=</span> <span class="vi">@video</span><span class="o">.</span><span class="n">description</span></code></pre></div>
-
-<h4>Step 3. Build Routes corresponding with future code</h4>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Myflix</span><span class="o">::</span><span class="no">Application</span><span class="o">.</span><span class="n">routes</span><span class="o">.</span><span class="n">draw</span> <span class="k">do</span>
-  <span class="n">resources</span> <span class="ss">:videos</span><span class="p">,</span> <span class="ss">only</span><span class="p">:</span> <span class="o">[</span><span class="ss">:show</span><span class="o">]</span>
- <span class="k">end</span></code></pre></div>
-
-<h4>Step 4. Begin testing videos controller spec</h4>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/12/05/course3-from-design-to-dev/">
-        Build Robust & Production Quality Applications: Precourse, From Design to Development
-      </a>
-    </h1>
-
-    <span class="post-date">05 Dec 2014</span>
-
-    <h2>Items Covered:</h2>
-
-<ol>
-<li>Slicing Mockups</li>
-<li>SASS</li>
-<li>Haml</li>
-</ol>
-
-<h2>How to serve sliced mockups pages</h2>
-
-<h3>Slicing with UI Controllers</h3>
-
-<p>We will use a UI controller that will point to pages that we need, such as &quot;sign in&quot; page, &quot;account page&quot;.
-Currenty the data and images in these layouts/templates are hardcoded with data and images (nothing is actually linked to the database)</p>
-
-<p>Because we don&#39;t want these templates accessible in prod, we have a before filter to ensure that that&#39;s the case:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#ui_controllers.rb</span>
-<span class="k">class</span> <span class="nc">UiController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
-  <span class="n">before_filter</span> <span class="k">do</span>
-    <span class="n">redirect_to</span> <span class="ss">:root</span> <span class="k">if</span> <span class="no">Rails</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">production?</span>
+    <span class="post-date">18 Feb 2015</span>
+
+    <h2>Techniques you can use to grow your test suite:</h2>
+
+<p>Testing tags (many to many relationship with Todos)
+* When testing for numbers, you want to use the 0, 1, many, and boundary_condition
+(if there is one)</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;display_text&quot;</span> <span class="k">do</span>
+  <span class="n">it</span> <span class="s2">&quot;displays the name when there&#39;s no tags&quot;</span>
+  <span class="n">it</span> <span class="s2">&quot;displays the only tag with word &#39;tag&#39; when there&#39;s one tag&quot;</span>
+  <span class="n">it</span> <span class="s2">&quot;displays name with multiple tags&quot;</span>
+  <span class="n">it</span> <span class="s2">&quot;displays up to four tags&quot;</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;#display_text&quot;</span> <span class="k">do</span>
+  <span class="n">it</span> <span class="s2">&quot;displays the name when there&#39;s no tags&quot;</span> <span class="k">do</span>
+   <span class="n">todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook dinner&quot;</span><span class="p">)</span>
+   <span class="n">todo</span><span class="o">.</span><span class="n">display_text</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="s2">&quot;cook dinner&quot;</span>
   <span class="k">end</span>
 
-  <span class="n">layout</span> <span class="s2">&quot;application&quot;</span>
+  <span class="n">it</span> <span class="nb">display</span> <span class="n">the</span> <span class="n">only</span> <span class="n">tag</span> <span class="n">with</span> <span class="n">the</span> <span class="n">word</span> <span class="s1">&#39;tag&#39;</span> <span class="k">when</span> <span class="n">there</span><span class="err">&#39;</span><span class="n">s</span> <span class="n">one</span> <span class="n">tag</span> <span class="k">do</span>
+    <span class="n">todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook dinner&quot;</span><span class="p">)</span>
+    <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;home&quot;</span><span class="p">)</span>
+    <span class="n">todo</span><span class="o">.</span><span class="n">display_text</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="s2">&quot;cook dinner (tags: home)&quot;</span>
+  <span class="k">end</span>
+
+  <span class="n">it</span> <span class="s2">&quot;displays name with multiple tags&quot;</span> <span class="k">do</span>
+    <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook dinner&quot;</span><span class="p">)</span>
+    <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;home&quot;</span><span class="p">)</span>
+    <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;urgent&quot;</span><span class="p">)</span>
+    <span class="n">todo</span><span class="o">.</span><span class="n">display_text</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="s2">&quot;cook dinner(tags: home, urgent)&quot;</span>
+  <span class="k">end</span>
+
+  <span class="n">it</span> <span class="s2">&quot;displays up to four tags&quot;</span> <span class="k">do</span>
+    <span class="n">todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook dinner&quot;</span><span class="p">)</span>
+    <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;home&quot;</span><span class="p">)</span>
+    <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;urgent&quot;</span><span class="p">)</span>
+    <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;help&quot;</span><span class="p">)</span>
+    <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;book&quot;</span><span class="p">)</span>
+    <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;patience&quot;</span><span class="p">)</span>
+    <span class="n">todo</span><span class="o">.</span><span class="n">displat_text</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="s2">&quot;cook dinner (tags: home, urgent, help, book, more...)&quot;</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/02/16/course3-refactor-in-TDD/">
+        Build Robust & Production Quality Applications - Lesson 2: Refactor in TDD
+      </a>
+    </h1>
+
+    <span class="post-date">16 Feb 2015</span>
+
+    <h3>Add feature in the Red and refactor in the green.</h3>
+
+<ol>
+<li>Pull out anything complex into a separate method and give it a name</li>
+<li>Clean up public facing methods.. pulling complex code into private methods</li>
+</ol>
+
+<p>Example:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Todo</span> <span class="o">&lt;</span> <span class="ss">ActiveRecord</span><span class="p">:;</span><span class="no">Base</span>
+  <span class="n">has_many</span> <span class="ss">:taggings</span>
+  <span class="n">has_many</span> <span class="ss">:tags</span><span class="p">,</span> <span class="ss">through</span><span class="p">:</span> <span class="ss">:taggings</span>
+  <span class="n">validates_presence_of</span> <span class="ss">:name</span>
+
+
+  <span class="k">def</span> <span class="nf">name_only?</span>
+    <span class="n">description</span><span class="o">.</span><span class="n">blank?</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">display_text</span>
+    <span class="nb">name</span> <span class="o">+</span> <span class="n">tag_text</span>
+  <span class="k">end</span>
+
+
+  <span class="kp">private</span>
+
+  <span class="k">def</span> <span class="nf">tag_text</span>
+    <span class="k">if</span> <span class="n">tags</span><span class="o">.</span><span class="n">any?</span>
+      <span class="s2">&quot; (</span><span class="si">#{</span><span class="n">tags</span><span class="o">.</span><span class="n">one?</span> <span class="p">?</span> <span class="s1">&#39;tag&#39;</span> <span class="p">:</span> <span class="s1">&#39;tags&#39;</span> <span class="si">}</span><span class="s2"> : </span><span class="si">#{</span><span class="n">tags</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:name</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">)</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">      </span><span class="si">#{</span><span class="s1">&#39;, more...&#39;</span> <span class="k">if</span> <span class="n">tags</span><span class="o">.</span><span class="n">count</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="si">}</span><span class="s2">)&quot;</span>
+    <span class="k">else</span>
+      <span class="s2">&quot;&quot;</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/02/13/course3-write-controller-tests/">
+        Build Robust & Production Quality Applications - Lesson 2: Writing Controller Tests
+      </a>
+    </h1>
+
+    <span class="post-date">13 Feb 2015</span>
+
+    <h3>With any test, there are typically 3 actions:</h3>
+
+<ol>
+<li>Set up the data required for the action</li>
+<li>Perform the action</li>
+<li>Verify the the expected result</li>
+</ol>
+
+<h3>Controller Tests</h3>
+
+<ul>
+<li>are typically considered more functional bc you&#39;re pulling together
+multiple components</li>
+</ul>
+
+<p>You typically never have to tests the render or redirect views portion of an action
+because that is testing the functionality of rails rather than the code we write. The goal
+of testing is to test the code we write only.</p>
+
+<p>You do, however want to test redirect_to for unauthorized users.</p>
+
+<p>Also if you dont wan&#39;t to rerun all the tests in your suite and just run one in particular
+you can specify &quot;line:27&quot; and it will run the test on that line.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">rspec</span> <span class="n">spec</span><span class="o">/</span><span class="n">controllers</span><span class="o">/</span><span class="n">todos_controller_spec</span><span class="o">.</span><span class="n">rb</span> <span class="mi">27</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">TodoController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
 
   <span class="k">def</span> <span class="nf">index</span>
+    <span class="vi">@todos</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">new</span>
+    <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">create</span>
+    <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:todo</span><span class="o">]</span><span class="p">)</span>
+    <span class="k">if</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">save</span>
+      <span class="n">redirect_to</span> <span class="n">root_path</span>
+    <span class="k">else</span>
+    <span class="n">render</span> <span class="ss">:new</span>
+    <span class="k">end</span>
   <span class="k">end</span>
 <span class="k">end</span></code></pre></div>
 
-<h3>In the routes:</h3>
+<h3>Steps:</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#routes.rb</span>
-<span class="no">Myflix</span><span class="o">::</span><span class="no">Application</span><span class="o">.</span><span class="n">routes</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">do</span>
-  <span class="n">get</span> <span class="s1">&#39;ui/:action)&#39;</span> <span class="p">,</span> <span class="ss">controller</span><span class="p">:</span> <span class="s1">&#39;ui&#39;</span>
+<ol>
+<li>Create directory: controllers</li>
+<li>Create spec: todos<em>conroller</em>spec.rb</li>
+<li>Controller typically have two goals... render and redirect</li>
+</ol>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
+
+<span class="n">describe</span> <span class="no">TodoController</span> <span class="k">do</span>
+
+  <span class="n">describe</span> <span class="s2">&quot;GET index&quot;</span> <span class="k">do</span>
+  <span class="n">it</span> <span class="s2">&quot;set the @todos variable&quot;</span> <span class="k">do</span>
+    <span class="n">cook</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook&quot;</span><span class="p">)</span>
+    <span class="nb">sleep</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;sleep&quot;</span><span class="p">)</span>
+
+    <span class="n">get</span> <span class="ss">:index</span>
+    <span class="n">assigns</span><span class="p">(</span><span class="ss">:todos</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="p">(</span><span class="n">cook</span><span class="p">,</span> <span class="nb">sleep</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="n">it</span> <span class="s2">&quot;render the index template&quot;</span> <span class="k">do</span>
+    <span class="n">get</span> <span class="ss">:index</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">should</span> <span class="n">render_template</span> <span class="ss">:index</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="n">describe</span> <span class="s1">&#39;GET new&#39;</span> <span class="k">do</span>
+    <span class="n">it</span> <span class="s2">&quot;sets  the @todo variable&quot;</span> <span class="k">do</span>
+      <span class="n">get</span> <span class="ss">:new</span>
+      <span class="n">assigns</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="n">be_new_record</span>
+      <span class="n">assigns</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="n">be_instance_of</span><span class="p">(</span><span class="no">Todo</span><span class="p">)</span>
+    <span class="k">end</span>
+    <span class="n">it</span> <span class="s2">&quot;renders the new template&quot;</span> <span class="k">do</span>
+      <span class="n">get</span> <span class="ss">:new</span>
+      <span class="n">response</span><span class="o">.</span><span class="n">should</span> <span class="n">render_template</span> <span class="ss">:new</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="n">describe</span> <span class="s2">&quot;POST create&quot;</span> <span class="k">do</span>
+    <span class="n">it</span> <span class="s2">&quot;creates the todo record when the input is valid&quot;</span> <span class="k">do</span>
+      <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">todo</span><span class="p">:</span> <span class="p">{</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook&quot;</span><span class="p">,</span> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;I like to cook&quot;</span><span class="p">}</span>
+      <span class="no">Todo</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="s2">&quot;cook&quot;</span>
+      <span class="no">Todo</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="s2">&quot;I like cooking&quot;</span>
+    <span class="k">end</span>
+
+    <span class="n">it</span> <span class="s2">&quot;redirects to the root path when the input is valid&quot;</span> <span class="k">do</span>
+        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">todo</span><span class="p">:</span> <span class="p">{</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook&quot;</span><span class="p">,</span> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;I like cooking&quot;</span><span class="p">}</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">should</span> <span class="n">redirect_to</span> <span class="n">root_path</span>
+    <span class="k">end</span>
+
+    <span class="n">it</span> <span class="s2">&quot;does not create a todo when the input is invalid&quot;</span> <span class="k">do</span>
+        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">todo</span><span class="p">:</span> <span class="p">{</span><span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;I like cooking&quot;</span><span class="p">}</span>
+        <span class="no">Todo</span><span class="o">.</span><span class="n">count</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="k">end</span>
+
+    <span class="n">it</span> <span class="s2">&quot;renders the new template when the input is invalid&quot;</span> <span class="k">do</span>
+      <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">todo</span><span class="p">:</span> <span class="p">{</span><span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;I like cooking&quot;</span><span class="p">}</span>
+      <span class="n">response</span><span class="o">.</span><span class="n">should</span> <span class="n">render_template</span> <span class="ss">:new</span>
+    <span class="k">end</span>
 <span class="k">end</span></code></pre></div>
 
-<h3>UI Index</h3>
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/02/10/shoulda-matchers/">
+        Build Robust & Production Quality Applications - Lesson 2: Shoulda Matchers
+      </a>
+    </h1>
 
-<p>So we want our index action to show all views available with links containing (&#39;html.haml&#39;) unless its index:</p>
+    <span class="post-date">10 Feb 2015</span>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">section</span><span class="o">.</span><span class="n">ui</span><span class="o">-</span><span class="n">index</span>
-  <span class="o">%</span><span class="n">ul</span>
-    <span class="o">-</span> <span class="no">Dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;app/views/ui/*.html.haml&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">file</span><span class="o">|</span>
-      <span class="o">-</span> <span class="n">wireframe</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="s1">&#39;.html.haml&#39;</span><span class="p">)</span>
-      <span class="o">-</span>  <span class="k">unless</span> <span class="n">wireframe</span> <span class="o">==</span> <span class="s1">&#39;index&#39;</span> <span class="o">||</span> <span class="n">wireframe</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sr">/^_/</span><span class="p">)</span>
-        <span class="o">%</span><span class="n">li</span><span class="o">=</span> <span class="n">link_to</span> <span class="n">wireframe</span><span class="o">.</span><span class="n">titleize</span><span class="p">,</span> <span class="ss">action</span><span class="p">:</span> <span class="n">wireframe</span> <span class="k">unless</span> <span class="n">wireframe</span> <span class="o">==</span> <span class="s1">&#39;index&#39;</span></code></pre></div>
+    <p>With rspec, there comes built-in matchers, which can be found: <a href="http://www.relishapp.com/rspec/rspec-expectations/v/2-9/docs/built-in-matchers">shoulda matchers</a></p>
 
-<ul>
-<li>To read more about UI Controllers, checkout this blog post from hashrocket:</li>
-</ul>
+<h3>1. Object Identity:</h3>
 
-<h2>Stylesheets</h2>
-
-<h3>SASS</h3>
-
-<p>In this project, we will use application.css (manifest file) that will pull in all of our required files (asset pipline). You had several options - some devs like to use 1 sass/css stylesheet for their entire app, in this case, we broke it out according to the page (user sign in, billing, etc.)</p>
-
-<p>There are two options when using sass, sass and scss. Scss is more verobse but desgined to be compatible with vanilla css. In this case, we are using sass because its less verobse.</p>
+<p>You should use &quot;Object Equivalence&quot; instead because you will be testing if the
+two objects are the same when in reality they may equal the same but be different objects</p>
 
 <ul>
-<li>To read more about Sass:<a href="http://sass-lang.com/guide">Sass Documentation</a></li>
+<li>actual.should == expected</li>
+<li>actual.should eq(expected)</li>
+<li>actual.should eql(expected)</li>
+<li>actual.should equal(expected)</li>
 </ul>
 
-<h2>Views</h2>
+<h3>2. Comparison</h3>
 
-<h3>HAML</h3>
+<p>actual should.be &gt; expected</p>
 
-<p>We are also using Haml instead of ERB. Haml appears to be more succint because it uses indentation instead of closing tags</p>
+<h3>3. Types of Classes</h3>
+
+<p>test whether the actual is an instance of a class</p>
+
+<h3>4. Truthiness and Existentialism</h3>
+
+<p>tests whether the actual is truthy(not nil or false)</p>
+
+<h3>5. Expecting errors</h3>
+
+<h3>6. Expecting Throws</h3>
+
+<p>Expecting methods to throw a symbol
+* Predicate Matchers - passes if method returns a truthy result</p>
+
+<h3>7. Collection Membership</h3>
+
+<p>testing whether an array is a subset of the expected</p>
+
+<h3>8. Ranges (only for Ruby 1.9)</h3>
+
+<p>Also matchers worth mentioning:</p>
 
 <ul>
-<li><p>To read more about Haml: <a href="http://haml.info/docs.html">Haml Documentation</a></p></li>
-<li><p>To read more about the asset pipeline: <a href="http://guides.rubyonrails.org/asset_pipeline.html#coding-links-to-assets">Rails Asset Pipeline</a></p></li>
+<li>Have(n)items matcher</li>
+<li>Operator matchers</li>
+<li>Respond_to matchers - does this object respond to a certain method</li>
+<li>Satisfy matcher - very flexible, you can pass it a block to see if it will evaluate to true</li>
+<li>Specify a<em>kind</em>of matcher</li>
+<li>Yield matchers - allow you to work with blocks</li>
+<li>End<em>with, start</em>with</li>
+<li>Cover Matchers</li>
 </ul>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/02/07/course3-frontpage/">
+        Build Robust & Production Quality Applications - Lesson 1: Front Page
+      </a>
+    </h1>
+
+    <span class="post-date">07 Feb 2015</span>
+
+    <h2>Front Page</h2>
+
+<p>Front Pages or Root/home pages are typically static images. Those
+are rendered using the pages#controller. In this case however, we do not need the
+pages#front action defined in the controller bc it doesnt do anything.
+For now, we can just have the empty controller bc due rails conventions, Rails will just render
+the view of the same name if the action is not present in the controller.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#pages_controller.rb</span>
+<span class="k">class</span> <span class="nc">PagesController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="k">def</span> <span class="nf">front</span>
+    <span class="n">redirect_to</span> <span class="n">home_path</span> <span class="k">if</span> <span class="n">current_user</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
 
   </div>
   

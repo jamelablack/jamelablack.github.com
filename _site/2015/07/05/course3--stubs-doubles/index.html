@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Build Robust & Production Quality Applications - Lesson 8: Fully Integrated API Tests &middot; grit| commit
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/public/css/poole.css">
+  <link rel="stylesheet" href="/public/css/syntax.css">
+  <link rel="stylesheet" href="/public/css/hyde.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,400italic,700|Abril+Fatface">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png">
+                                 <link rel="shortcut icon" href="/public/favicon.ico">
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+</head>
+
+
+  <body class="theme-base-0c">
+
+    <div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="/">
+          <span style="color: #FF6347; font: Verdana">grit| commit</span>
+        </a>
+      </h1>
+      <p class="lead">daily learnings as a ruby dev</p>
+    </div>
+
+
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item" href="/">Home</a>
+
+      
+
+      
+      
+        
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href=""></a>
+
+            <a class="sidebar-nav-item" href="/about/">About</a>
+
+          
+        
+      
+        
+          
+            <a class="sidebar-nav-item" href=""></a>
+
+            <a class="sidebar-nav-item" href="/archive/">Archive</a>
+
+          
+        
+      
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+        
+          
+        
+      
+
+    <p>&copy; 2015. All rights reserved.</p>
+  </div>
+</div>
+
+
+    <div class="content container">
+      <div class="post">
+  <h1 class="post-title">Build Robust & Production Quality Applications - Lesson 8: Fully Integrated API Tests</h1>
+  <span class="post-date">05 Jul 2015</span>
+  <h2>Stub Methods</h2>
+
+<p>Typically, you want to use the stub method in three scenarios:
+1. You want to use the stub method when actually calling a method is expensive in terms of time. So you stub the test double to be in state that you desire.</p>
+
+<ol>
+<li><p>The action or interface that you&#39;re testing is already thoroughly tested elsewhere. For example, there is no need to fully test the Stripe API&#39;s ablility to charge credi card and return token, becasue this funcitionality is already in the StripeWrapper::Charge test - therefore stubbing would be perfectly fine.</p></li>
+<li><p>You want to mimick some behavior you haven&#39;t fully developed yet.</p></li>
+</ol>
+
+<p>Doubles create a fake object that stands in the place of a real object and stubs call a desried fictitious method on that double and gives it a desired value as a result of calling that fictitous method.</p>
+
+<p>We are intersted in doubles and stubs in this case because we want to avoid actually submtting a an charge and hitting Stripe&#39;s server.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#spec/controllers/payments_controller.rb</span>
+<span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
+
+<span class="n">describe</span> <span class="no">PaymentsController</span> <span class="k">do</span>
+  <span class="n">describe</span> <span class="s2">&quot;POST create&quot;</span> <span class="k">do</span>
+    <span class="n">context</span> <span class="s2">&quot;with a successful charge&quot;</span> <span class="k">do</span>
+      <span class="n">before</span> <span class="k">do</span>
+        <span class="n">charge</span> <span class="o">=</span> <span class="n">double</span><span class="p">(</span><span class="s1">&#39;charge&#39;</span><span class="p">)</span>
+        <span class="n">charge</span><span class="o">.</span><span class="n">stub</span><span class="p">(</span><span class="ss">:successful?</span><span class="p">)</span><span class="o">.</span><span class="n">and_return</span><span class="p">(</span><span class="kp">true</span><span class="p">)</span>
+        <span class="no">StripeWrapper</span><span class="o">::</span><span class="no">Charge</span><span class="o">.</span><span class="n">stub</span><span class="p">(</span><span class="ss">:create</span><span class="p">)</span><span class="o">.</span><span class="n">and_return</span><span class="p">(</span><span class="n">charge</span><span class="p">)</span>
+
+        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">token</span><span class="p">:</span> <span class="s1">&#39;123&#39;</span>
+      <span class="k">end</span>
+
+  <span class="n">it</span> <span class="s2">&quot;sets the flash success message&quot;</span> <span class="k">do</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">flash</span><span class="o">[</span><span class="ss">:success</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">to</span>  <span class="n">eq</span><span class="p">(</span><span class="s2">&quot;Thank you!&quot;</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="n">it</span> <span class="s2">&quot;redirects to the new payment path&quot;</span> <span class="k">do</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">response</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">redirect_to</span> <span class="n">new_payment_path</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+  <span class="n">context</span> <span class="s2">&quot;with an failed charge&quot;</span> <span class="k">do</span>
+    <span class="n">before</span> <span class="k">do</span>
+      <span class="n">charge</span> <span class="o">=</span> <span class="n">double</span><span class="p">(</span><span class="s1">&#39;charge&#39;</span><span class="p">)</span>
+      <span class="n">charge</span><span class="o">.</span><span class="n">stub</span><span class="p">(</span><span class="ss">:successful?</span><span class="p">)</span><span class="o">.</span><span class="n">and_return</span><span class="p">(</span><span class="kp">false</span><span class="p">)</span>
+      <span class="n">charge</span><span class="o">.</span><span class="n">stub</span><span class="p">(</span><span class="ss">:error_message</span><span class="p">)</span><span class="o">.</span><span class="n">and_return</span><span class="p">(</span><span class="s1">&#39;Your card was declined&#39;</span><span class="p">)</span>
+
+      <span class="no">StripeWrapper</span><span class="o">::</span><span class="no">Charge</span><span class="o">.</span><span class="n">stub</span><span class="p">(</span><span class="ss">:create</span><span class="p">)</span><span class="o">.</span><span class="n">and_return</span><span class="p">(</span><span class="n">charge</span><span class="p">)</span>
+      <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="n">token</span> <span class="p">:</span> <span class="s1">&#39;123&#39;</span>
+    <span class="k">end</span>
+
+    <span class="n">it</span> <span class="s2">&quot;sets the flash error message&quot;</span> <span class="k">do</span>
+      <span class="n">expect</span><span class="p">(</span><span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">eq</span><span class="p">(</span><span class="s1">&#39;Your card was declined&#39;</span><span class="p">)</span>
+    <span class="k">end</span>
+
+    <span class="n">it</span> <span class="s2">&quot;redirects to the new payment path&quot;</span> <span class="k">do</span>
+      <span class="n">expect</span><span class="p">(</span><span class="n">response</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">redirect_to</span> <span class="n">new_payment_path</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/controllers/payments_controller.rb</span>
+<span class="k">class</span> <span class="nc">PaymentsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+
+<span class="k">def</span> <span class="nf">create</span>
+  <span class="n">token</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:stripeToken</span><span class="o">]</span>
+  <span class="n">charge</span> <span class="o">=</span> <span class="no">StripeWrapper</span><span class="o">::</span><span class="no">Charge</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">amount</span><span class="p">:</span> <span class="mi">3000</span><span class="p">,</span> <span class="ss">card</span><span class="p">:</span> <span class="n">token</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">charge</span><span class="o">.</span><span class="n">successful?</span>
+      <span class="n">flash</span><span class="o">[</span><span class="ss">:succes</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Thank you!&quot;</span>
+      <span class="n">redirect_to</span> <span class="n">new_payment_path</span>
+  <span class="k">else</span>
+    <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="n">charge</span><span class="o">.</span><span class="n">error_message</span>
+    <span class="n">redirect_to</span> <span class="n">new_payment_path</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>Check out the Test Doubles <a href="https://www.relishapp.com/rspec/rspec-mocks/v/3-3/docs/basics/test-doubles">docs</a> for more info. For more info on Method Stubs, with an older version on Rspec, checkout these <a href="http://www.relishapp.com/rspec/rspec-mocks/v/2-13/docs/method-stubs">docs</a> also.</p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2015/07/18/course3-testing-talks/">
+            Build Robust & Production Quality Applications - Lesson 8: - Mocks & Stubs
+            <small>18 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/07/17/course3-mocks-and-stubs/">
+            Build Robust & Production Quality Applications - Lesson 8: - Mocks & Stubs
+            <small>17 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2015/07/16/course3-mocking/">
+            Build Robust & Production Quality Applications - Lesson 8: - Mocking
+            <small>16 Jul 2015</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+    </div>
+
+  </body>
+</html>

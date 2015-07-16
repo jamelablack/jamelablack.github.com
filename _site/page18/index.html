@@ -156,6 +156,14 @@
           
         
       
+        
+          
+        
+      
+        
+          
+        
+      
 
     <p>&copy; 2015. All rights reserved.</p>
   </div>
@@ -167,966 +175,469 @@
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2014/10/05/course2-lesson2/">
-        Rapid Prototyping with Rails: Lesson 2, part 1
+      <a href="/2014/11/03/course2-authentication/">
+        Rapid Prototyping with Rails: Lesson 3, Authentication
       </a>
     </h1>
 
-    <span class="post-date">05 Oct 2014</span>
+    <span class="post-date">03 Nov 2014</span>
 
-    <p>Items covered:
-1. Rails Forms
-2. Strong Parameters</p>
+    <h2>Steps</h2>
 
-<h2>Rails Forms</h2>
+<h3>Step 1: Create routes</h3>
 
-<p>There are 3 ways to create a form
-  1. Pure HTML
-  2. Rails Forms Helpers
-  3. Rails model-backed Forms Helpers</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#routes.rb</span>
+<span class="n">add</span> <span class="n">sessions</span><span class="c1">#new, sessions#create, sessions#destory routes</span></code></pre></div>
 
-<ol>
-<li>PURE HTML</li>
-</ol>
+<h3>Step 2: Create sessions template</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">h5</span><span class="o">&gt;</span> <span class="no">Pure</span> <span class="no">HTML</span> <span class="no">Form</span> <span class="o">&lt;</span><span class="sr">/h5&gt;</span>
-<span class="sr">  &lt;form action=&#39;/</span><span class="n">posts</span><span class="s1">&#39; method=&#39;</span><span class="no">POST</span><span class="s1">&#39;&gt;</span>
-<span class="s1">    Title &lt;input type=&#39;</span><span class="n">text</span><span class="s1">&#39; name=&#39;</span><span class="n">my_title</span><span class="s1">&#39;&gt;</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#sessions/new.html.erb</span>
+<span class="no">Add</span> <span class="n">html</span></code></pre></div>
 
-<span class="s1">    &lt;br/&gt;</span>
+<h3>Step 3: Sessions_Controller.rb</h3>
 
-<span class="s1">    &lt;input type=&#39;</span><span class="n">submit</span><span class="s1">&#39; class=&#39;</span><span class="n">btn</span> <span class="n">btn</span><span class="o">-</span><span class="n">primary</span><span class="err">&#39;</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="sr">/form&gt;</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">SessionsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="k">def</span> <span class="nf">create</span>
+  <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">username</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:username</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
+    <span class="ow">or</span>
+  <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">find_by</span><span class="p">(</span><span class="ss">username</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:username</span><span class="o">]</span><span class="p">)</span>
 
-<p><em>Rails has something called CSFP - cross site forgery protection built into it.
-It tries to prevent fake forms from submitting to your website.. without token.</em>
-This can be disabled in your application_controller.rb</p>
+<span class="no">Alternative</span> <span class="no">Flash</span> <span class="n">syntax</span>
 
-<p>In the above section, where it says</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Title</span> <span class="o">&lt;</span><span class="n">input</span> <span class="n">type</span><span class="o">=</span><span class="s1">&#39;text name=&#39;</span><span class="n">my_title</span><span class="err">&#39;</span><span class="o">&gt;</span></code></pre></div>
-
-<p>Giving the title attribute a name called &quot;my_title&quot; gives you the ability refer to it as a hash. So params typed into pry would give you:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="p">{</span><span class="s2">&quot;my_title&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;some title&quot;</span><span class="p">}</span></code></pre></div>
-
-<p>or</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">params</span><span class="o">[</span><span class="ss">:my_title</span><span class="o">]</span> <span class="n">would</span> <span class="n">give</span> <span class="n">you</span> <span class="s2">&quot;some title&quot;</span> <span class="n">returned</span></code></pre></div>
-
-<p>*Hash with indifferent access - means although the key is a string, I can refer to it as a :symbol&quot;
-So therefore, in your console, you could type:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Post</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">title</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:my_title</span><span class="o">]</span><span class="p">)</span> <span class="o">**</span><span class="no">This</span> <span class="n">is</span> <span class="n">called</span> <span class="n">mass</span> <span class="n">assignment</span><span class="o">**</span></code></pre></div>
-
-<ol>
-<li>RAILS FORMS HELPERS
-When creating pure html forms, use form helpers.</li>
-</ol>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">h4</span><span class="o">&gt;</span> <span class="no">Rails</span> <span class="no">Forms</span> <span class="no">Helpers</span> <span class="o">&lt;</span><span class="sr">/h4&gt;</span>
-<span class="sr">&lt;%= form_tag &#39;/</span><span class="n">posts</span><span class="s1">&#39; do %&gt;</span>
-<span class="s1">  &lt;%= label_tag :title, &quot;Input a title&quot; %&gt;</span>
-<span class="s1">  &lt;%= text_field_tag :title %&gt;</span>
-<span class="s1">  &lt;br/&gt;</span>
-<span class="s1">  &lt;%= submit_tag &quot;Create Post&quot;, class: &#39;</span><span class="n">btn</span> <span class="n">btn</span><span class="o">-</span><span class="n">primary</span><span class="err">&#39;</span> <span class="sx">%&gt;</span>
-<span class="sx">&lt;% end %&gt;</span></code></pre></div>
-
-<h2>Form helpers, do several things:</h2>
-
-<ol>
-<li>Automatically determines the method=&#39;POST&#39;
-B/c it is a form</li>
-<li>Security
-Provides an UTF 8 &amp; authenticity token in a hidden div that helps allows us to submit under cross site forgery protection</li>
-<li><p>Using the label_tag (helper)
-Gives more guidance to the blind. Label elements correalate with input elements and is read
-by screenreaders for the hearing impaired. <Where is says "Input a title"></p>
-
-<ol>
-<li>RAILS MODEL-BACKED FORMS</li>
-</ol></li>
-</ol>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">h4</span><span class="o">&gt;</span> <span class="no">Rails</span> <span class="n">model</span><span class="o">-</span><span class="n">backed</span> <span class="n">form</span> <span class="n">helpers</span> <span class="o">&lt;</span><span class="sr">/h4&gt;</span>
-<span class="sr">  &lt;%= form_for @post do |f| %&gt;</span>
-<span class="sr">  &lt;%= f.label :title %&gt;</span>
-<span class="sr">  &lt;%= f.text_field :title %&gt;</span>
-
-<span class="sr">  &lt;%= f.label :url %&gt;</span>
-<span class="sr">  &lt;% f.text_field :title %&gt;</span>
-<span class="sr">  &lt;br/</span><span class="o">&gt;</span>
-  <span class="o">&lt;%=</span> <span class="n">f</span><span class="o">.</span><span class="n">submit</span> <span class="s2">&quot;Create Post&quot;</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;btn btn-primary&#39;</span> <span class="sx">%&gt;</span>
-<span class="sx">&lt;% end %&gt;</span></code></pre></div>
-
-<p>You can mix and match forms and tags (from 2 and 3), if needed.</p>
-
-<h3>What is happening here:</h3>
-
-<p>The form_for is taking an object (@post). We must define @post in our controller:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">new</span>
-      <span class="vi">@post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">new</span>
-    <span class="k">end</span></code></pre></div>
-
-<h3>This gives us a few liberties:</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Post</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:post</span><span class="o">]</span><span class="p">)</span> <span class="ow">or</span> <span class="no">Post</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:post</span><span class="o">]</span><span class="p">)</span> <span class="n">is</span> <span class="n">effectively</span> <span class="n">doing</span> <span class="n">mass</span> <span class="n">assignment</span><span class="p">,</span>
-<span class="n">using</span> <span class="n">the</span> <span class="nb">hash</span> <span class="n">assigned</span> <span class="n">to</span> <span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:post</span><span class="o">]</span><span class="p">)</span></code></pre></div>
-
-<h2>Associations</h2>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">has_many</span> <span class="ss">:comments</span>
-<span class="n">has_many</span> <span class="ss">:posts</span></code></pre></div>
-
-<p>These become getters and setter bc they are virtual attributes as opposed to the
-actual column names which are actual attributes</p>
-
-<p>When you have a model-backed form, you must use fields that are virtual or actual attributes
-because your input will attempt roll up and mass assign. This will not work if the actual
-attribute does not exist.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="ss">:whatever</span> <span class="p">(</span><span class="n">yes</span><span class="p">)</span>
-  <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:whatever</span> <span class="p">(</span><span class="n">no</span><span class="p">)</span></code></pre></div>
-
-<p>However, the above can be accomplished with Rails Forms Helpers (#2) or Pure HTML,
-you can do what you want and just parse it out on the back-end.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">URL</span>
-      <span class="nb">name</span> <span class="o">=</span> <span class="p">(</span><span class="n">post</span><span class="o">[</span><span class="ss">:url</span><span class="o">]</span><span class="p">)</span> <span class="n">is</span> <span class="n">how</span> <span class="n">rails</span> <span class="n">magic</span><span class="p">,</span> <span class="n">mass</span> <span class="n">assignment</span> <span class="n">occurs</span>
-      <span class="no">In</span> <span class="n">console</span> <span class="ow">or</span> <span class="n">during</span> <span class="nb">binding</span><span class="o">.</span><span class="n">pry</span><span class="p">,</span> <span class="n">typing</span> <span class="n">params</span> <span class="n">will</span> <span class="n">list</span>
-      <span class="no">UTf8</span>
-      <span class="no">Authenticity</span> <span class="no">Token</span>
-      <span class="no">Post</span> <span class="n">attributes</span> <span class="k">in</span> <span class="nb">hash</span> <span class="n">form</span>
-      <span class="no">Commit</span>
-      <span class="no">Action</span>
-      <span class="no">Controller</span></code></pre></div>
-
-<p>Typing params[:post] is the same as post.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Strong</span> <span class="no">Parameters</span>
-<span class="k">def</span> <span class="nf">create</span>
-  <span class="n">post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:post</span><span class="o">]</span><span class="p">)</span>
-<span class="k">end</span></code></pre></div>
-
-<p>Will through an error in Rails 4 bc you don&#39;t have strong_parameters.
-They realized that the concern regarding strong parameters and security really
-didn&#39;t occur at the model layer but rather in the action based on user access,
-roles, etc.</p>
-
-<p>So no-longer a white list of attributes available for mass<em>assignment,
-attr</em>accessible :name :sex :location</p>
-
-<p>So the Rails 4 version is:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">create</span>
-  <span class="vi">@post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">post_params</span><span class="p">)</span>
-<span class="k">end</span>
-
-<span class="kp">private</span>
-<span class="k">def</span> <span class="nf">post_params</span> <span class="c1">#because we want to reuse this, so lets create a post_params method</span>
-  <span class="n">params</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="ss">:post</span><span class="p">)</span><span class="o">.</span><span class="n">permit</span><span class="p">(</span><span class="ss">:title</span><span class="p">,</span> <span class="ss">:url</span><span class="p">)</span>
-<span class="k">end</span></code></pre></div>
-
-<p>OR you can assign strong parameters based roles</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">post_params</span>
-  <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">admin?</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="ss">:post</span><span class="p">)</span><span class="o">.</span><span class="n">permit!</span> <span class="c1">#permit everything</span>
-
-  <span class="k">else</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="ss">:post</span><span class="p">)</span><span class="o">.</span><span class="n">permit</span><span class="p">(</span><span class="ss">:title</span><span class="p">,</span> <span class="ss">:url</span><span class="p">)</span> <span class="c1">#only permit title and url</span>
+  <span class="n">flash</span><span class="o">.</span><span class="n">now</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;There is something wrong with your username or password.&quot;</span>
+  <span class="n">render</span> <span class="ss">:new</span>
   <span class="k">end</span>
 <span class="k">end</span></code></pre></div>
 
-<p>If in the future, you add other input fields but do not update your strong params, it will just wipe away
-your entry attempt, it will not throw an error as to let hackers know what ways to pass the security restriction</p>
+<h3>Step 4: Helpers</h3>
 
-<p>So Rails 3 is attr<em>accessible :title (whitelist) and Rails 4 is strong</em>params in controller action.</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#application_helper.rb</span>
+  <span class="mi">1</span><span class="o">.</span> <span class="n">create</span> <span class="n">current_user</span> <span class="ow">and</span> <span class="n">logged_in?</span> <span class="nb">methods</span>
 
-<p>Now that you have understood post params, next memorize the following:</p>
+<span class="o">*</span> <span class="ss">Memoization</span><span class="p">:</span> <span class="n">allows</span> <span class="n">you</span> <span class="n">to</span> <span class="n">only</span> <span class="n">hit</span> <span class="n">the</span> <span class="n">database</span> <span class="n">once</span> <span class="k">when</span> <span class="n">being</span> <span class="n">called</span> <span class="n">multiple</span> <span class="n">times</span> <span class="n">on</span> <span class="n">a</span> <span class="n">template</span>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">create</span>
+  <span class="mi">2</span><span class="o">.</span> <span class="n">add</span> <span class="n">helper_method</span> <span class="n">syntax</span> <span class="n">to</span> <span class="n">make</span> <span class="n">accessible</span> <span class="k">in</span> <span class="n">views</span></code></pre></div>
 
-  <span class="vi">@post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">post_params</span><span class="p">)</span>
+<h3>Step 5. _navigation.html.erb</h3>
 
-  <span class="k">if</span> <span class="vi">@post</span><span class="o">.</span><span class="n">save</span>
-    <span class="n">flash</span><span class="o">[</span><span class="ss">:notice</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Your post was created.&quot;</span>
-    <span class="n">redirect_to</span> <span class="n">posts_path</span>
-  <span class="k">else</span>
-    <span class="n">render</span> <span class="s1">&#39;new&#39;</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
+<p>Two ways to protect the fuctionality of your application for non-logged in users:
+1. Links on User Interface (using &#39;if logged<em>in? method&#39;)
+2. Urls/Controller actions (using before</em>action)</p>
+
+<p>We want to keep those who aren&#39;t logged in from creating a post.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="sx">% if </span><span class="n">logged_in?</span> <span class="sx">%&gt;</span>
+<span class="sx">&lt;div class=&#39;nav item&#39;&gt;</span>
+  <span class="o">&lt;%=</span> <span class="n">link_to</span> <span class="s2">&quot;New Post&quot;</span><span class="p">,</span> <span class="n">new_post_path</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s1">&#39;btn btn-success btn-small&#39;</span> <span class="sx">%&gt;</span>
+<span class="sx">&lt;/div&gt;</span>
+<span class="o">&lt;</span><span class="sx">% end </span><span class="o">%&gt;</span></code></pre></div>
+
+<h3>Step 6. Add before action to prevent navigation to certain links</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">posts_controller</span><span class="o">.</span><span class="n">rb</span>
+  <span class="n">add</span> <span class="n">before_action</span> <span class="ss">:require_user</span><span class="p">,</span> <span class="ss">except</span><span class="p">:</span> <span class="o">[</span><span class="ss">:index</span><span class="p">,</span> <span class="ss">:show</span><span class="o">]</span></code></pre></div>
+
+<h3>Step 7. require_user method</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Create</span> <span class="n">require_user</span> <span class="nb">method</span> <span class="k">in</span> <span class="n">application_controller</span><span class="o">.</span><span class="n">rb</span></code></pre></div>
+
+<h3>Step 8. Add current_user</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Remove</span> <span class="no">User</span><span class="o">.</span><span class="n">first</span> <span class="ow">and</span> <span class="n">add</span> <span class="n">current_user</span> <span class="k">for</span> <span class="n">post</span><span class="o">.</span><span class="n">creator</span> <span class="ow">and</span> <span class="n">comment</span><span class="o">.</span><span class="n">creator</span></code></pre></div>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2014/10/01/course2-lesson1/">
-        Rapid Prototyping with Rails: Lesson 1
+      <a href="/2014/11/01/course2-features/">
+        Rapid Prototyping with Rails: Lesson 3, Feature Building
       </a>
     </h1>
 
-    <span class="post-date">01 Oct 2014</span>
+    <span class="post-date">01 Nov 2014</span>
 
-    <h1>Items covered:</h1>
-
-<ol>
-<li>Bundle Install/Bundle Exec</li>
-<li>Creating your Rails App</li>
-<li>Folder Directory</li>
-<li>Rake Routes</li>
-<li>Relational Databases</li>
-</ol>
-
-<h2>Bundle Install</h2>
-
-<p>Before you couldn&#39;t have multiple versions of gems installed on your machine when
-switching b/w projects.</p>
-
-<p>Bundler creates a sandbox in your application where the proper versions of your gems
-are stored.</p>
-
-<h3>Bundle exec</h3>
-
-<p>does the samething and is used when your system level rake (rake db:migrate) for example
-is not compatible with the current settings.
-Therefore you have to use bundle exec rake db:migrate or just bundle exec.</p>
-
-<p>Heroku also uses Bundler.</p>
-
-<h2>Creating your app:</h2>
-
-<p>Files you should always look at:</p>
-
-<h3>1. database.yml</h3>
-
-<p>Tells the application how to connect to the database
-*In development - we use sqlite3
-*In production - we use postgres (although in this course Heroku takes care it for us)</p>
-
-<p>For sqlite - your database is in your code base and its one file, unlike others
-where is an application and usually your database is hosted somewhere:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">production</span>
-        <span class="ss">adapter</span><span class="p">:</span> <span class="n">mysql</span>
-        <span class="ss">database</span><span class="p">:</span> <span class="n">myapp_development</span>
-        <span class="ss">host</span><span class="p">:</span> <span class="n">localhost</span>
-        <span class="ss">username</span><span class="p">:</span>
-        <span class="ss">password</span><span class="p">:</span></code></pre></div>
-
-<p>You will want to mimick your local enviornment as much as possible to your production
-enviornment in order to catch bugs</p>
-
-<h2>2. Gemfile</h2>
-
-<h3>3. Routes File</h3>
-
-<p>How the request initally get&#39;s routed. The blueprint of your application ad its
-capabilities.</p>
-
-<h2>Folder Directory</h2>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">app</span> <span class="o">-</span> <span class="n">where</span> <span class="n">you</span> <span class="n">spend</span> <span class="n">most</span> <span class="n">time</span>
-  <span class="n">assets</span> <span class="o">-</span> <span class="n">where</span> <span class="n">you</span> <span class="n">put</span> <span class="n">all</span> <span class="n">static</span> <span class="n">files</span><span class="p">,</span> <span class="n">images</span><span class="p">,</span> <span class="n">etc</span><span class="o">.</span>
-  <span class="n">controllers</span>
-  <span class="n">mailers</span> <span class="o">-</span> <span class="n">outbound</span> <span class="n">mail</span><span class="o">.</span> <span class="no">Not</span> <span class="n">good</span> <span class="n">to</span> <span class="n">use</span> <span class="n">because</span> <span class="n">you</span> <span class="n">can</span> <span class="n">easily</span> <span class="n">get</span> <span class="n">flagged</span> <span class="n">as</span> <span class="n">spam</span>
-   <span class="p">(</span><span class="n">use</span> <span class="n">a</span> <span class="n">transactional</span> <span class="n">email</span> <span class="n">provider</span> <span class="p">(</span><span class="n">stmp</span> <span class="n">mailers</span><span class="p">)</span> <span class="n">hosts</span> <span class="n">such</span> <span class="n">as</span> <span class="n">mailgun</span><span class="p">,</span> <span class="n">postmark</span><span class="p">,</span> <span class="n">etc</span><span class="o">.</span> <span class="p">)</span>
-   <span class="n">models</span>
-   <span class="n">views</span> <span class="o">-</span> <span class="n">where</span> <span class="n">our</span> <span class="n">erb</span> <span class="n">goes</span>
-<span class="n">bin</span> <span class="o">-</span> <span class="n">where</span> <span class="n">your</span> <span class="n">executable</span> <span class="n">code</span> <span class="n">goes</span> <span class="o">-</span> <span class="n">we</span> <span class="n">never</span> <span class="n">touch</span> <span class="n">this</span>
-<span class="n">application</span><span class="o">.</span><span class="n">rb</span> <span class="o">-</span> <span class="n">sets</span> <span class="n">application</span> <span class="n">defaults</span> <span class="n">such</span> <span class="n">as</span> <span class="n">timezone</span><span class="p">,</span> <span class="nb">load</span> <span class="n">path</span>
-<span class="n">enviornment</span> <span class="n">folder</span> <span class="o">-</span> <span class="n">configurations</span> <span class="k">for</span> <span class="n">development</span> <span class="ow">and</span> <span class="n">production</span><span class="p">,</span> <span class="ow">and</span> <span class="n">testing</span><span class="o">.</span>
-                  <span class="o">-</span> <span class="n">you</span> <span class="n">can</span> <span class="n">also</span> <span class="n">create</span> <span class="n">custom</span> <span class="n">enviornments</span> <span class="o">-</span> <span class="n">such</span> <span class="no">QA</span><span class="p">,</span> <span class="n">intergration</span> <span class="ow">or</span> <span class="n">staging</span>
-<span class="n">initializers</span> <span class="n">folder</span> <span class="o">-</span> <span class="n">where</span> <span class="n">you</span> <span class="n">files</span> <span class="n">that</span> <span class="n">you</span> <span class="n">want</span> <span class="n">to</span> <span class="nb">load</span> <span class="k">when</span> <span class="n">your</span> <span class="n">application</span>
-                    <span class="n">is</span> <span class="n">initialized</span>
-<span class="no">Config</span> <span class="n">folder</span>
-  <span class="n">locales</span> <span class="o">-</span> <span class="n">yml</span> <span class="n">files</span> <span class="o">-</span> <span class="n">is</span> <span class="n">a</span> <span class="n">way</span> <span class="n">to</span> <span class="n">internationalize</span> <span class="n">your</span> <span class="n">app</span><span class="o">.</span> <span class="no">Is</span> <span class="n">comprised</span> <span class="n">of</span> <span class="n">comlicated</span> <span class="n">hashes</span>
-        <span class="ow">and</span> <span class="n">you</span> <span class="n">no</span> <span class="n">longer</span> <span class="n">write</span> <span class="n">using</span> <span class="n">strings</span><span class="o">.</span> <span class="no">Extremely</span> <span class="n">painful</span> <span class="n">to</span> <span class="n">manage</span> <span class="n">files</span>
-<span class="no">Lib</span> <span class="o">-</span> <span class="n">you</span> <span class="n">can</span> <span class="n">also</span> <span class="n">put</span> <span class="n">assets</span> <span class="k">in</span> <span class="n">there</span>
-<span class="no">Tasks</span> <span class="o">-</span> <span class="n">you</span> <span class="n">can</span> <span class="n">place</span> <span class="n">rake</span> <span class="n">tasks</span> <span class="k">in</span> <span class="n">here</span>
-<span class="n">log</span> <span class="o">-</span> <span class="n">stores</span> <span class="n">all</span> <span class="n">terminal</span> <span class="n">logs</span> <span class="n">from</span> <span class="n">your</span> <span class="n">application</span>
-<span class="kp">public</span> <span class="o">-</span> <span class="n">where</span> <span class="n">you</span> <span class="n">store</span> <span class="n">your</span> <span class="n">error</span> <span class="n">pages</span>
-      <span class="o">-</span> <span class="n">robosts</span> <span class="o">-</span> <span class="n">tell</span> <span class="n">search</span> <span class="n">engines</span> <span class="n">where</span> <span class="n">to</span> <span class="n">go</span> <span class="n">within</span> <span class="n">your</span> <span class="n">application</span>
-<span class="no">Vendor</span> <span class="o">-</span> <span class="n">a</span> <span class="n">relic</span> <span class="n">from</span> <span class="n">the</span> <span class="n">past</span>
-<span class="o">.</span><span class="n">gitignore</span> <span class="o">-</span> <span class="n">tells</span> <span class="n">git</span> <span class="n">what</span> <span class="n">files</span> <span class="n">to</span> <span class="n">ignore</span> <span class="k">when</span> <span class="n">committing</span><span class="o">.</span> <span class="p">(</span><span class="o">.</span><span class="n">files</span> <span class="n">are</span> <span class="n">hidden</span> <span class="n">files</span><span class="p">)</span>
-<span class="no">Readme</span> <span class="o">-</span> <span class="n">is</span> <span class="n">what</span> <span class="n">is</span> <span class="n">dispayed</span> <span class="k">when</span> <span class="n">you</span> <span class="n">push</span> <span class="n">your</span> <span class="n">app</span> <span class="n">to</span> <span class="no">Github</span><span class="o">.</span></code></pre></div>
-
-<h2>Rake Routes</h2>
-
-<p>shows all possible endpoints in your application
-You can also view your routes in your browser by going to localhost:3000/rails/info/routes
-in Rails 4 only or you can use the terminal: rake routes | grep _______</p>
-
-<h2>Relational Databases:</h2>
-
-<p>A series of spreadsheets.</p>
-
-<p>To connect these tables in order to link infromation:
-1. primary<em>key in rails is the &quot;id&quot;
-2. foreign</em>key is the creation of a &quot;user<em>id&quot; column with the primary</em>key in on
-other tables to connect to the main table.</p>
-
-<h3>There are 2 Views</h3>
+    <h2>Review of Building Out a Feature</h2>
 
 <ol>
-<li>Data View: very much like Excel</li>
-<li>Schema View: lists the column name and the data type allowed for that column.</li>
-</ol>
-
-<h3>1:M</h3>
-
-<p>the Foreign_key is always on the many side of a one to many relationship</p>
-
-<h3>ORMs</h3>
-
-<p>ActiveRecord is an ORM (Object Relational Mapper), a pattern created by Martin Fowler
-which describes how to abstract data from a database into code. Prior to this, using
-PHP, you would write sql code directly in the views.</p>
-
-<p>In console, using &quot;= _&quot; is equivalent to your last returned item.</p>
-
-<p>Rails is good for simple, applications with quick builds that aren&#39;t for existing
-application is analytics.</p>
-
-<p>Setting up 1:M b/w posts and users (Posts were previously created)</p>
-
-<ol>
-<li><p>Create user table
-Terminal: rails g migration create_users</p></li>
-<li><p>Create Users model
-Create model - singular, snack_case of Class name</p></li>
-<li><p>Need to add foreign key to the many side (the Posts table)
-Terminal: rails g migration add<em>user</em>id<em>to</em>posts</p></li>
-</ol>
-
-<p>Inside migration file:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">change</span>
-    <span class="n">add_column</span> <span class="ss">:table_name</span> <span class="ss">:foreign_key</span> <span class="p">(</span><span class="n">which</span> <span class="n">is</span> <span class="n">normally</span> <span class="n">the</span> <span class="n">resource</span><span class="o">+</span><span class="n">primary_key</span><span class="p">),</span> <span class="ss">:datatype</span> <span class="p">(</span><span class="n">always</span> <span class="n">will</span> <span class="n">be</span> <span class="n">integer</span><span class="p">)</span>
-
-    <span class="n">add_column</span> <span class="ss">:posts</span><span class="p">,</span> <span class="ss">:user_id</span><span class="p">,</span> <span class="ss">:integer</span>
-  <span class="k">end</span></code></pre></div>
-
-<ol>
-<li>Write in has<em>many and belongs</em>to on the models</li>
-</ol>
-
-<h3>Virtual Attribute</h3>
-
-<p>attributes that are not columns, are given through associations</p>
-
-<h2>Mass Assignment</h2>
-
-<p>The ability create/update AR obj through a hash where the keys match the attirbute
-or virtual attribute.
-example:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Post</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">title</span><span class="p">:</span> <span class="s2">&quot;some title&quot;</span><span class="p">,</span> <span class="ss">url</span><span class="p">:</span> <span class="s2">&quot;some url&quot;</span><span class="p">,</span> <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">first</span><span class="p">)</span></code></pre></div>
-
-<h3>Post.new &amp; Post.create</h3>
-
-<p>Both can be used for mass assignment. Post.new is in memory (no user id assigned)
-while Post.create will update to the database immediately.</p>
-
-<p>Post.build and Post.new are the same.</p>
-
-<h3>When in the console:</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">You</span> <span class="n">can</span> <span class="n">run</span> <span class="n">the</span> <span class="n">following</span> <span class="ss">commands</span><span class="p">:</span>
-  <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">first</span>
-  <span class="n">post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">first</span>
-  <span class="n">post</span><span class="o">.</span><span class="n">user</span> <span class="o">****</span> <span class="n">virtual</span> <span class="n">attribute</span>
-  <span class="n">post</span><span class="o">.</span><span class="n">title</span>
-  <span class="n">post</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">user</span> <span class="o">***</span><span class="no">NO</span><span class="p">,</span> <span class="n">you</span> <span class="n">can</span> <span class="n">only</span> <span class="n">set</span> <span class="n">objects</span> <span class="n">to</span> <span class="n">object</span> <span class="ow">and</span> <span class="n">integers</span> <span class="n">to</span> <span class="n">integers</span>
-  <span class="n">post</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span></code></pre></div>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/09/25/blackjack-oo-game/">
-        Intro to Ruby & Web Dev: Blackjack OO Game
-      </a>
-    </h1>
-
-    <span class="post-date">25 Sep 2014</span>
-
-    <h2>Object Oriented Blackjack Game</h2>
-
-<ol>
-<li>Abstraction - the interaction of objects (keeping track of state and behaviors</li>
-<li>Encapsulation - encapsulates certain behaviors</li>
-</ol>
-
-<h3>Steps</h3>
-
-<ol>
-<li>Look at the Requirements</li>
-<li>Pick nouns</li>
-<li>Think off all actions you want the object to perform and write down method calls (i.e. player.deal) as though the methods already exists.</li>
-<li>Do this for each class.</li>
-</ol>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Card</span>
-  <span class="kp">attr_accessor</span> <span class="ss">:suit</span><span class="p">,</span> <span class="ss">:face_value</span>
-
-  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">fv</span><span class="p">)</span>
-    <span class="vi">@suit</span> <span class="o">=</span> <span class="n">s</span>
-    <span class="vi">@face_value</span> <span class="o">=</span> <span class="n">fv</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">pretty_output</span>
-    <span class="s2">&quot;The </span><span class="si">#{</span><span class="n">face_value</span><span class="si">}</span><span class="s2"> of </span><span class="si">#{</span><span class="n">find_suit</span><span class="si">}</span><span class="s2">&quot;</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">to_s</span>
-    <span class="n">pretty_output</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">find_suit</span>
-    <span class="n">ret_val</span> <span class="o">=</span> <span class="k">case</span> <span class="n">suit</span>
-                <span class="k">when</span> <span class="s1">&#39;H&#39;</span> <span class="k">then</span> <span class="s1">&#39;Hearts&#39;</span>
-                <span class="k">when</span> <span class="s1">&#39;D&#39;</span> <span class="k">then</span> <span class="s1">&#39;Diamonds&#39;</span>
-                <span class="k">when</span> <span class="s1">&#39;S&#39;</span> <span class="k">then</span> <span class="s1">&#39;Spades&#39;</span>
-                <span class="k">when</span> <span class="s1">&#39;C&#39;</span> <span class="k">then</span> <span class="s1">&#39;Clubs&#39;</span>
-              <span class="k">end</span>
-    <span class="n">ret_val</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-
-<span class="k">class</span> <span class="nc">Deck</span>
-  <span class="kp">attr_accessor</span> <span class="ss">:cards</span>
-
-  <span class="k">def</span> <span class="nf">initialize</span>
-    <span class="vi">@cards</span> <span class="o">=</span> <span class="o">[]</span>
-    <span class="o">[</span><span class="s1">&#39;H&#39;</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">suit</span><span class="o">|</span>
-      <span class="o">[</span><span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">,</span> <span class="s1">&#39;6&#39;</span><span class="p">,</span> <span class="s1">&#39;7&#39;</span><span class="p">,</span> <span class="s1">&#39;8&#39;</span><span class="p">,</span> <span class="s1">&#39;9&#39;</span><span class="p">,</span> <span class="s1">&#39;10&#39;</span><span class="p">,</span> <span class="s1">&#39;J&#39;</span><span class="p">,</span> <span class="s1">&#39;Q&#39;</span><span class="p">,</span> <span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">face_value</span><span class="o">|</span>
-        <span class="vi">@cards</span> <span class="o">&lt;&lt;</span> <span class="no">Card</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">suit</span><span class="p">,</span> <span class="n">face_value</span><span class="p">)</span>
-      <span class="k">end</span>
-    <span class="k">end</span>
-    <span class="n">scramble!</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">scramble!</span>
-    <span class="n">cards</span><span class="o">.</span><span class="n">shuffle!</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">deal_one</span>
-    <span class="n">cards</span><span class="o">.</span><span class="n">pop</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">size</span>
-    <span class="n">cards</span><span class="o">.</span><span class="n">size</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-
-<span class="k">module</span> <span class="nn">Hand</span>
-  <span class="k">def</span> <span class="nf">show_hand</span>
-    <span class="nb">puts</span> <span class="s2">&quot;---- </span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2">&#39;s Hand ----&quot;</span>
-    <span class="n">cards</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span><span class="o">|</span><span class="n">card</span><span class="o">|</span>
-      <span class="nb">puts</span> <span class="s2">&quot;=&gt; </span><span class="si">#{</span><span class="n">card</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="k">end</span>
-    <span class="nb">puts</span> <span class="s2">&quot;=&gt; Total: </span><span class="si">#{</span><span class="n">total</span><span class="si">}</span><span class="s2">&quot;</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">total</span>
-    <span class="n">face_values</span> <span class="o">=</span> <span class="n">cards</span><span class="o">.</span><span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="n">card</span><span class="o">|</span> <span class="n">card</span><span class="o">.</span><span class="n">face_value</span> <span class="p">}</span>
-
-    <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">face_values</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">val</span><span class="o">|</span>
-      <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="s2">&quot;A&quot;</span>
-        <span class="n">total</span> <span class="o">+=</span> <span class="mi">11</span>
-      <span class="k">else</span>
-        <span class="n">total</span> <span class="o">+=</span> <span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">to_i</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">?</span> <span class="mi">10</span> <span class="p">:</span> <span class="n">val</span><span class="o">.</span><span class="n">to_i</span><span class="p">)</span>
-      <span class="k">end</span>
-    <span class="k">end</span>
-
-    <span class="c1">#correct for Aces</span>
-    <span class="n">face_values</span><span class="o">.</span><span class="n">select</span><span class="p">{</span><span class="o">|</span><span class="n">val</span><span class="o">|</span> <span class="n">val</span> <span class="o">==</span> <span class="s2">&quot;A&quot;</span><span class="p">}</span><span class="o">.</span><span class="n">count</span><span class="o">.</span><span class="n">times</span> <span class="k">do</span>
-      <span class="k">break</span> <span class="k">if</span> <span class="n">total</span> <span class="o">&lt;=</span> <span class="mi">21</span>
-      <span class="n">total</span> <span class="o">-=</span> <span class="mi">10</span>
-    <span class="k">end</span>
-
-    <span class="n">total</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">add_card</span><span class="p">(</span><span class="n">new_card</span><span class="p">)</span>
-    <span class="n">cards</span> <span class="o">&lt;&lt;</span> <span class="n">new_card</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">is_busted?</span>
-    <span class="n">total</span> <span class="o">&gt;</span> <span class="no">Blackjack</span><span class="o">::</span><span class="no">BLACKJACK_AMOUNT</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-
-<span class="k">class</span> <span class="nc">Player</span>
-  <span class="kp">include</span> <span class="no">Hand</span>
-
-  <span class="kp">attr_accessor</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:cards</span>
-
-  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-    <span class="vi">@name</span> <span class="o">=</span> <span class="n">n</span>
-    <span class="vi">@cards</span> <span class="o">=</span> <span class="o">[]</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">show_flop</span>
-    <span class="n">show_hand</span>
-  <span class="k">end</span>
-
-<span class="k">end</span>
-
-<span class="k">class</span> <span class="nc">Dealer</span>
-  <span class="kp">include</span> <span class="no">Hand</span>
-
-  <span class="kp">attr_accessor</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:cards</span>
-
-  <span class="k">def</span> <span class="nf">initialize</span>
-    <span class="vi">@name</span> <span class="o">=</span> <span class="s2">&quot;Dealer&quot;</span>
-    <span class="vi">@cards</span> <span class="o">=</span> <span class="o">[]</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">show_flop</span>
-    <span class="nb">puts</span> <span class="s2">&quot;---- Dealer&#39;s Hand ----&quot;</span>
-    <span class="nb">puts</span> <span class="s2">&quot;=&gt; First card is hidden&quot;</span>
-    <span class="nb">puts</span> <span class="s2">&quot;=&gt; Second card is </span><span class="si">#{</span><span class="n">cards</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-
-<span class="k">class</span> <span class="nc">Blackjack</span>
-  <span class="kp">attr_accessor</span> <span class="ss">:deck</span><span class="p">,</span> <span class="ss">:player</span><span class="p">,</span> <span class="ss">:dealer</span>
-
-  <span class="no">BLACKJACK_AMOUNT</span> <span class="o">=</span> <span class="mi">21</span>
-  <span class="no">DEALER_HIT_MIN</span> <span class="o">=</span> <span class="mi">17</span>
-
-  <span class="k">def</span> <span class="nf">initialize</span>
-    <span class="vi">@deck</span> <span class="o">=</span> <span class="no">Deck</span><span class="o">.</span><span class="n">new</span>
-    <span class="vi">@player</span> <span class="o">=</span> <span class="no">Player</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;Player1&quot;</span><span class="p">)</span>
-    <span class="vi">@dealer</span> <span class="o">=</span> <span class="no">Dealer</span><span class="o">.</span><span class="n">new</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">set_player_name</span>
-    <span class="nb">puts</span> <span class="s2">&quot;What&#39;s your name?&quot;</span>
-    <span class="n">player</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="nb">gets</span><span class="o">.</span><span class="n">chomp</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">deal_cards</span>
-    <span class="n">player</span><span class="o">.</span><span class="n">add_card</span><span class="p">(</span><span class="n">deck</span><span class="o">.</span><span class="n">deal_one</span><span class="p">)</span>
-    <span class="n">dealer</span><span class="o">.</span><span class="n">add_card</span><span class="p">(</span><span class="n">deck</span><span class="o">.</span><span class="n">deal_one</span><span class="p">)</span>
-    <span class="n">player</span><span class="o">.</span><span class="n">add_card</span><span class="p">(</span><span class="n">deck</span><span class="o">.</span><span class="n">deal_one</span><span class="p">)</span>
-    <span class="n">dealer</span><span class="o">.</span><span class="n">add_card</span><span class="p">(</span><span class="n">deck</span><span class="o">.</span><span class="n">deal_one</span><span class="p">)</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">show_flop</span>
-    <span class="n">player</span><span class="o">.</span><span class="n">show_flop</span>
-    <span class="n">dealer</span><span class="o">.</span><span class="n">show_flop</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">blackjack_or_bust?</span><span class="p">(</span><span class="n">player_or_dealer</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">player_or_dealer</span><span class="o">.</span><span class="n">total</span> <span class="o">==</span> <span class="no">BLACKJACK_AMOUNT</span>
-      <span class="k">if</span> <span class="n">player_or_dealer</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Dealer</span><span class="p">)</span>
-        <span class="nb">puts</span> <span class="s2">&quot;Sorry, dealer hit blackjack. </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> loses.&quot;</span>
-      <span class="k">else</span>
-        <span class="nb">puts</span> <span class="s2">&quot;Congratulations, you hit blackjack! </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> win!&quot;</span>
-      <span class="k">end</span>
-      <span class="n">play_again?</span>
-    <span class="k">elsif</span> <span class="n">player_or_dealer</span><span class="o">.</span><span class="n">is_busted?</span>
-      <span class="k">if</span> <span class="n">player_or_dealer</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Dealer</span><span class="p">)</span>
-        <span class="nb">puts</span> <span class="s2">&quot;Congratulations, dealer busted. </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> win!&quot;</span>
-      <span class="k">else</span>
-        <span class="nb">puts</span> <span class="s2">&quot;Sorry, </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> busted. </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> loses.&quot;</span>
-      <span class="k">end</span>
-      <span class="n">play_again?</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">player_turn</span>
-    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;s turn.&quot;</span>
-
-    <span class="n">blackjack_or_bust?</span><span class="p">(</span><span class="n">player</span><span class="p">)</span>
-
-    <span class="k">while</span> <span class="o">!</span><span class="n">player</span><span class="o">.</span><span class="n">is_busted?</span>
-      <span class="nb">puts</span> <span class="s2">&quot;What would you like to do? 1) hit 2) stay&quot;</span>
-      <span class="n">response</span> <span class="o">=</span> <span class="nb">gets</span><span class="o">.</span><span class="n">chomp</span>
-
-      <span class="k">if</span> <span class="o">![</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="o">].</span><span class="n">include?</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
-        <span class="nb">puts</span> <span class="s2">&quot;Error: you must enter 1 or 2&quot;</span>
-        <span class="k">next</span>
-      <span class="k">end</span>
-
-      <span class="k">if</span> <span class="n">response</span> <span class="o">==</span> <span class="s1">&#39;2&#39;</span>
-        <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> chose to stay.&quot;</span>
-        <span class="k">break</span>
-      <span class="k">end</span>
-
-      <span class="c1">#hit</span>
-      <span class="n">new_card</span> <span class="o">=</span> <span class="n">deck</span><span class="o">.</span><span class="n">deal_one</span>
-      <span class="nb">puts</span> <span class="s2">&quot;Dealing card to </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="n">new_card</span><span class="si">}</span><span class="s2">&quot;</span>
-      <span class="n">player</span><span class="o">.</span><span class="n">add_card</span><span class="p">(</span><span class="n">new_card</span><span class="p">)</span>
-      <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;s total is now: </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">total</span><span class="si">}</span><span class="s2">&quot;</span>
-
-      <span class="n">blackjack_or_bust?</span><span class="p">(</span><span class="n">player</span><span class="p">)</span>
-    <span class="k">end</span>
-    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> stays at </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">total</span><span class="si">}</span><span class="s2">.&quot;</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">dealer_turn</span>
-    <span class="nb">puts</span> <span class="s2">&quot;Dealer&#39;s turn.&quot;</span>
-
-    <span class="n">blackjack_or_bust?</span><span class="p">(</span><span class="n">dealer</span><span class="p">)</span>
-    <span class="k">while</span> <span class="n">dealer</span><span class="o">.</span><span class="n">total</span> <span class="o">&lt;</span> <span class="no">DEALER_HIT_MIN</span>
-      <span class="n">new_card</span> <span class="o">=</span> <span class="n">deck</span><span class="o">.</span><span class="n">deal_one</span>
-      <span class="nb">puts</span> <span class="s2">&quot;Dealing card to dealer: </span><span class="si">#{</span><span class="n">new_card</span><span class="si">}</span><span class="s2">&quot;</span>
-      <span class="n">dealer</span><span class="o">.</span><span class="n">add_card</span><span class="p">(</span><span class="n">new_card</span><span class="p">)</span>
-      <span class="nb">puts</span> <span class="s2">&quot;Dealer total is now: </span><span class="si">#{</span><span class="n">dealer</span><span class="o">.</span><span class="n">total</span><span class="si">}</span><span class="s2">&quot;</span>
-
-      <span class="n">blackjack_or_bust?</span><span class="p">(</span><span class="n">dealer</span><span class="p">)</span>
-    <span class="k">end</span>
-    <span class="nb">puts</span> <span class="s2">&quot;Dealer stays at </span><span class="si">#{</span><span class="n">dealer</span><span class="o">.</span><span class="n">total</span><span class="si">}</span><span class="s2">.&quot;</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">who_won?</span>
-    <span class="k">if</span> <span class="n">player</span><span class="o">.</span><span class="n">total</span> <span class="o">&gt;</span> <span class="n">dealer</span><span class="o">.</span><span class="n">total</span>
-      <span class="nb">puts</span> <span class="s2">&quot;Congratulations, </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> wins!&quot;</span>
-    <span class="k">elsif</span> <span class="n">player</span><span class="o">.</span><span class="n">total</span> <span class="o">&lt;</span> <span class="n">dealer</span><span class="o">.</span><span class="n">total</span>
-      <span class="nb">puts</span> <span class="s2">&quot;Sorry, </span><span class="si">#{</span><span class="n">player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> loses.&quot;</span>
-    <span class="k">else</span>
-      <span class="nb">puts</span> <span class="s2">&quot;It&#39;s a tie!&quot;</span>
-    <span class="k">end</span>
-    <span class="n">play_again?</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">play_again?</span>
-    <span class="nb">puts</span> <span class="s2">&quot;&quot;</span>
-    <span class="nb">puts</span> <span class="s2">&quot;Would you like to play again? 1) yes 2) no, exit&quot;</span>
-    <span class="k">if</span> <span class="nb">gets</span><span class="o">.</span><span class="n">chomp</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span>
-      <span class="nb">puts</span> <span class="s2">&quot;Starting new game...&quot;</span>
-      <span class="nb">puts</span> <span class="s2">&quot;&quot;</span>
-      <span class="n">deck</span> <span class="o">=</span> <span class="no">Deck</span><span class="o">.</span><span class="n">new</span>
-      <span class="n">player</span><span class="o">.</span><span class="n">cards</span> <span class="o">=</span> <span class="o">[]</span>
-      <span class="n">dealer</span><span class="o">.</span><span class="n">cards</span> <span class="o">=</span> <span class="o">[]</span>
-      <span class="n">start</span>
-    <span class="k">else</span>
-      <span class="nb">puts</span> <span class="s2">&quot;Goodbye!&quot;</span>
-      <span class="nb">exit</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">start</span>
-    <span class="n">set_player_name</span>
-    <span class="n">deal_cards</span>
-    <span class="n">show_flop</span>
-    <span class="n">player_turn</span>
-    <span class="n">dealer_turn</span>
-    <span class="n">who_won?</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-
-<span class="n">game</span> <span class="o">=</span> <span class="no">Blackjack</span><span class="o">.</span><span class="n">new</span>
-<span class="n">game</span><span class="o">.</span><span class="n">start</span></code></pre></div>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/09/22/tic-tac-toe-oo/">
-        Intro to Ruby & Web Dev: Tic-Tac-Toe OO Game
-      </a>
-    </h1>
-
-    <span class="post-date">22 Sep 2014</span>
-
-    <h1>Goal</h1>
-
-<p>Build a tic-tac-toe game with object oriented programming.</p>
-
-<h2>There are 2 Approaches</h2>
-
-<ol>
-<li>Look at Procedural Code and extract classes and objects (more experienced)</li>
-<li>Write out psuedo code (put rules into words describing the game, list nouns and common verbs</li>
-</ol>
-
-<h2>Start with an empty 3x3 board.</h2>
-
-<p>Board with two players
-One player is &quot;x&quot;, the other is &quot;o&quot;, and player &quot;x&quot; goes first. Then they alternate until 3 of x/o in a row or
-all cells are ful, which means its a tie.</p>
-
-<h2>Extract Classes</h2>
-
-<h3>Board</h3>
+<li>Bulid out html link in parital or html.erb</li>
+<li>Build necessary routes
 
 <ul>
-<li>squares</li>
-<li>Are all squares marked?</li>
-<li>Find all empty squares
-###Player</li>
-<li>name</li>
-<li>marker</li>
-</ul>
-
-<h3>Square</h3>
-
-<p>you wouldn&#39;t want to say square is aware of position, b/c the square is no longer reusable
-  - occupied?
-  - mark(marker)</p>
-
-<h3>Game_engine</h3>
-
-<p>is the procedural peice to the game that will orchestrate the game
-Sequence of steps</p>
-
-<ol>
-<li>Draw a board</li>
-<li>Assign Player to &quot;x&quot;</li>
-<li>Assign Computer to &quot;o&quot;
-Loop until a winner or all squares are taken</li>
-<li>Player 1 picks an empty square
-Check for winner</li>
-<li>Player 2 picks an empty square</li>
-<li>Check for winner</li>
-<li>If there is a winner, show winner; else &quot;It&#39;s a tie&quot;</li>
-</ol>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Board</span>
-  <span class="no">WINNING_LINES</span> <span class="o">=</span> <span class="o">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">8</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">9</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">9</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="o">]]</span>
-
-  <span class="k">def</span> <span class="nf">initialize</span>
-    <span class="vi">@data</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="p">(</span><span class="mi">1</span><span class="o">.</span><span class="n">.</span><span class="mi">9</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span><span class="o">|</span><span class="n">position</span><span class="o">|</span> <span class="vi">@data</span><span class="o">[</span><span class="n">position</span><span class="o">]</span> <span class="o">=</span> <span class="no">Square</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="p">}</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">empty_squares</span>
-    <span class="vi">@data</span><span class="o">.</span><span class="n">select</span> <span class="p">{</span><span class="o">|</span><span class="n">_</span><span class="p">,</span> <span class="n">square</span><span class="o">|</span> <span class="n">square</span><span class="o">.</span><span class="n">empty?</span><span class="p">}</span><span class="o">.</span><span class="n">values</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">empty_positions</span>
-    <span class="vi">@data</span><span class="o">.</span><span class="n">select</span> <span class="p">{</span><span class="o">|</span><span class="n">_</span><span class="p">,</span> <span class="n">square</span><span class="o">|</span> <span class="n">square</span><span class="o">.</span><span class="n">empty?</span><span class="p">}</span><span class="o">.</span><span class="n">keys</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">all_squares_marked?</span>
-    <span class="n">empty_squares</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">three_squares_in_a_row?</span><span class="p">(</span><span class="n">marker</span><span class="p">)</span>
-    <span class="no">WINNING_LINES</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span>
-      <span class="k">return</span> <span class="kp">true</span> <span class="k">if</span> <span class="vi">@data</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">0</span><span class="o">]].</span><span class="n">value</span> <span class="o">==</span> <span class="n">marker</span> <span class="o">&amp;&amp;</span> <span class="vi">@data</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">1</span><span class="o">]].</span><span class="n">value</span>  <span class="o">==</span> <span class="n">marker</span> <span class="o">&amp;&amp;</span> <span class="vi">@data</span><span class="o">[</span><span class="n">line</span><span class="o">[</span><span class="mi">2</span><span class="o">]].</span><span class="n">value</span> <span class="o">==</span> <span class="n">marker</span>
-    <span class="k">end</span>
-    <span class="kp">false</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">mark_square</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">marker</span><span class="p">)</span>
-    <span class="vi">@data</span><span class="o">[</span><span class="n">position</span><span class="o">].</span><span class="n">mark</span><span class="p">(</span><span class="n">marker</span><span class="p">)</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">draw</span>
-    <span class="nb">system</span> <span class="s1">&#39;clear&#39;</span>
-    <span class="nb">puts</span>
-    <span class="nb">puts</span> <span class="s2">&quot;     |     |&quot;</span>
-    <span class="nb">puts</span> <span class="s2">&quot;  </span><span class="si">#{</span><span class="vi">@data</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="si">}</span><span class="s2">  |  </span><span class="si">#{</span><span class="vi">@data</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span><span class="si">}</span><span class="s2">  |  </span><span class="si">#{</span><span class="vi">@data</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="nb">puts</span> <span class="s2">&quot;     |     |&quot;</span>
-    <span class="nb">puts</span> <span class="s2">&quot;-----+-----+-----&quot;</span>
-    <span class="nb">puts</span> <span class="s2">&quot;     |     |&quot;</span>
-    <span class="nb">puts</span> <span class="s2">&quot;  </span><span class="si">#{</span><span class="vi">@data</span><span class="o">[</span><span class="mi">4</span><span class="o">]</span><span class="si">}</span><span class="s2">  |  </span><span class="si">#{</span><span class="vi">@data</span><span class="o">[</span><span class="mi">5</span><span class="o">]</span><span class="si">}</span><span class="s2">  |  </span><span class="si">#{</span><span class="vi">@data</span><span class="o">[</span><span class="mi">6</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="nb">puts</span> <span class="s2">&quot;     |     |&quot;</span>
-    <span class="nb">puts</span> <span class="s2">&quot;-----+-----+-----&quot;</span>
-    <span class="nb">puts</span> <span class="s2">&quot;     |     |&quot;</span>
-    <span class="nb">puts</span> <span class="s2">&quot;  </span><span class="si">#{</span><span class="vi">@data</span><span class="o">[</span><span class="mi">7</span><span class="o">]</span><span class="si">}</span><span class="s2">  |  </span><span class="si">#{</span><span class="vi">@data</span><span class="o">[</span><span class="mi">8</span><span class="o">]</span><span class="si">}</span><span class="s2">  |  </span><span class="si">#{</span><span class="vi">@data</span><span class="o">[</span><span class="mi">9</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="nb">puts</span> <span class="s2">&quot;     |     |&quot;</span>
-    <span class="nb">puts</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-
-<span class="k">class</span> <span class="nc">Player</span>
-  <span class="kp">attr_reader</span> <span class="ss">:marker</span><span class="p">,</span> <span class="ss">:name</span>
-  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">marker</span><span class="p">)</span>
-    <span class="vi">@name</span> <span class="o">=</span> <span class="nb">name</span>
-    <span class="vi">@marker</span> <span class="o">=</span> <span class="n">marker</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-
-<span class="k">class</span> <span class="nc">Square</span>
-  <span class="kp">attr_reader</span> <span class="ss">:value</span>
-
-  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-    <span class="vi">@value</span> <span class="o">=</span> <span class="n">value</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">empty?</span>
-    <span class="vi">@value</span> <span class="o">==</span> <span class="s1">&#39; &#39;</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">mark</span><span class="p">(</span><span class="n">marker</span><span class="p">)</span>
-    <span class="vi">@value</span> <span class="o">=</span> <span class="n">marker</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">to_s</span>
-    <span class="vi">@value</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-
-<span class="k">class</span> <span class="nc">Game</span>
-  <span class="k">def</span> <span class="nf">initialize</span>
-    <span class="vi">@board</span> <span class="o">=</span> <span class="no">Board</span><span class="o">.</span><span class="n">new</span>
-    <span class="vi">@human</span> <span class="o">=</span> <span class="no">Player</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;James&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">)</span>
-    <span class="vi">@computer</span> <span class="o">=</span> <span class="no">Player</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;R2D2&quot;</span><span class="p">,</span> <span class="s2">&quot;O&quot;</span><span class="p">)</span>
-    <span class="vi">@current_player</span> <span class="o">=</span> <span class="vi">@human</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">current_player_marks_square</span>
-    <span class="k">if</span> <span class="vi">@current_player</span> <span class="o">==</span> <span class="vi">@human</span>
-      <span class="k">begin</span>
-        <span class="nb">puts</span> <span class="s2">&quot;Choose a position </span><span class="si">#{</span><span class="vi">@board</span><span class="o">.</span><span class="n">empty_positions</span><span class="si">}</span><span class="s2"> to place a piece:&quot;</span>
-        <span class="n">position</span> <span class="o">=</span> <span class="nb">gets</span><span class="o">.</span><span class="n">chomp</span><span class="o">.</span><span class="n">to_i</span>
-      <span class="k">end</span> <span class="k">until</span> <span class="vi">@board</span><span class="o">.</span><span class="n">empty_positions</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
-    <span class="k">else</span>
-      <span class="n">position</span> <span class="o">=</span> <span class="vi">@board</span><span class="o">.</span><span class="n">empty_positions</span><span class="o">.</span><span class="n">sample</span>
-    <span class="k">end</span>
-    <span class="vi">@board</span><span class="o">.</span><span class="n">mark_square</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="vi">@current_player</span><span class="o">.</span><span class="n">marker</span><span class="p">)</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">alternate_player</span>
-    <span class="k">if</span> <span class="vi">@current_player</span> <span class="o">==</span> <span class="vi">@human</span>
-      <span class="vi">@current_player</span> <span class="o">=</span> <span class="vi">@computer</span>
-    <span class="k">else</span>
-      <span class="vi">@current_player</span> <span class="o">=</span> <span class="vi">@human</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">current_player_wins?</span>
-    <span class="vi">@board</span><span class="o">.</span><span class="n">three_squares_in_a_row?</span><span class="p">(</span><span class="vi">@current_player</span><span class="o">.</span><span class="n">marker</span><span class="p">)</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">play</span>
-    <span class="vi">@board</span><span class="o">.</span><span class="n">draw</span>
-    <span class="kp">loop</span> <span class="k">do</span>
-      <span class="n">current_player_marks_square</span>
-      <span class="vi">@board</span><span class="o">.</span><span class="n">draw</span>
-      <span class="k">if</span> <span class="n">current_player_wins?</span>
-        <span class="nb">puts</span> <span class="s2">&quot;The winner is </span><span class="si">#{</span><span class="vi">@current_player</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">!&quot;</span>
-        <span class="k">break</span>
-      <span class="k">elsif</span> <span class="vi">@board</span><span class="o">.</span><span class="n">all_squares_marked?</span>
-        <span class="nb">puts</span> <span class="s2">&quot;It&#39;s a tie.&quot;</span>
-        <span class="k">break</span>
-      <span class="k">else</span>
-        <span class="n">alternate_player</span>
-      <span class="k">end</span>
-    <span class="k">end</span>
-    <span class="nb">puts</span> <span class="s2">&quot;Bye&quot;</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-
-<span class="no">Game</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">play</span></code></pre></div>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2014/09/21/course1-lesson4/">
-        Intro to Ruby & Web Dev: Lesson 3
-      </a>
-    </h1>
-
-    <span class="post-date">21 Sep 2014</span>
-
-    <h1>Items covered:</h1>
-
-<ol>
-<li>Ajax</li>
-<li>Un-obstrusive Javascript</li>
-<li>Jquery</li>
-<li>Deployment Options</li>
-</ol>
-
-<h2>Ajax</h2>
-
-<p>is used in a scernario when elements on the page are changing but you only want thos elements
-to change rather reload (reconstituting the state of your application) each time.
-Pages can be computationally expensive and create a bad user interface.
-Ajax will issue the request behind the scences and the when the response comes back, your Javascript code must handle that data.
-This is using unobstrusive Javascript. For example, if you have likes on your Facebook page, we will want
-to see an increment in the number of likes and the like button go from &quot;like&quot; to &quot;unlike&quot;.
-However, for our use case, only the URL won&#39;t change.</p>
-
-<h2>Un-obsturive Javascript</h2>
-
-<p>Back in the day, Js used to be added directly to the HTML but now a js file is created just like
-the stylesheet.css file added to the layout.erb
-JQuery is now the defacto Js Library.</p>
-
-<div class="highlight"><pre><code class="language-html" data-lang="html">You must add the <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;/application.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span> to the layout.erb
-Google hosts Jquery for you!
-1.x snippet: <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span></code></pre></div>
-
-<ul>
-<li># is an anchor tag
-##JQuery
-.class - same style
-#id - unique element on your DOM</li>
-</ul>
-
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="nx">funtion</span><span class="p">(){</span>
-    <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;element&quot;</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="nx">funtion</span><span class="p">()</span> <span class="p">{</span>
-        <span class="nx">$</span><span class="p">(</span><span class="err">#</span><span class="nx">player</span><span class="p">)</span><span class="nx">_area</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="s1">&#39;background-color&#39;</span><span class="p">,</span> <span class="s1">&#39;yellow&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">false</span><span class="p">;</span><span class="o">===&gt;</span> <span class="k">do</span> <span class="nx">not</span> <span class="nx">re</span><span class="o">-</span><span class="nx">execute</span>
-      <span class="p">});</span>
-  <span class="p">});</span></code></pre></div>
-
-<p>un-obstrusive Js allows you to hijack the webpage.
-You shouldn&#39;t create elaborate pages with a bunch of event-listeners.
-Using JQuery in this manner can be hard to manage. So if you&#39;re looking to create an enriched
-user-experience, you should use Angular, Backbone, and/or Ember.
-So more like dashes and sprinkles of Jquery rather than overload of JQuery</p>
-
-<p>Hijacking (Adding JQuery to) the &quot;hit-button&quot;</p>
-
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-  <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#hit_form input&#39;</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;hit button clicked!&#39;</span><span class="p">);</span>
-    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
-    <span class="p">});</span>
-  <span class="p">});</span></code></pre></div>
-
-<p>use console.log (to inspect/debug in Firefox)</p>
-
-<p>Using Ajax</p>
-
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-  <span class="err">#</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#hit_form input&#39;</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="err">#</span><span class="nx">must</span> <span class="nx">be</span> <span class="nx">rebind</span> <span class="kd">with</span> <span class="nx">the</span> <span class="nx">input</span> <span class="nx">again</span> <span class="nx">after</span> <span class="nx">indcating</span> <span class="nx">layout</span> <span class="kc">false</span>
-    <span class="nx">$document</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="nx">click</span><span class="p">,</span> <span class="s1">&#39;#hit_form input&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">())</span> <span class="p">{</span>
-
-    <span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span> <span class="err">#</span><span class="k">this</span> <span class="nx">is</span> <span class="nx">a</span> <span class="nx">hash</span><span class="p">,</span> <span class="nx">much</span> <span class="nx">include</span> <span class="nx">comma</span> <span class="nx">after</span> <span class="nx">entry</span>
-      <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
-      <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/game/player/hit&#39;</span>
-      <span class="err">#</span><span class="nx">data</span><span class="o">:</span> <span class="err">#</span><span class="nx">also</span> <span class="nx">known</span> <span class="nx">as</span> <span class="nx">parameters</span>
-      <span class="p">)}.</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span> <span class="p">{</span>
-        <span class="err">#</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#game&#39;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span> <span class="err">#</span><span class="nx">create</span> <span class="nx">div</span> <span class="k">for</span> <span class="nx">game</span><span class="p">.</span> <span class="nx">Can</span><span class="s1">&#39;t use HTML b/c its creating a duplicate game div id</span>
-<span class="s1">        $(&#39;</span><span class="err">#</span><span class="nx">game</span><span class="err">&#39;</span><span class="p">).</span><span class="nx">replaceWith</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
-        <span class="p">});</span>
-      <span class="p">});</span>
-
-    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
-    <span class="p">});</span>
-  <span class="p">});</span></code></pre></div>
-
-<h2>Deployment Options</h2>
-
-<ol>
-<li>Self-managed</li>
-<li>Shared host (no longer popular)</li>
-<li>VPS (most popular)
-
-<ul>
-<li>AWS, Rackspace, Linode, Digital Ocean</li>
-<li>must have sys admin knowledge</li>
+<li>run grep routes to determine which routes are needed</li>
 </ul></li>
-<li><p>Dedicated Server (hardware) - most expensive</p></li>
-<li><p>Managed - no sys admin needs, no access to file system</p></li>
-<li><p>Heroku</p></li>
-<li><p>Google App Engine</p></li>
-<li><p>Ninefold</p></li>
+<li>Write code for action in controller
+
+<ul>
+<li>run binding pry to see what parameters are being submitted</li>
+</ul></li>
 </ol>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2014/10/30/course2-http/">
+        Rapid Prototyping with Rails: Lesson 3, HTTP
+      </a>
+    </h1>
+
+    <span class="post-date">30 Oct 2014</span>
+
+    <h2>HTTP has two parts:</h2>
+
+<h3>1. Request:</h3>
+
+<ul>
+<li>Verb/Method: GET, POST</li>
+<li>URL</li>
+<li>Parameters</li>
+</ul>
+
+<h3>2. Response:</h3>
+
+<ol>
+<li>Status Code
+
+<ul>
+<li>200 Ok</li>
+<li>302 Redirect (issues another request)</li>
+<li>404 File Not Found</li>
+<li>500 Application Error</li>
+</ul></li>
+<li>Payload/Message/Body - which will depend on the request</li>
+</ol>
+
+<p>Modern browsers will block against redirect loops and/or limit redirects.</p>
+
+<p>A request is not connected to another request - meaning its stateless.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">An</span> <span class="ss">example</span><span class="p">:</span>
+<span class="no">GET</span><span class="o">/</span><span class="n">new_game</span>
+  <span class="o">-</span> <span class="nb">display</span> <span class="n">the</span> <span class="n">form</span> <span class="n">to</span> <span class="n">enter</span> <span class="n">your</span> <span class="nb">name</span>
+  <span class="o">-</span> <span class="n">render</span> <span class="n">a</span> <span class="ss">view</span><span class="p">:</span> <span class="mi">200</span> <span class="ow">and</span> <span class="no">HTML</span> <span class="p">(</span><span class="n">complete</span> <span class="n">the</span> <span class="n">response</span><span class="p">)</span>
+
+<span class="no">POST</span><span class="o">/</span><span class="n">new_game</span>
+  <span class="o">-</span> <span class="n">save</span> <span class="n">the</span> <span class="nb">name</span> <span class="n">somewhere</span> <span class="p">(</span><span class="n">persistence</span> <span class="n">layer</span><span class="p">)</span>
+  <span class="o">-</span> <span class="nb">display</span> <span class="n">the</span> <span class="k">next</span> <span class="n">thing</span>
+  <span class="o">-</span> <span class="n">redirect</span> <span class="n">to</span> <span class="n">another</span> <span class="ss">URL</span><span class="p">:</span> <span class="mi">302</span> <span class="ow">and</span> <span class="n">the</span> <span class="k">next</span> <span class="no">URL</span> <span class="n">completes</span> <span class="n">the</span> <span class="n">response</span><span class="o">.</span>
+
+<span class="no">Persistency</span> <span class="no">Layer</span>
+<span class="mi">1</span><span class="o">.</span> <span class="no">Database</span> <span class="p">(</span><span class="n">most</span> <span class="n">common</span><span class="p">)</span>
+<span class="mi">2</span><span class="o">.</span> <span class="no">Session</span> <span class="n">cookies</span> <span class="p">(</span><span class="n">persistency</span> <span class="n">within</span> <span class="n">your</span> <span class="n">browser</span><span class="p">)</span></code></pre></div>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2014/10/28/course2-lesson3/">
+        Rapid Prototyping with Rails: Lesson 3, part 4
+      </a>
+    </h1>
+
+    <span class="post-date">28 Oct 2014</span>
+
+    <h3>1. Create vote controller action</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">PostsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="k">def</span> <span class="nf">vote</span>
+    <span class="nb">binding</span><span class="o">.</span><span class="n">pry</span>
+  <span class="k">end</span>
+ <span class="k">end</span></code></pre></div>
+
+<p>Entering params in rails console, will show us that we passing an id parameter but not the
+ boolean to indicate true/false, whether the post is up or down.</p>
+
+<h3>2. Add boolean parameter to views to create link</h3>
+
+<p>Add boolean parameter to views to create link  /posts/2/vote?vote=true&amp;param2=2</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#posts/index.html.erb</span>
+ <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s1">&#39;row&#39;</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s1">&#39;span0 well text-center&#39;</span><span class="o">&gt;</span>
+      <span class="o">&lt;%=</span> <span class="n">link_to</span> <span class="n">vote_post_path</span><span class="p">(</span><span class="n">post</span><span class="p">,</span> <span class="ss">vote</span><span class="p">:</span> <span class="kp">true</span><span class="p">),</span> <span class="nb">method</span><span class="p">:</span> <span class="s1">&#39;post&#39;</span> <span class="k">do</span> <span class="o">%&gt;</span></code></pre></div>
+
+<h3>3. Now that we have our thing we are voting on and our vote, we can create our vote action</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">PostsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="n">before_action</span> <span class="ss">:set_post</span><span class="p">,</span> <span class="ss">only</span><span class="p">:</span> <span class="o">[</span><span class="ss">:show</span><span class="p">,</span> <span class="n">edit</span><span class="p">,</span> <span class="ss">:update</span><span class="p">,</span> <span class="ss">:vote</span><span class="o">]</span>
+
+<span class="k">def</span> <span class="nf">vote</span>
+  <span class="c1">#post = Post.find(params[:id]) or use @post(created in the before_action)</span>
+  <span class="vi">@vote</span> <span class="o">=</span> <span class="no">Vote</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">voteable</span><span class="p">:</span> <span class="vi">@post</span><span class="p">,</span> <span class="ss">creator</span><span class="p">:</span> <span class="n">current_user</span><span class="p">,</span> <span class="ss">vote</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:vote</span><span class="o">]</span><span class="p">)</span>
+
+  <span class="k">if</span> <span class="vi">@vote</span><span class="o">.</span><span class="n">valid?</span>
+    <span class="n">flash</span><span class="o">[</span><span class="ss">:notice</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Your vote was recorded&quot;</span>
+  <span class="k">else</span>
+    <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Your vote was not recorded&quot;</span>
+  <span class="k">end</span>
+    <span class="n">redirect_to</span> <span class="ss">:back</span> <span class="p">(</span><span class="n">to</span> <span class="n">go</span> <span class="n">back</span> <span class="n">to</span> <span class="n">the</span> <span class="n">original</span> <span class="n">page</span> <span class="n">viewed</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>4. Wire up the same for the down vote in the views/posts/index</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s1">&#39;row&#39;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s1">&#39;span0 well text-center&#39;</span><span class="o">&gt;</span>
+    <span class="o">&lt;%=</span> <span class="n">link_to</span> <span class="n">vote_post_path</span><span class="p">(</span><span class="n">post</span><span class="p">,</span> <span class="ss">vote</span><span class="p">:</span> <span class="kp">false</span><span class="p">),</span> <span class="nb">method</span><span class="p">:</span> <span class="s1">&#39;post&#39;</span> <span class="k">do</span> <span class="o">%&gt;</span></code></pre></div>
+
+<h3>5. What if I want to display the number of votes</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;%</span><span class="n">post</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">size</span><span class="o">%&gt;</span></code></pre></div>
+
+<h3>6. What if I want the number of votes to decrease when pressing the down button.</h3>
+
+<p>Although this may seem like a presentational concern that would require a helper
+method - however storing the number of votes is a data concern and not a presentational one.
+Method regarding business logic belong in the model itself.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Post</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+   <span class="k">def</span> <span class="nf">total_votes</span>
+    <span class="n">up_votes</span> <span class="o">-</span> <span class="n">down_votes</span>
+   <span class="k">end</span>
+
+   <span class="k">def</span> <span class="nf">up_votes</span>
+    <span class="nb">self</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">vote</span><span class="p">:</span> <span class="kp">true</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
+   <span class="k">end</span>
+
+   <span class="k">def</span> <span class="nf">down_votes</span>
+    <span class="nb">self</span><span class="o">.</span><span class="n">votes</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">vote</span><span class="p">:</span> <span class="kp">false</span><span class="p">)</span><span class="o">.</span><span class="n">size</span>
+   <span class="k">end</span>
+ <span class="k">end</span></code></pre></div>
+
+<p>So now in the presentation layer, we can call total_votes:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="sx">% post.total_votes </span><span class="o">%&gt;</span></code></pre></div>
+
+<h3>7. What if we wanted to sort</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">PostsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+
+  <span class="k">def</span> <span class="nf">index</span>
+    <span class="vi">@posts</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="n">x</span><span class="o">.</span><span class="n">total_votes</span><span class="p">)</span><span class="o">.</span><span class="n">reverse</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>8. How can we make sure that each user only votes once for post:</h3>
+
+<p>There are many ways to accomplish this but the best way would be to add the
+uniqueness validation to the model:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span>  <span class="nc">Vote</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="n">validates_uniqueness_of</span> <span class="ss">:creator</span><span class="p">,</span> <span class="ss">scope</span><span class="p">:</span> <span class="ss">:voteable</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>9. Using html_safe</h3>
+
+<p>Rails by default escapes everything so user input html, js or script tags are escaped to
+prevent malicious intent.
+In order to write html in any place besides the html.erb files, you must append html_safe
+at the end of your statement</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">vote</span>
+  <span class="c1">#post = Post.find(params[:id]) or use @post(created in the before_action)</span>
+  <span class="vi">@vote</span> <span class="o">=</span> <span class="no">Vote</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">voteable</span><span class="p">:</span> <span class="vi">@post</span><span class="p">,</span> <span class="ss">creator</span><span class="p">:</span> <span class="n">current_user</span><span class="p">,</span> <span class="ss">vote</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:vote</span><span class="o">]</span><span class="p">)</span>
+    <span class="o">**</span> <span class="no">We</span> <span class="k">do</span> <span class="ow">not</span> <span class="n">need</span> <span class="n">to</span> <span class="n">use</span> <span class="n">strong_params</span> <span class="n">because</span> <span class="n">we</span> <span class="n">are</span> <span class="ow">not</span> <span class="n">using</span> <span class="n">the</span> <span class="n">key</span> <span class="n">value</span>
+    <span class="n">pairs</span> <span class="k">for</span> <span class="n">mass</span> <span class="n">assignment</span><span class="p">,</span> <span class="n">instead</span> <span class="n">we</span> <span class="n">are</span> <span class="n">hard</span> <span class="n">coding</span> <span class="k">in</span> <span class="n">the</span> <span class="n">keys</span><span class="o">.</span>
+  <span class="k">if</span> <span class="vi">@vote</span><span class="o">.</span><span class="n">valid?</span>
+    <span class="n">flash</span><span class="o">[</span><span class="ss">:notice</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Your vote was recorded&quot;</span>
+  <span class="k">else</span>
+    <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Your vote was &lt;strong&gt;not&lt;/strong&gt; recorded&quot;</span><span class="o">.</span><span class="n">html_safe</span>
+  <span class="k">end</span>
+    <span class="n">redirect_to</span> <span class="ss">:back</span> <span class="c1">#(to go back to the original page viewed)</span>
+<span class="k">end</span></code></pre></div>
+
+<p>This will cause the rails to not escape those tags and apply the html. You generally do not
+want to add html_safe on user input elements.</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2014/10/26/course2-lesson3/">
+        Rapid Prototyping with Rails: Lesson 3, part 3
+      </a>
+    </h1>
+
+    <span class="post-date">26 Oct 2014</span>
+
+    <h2>Items Covered</h2>
+
+<ol>
+<li>polymorphic associations
+
+<ul>
+<li>databases (syntax)</li>
+<li>models (syntax)</li>
+</ul></li>
+<li>Voting</li>
+</ol>
+
+<h2>Polymorphic Associations:</h2>
+
+<p>At the database level:</p>
+
+<p>When you have one subject but many objects for example, 1 comment or like can be placed on
+ many objects or foreign keys - post<em>id, photo</em>id, video_id, etc.
+ - This creates alot of spaces and ineffiencies in the database.
+ This is solved by restricting the database from:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="s2">&quot;id, body, user_id, post_id, photo_id, video_id&quot;</span> <span class="n">to</span>
+
+ <span class="s2">&quot;id, body, user_id, commentable type, commentable_id&quot;</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="ss">commentable_type</span><span class="p">:</span> <span class="n">must</span> <span class="n">be</span> <span class="n">the</span> <span class="n">model</span> <span class="nb">name</span><span class="p">,</span> <span class="n">capitialize</span> <span class="n">first</span> <span class="n">initial</span><span class="p">,</span> <span class="n">string</span>
+ <span class="ss">commentable_id</span><span class="p">:</span> <span class="n">is</span> <span class="n">the</span> <span class="n">primary_key</span> <span class="n">on</span> <span class="n">the</span> <span class="mi">1</span> <span class="n">side</span><span class="o">.</span>
+
+ <span class="n">commentable_type</span> <span class="n">to</span> <span class="ss">commentable_id</span><span class="p">:</span> <span class="n">is</span> <span class="n">a</span> <span class="n">composite</span> <span class="n">foreign_key</span></code></pre></div>
+
+<p>In our application, we will implement voting using polymorphic associations and we can
+ practically vote on anything, but in this case, we will vote on just posts and comments.</p>
+
+<h3>Step 1: Generate Migration</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Create</span> <span class="n">votes</span> <span class="n">table</span>
+  <span class="o">=&gt;</span><span class="n">rails</span> <span class="n">g</span> <span class="n">migration</span> <span class="n">create_votes</span></code></pre></div>
+
+<h3>Step 2: Generate Table</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">create_table</span> <span class="ss">:votes</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
+  <span class="n">t</span><span class="o">.</span><span class="n">boolean</span> <span class="ss">:vote</span>
+  <span class="n">t</span><span class="o">.</span><span class="n">integer</span> <span class="ss">:user_id</span>
+  <span class="n">t</span><span class="o">.</span><span class="n">string</span> <span class="ss">:voteable_type</span>
+  <span class="n">t</span><span class="o">.</span><span class="n">integer</span> <span class="ss">:voteable_id</span>
+  <span class="n">t</span><span class="o">.</span><span class="n">timestamps</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>or use</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">t</span><span class="o">.</span><span class="n">references</span> <span class="ss">:voteable</span><span class="p">,</span> <span class="ss">polymorphic</span><span class="p">:</span> <span class="kp">true</span></code></pre></div>
+
+<h3>Step 3: Create Vote Model</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Vote</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="n">belongs_to</span> <span class="ss">:creator</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s1">&#39;User&#39;</span><span class="p">,</span> <span class="ss">foreign_key</span><span class="p">:</span> <span class="s1">&#39;user_id&#39;</span>
+  <span class="n">belongs_to</span> <span class="ss">:voteable</span><span class="p">,</span> <span class="ss">polymorphic</span><span class="p">:</span> <span class="kp">true</span>
+<span class="k">end</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">User</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="n">has_many</span> <span class="ss">:votes</span>
+<span class="k">end</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Post</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="n">has_many</span> <span class="ss">:votes</span><span class="p">,</span> <span class="ss">as</span><span class="p">:</span> <span class="n">voteable</span>
+<span class="k">end</span></code></pre></div>
+
+<p>Do the same for comments.</p>
+
+<p>The above action gives you voteable getters/setters and now you can assign a variable to your user and call .votes</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">So</span> <span class="k">in</span> <span class="n">the</span> <span class="ss">console</span><span class="p">:</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="no">Votes</span><span class="o">.</span><span class="n">first</span>
+    <span class="n">v</span><span class="o">.</span><span class="n">voteable</span> <span class="o">=&gt;</span> <span class="kp">nil</span>
+    <span class="n">post</span> <span class="o">=</span> <span class="no">Post</span><span class="o">.</span><span class="n">first</span>
+    <span class="n">post</span><span class="o">.</span><span class="n">votes</span> <span class="o">&lt;&lt;</span> <span class="n">v</span>
+    <span class="ow">or</span> <span class="n">another</span> <span class="n">way</span> <span class="n">to</span> <span class="n">assign</span> <span class="n">is</span>
+    <span class="n">v</span><span class="o">.</span><span class="n">votable</span> <span class="o">=</span> <span class="no">Comments</span><span class="o">.</span><span class="n">first</span>
+    <span class="n">v</span><span class="o">.</span><span class="n">save</span></code></pre></div>
+
+<p>In the above - the user and vote are the subjects while the comments and posts
+are the objects being voted on.</p>
+
+<h3>Remember</h3>
+
+<ul>
+<li>Subjects - has_many, can use same gatters and setters as ususal</li>
+<li>Objects - belongs<em>to, will expect subject foreign</em>keys, voteable is now your getter/setter
+where you pass voteable an object or set the voteable</li>
+</ul>
+
+<h2>Voting</h2>
+
+<p>Step 1. Now let&#39;s show votes on posts index page</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#posts/index.html.erb</span>
+<span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s1">&#39;row&#39;</span>
+  <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s1">&#39;span0 well text-center&#39;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="sx">%= link_to &#39;&#39; do %&gt;</span>
+<span class="sx">    &lt;i class=</span><span class="s1">&#39;icon-arrow-up&#39;</span><span class="o">&gt;&lt;</span><span class="sr">/i&gt;</span>
+<span class="sr">    &lt;% end %&gt;</span>
+<span class="sr">    &lt;br/</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="sx">%= link_to &#39;&#39; do %&gt;</span>
+<span class="sx">    &lt;i class=</span><span class="s1">&#39;icon-arrow-down&#39;</span><span class="o">&gt;&lt;</span><span class="sr">/i&gt;</span>
+<span class="sr">    &lt;% end %&gt;</span>
+<span class="sr">&lt;/</span><span class="n">div</span><span class="o">&gt;</span></code></pre></div>
+
+<p>Step 2. How do we reflect the increase/decrease of votes every time the link is clicked:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#routes.rb</span>
+<span class="no">Two</span> <span class="n">ways</span><span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="n">.</span>
+<span class="n">a</span><span class="p">)</span> <span class="no">POST</span><span class="o">/</span><span class="n">votes</span> <span class="o">=&gt;</span> <span class="s1">&#39;VotesController#create&#39;</span>
+  <span class="o">-</span> <span class="n">needs</span> <span class="n">to</span> <span class="n">pass</span> <span class="k">in</span> <span class="n">two</span> <span class="n">pieces</span> <span class="n">of</span> <span class="n">information</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">whether</span> <span class="n">its</span> <span class="n">the</span> <span class="n">post</span><span class="o">/</span><span class="n">comment</span>
+  <span class="n">being</span> <span class="n">voted</span> <span class="n">on</span><span class="p">,</span> <span class="mi">2</span><span class="o">.</span> <span class="no">The</span> <span class="n">post</span><span class="o">/</span><span class="n">comment</span> <span class="nb">id</span>
+  <span class="o">-</span> <span class="n">also</span> <span class="n">this</span> <span class="n">would</span> <span class="n">create</span> <span class="n">another</span> <span class="n">top</span> <span class="n">level</span> <span class="n">resource</span><span class="p">)</span>
+  <span class="o">-</span> <span class="n">best</span> <span class="k">for</span> <span class="k">if</span> <span class="n">you</span><span class="s1">&#39;re voting on alot of objects</span>
+
+<span class="s1">        How to implement this in your routes:</span>
+<span class="s1">        resources :votes, only: [:create]</span>
+
+<span class="s1">b) POST/posts/3/vote =&gt; &#39;</span><span class="no">PostsController</span><span class="c1">#vote&#39;</span>
+<span class="no">POST</span><span class="o">/</span><span class="n">posts</span><span class="o">/</span><span class="mi">3</span><span class="o">/</span><span class="n">comments</span><span class="o">/</span><span class="mi">4</span><span class="o">/</span><span class="n">vote</span> <span class="o">=&gt;</span> <span class="s1">&#39;CommentsController#vote&#39;</span>
+    <span class="no">How</span> <span class="n">to</span> <span class="n">implement</span> <span class="n">this</span> <span class="k">in</span> <span class="n">your</span> <span class="n">routes</span><span class="p">,</span> <span class="n">you</span> <span class="n">must</span> <span class="n">use</span> <span class="n">something</span> <span class="n">called</span> <span class="n">a</span> <span class="n">member</span><span class="p">,</span> <span class="n">where</span>
+    <span class="n">each</span> <span class="n">action</span> <span class="n">will</span> <span class="n">be</span> <span class="n">exposed</span> <span class="n">to</span> <span class="n">the</span> <span class="n">member</span> <span class="n">of</span> <span class="n">that</span> <span class="n">url</span>
+
+    <span class="n">resources</span> <span class="ss">:posts</span><span class="p">,</span> <span class="ss">except</span><span class="p">:</span> <span class="o">[</span><span class="ss">:destroy</span><span class="o">]</span> <span class="k">do</span>
+
+      <span class="n">member</span> <span class="k">do</span>
+        <span class="n">post</span> <span class="ss">:vote</span>
+      <span class="k">end</span>
+
+      <span class="p">(</span><span class="n">where</span> <span class="n">post</span> <span class="n">is</span> <span class="n">the</span> <span class="n">member</span> <span class="ow">and</span> <span class="n">vote</span> <span class="n">is</span> <span class="n">the</span> <span class="n">action</span><span class="p">)</span>
+
+
+      <span class="o">**</span><span class="n">rake</span> <span class="n">routes</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">vote</span>
+      <span class="n">vote_post</span> <span class="no">POST</span> <span class="sr">/posts/</span><span class="ss">:id</span><span class="o">/</span><span class="n">vote</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>   <span class="n">post</span><span class="c1">#vote</span></code></pre></div>
+
+<p>Step 3. Also what about if we want to see archives of our posts</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1"># GET /posts/archives</span>
+
+  <span class="n">collection</span> <span class="k">do</span>
+    <span class="n">get</span> <span class="ss">:archives</span>
+  <span class="k">end</span>
+  <span class="o">**</span><span class="n">rake</span> <span class="n">routes</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">archives</span>
+  <span class="n">archives_posts</span> <span class="no">GET</span> <span class="sr">/posts/</span><span class="n">archives</span><span class="p">(</span><span class="o">.</span><span class="ss">:format</span><span class="p">)</span>  <span class="n">posts</span><span class="c1">#archives</span></code></pre></div>
+
+<p>So to compare using post vs get, post will require pass in an object.
+So basically you can create any route that you want using member, collections, and nested resources</p>
+
+<h2>Steps from UX</h2>
+
+<ul>
+<li>Lofi/hifi</li>
+<li>ERD</li>
+<li>Tables</li>
+<li>URL design</li>
+</ul>
+
+<p>Step 4. Let&#39;s include these new routes in our posts/index.html.erb</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#posts/index.html.erb</span>
+<span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s1">&#39;row&#39;</span>
+  <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s1">&#39;span0 well text-center&#39;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="sx">%= link_to vote_post_path(post) method: &#39;post&#39; do %&gt;</span>
+<span class="sx">    &lt;i class=</span><span class="s1">&#39;icon-arrow-up&#39;</span><span class="o">&gt;&lt;</span><span class="sr">/i&gt;</span>
+<span class="sr">    &lt;% end %&gt;</span>
+<span class="sr">    &lt;br/</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="sx">%= link_to &#39;&#39; do %&gt;</span>
+<span class="sx">    &lt;i class=</span><span class="s1">&#39;icon-arrow-down&#39;</span><span class="o">&gt;&lt;</span><span class="sr">/i&gt;</span>
+<span class="sr">  &lt;% end %&gt;</span>
+<span class="sr">&lt;/</span><span class="n">div</span><span class="o">&gt;</span></code></pre></div>
+
+<p>You must specify method: &#39;post&#39; because with out it the default will be the GET method and the link, post/id/vote will not work on a GET.
+* method: &#39;post&#39; create data method: There is javascript that comes with rails
+that looks for anchor tags and the data-method=&quot;post&quot;,  that will turn the link
+into an actual form and submit content.</p>
 
   </div>
   

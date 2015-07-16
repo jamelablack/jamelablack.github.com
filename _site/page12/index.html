@@ -156,6 +156,14 @@
           
         
       
+        
+          
+        
+      
+        
+          
+        
+      
 
     <p>&copy; 2015. All rights reserved.</p>
   </div>
@@ -167,211 +175,313 @@
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/01/28/course3-from-test-later-to-test-driven/">
-        Build Robust & Production Quality Applications - Lesson 1: From Test Later to Test Driven
+      <a href="/2015/03/02/course3-lesson3/">
+        Build Robust & Production Quality Applications - Lesson 3: Part 1
       </a>
     </h1>
 
-    <span class="post-date">28 Jan 2015</span>
+    <span class="post-date">02 Mar 2015</span>
 
-    <h2>There are several ways to integrate testing into your workflow:</h2>
-
-<h4>1. Code First, Test Later</h4>
-
-<p>Benefit: Guard against regression</p>
-
-<h4>2. Code a Little, Test a Little</h4>
-
-<p>Benefit: Feedback loop is shorter</p>
-
-<h4>3. Test First Development</h4>
-
-<p>Where you write the test first, run it and make sure it fails then after which you write the code to
-make it pass. It challenges to think about your expected result upfront and you&#39;re able to lock in your behavior
-while working towards that</p>
-
-<h4>4. Test Driven Development (TDD)</h4>
-
-<p>Test, not only to test with an expected result in mind but you write test to interactively build up (drive out) your
-implementation code.
-Benefit: people normally gravitate towards TDD, when they have an end goal that is complex in nature so they start
-with the simple and build up on complexity gradually.</p>
-
-<h4>5. Test Driven Design (TDDe)</h4>
-
-<p>Similar to Test Driven Development, except TDD is more logic and locally focused. while TDDe is more
-expanding to the system level, more focused on the architecture (the interaction or collaboration b/w components in
-your system - describing the interactions b/w various objects)</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/01/26/course3-git-flow/">
-        Build Robust & Production Quality Applications - Lesson 1: Git Flow
-      </a>
-    </h1>
-
-    <span class="post-date">26 Jan 2015</span>
-
-    <p>How to create a branch and checkout at the same time:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">git</span> <span class="n">checkout</span> <span class="o">-</span><span class="n">b</span> <span class="n">mod3</span></code></pre></div>
+    <h2>Items Covered:</h2>
 
 <ol>
-<li>Anything in the master branch is deployable</li>
-<li>To work on something new, create a descriptively named branch off of master (ie: new-oauth2-scopes)</li>
-<li>Commit to that branch locally and regularly push your work to the same named branch on the server</li>
-<li>When you need feedback or help, or you think the branch is ready for merging, open a pull request</li>
-<li>After someone else has reviewed and signed off on the feature, you can merge it into master</li>
-<li>Once it is merged and pushed to ‘master’, you can and should deploy immediately</li>
+<li>Growing Complexity</li>
+<li>Interactive Debugging for Solution Delivery</li>
+<li>Transactions</li>
 </ol>
 
-<p>Read more: <a href="http://nvie.com/posts/a-successful-git-branching-model/">A successful Git branching model</a></p>
+<h2>Growing Complexity Guided By Tests</h2>
+
+<p>Tags.all.map(&amp;:name) == Tags.all.map{|tag| tag.name}</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">create</span>
+  <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:todo</span><span class="o">]</span><span class="p">)</span>
+  <span class="k">if</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">save</span>
+    <span class="n">location_string</span> <span class="o">=</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;at&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">strip</span>
+    <span class="vi">@todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;location#(location_string)&quot;</span><span class="p">)</span>
+    <span class="n">redrect_to</span> <span class="n">root_path</span>
+  <span class="k">else</span>
+  <span class="n">render</span> <span class="ss">:new</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>strip method removes all spaces.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">create</span>
+  <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:todo</span><span class="o">]</span><span class="p">)</span>
+  <span class="k">if</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">save</span>
+    <span class="n">location_string</span> <span class="o">=</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;at&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">strip</span>
+    <span class="n">locations</span> <span class="o">=</span> <span class="n">location_string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;and&#39;</span><span class="p">)</span>
+    <span class="n">locations</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">location</span><span class="o">|</span>
+    <span class="vi">@todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;location:#(location)&quot;</span><span class="p">)</span>
+    <span class="n">redrect_to</span> <span class="n">root_path</span>
+  <span class="k">else</span>
+  <span class="n">render</span> <span class="ss">:new</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>When to use each vs map</h3>
+
+<p>each is used for when you want to iterate through a an collection of data, an
+array for example but you dont want to manipulate the result.
+map is ideal for when iterating over a collection and then you need to alter of manipulate those returned values for input into another problem.</p>
+
+<h3>When to use split vs regex</h3>
+
+<p>Use split when searching for one element
+And regex when searching for more than one.</p>
+
+<h2>Interactive Debugging for Solution Discovery</h2>
+
+<p>After writing and implementing your test cases, you should run sanity checks within your browser.
+If bugs are identified, you should run write tests to isolate it the bug.</p>
+
+<p>Use Binding.pry to in your controller being tested, after the problematic line.
+Binding.pry is really just irb so you now have a means to experiment with your code
+until you find the right solution.</p>
+
+<p>For a good regex tutorial:
+<a href="www.regular-expressions.info">Regex Tutorial</a>
+<a href="www.rubular.com">Rubular</a></p>
+
+<p>.split method cannot run on nil so Ruby 1.9 introduced .try(:split),
+which will run .split if not nil.</p>
+
+<h2>Transactions</h2>
+
+<p>Wrapping batch operations into transactions:</p>
+
+<p>To update the queue in MyFlix, the position entered must be an integer.
+If not, the entire page will fail to update. This is unlike normal transactions
+where we can include a validation error.
+This is where the concept of transactions come in. If all actions in the transaction
+do not save, it will rollback.</p>
+
+<p>Transactions are protective blocks where SQL statements are only permanent if
+they can all succeed as one atomic action. The classic example is a transfer between
+two accounts where you can only have a deposit if the withdrawal succeeded and vice versa.
+Transactions enforce the integrity of the database and guard the data against program errors or database break-downs.
+So basically you should use transaction blocks whenever you have a number of statements that must be executed together
+or not at all.</p>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/01/23/course3-first-test-in-rspec/">
-        Build Robust & Production Quality Applications - Lesson 1: First test in Rspec
+      <a href="/2015/02/28/course3-faker/">
+        Build Robust & Production Quality Applications - Lesson 2: Generate Fake Data with Faker
       </a>
     </h1>
 
-    <span class="post-date">23 Jan 2015</span>
+    <span class="post-date">28 Feb 2015</span>
 
-    <ol>
-<li>Add Rspec to your gemfile, make sure to include in both test and development:</li>
-</ol>
+    <h2>Use Faker to Generate Fake Data</h2>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">group</span> <span class="ss">:test</span><span class="p">,</span> <span class="ss">:development</span> <span class="k">do</span>
-    <span class="n">gem</span> <span class="s1">&#39;rspec-rails&#39;</span>
+<p>Creating fake data when your model has uniqueness validations will throw errors
+if your data is not unique.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="k">do</span>
+  <span class="nb">name</span> <span class="p">{</span> <span class="s2">&quot;cooking&quot;</span> <span class="p">}</span>
+  <span class="n">user</span>
+<span class="k">end</span></code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span> <span class="k">do</span>
+  <span class="n">email</span> <span class="p">{</span> <span class="s2">&quot;joe@example.com&quot;</span><span class="p">}</span> <span class="c1">#This will throw an error eventually if email record already exists.</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>Examples</h3>
+
+<p>Creating a category:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:category</span><span class="p">)</span> <span class="k">do</span>
+  <span class="nb">name</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Name</span><span class="o">.</span><span class="n">name</span> <span class="p">}</span>
+<span class="k">end</span></code></pre></div>
+
+<p>Creating a video:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:video</span><span class="p">)</span> <span class="k">do</span>
+  <span class="n">title</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Lorem</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="p">}</span>
+  <span class="n">description</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Lorem</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="p">}</span>
+<span class="k">end</span></code></pre></div>
+
+<p>Creating an invitation:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">)</span> <span class="k">do</span>
+  <span class="n">recipient_name</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Name</span><span class="o">.</span><span class="n">name</span> <span class="p">}</span>
+  <span class="n">recipient_email</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Internet</span><span class="o">.</span><span class="n">email</span> <span class="p">}</span>
+  <span class="n">message</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Lorem</span><span class="o">.</span><span class="n">paragraphs</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="p">}</span>
+<span class="k">end</span></code></pre></div>
+
+<p>Read more: <a href="https://github.com/stympy/faker">Faker Docs</a></p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/02/26/course3-fabricators/">
+        Build Robust & Production Quality Applications - Lesson 2: Object Generation with Fabricators
+      </a>
+    </h1>
+
+    <span class="post-date">26 Feb 2015</span>
+
+    <p>It&#39;s typical to create many objects during testing and the more attributes you have
+the more cumbersome it could be to maintain, moreover, if an attribute changes, it then becomes very difficult
+to update all those tests.</p>
+
+<p>To make this better, we can use an object generator framework called Fabrication.</p>
+
+<h3>Steps:</h3>
+
+<h4>1. Create a folder under specs called &quot;Fabricators&quot;</h4>
+
+<h4>2. create fabricator_todo.rb</h4>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="k">do</span>
+    <span class="nb">name</span> <span class="p">{</span> <span class="s2">&quot;cooking&quot;</span> <span class="p">}</span>
   <span class="k">end</span></code></pre></div>
 
-<ol>
-<li>rails g rspec:install</li>
-</ol>
+<h4>3. You can also create a user each time a todo is created:</h4>
 
-<p>Generates three items:
-  1. .rspec file - contains &quot;color&quot;.. just means you want your output to be color-coded
-  2. spec folder
-  3. spec helper - where configuration goes</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="k">do</span>
+  <span class="nb">name</span> <span class="p">{</span> <span class="s2">&quot;cooking&quot;</span> <span class="p">}</span>
+  <span class="n">user</span> <span class="p">{</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span> <span class="p">}</span>
+<span class="k">end</span></code></pre></div>
 
-<ol>
-<li><p>Create models folder inside spec folder</p></li>
-<li><p>Create a todo_spec.rb within the models folder (name of model)</p></li>
-<li><p>Within todo_spec.rb you must:</p></li>
-</ol>
+<p>or</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="k">do</span>
+  <span class="nb">name</span> <span class="p">{</span> <span class="s2">&quot;cooking&quot;</span> <span class="p">}</span>
+  <span class="n">user</span>
+<span class="k">end</span></code></pre></div>
 
-  <span class="n">describe</span> <span class="no">Todo</span> <span class="k">do</span>
-    <span class="n">it</span> <span class="s2">&quot;saves itself&quot;</span> <span class="k">do</span>
-      <span class="n">todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook dinner&quot;</span><span class="p">,</span> <span class="ss">description</span><span class="p">:</span> <span class="s2">&quot;love me some din din&quot;</span><span class="p">)</span>
-      <span class="n">todo</span><span class="o">.</span><span class="n">save</span>
-      <span class="no">Todo</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="s2">&quot;cook dinner&quot;</span>
-    <span class="k">end</span>
-  <span class="k">end</span></code></pre></div>
+<h3>In your test suite:</h3>
 
-<p>** &quot;it&quot; is a keyword that begins each test</p>
+<p>If you want to create an object in your database:</p>
 
-<p>** &quot;do&quot; implements the test</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;#display_text&quot;</span> <span class="k">do</span>
+  <span class="n">let</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="p">{</span> <span class="n">fabricate</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="p">}</span>
+  <span class="n">subject</span> <span class="p">{</span> <span class="n">todo</span><span class="o">.</span><span class="n">display_text</span> <span class="p">}</span></code></pre></div>
 
-<p>** .should is another keyword will test to see if we have the desired result.</p>
+<p>If you would rather create an object in memory, you could:</p>
 
-<p>** == is the matcher</p>
-
-<h2>How to run rspec outside of Rails</h2>
-
-<ol>
-<li>Create a project folder</li>
-<li>Inside the project folder, create a lib folder. Your code that you&#39;re testing will go inside here.</li>
-<li>Create another folder: spec, where your .spec test files will go.</li>
-<li>Make sure to require your code files inside your specs.</li>
-</ol>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;#display_text&quot;</span> <span class="k">do</span>
+  <span class="n">let</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="p">{</span> <span class="n">fabricate</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="p">}</span>
+  <span class="n">subject</span> <span class="p">{</span> <span class="n">todo</span><span class="o">.</span><span class="n">display_text</span> <span class="p">}</span></code></pre></div>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/01/20/course3-unit-functional-integration-tests/">
-        Build Robust & Production Quality Applications - Lesson 1: Unit vs. Functional vs. Integration Tests
+      <a href="/2015/02/23/course3-single-assertion-principle/">
+        Build Robust & Production Quality Applications - Lesson 2: Single Assertion Principle
       </a>
     </h1>
 
-    <span class="post-date">20 Jan 2015</span>
+    <span class="post-date">23 Feb 2015</span>
 
-    <h3>There are 3 types of tests:</h3>
+    <h2>Single Assertion principle states:</h2>
 
-<ol>
-<li>Unit</li>
-<li>Functional</li>
-<li>Integration</li>
-</ol>
+<p>A test suite should only have one assertion, so that if there is a failure
+they fail separately. If you find yourself using &quot;and&quot; then you are probably
+testing too much at once:</p>
 
-<h3>Ranking according to:</h3>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">get</span> <span class="ss">:index</span>
+  <span class="n">assigns</span><span class="p">(</span><span class="ss">:todos</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="p">(</span><span class="n">cook</span><span class="p">,</span> <span class="nb">sleep</span><span class="p">)</span></code></pre></div>
 
-<h4>Coverage:</h4>
+<p>There is an exception to this rule - when the assertions are very related concerning the same object:</p>
 
-<p>Unit &gt; Functional &gt; Integration</p>
-
-<h4>Speed:</h4>
-
-<p>Unit &gt; Functional &gt; Integration</p>
-
-<h4>Realistic:</h4>
-
-<p>Integration &gt; Functional &gt; Unit</p>
-
-<h3>1) Unit Tests</h3>
-
-<ul>
-<li>testing a component in isolation, focusing on 1 thing and making sure all cases are covered</li>
-<li>isolated components tested: routes, models, views, helpers</li>
-<li>allow you to thoroughly test all components.. as it is the closest to the code.</li>
-<li>is the fastest and gives you the best coverage</li>
-</ul>
-
-<h3>2) Functional Tests</h3>
-
-<ul>
-<li>testing components in collaboration, making sure not only they work but that they play nicely with each other</li>
-<li>components tested: controllers (where everything interacts), typically once request/response cycle</li>
-</ul>
-
-<h3>3) Integration Tests</h3>
-
-<p>Builds upon functional tests in the sense that not only must play nicely together but they must achieve a desired business objective.</p>
-
-<ul>
-<li>Components tested: Goal is to emulate the user, typically occurs in browser and follows the entire business process and
-that the business objective is achieved</li>
-</ul>
-
-<p>There are multiple styles of testing.. it has become very much like an &quot;art&quot; as devs often times develop a taste of styles for what to test, when, etc. In this course, we will primarily write unit and functional tests leaving integration tests for important business workflows.</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">get</span> <span class="ss">:new</span>
+  <span class="n">assigns</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="n">be_new_record</span>
+  <span class="n">assigns</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="n">be</span> <span class="n">instance_of</span><span class="p">(</span><span class="no">Todo</span><span class="p">)</span></code></pre></div>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/01/17/coures3-technical-debt/">
-        Build Robust & Production Quality Applications - Lesson 1: Technical Debt
+      <a href="/2015/02/20/course3-alt-style-or-rspec/">
+        Build Robust & Production Quality Applications - Lesson 2: Alternative Style of Rspec
       </a>
     </h1>
 
-    <span class="post-date">17 Jan 2015</span>
+    <span class="post-date">20 Feb 2015</span>
 
-    <p>A typically response to testing is &quot;I don&#39;t have time, I have to meet my deadline&quot;
-As your project size increases, you technical debt increases to the nth degree as time passes.</p>
+    <h2>An Alternative Style of Rspec</h2>
 
-<p>The problem is that devs don&#39;t remember the code the wrote 3 months ago, so they have to do a &quot;context switch&quot;
-and recall why they wrote the code they did. This often times can have a cascading effect of issues.</p>
+<ul>
+<li>using let, before, subject, etc.</li>
+</ul>
 
-<h3>Rescue Projects:</h3>
+<p>Uses lazy evaluation which means it doesn&#39;t evaluate the :todo
+or the subject until it has to ...namingly when it reaches it or before.</p>
 
-<p>That is why projects in this case are called rescue projects, bc they have to call in outside help to
-fix their project. One of the first steps an outside company does to save rescue projects is create a test suite.
-This is the pay off for the technical debt.</p>
+<p>To avoid lazy evaluation, you could do:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">let!</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="p">{</span><span class="no">Todo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook dinner&quot;</span><span class="p">)}</span></code></pre></div>
+
+<h3>Pros:</h3>
+
+<p>is more concise and separates the common set  up code using lets</p>
+
+<h3>Cons:</h3>
+
+<p>For a lengthy test suite it may be hard to connect the test with the description.</p>
+
+<h4>Using let</h4>
+
+<p>Step 1. Eliminate the repetition of Todo.create in each test:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;#display_text&quot;</span> <span class="k">do</span>
+  <span class="n">let</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="p">{</span> <span class="no">Todo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook dinner&quot;</span><span class="p">)</span> <span class="p">}</span></code></pre></div>
+
+<p>Step 2. Replace todo.display_ text</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;#display_text&quot;</span> <span class="k">do</span>
+  <span class="n">let</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="p">{</span> <span class="no">Todo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook dinner&quot;</span><span class="p">)</span> <span class="p">}</span>
+  <span class="n">let</span><span class="p">(</span><span class="ss">:subject</span><span class="p">)</span> <span class="p">{</span> <span class="n">todo</span><span class="o">.</span><span class="n">display_text</span> <span class="p">}</span></code></pre></div>
+
+<p>or</p>
+
+<p>Step3. Replace todo.display_text</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;#display_text&quot;</span> <span class="k">do</span>
+  <span class="n">let</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="p">{</span> <span class="no">Todo</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;cook dinner&quot;</span><span class="p">)</span> <span class="p">}</span>
+  <span class="n">subject</span> <span class="p">{</span> <span class="n">todo</span><span class="o">.</span><span class="n">display_text</span> <span class="p">}</span></code></pre></div>
+
+<hr>
+
+<h4>Using before for case specific tests</h4>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">context</span> <span class="s2">&quot;displays the name when there&#39;s no tags&quot;</span> <span class="k">do</span>
+  <span class="n">it</span> <span class="s2">&quot;displays the name when there&#39;s no tags&quot;</span> <span class="k">do</span>
+    <span class="n">subject</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="s2">&quot;cook dinner&quot;</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">context</span> <span class="s2">&quot;displays the only tag with word &#39;tags&#39; when there&#39;s one tag&quot;</span>
+  <span class="n">before</span> <span class="k">do</span>
+    <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;home&quot;</span><span class="p">)</span>
+    <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;urgent&quot;</span><span class="p">)</span>
+  <span class="k">end</span>
+  <span class="n">it</span> <span class="s2">&quot;displays name with multiple tags&quot;</span> <span class="k">do</span>
+    <span class="n">subject</span><span class="o">.</span><span class="n">should</span> <span class="o">==</span> <span class="s2">&quot;cook dinner (tags: home, urgent)&quot;</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>Change lengthy context to more succinct:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">context</span> <span class="s2">&quot;displays the only tag with word &#39;tags&#39; when there&#39;s one tag&quot;</span></code></pre></div>
+
+<p>to =&gt;</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">context</span> <span class="s2">&quot;multiple tags&quot;</span></code></pre></div>
+
+<p>Remove the &quot;it -text-&quot; because its in context with the description</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">context</span> <span class="s2">&quot;one tag&quot;</span> <span class="k">do</span>
+  <span class="n">before</span> <span class="p">{</span> <span class="n">todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;home&quot;</span><span class="p">)</span> <span class="p">}</span>
+  <span class="n">it</span> <span class="p">{</span> <span class="n">should</span> <span class="o">==</span> <span class="s2">&quot;cook dinner (tag: home)&quot;</span> <span class="p">}</span>
+<span class="k">end</span></code></pre></div>
 
   </div>
   

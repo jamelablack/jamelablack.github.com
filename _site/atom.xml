@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
  <title>grit| commit</title>
- <link href="http://jamelablack.github.io/atom.xml" rel="self"/>
- <link href="http://jamelablack.github.io/"/>
- <updated>2015-07-11T02:54:54-04:00</updated>
- <id>http://jamelablack.github.io</id>
+ <link href="http:/gritcommit.com/atom.xml" rel="self"/>
+ <link href="http:/gritcommit.com/"/>
+ <updated>2015-07-15T23:47:49-04:00</updated>
+ <id>http:/gritcommit.com</id>
  <author>
    <name>Jam Black</name>
    <email></email>
@@ -13,10 +13,725 @@
 
  
  <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 8: - Mocks & Stubs</title>
+   <link href="http:/gritcommit.com/2015/07/18/course3-testing-talks/"/>
+   <updated>2015-07-18T00:00:00-04:00</updated>
+   <id>http:/gritcommit.com/2015/07/18/course3-testing-talks</id>
+   <content type="html">&lt;h2&gt;Magic Tricks of Testing&lt;/h2&gt;
+
+&lt;p&gt;We want unit tests to be
+*Thorough
+*Stable
+*Fast
+*Few&lt;/p&gt;
+
+&lt;p&gt;Focus on Messages
+Objects are simple-minded.&lt;/p&gt;
+
+&lt;p&gt;Message Origin
+Objects under test have three message origin options:
+*1. Incoming Messages
+*2. Outgoing Messages
+*3. Messages sent to self (messages that are completely contained inside the object and are unknown to the outside)&lt;/p&gt;
+
+&lt;p&gt;Message Type
+*1. Query - returns something, changes nothing (addition method)
+*2. Command - returns something, changes something (save method)&lt;/p&gt;
+
+&lt;p&gt;We often times conflate commands and queries (like .(pop))&lt;/p&gt;
+
+&lt;p&gt;Rules of the Unit Test Minimalist
+INCOMING QUERY MESSAGES&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Test Incoming Query Messages by making assetions about what the send back. Makes an assertion about a value (state). Here we want to test the interface and not the implementation. If we just care about what value is returned and not how we get there... then I can change the code without breaking it.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;INCOMING COMMAND MESSAGES
+2. Test incoming command messages by making assertions about direct public side effects. Direct means its the responsibility of the last ruby class invloved. You&amp;#39;re making an assertion on the new value as result of calling that command.&lt;/p&gt;
+
+&lt;p&gt;Key Takeway - The receiver of incoming messages has the sole responsibility of asserting the result direct public side effect. This is the sole place where we are making an assertions about values, testing the value of the thing returned&lt;/p&gt;
+
+&lt;p&gt;MESSAGES SENT TO SELF&lt;/p&gt;
+
+&lt;p&gt;Private Methods - Don&amp;#39;t test private methods. Don&amp;#39;t make assertiond about their result. Do not expect to send them. Doing so will add no value to your tests and will make it impossible to change in the future wihthout breaking something. They also discourage other devs from touching your code so you may want to add the comment &amp;quot;if these tests fail, delete them.&amp;quot;&lt;/p&gt;
+
+&lt;p&gt;Caveat: Break rule if itk saves $$$ during development.&lt;/p&gt;
+
+&lt;p&gt;Key Takeway - Ignore them.&lt;/p&gt;
+
+&lt;p&gt;OUTGOING QUERY MESSAGES
+Making assertions on query messages is the job of the reciever. Therefore making an assertion on outgoing messages is redundant and should be avoided. It makes your tests are break when there is a change and it is very combersome to understand what going on. It adds no value.&lt;/p&gt;
+
+&lt;p&gt;Rule: Do not test outgoing query messages. Do not make assertions about their result. Do not epxect to send them.&lt;/p&gt;
+
+&lt;p&gt;You will notice that both tests made to self and tech on outgoing query messages have the same rule, don&amp;#39;t do them. This is because they have no visbible side effects, they are invisible to the rest of your application and their tests add no value.&lt;/p&gt;
+
+&lt;p&gt;Rule: If a message has no visible side-effects, the sender should not test it.&lt;/p&gt;
+
+&lt;p&gt;OUTGOING COMMAND MESSAGES
+Outgoing command messages must be sent, they have to be sent or the app will not be correct. Testing, however the distant side effects of sending the message is an integration test. Asserting that the state of a thing changed in the database is not job of the outgoing command message. It&amp;#39;s job is ensure that a message is sent. Asserting that some change has occured or making an assertion about the state of the DB will forever connect you to that result and the objects.. even those distant involved.&lt;/p&gt;
+
+&lt;p&gt;Testing that a message was sent requires a mock. Testing this way makes a bet that the edge (the API...the message sent) is more stable than the distant side effect and the path to it.&lt;/p&gt;
+
+&lt;p&gt;Rule: Test outgoing command messages by setting expectations on them being sent. Caveat: Break Rule if ide effects are stable and cheap... and close. The further away - the worse.&lt;/p&gt;
+
+&lt;p&gt;Rule: It is our job to ensure that mocks honor their contract. Ensure test doubles stay insync with the API&lt;/p&gt;
+
+&lt;p&gt;Gems that help you manage your mocks:
+*Bogus
+*Quacky
+*Rspec-Fire
+*Minitest-Firemock&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 8: - Mocks & Stubs</title>
+   <link href="http:/gritcommit.com/2015/07/17/course3-mocks-and-stubs/"/>
+   <updated>2015-07-17T00:00:00-04:00</updated>
+   <id>http:/gritcommit.com/2015/07/17/course3-mocks-and-stubs</id>
+   <content type="html">&lt;h2&gt;Further Reading&lt;/h2&gt;
+
+&lt;p&gt;Check out this &lt;a href=&quot;http://martinfowler.com/articles/mocksArentStubs.html&quot;&gt;blog post&lt;/a&gt; by Martin Fowler. Here is an excert I found valuable:&lt;/p&gt;
+
+&lt;p&gt;Meszaros uses the term Test Double as the generic term for any kind of pretend object used in place of a real object for testing purposes. The name comes from the notion of a Stunt Double in movies. (One of his aims was to avoid using any name that was already widely used.) Meszaros then defined four particular kinds of double:&lt;/p&gt;
+
+&lt;p&gt;Dummy objects are passed around but never actually used. Usually they are just used to fill parameter lists.
+*Fake objects actually have working implementations, but usually take some shortcut which makes them not suitable for production (an in memory database is a good example).
+*Stubs provide canned answers to calls made during the test, usually not responding at all to anything outside what&amp;#39;s programmed in for the test. Stubs may also record information about calls, such as an email gateway stub that remembers the messages it &amp;#39;sent&amp;#39;, or maybe only how many messages it &amp;#39;sent&amp;#39;.
+*Mocks are what we are talking about here: objects pre-programmed with expectations which form a specification of the calls they are expected to receive.
+Of these kinds of doubles, only mocks insist upon behavior verification. The other doubles can, and usually do, use state verification.&lt;/p&gt;
+
+&lt;p&gt;Also, check out this &lt;a href=&quot;http://confreaks.tv/videos/rubyconf2011-why-you-don-t-get-mock-objects&quot;&gt;talk &lt;/a&gt; on Mocks&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 8: - Mocking</title>
+   <link href="http:/gritcommit.com/2015/07/16/course3-mocking/"/>
+   <updated>2015-07-16T00:00:00-04:00</updated>
+   <id>http:/gritcommit.com/2015/07/16/course3-mocking</id>
+   <content type="html">&lt;p&gt;In previous lessons, extracted some of our logic into policy, domain and service objects. We can now update our TodosController spec to reflect these new objects, but we don&amp;#39;t have to test the functionality of the service level object, for example - we just to make sure that the object can respond to the actions extracted to the Service Level process. We can accomplish this with mocking &amp;amp; stubbing. Ensuring that a message has been sent and the object can respond to that message. We are not concerned with the response for that message.&lt;/p&gt;
+
+&lt;p&gt;So far with stubbing (which is all we have done up until this point), we have always been asserting on values or the state of the system. With mocking, we asserting on communication. Mocks will always be in unit testing becasue you ar stubbing out your collaborators. If you have to create too many mocks, then you know that you are missing another layer of abstraction. Limiting your spec to focusing on one object allows you code smells like these.&lt;/p&gt;
+
+&lt;p&gt;Picking up from our last example, we would create a mock with the following. Please note that the trigger is after the assertion:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;delegates to CreditDeduction to deduct credit&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;credit_deduction&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;double&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;credit deduction&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;no&quot;&gt;CreditDeduction&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stub&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;alice&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;and_return&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;credit_deduction&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;credit_deduction&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to_recieve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:deduct_credit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;post&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;todo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;cook&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;description&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;I like cooking!&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 8: Message Expectations</title>
+   <link href="http:/gritcommit.com/2015/07/15/course3-message-expecations/"/>
+   <updated>2015-07-15T00:00:00-04:00</updated>
+   <id>http:/gritcommit.com/2015/07/15/course3-message-expecations</id>
+   <content type="html">&lt;h2&gt;Messgage Expectations&lt;/h2&gt;
+
+&lt;p&gt;The best resource for docs on &lt;a href=&quot;http://www.relishapp.com/rspec/rspec-mocks/v/2-13/docs/message-expectations&quot;&gt;message expectations&lt;/a&gt;. Message expectations is what is referred to mocking.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 8: Beyond MVC - Object Composition, Object Oriented Design, & YAGNI</title>
+   <link href="http:/gritcommit.com/2015/07/14/course3-Comp-OOD-YAGNI/"/>
+   <updated>2015-07-14T00:00:00-04:00</updated>
+   <id>http:/gritcommit.com/2015/07/14/course3-Comp-OOD-YAGNI</id>
+   <content type="html">&lt;p&gt;Rails provides an MVC framework - but there is a point where the complexity of your application grows beyong this structure. Typically, when this first happens, devs move the logic from their controllers, to the models (skinny contollers/fat models) - but often we find that we are pushing too much logic into the models, making them bloated. Often times models at the center of your application, that are so large (in complexity and touches so many other objects) that people are afraid to touch it (becasue something bad will happen if you mess up) is called God Objects (God Models).&lt;/p&gt;
+
+&lt;h2&gt;Object Composition&lt;/h2&gt;
+
+&lt;p&gt;We can take some of the responsibility from those objects however, this does come at a cost.&lt;/p&gt;
+
+&lt;h4&gt;In-direction&lt;/h4&gt;
+
+&lt;p&gt;When you extract logic to various objects within a process, it can be difficult to chase down what is happening as the process is not all in one view. Well defined names and interfaces.&lt;/p&gt;
+
+&lt;p&gt;However - there are some ways to abuse object composition.&lt;/p&gt;
+
+&lt;h3&gt;YAGNI (You Aren&amp;#39;t Going to Need It)&lt;/h3&gt;
+
+&lt;p&gt;is over-extracting or abstracting to a layer that is not useful at the moment, in hopes that it will be in the future, but you prolly won&amp;#39;t. It is better to wait as you will never know less about the future than you do now.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 8: Beyond MVC - Service Objects</title>
+   <link href="http:/gritcommit.com/2015/07/13/course3-service-objects/"/>
+   <updated>2015-07-13T00:00:00-04:00</updated>
+   <id>http:/gritcommit.com/2015/07/13/course3-service-objects</id>
+   <content type="html">&lt;h2&gt;Service Objects&lt;/h2&gt;
+
+&lt;p&gt;Just like we can extract domain logic into domain objects, we can extract business level logic into service objects.  Currently, the below process is modeling the Credit Deduction Business Process. Let&amp;#39;s extract that into a Service Object called CreditDeduction.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#apps/controllers/todos_controller.rb&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;create&lt;/span&gt;
+  &lt;span class=&quot;vi&quot;&gt;@todo&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Todo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;params&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:todo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Credit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;current_user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@todo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;save_with_tags&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;UserLevelPoicy&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ccurent_user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;premium?&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;save&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;depleted?&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;
+    &lt;span class=&quot;no&quot;&gt;AppMailer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;notify&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;insufficient_funds&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;elsif&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;low_balance?&lt;/span&gt;
+    &lt;span class=&quot;no&quot;&gt;AppMailer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;notify_low_balance&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;redirect_to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;root_path&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;render&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:new&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;Create the Service Policy called CreditDeduction&lt;/h3&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#app/services/credit_deduction.rb&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;Class&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;CreditDeduction&lt;/span&gt;
+
+
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4&gt;Extract business process related Code&lt;/h4&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#app/services/credit_deduction.rb&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;Class&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;CreditDeduction&lt;/span&gt;
+  &lt;span class=&quot;kp&quot;&gt;attr_accessor&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:user&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;deduct_credit&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;UserLevelPoicy&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ccurent_user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;premium?&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;save&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;depleted?&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;
+      &lt;span class=&quot;no&quot;&gt;AppMailer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;notify&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;insufficient_funds&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;elsif&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;low_balance?&lt;/span&gt;
+      &lt;span class=&quot;no&quot;&gt;AppMailer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;notify_low_balance&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4&gt;Update the TodoController&lt;/h4&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#apps/controllers/todos_controller&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;create&lt;/span&gt;
+  &lt;span class=&quot;vi&quot;&gt;@todo&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Todo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;params&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:todo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Credit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;current_user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@todo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;save_with_tags&lt;/span&gt;
+    &lt;span class=&quot;no&quot;&gt;CreditDeduction&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current_user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;deduct_credit&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;redirect_to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;root_path&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;render&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:new&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4&gt;Move instatiating a new Credit Object to your Service Policy&lt;/h4&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#app/services/credit_deduction.rb&lt;/span&gt;
+&lt;span class=&quot;no&quot;&gt;Class&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;CreditDeduction&lt;/span&gt;
+  &lt;span class=&quot;kp&quot;&gt;attr_accessor&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:credit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:user&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@credit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Credit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;deduct_credit&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;UserLevelPoicy&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ccurent_user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;premium?&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;save&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;depleted?&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;
+      &lt;span class=&quot;no&quot;&gt;AppMailer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;notify&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;insufficient_funds&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;elsif&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;low_balance?&lt;/span&gt;
+      &lt;span class=&quot;no&quot;&gt;AppMailer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;notify_low_balance&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#apps/controllers/todos_controller&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;create&lt;/span&gt;
+  &lt;span class=&quot;vi&quot;&gt;@todo&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Todo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;params&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:todo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@todo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;save_with_tags&lt;/span&gt;
+    &lt;span class=&quot;no&quot;&gt;CreditDeduction&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;current_user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;deduct_credit&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;redirect_to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;root_path&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;render&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:new&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 8: Beyond MVC - Domain Objects</title>
+   <link href="http:/gritcommit.com/2015/07/12/course3-domain-objects/"/>
+   <updated>2015-07-12T00:00:00-04:00</updated>
+   <id>http:/gritcommit.com/2015/07/12/course3-domain-objects</id>
+   <content type="html">&lt;h2&gt;Policy Objects&lt;/h2&gt;
+
+&lt;p&gt;Are objects that are within the domain object model. Not all of them inherit from active record though, often times they do not always map to database tables.&lt;/p&gt;
+
+&lt;p&gt;For important attributes, it may be worth it to create a seperate domain object rather than calling an object to access that attribute.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#apps/controllers/todos_controller.rb&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;create&lt;/span&gt;
+  &lt;span class=&quot;vi&quot;&gt;@todo&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Todo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;params&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:todo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@todo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;save_with_tags&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;created_at&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Date&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2013&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;plan&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;premium?&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;new_credit_balance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current_user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;current_credit_balance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;new_credit_balance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current_user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;current_credit_balance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;current_user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;current_credit_balance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;new_credit_balance&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;current_user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;save&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;new_credit_balance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;
+    &lt;span class=&quot;no&quot;&gt;AppMailer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;notify&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;insufficient_funds&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;elsif&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current_user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;current_credit_balance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;
+    &lt;span class=&quot;no&quot;&gt;AppMailer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;notify_low_balance&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;redirect_to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;root_path&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;render&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:new&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Let&amp;#39;s create a domain called Credit:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#app/models/credit.rb&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Credit&lt;/span&gt;
+  &lt;span class=&quot;kp&quot;&gt;attr_accessor&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:credit_balance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:user&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@credit_balance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;current_credit_balance&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;number&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;credit_balance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;credit_balance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;number&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;save&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;current_credit_balance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;credit_balance&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;save&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;depleted?&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;credit_balance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;low_balance?&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;credit_balance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Now let&amp;#39;s update the Todos Controller:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#apps/controllers/todos_controller.rb&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;create&lt;/span&gt;
+  &lt;span class=&quot;vi&quot;&gt;@todo&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Todo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;params&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:todo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Credit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;current_user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@todo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;save_with_tags&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;UserLevelPoicy&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ccurent_user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;premium?&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;save&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;depleted?&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;
+    &lt;span class=&quot;no&quot;&gt;AppMailer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;notify&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;insufficient_funds&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;elsif&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;credit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;low_balance?&lt;/span&gt;
+    &lt;span class=&quot;no&quot;&gt;AppMailer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;notify_low_balance&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;redirect_to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;root_path&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;render&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:new&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 8: Beyond MVC - Policy Objects</title>
+   <link href="http:/gritcommit.com/2015/07/11/course3-policy-objects/"/>
+   <updated>2015-07-11T00:00:00-04:00</updated>
+   <id>http:/gritcommit.com/2015/07/11/course3-policy-objects</id>
+   <content type="html">&lt;h2&gt;Policy Objects&lt;/h2&gt;
+
+&lt;p&gt;Complicated code in your logic - cure that thing with Policy Objects!
+Policy Objects can be used to represent the state of an object:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#apps/controllers/todos_controller.rb&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;create&lt;/span&gt;
+  &lt;span class=&quot;vi&quot;&gt;@todo&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Todo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;params&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:todo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@todo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;save_with_tags&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;created_at&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Date&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2013&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;plan&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;premium?&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;new_credit_balance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current_user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;current_credit_balance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;new_credit_balance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current_user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;current_credit_balance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#app/models/user_level_policy&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;UserLevelPolicy&lt;/span&gt;
+&lt;span class=&quot;kp&quot;&gt;attr_reader&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:user&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;vi&quot;&gt;@user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;premuim?&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;created_at&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Date&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2013&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;plan&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;premium?&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;silver?&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;bronze?&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 8: Beyond MVC - Decorators</title>
+   <link href="http:/gritcommit.com/2015/07/09/course3-decorators/"/>
+   <updated>2015-07-09T00:00:00-04:00</updated>
+   <id>http:/gritcommit.com/2015/07/09/course3-decorators</id>
+   <content type="html">&lt;p&gt;Let&amp;#39;s say we have a Todo model. The methods name&lt;em&gt;only? and display&lt;/em&gt;text is purely presentational logic.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;no&quot;&gt;Class&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Todo&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ActiveRecord&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Base&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;has_many&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:taggings&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;has_many&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:tags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;through&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:taggigngs&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;name_only?&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;description&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;blank?&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;display_text&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tag_text&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;kp&quot;&gt;private&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;tag_text&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;#some complicated regex code&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We decide to move those two methods to a decorator:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#app/decorators/todo_decorator.rb&lt;/span&gt;
+
+&lt;span class=&quot;no&quot;&gt;Class&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;TodoDecorator&lt;/span&gt;
+  &lt;span class=&quot;kp&quot;&gt;attr_reader&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:todo&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;todo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@todo&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;todo&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;display_text&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;todo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tag_text&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;kp&quot;&gt;private&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;tag_text&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;todo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;any?&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;#some complicated regex code&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Now we can remove the extracted code from the Todo model and update the way its called in the views:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#app/views/todos/new.html/haml&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ul&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@todos&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;each&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;li&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;link_to&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;TodoDecorator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;todo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;display_text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;todo&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;If we find ourselves using the decorator alot, we could create a decorator method on the Todo model:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#app/models/todo.rb&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;decorator&lt;/span&gt;
+  &lt;span class=&quot;no&quot;&gt;TodoDecorator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We may in the future also want to call methods on the decorator and the original model and we don&amp;#39;t want the views to be concerned with this level of logic (when to instantiate the decorator vs the model)&lt;/p&gt;
+
+&lt;p&gt;In the Todos controller, we could pass an array of decorators in addition to an array of Todos:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#app/controllers/todos_controller.rb&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;index&lt;/span&gt;
+  &lt;span class=&quot;vi&quot;&gt;@todos&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current_user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;todos&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:decorator&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;But then our decorator has to respond to the methods within the decorator and within the model itself. To allow this we must extend  Ruby the Forwardable module and create a delegator method:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#app/decorators/todo_decorator.rb&lt;/span&gt;
+
+&lt;span class=&quot;no&quot;&gt;Class&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;TodoDecorator&lt;/span&gt;
+
+  &lt;span class=&quot;kp&quot;&gt;extend&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Forwardable&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;delegators&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:todo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:name_only?&lt;/span&gt;
+
+  &lt;span class=&quot;kp&quot;&gt;attr_reader&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:todo&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;todo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@todo&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;todo&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;display_text&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;todo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tag_text&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;kp&quot;&gt;private&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;tag_text&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;todo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tags&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;any?&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;#some complicated regex code&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Delegators are valuable when we present models one way in the database and differently in the browser - we use decorators to bridge this gap. When we seperate the domain logic from presentation logic, we can also test them seperately, creating decorator specs.&lt;/p&gt;
+
+&lt;h2&gt;Draper&lt;/h2&gt;
+
+&lt;p&gt;If you like decorators, you should check out &lt;a href=&quot;http://github.com/drapergem/draper&quot;&gt;Draper&lt;/a&gt;. Instead adding extendeding the Fowardable module, etc. All you have to do is create the decorator, make sure add &amp;#39;delegae_all&amp;#39; and update the videos controller:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;VideoDecorator&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Draper&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Decorator&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;delegate_all&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;rating&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rating&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;present?&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rating&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/5.0&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;N/A&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;VideosController&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ApplicationController&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;before_filter&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:require_user&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;index&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@videos&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Video&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;all&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@categories&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Category&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;all&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;show&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@video&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;VideoDecorator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;decorate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Video&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;find&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;params&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@reviews&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@video&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reviews&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 8: Transactions & Test Database Setup</title>
+   <link href="http:/gritcommit.com/2015/07/08/course3-transcations-test-database-setup/"/>
+   <updated>2015-07-08T00:00:00-04:00</updated>
+   <id>http:/gritcommit.com/2015/07/08/course3-transcations-test-database-setup</id>
+   <content type="html">&lt;h2&gt;Transactions and test database setup&lt;/h2&gt;
+
+&lt;p&gt;If you look at the instructions for capybara here: https://github.com/jnicklas/capybara&lt;/p&gt;
+
+&lt;p&gt;In the &amp;quot;Transactions and database setup&amp;quot; section, it talks about the Selenium driver needs to run against a real HTTP server and that capybara will start one for you but it runs on a different thread. In this case using &amp;quot;transactions&amp;quot; as the strategy to reset the database after each spec can be a problem, and this is where you want to use the &amp;quot;database_cleaner&amp;quot; gem so that you can use the &amp;quot;truncation&amp;quot; strategy, which effectively just goes to your database and delete all the records. It&amp;#39;s a bit slower than transaction rollbacks, but in this case guarantees data will be reset.&lt;/p&gt;
+
+&lt;p&gt;You can add the &amp;quot;database&lt;em&gt;cleaner&amp;quot; gem in your test group, and use the following configuration in your spec&lt;/em&gt;helper file inside of the RSpec.configure do |config| ... end block.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;before&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:suite&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;no&quot;&gt;DatabaseCleaner&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clean_with&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:truncation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;before&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:each&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;no&quot;&gt;DatabaseCleaner&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;strategy&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:truncation&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;before&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:each&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:js&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;no&quot;&gt;DatabaseCleaner&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;strategy&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:truncation&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;before&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:each&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;no&quot;&gt;DatabaseCleaner&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;start&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;after&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:each&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;no&quot;&gt;DatabaseCleaner&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clean&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 8: Feature Tests with Javascript</title>
+   <link href="http:/gritcommit.com/2015/07/06/course3-feature-tests-with-javascript/"/>
+   <updated>2015-07-06T00:00:00-04:00</updated>
+   <id>http:/gritcommit.com/2015/07/06/course3-feature-tests-with-javascript</id>
+   <content type="html">&lt;h2&gt;&lt;a href=&quot;https://github.com/jnicklas/capybara#selenium&quot;&gt;Selenium Webdriver&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;To date, our feature tests have been fun using Capybara, which using RackTest. While it is very fast, by default - it does not support javascript. Adding &amp;quot;:js =&amp;gt; true&amp;quot; to your test, will switch to the Capybara.javascript driver (Selenium Webdriver) - which will actually launch a browser to run the feature test.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#features/visitor_makes_payment.rb&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;require&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;spec_helper&amp;#39;&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;feature&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;Visitor makes payment&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;js&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;true&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;background&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;visit&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;new_payment_path&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;scenario&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;valid card number&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;pay_with_credit_card&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;424242424242424242&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;page&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;have_content&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;Thank you for your business!&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;s1&quot;&gt;scenairo &amp;quot;invalid card number&amp;quot; do&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;  pay_with_credit_card(&amp;#39;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;400000000000000069&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;)&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;  expect(page).to have_content(&amp;#39;&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Your&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;card&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;has&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;expired!&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;)&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;s1&quot;&gt;scendario &amp;quot;declined card&amp;quot; do&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;  pay_with_credit_card(&amp;#39;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4000000000000000002&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;)&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;  expect(page).to have_content(&amp;#39;&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Your&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;card&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;was&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;declined!&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;)&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;  end&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;s1&quot;&gt;def pay_with_crdit_card(card_number)&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;  fill_in &amp;quot;Credit Card Number&amp;quot;, with: card_number&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;  fill_in &amp;quot;Security Code&amp;quot;, with: &amp;quot;123&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;  select &amp;quot;3 - March&amp;quot;, from: &amp;quot;date_month&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;s1&quot;&gt;  select &amp;quot;2015&amp;quot;, from: &amp;#39;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;date_year&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;&amp;#39;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;click_button&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Submit Payment&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Tips:
+Your Selenium Webdiver must be compatiable with your latest version of Firefox.&lt;/p&gt;
+
+&lt;h2&gt;&lt;a href=&quot;https://github.com/jnicklas/capybara#capybara-webkit&quot;&gt;Capybara Webkit&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;Since Selenium Webdriver is really slow, we will go with Capybara Webkit which is faster. This will require you to install the Capybrara Webkit gem and also install Qt locally (using homebrew). Make it the default js runner by declaring so in your spec_helper:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;no&quot;&gt;Capybara&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;javascript_driver&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:webkit&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;To run tests with Selenium Webdriver so you can see what is happening in the web browser, simply add &amp;quot;driver: selenium&amp;quot; to the spec:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;scenario&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;valid card number&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;driver&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;selenium&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2&gt;&lt;a href=&quot;https://github.com/jnicklas/capybara#poltergeist&quot;&gt;Poltergeist&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;Must install PhantomJs locally but it has a very nice feature set and allows for extensive customization.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
    <title>Build Robust & Production Quality Applications - Lesson 8: Fully Integrated API Tests</title>
-   <link href="http://jamelablack.github.io/2015/07/04/course3-isolated-api-tests/"/>
+   <link href="http:/gritcommit.com/2015/07/05/course3--stubs-doubles/"/>
+   <updated>2015-07-05T00:00:00-04:00</updated>
+   <id>http:/gritcommit.com/2015/07/05/course3--stubs-doubles</id>
+   <content type="html">&lt;h2&gt;Stub Methods&lt;/h2&gt;
+
+&lt;p&gt;Typically, you want to use the stub method in three scenarios:
+1. You want to use the stub method when actually calling a method is expensive in terms of time. So you stub the test double to be in state that you desire.&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;The action or interface that you&amp;#39;re testing is already thoroughly tested elsewhere. For example, there is no need to fully test the Stripe API&amp;#39;s ablility to charge credi card and return token, becasue this funcitionality is already in the StripeWrapper::Charge test - therefore stubbing would be perfectly fine.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;You want to mimick some behavior you haven&amp;#39;t fully developed yet.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Doubles create a fake object that stands in the place of a real object and stubs call a desried fictitious method on that double and gives it a desired value as a result of calling that fictitous method.&lt;/p&gt;
+
+&lt;p&gt;We are intersted in doubles and stubs in this case because we want to avoid actually submtting a an charge and hitting Stripe&amp;#39;s server.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#spec/controllers/payments_controller.rb&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;require&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;spec_helper&amp;#39;&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;describe&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;PaymentsController&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;describe&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;POST create&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;context&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;with a successful charge&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;before&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;charge&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;double&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;charge&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;charge&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stub&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:successful?&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;and_return&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kp&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;no&quot;&gt;StripeWrapper&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Charge&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stub&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;and_return&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;charge&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+        &lt;span class=&quot;n&quot;&gt;post&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;token&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;123&amp;#39;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;sets the flash success message&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;flash&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:success&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;eq&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;Thank you!&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;redirects to the new payment path&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;response&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;redirect_to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;new_payment_path&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;context&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;with an failed charge&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;before&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;charge&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;double&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;charge&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;charge&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stub&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:successful?&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;and_return&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kp&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;charge&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stub&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:error_message&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;and_return&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;Your card was declined&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+      &lt;span class=&quot;no&quot;&gt;StripeWrapper&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Charge&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stub&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;and_return&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;charge&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;post&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;token&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;123&amp;#39;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;sets the flash error message&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;flash&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:error&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eq&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;Your card was declined&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;redirects to the new payment path&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;response&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;redirect_to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;new_payment_path&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#app/controllers/payments_controller.rb&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;PaymentsController&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ApplicationController&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;create&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;token&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;params&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:stripeToken&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;charge&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;StripeWrapper&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Charge&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;amount&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;card&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;token&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;charge&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;successful?&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;flash&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:succes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Thank you!&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;redirect_to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;new_payment_path&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;flash&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:error&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;charge&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;error_message&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;redirect_to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;new_payment_path&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Check out the Test Doubles &lt;a href=&quot;https://www.relishapp.com/rspec/rspec-mocks/v/3-3/docs/basics/test-doubles&quot;&gt;docs&lt;/a&gt; for more info. For more info on Method Stubs, with an older version on Rspec, checkout these &lt;a href=&quot;http://www.relishapp.com/rspec/rspec-mocks/v/2-13/docs/method-stubs&quot;&gt;docs&lt;/a&gt; also.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Build Robust & Production Quality Applications - Lesson 8: Fully Integrated API Tests</title>
+   <link href="http:/gritcommit.com/2015/07/04/course3-isolated-api-tests/"/>
    <updated>2015-07-04T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/07/04/course3-isolated-api-tests</id>
+   <id>http:/gritcommit.com/2015/07/04/course3-isolated-api-tests</id>
    <content type="html">&lt;h2&gt;Isolated API Tests Stubbing Out the Internet&lt;/h2&gt;
 
 &lt;p&gt;Hitting the Stripe server takes alot of time approximently 22 seconds sicnce we are hitting the server twice, once to grab the token. The answer to this is pre-script a response for a given request.&lt;/p&gt;
@@ -52,22 +767,27 @@
 &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;h3&gt;Step 3: Add :vcr to the transactions you want to record&lt;/h3&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;it &amp;quot;charges the card successfully&amp;quot;, :vcr do
-response = StripeWapper::Charge.create(amount: 300, card: token)
-expect(response).to be_successful
-end
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;charges the card successfully&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:vcr&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;response&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;StripeWapper&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Charge&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;amount&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;300&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;card&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;token&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;response&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;be_successful&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
 &lt;h3&gt;Step 4: Cassettes &amp;amp; Configs&lt;/h3&gt;
 
 &lt;p&gt;As default, spec/cassettes holds all recordings and a creates data files for each spec ran. VCR allows for extensive customization. Including how many recordings per spec whether it be once or all.&lt;/p&gt;
+
+&lt;h3&gt;Refactor&lt;/h3&gt;
+
+&lt;p&gt;You can add Stripe.api&lt;em&gt;key = ENV[&amp;#39;STRIPE&lt;/em&gt;SECRET_KEY&amp;#39;] to your initializers (config/initializers/stripe.rb), rather than including in each test.&lt;/p&gt;
 </content>
  </entry>
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 8: Fully Integrated API Tests</title>
-   <link href="http://jamelablack.github.io/2015/07/03/course3-integrated-API-tests/"/>
+   <link href="http:/gritcommit.com/2015/07/03/course3-integrated-API-tests/"/>
    <updated>2015-07-03T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/07/03/course3-integrated-API-tests</id>
+   <id>http:/gritcommit.com/2015/07/03/course3-integrated-API-tests</id>
    <content type="html">&lt;p&gt;The are generally two options when testing third party API wrappers. We could only go to the where the TPA is and call the API and create fake response data - so what  we are testing is given the generated response, can your application interpret the response and generate the desired result. On the other hand, we can go all the way to the extent to hit the TPA server and hit their server, getting the real response and intergrate our wrapper code with that data to test it.&lt;/p&gt;
 
 &lt;p&gt;In this instance, we are writing fully intergrated API specs
@@ -116,9 +836,9 @@ end
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 8: How to Build API Wrappers</title>
-   <link href="http://jamelablack.github.io/2015/07/02/course3-API-wrappers/"/>
+   <link href="http:/gritcommit.com/2015/07/02/course3-API-wrappers/"/>
    <updated>2015-07-02T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/07/02/course3-API-wrappers</id>
+   <id>http:/gritcommit.com/2015/07/02/course3-API-wrappers</id>
    <content type="html">&lt;p&gt;Since we are going to be using Stripe alot, it may be smart to put the API in something called an API Wrapper, which becomed a centralized place for the API, rather than spread through-out your application.&lt;/p&gt;
 
 &lt;p&gt;Create a Wrapper called Stripe Wrapper&lt;/p&gt;
@@ -206,9 +926,9 @@ end&lt;/p&gt;
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 7: Processing Credit Card Payments Online with Stripe</title>
-   <link href="http://jamelablack.github.io/2015/07/01/course3-credit-card-payments/"/>
+   <link href="http:/gritcommit.com/2015/07/01/course3-credit-card-payments/"/>
    <updated>2015-07-01T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/07/01/course3-credit-card-payments</id>
+   <id>http:/gritcommit.com/2015/07/01/course3-credit-card-payments</id>
    <content type="html">&lt;h2&gt;Processing Credit Card Payments Online&lt;/h2&gt;
 
 &lt;p&gt;Back in the day, processing credit cards online was intense as told by 37Signals in their &lt;a href=&quot;https://signalvnoise.com/posts/753-ask-37signals-how-do-you-process-credit-cards&quot;&gt;blogpost&lt;/a&gt; back in 2007. If merchants didn&amp;#39;t want to connect their customers to Paypal to checkout, they had create a Merchant Account, followed by having an account with Authorize.net, and then an engine called ActiveMarchant with is Ruby gem for reoccuring billing - which required alot of custom code and an intense daily business process.
@@ -315,9 +1035,9 @@ This file will help to make sure that you add the payments.js file in the asset 
  
  <entry>
    <title>Sandi Metz - The Rules</title>
-   <link href="http://jamelablack.github.io/2015/06/30/Metz-5-Rules/"/>
+   <link href="http:/gritcommit.com/2015/06/30/Metz-5-Rules/"/>
    <updated>2015-06-30T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/06/30/Metz-5-Rules</id>
+   <id>http:/gritcommit.com/2015/06/30/Metz-5-Rules</id>
    <content type="html">&lt;ol&gt;
 &lt;li&gt;&lt;p&gt;Class can have no more than 100 lines&lt;/p&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;A method can contain no more than 5 lines&lt;/p&gt;&lt;/li&gt;
@@ -346,9 +1066,9 @@ This file will help to make sure that you add the payments.js file in the asset 
  
  <entry>
    <title>Refactoring - Dealing wihth Generalization</title>
-   <link href="http://jamelablack.github.io/2015/06/26/Refactoring-Generalization/"/>
+   <link href="http:/gritcommit.com/2015/06/26/Refactoring-Generalization/"/>
    <updated>2015-06-26T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/06/26/Refactoring-Generalization</id>
+   <id>http:/gritcommit.com/2015/06/26/Refactoring-Generalization</id>
    <content type="html">&lt;h3&gt;1. Pull Up Method&lt;/h3&gt;
 
 &lt;p&gt;You have methods with identical results on subclasses. Move them to the superclass.&lt;/p&gt;
@@ -402,9 +1122,9 @@ Replace the superclass with a module to better communicate your intention.&lt;/p
  
  <entry>
    <title>Refactoring - Simplifying Conditional Expressions</title>
-   <link href="http://jamelablack.github.io/2015/06/25/Refactoring-conditionals/"/>
+   <link href="http:/gritcommit.com/2015/06/25/Refactoring-conditionals/"/>
    <updated>2015-06-25T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/06/25/Refactoring-conditionals</id>
+   <id>http:/gritcommit.com/2015/06/25/Refactoring-conditionals</id>
    <content type="html">&lt;h3&gt;1. Decompose Condtional&lt;/h3&gt;
 
 &lt;p&gt;You have a complicated conditional (if-then-else) statement.
@@ -465,9 +1185,9 @@ Replace the nil value with a null object.&lt;/p&gt;
  
  <entry>
    <title>Refactoring - Simple Method Calls</title>
-   <link href="http://jamelablack.github.io/2015/06/25/Refactoring-Simple-Method-Calls/"/>
+   <link href="http:/gritcommit.com/2015/06/25/Refactoring-Simple-Method-Calls/"/>
    <updated>2015-06-25T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/06/25/Refactoring-Simple-Method-Calls</id>
+   <id>http:/gritcommit.com/2015/06/25/Refactoring-Simple-Method-Calls</id>
    <content type="html">&lt;h3&gt;1.. Rename Method&lt;/h3&gt;
 
 &lt;p&gt;The name of a method does not reveal its purpose.
@@ -555,9 +1275,9 @@ Introduce an Expression Builder and create an interface specific to your applica
  
  <entry>
    <title>Refactoring - Organizng Data</title>
-   <link href="http://jamelablack.github.io/2015/06/23/Refactoring-Organizing-Data/"/>
+   <link href="http:/gritcommit.com/2015/06/23/Refactoring-Organizing-Data/"/>
    <updated>2015-06-23T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/06/23/Refactoring-Organizing-Data</id>
+   <id>http:/gritcommit.com/2015/06/23/Refactoring-Organizing-Data</id>
    <content type="html">&lt;h3&gt;1. Self Encapsulated Field&lt;/h3&gt;
 
 &lt;p&gt;You are accessing a field directly, but the coupling to the field is becoming awkward.
@@ -597,9 +1317,9 @@ Replace the Hash with an object that has a field for each key.&lt;/p&gt;
  
  <entry>
    <title>Refactoring - Moving Features from Objects</title>
-   <link href="http://jamelablack.github.io/2015/06/21/Refactoring-Moving-Features/"/>
+   <link href="http:/gritcommit.com/2015/06/21/Refactoring-Moving-Features/"/>
    <updated>2015-06-21T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/06/21/Refactoring-Moving-Features</id>
+   <id>http:/gritcommit.com/2015/06/21/Refactoring-Moving-Features</id>
    <content type="html">&lt;p&gt;The most fundamental question in object oriented design is &amp;quot;Where to put responsibilities&amp;quot; Often times issues around these questions resolve these problems simply by using Move Method and Move Field to move the behavior around. If we need to use both, use Move Field first and then Move Method.&lt;/p&gt;
 
 &lt;h3&gt;Move Method&lt;/h3&gt;
@@ -636,9 +1356,9 @@ Get the client to call the delegate directly. In the motivation for Hide Delegat
  
  <entry>
    <title>Refactoring - Composing Methods</title>
-   <link href="http://jamelablack.github.io/2015/06/20/refactoring-composing_methods/"/>
+   <link href="http:/gritcommit.com/2015/06/20/refactoring-composing_methods/"/>
    <updated>2015-06-20T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/06/20/refactoring-composing_methods</id>
+   <id>http:/gritcommit.com/2015/06/20/refactoring-composing_methods</id>
    <content type="html">&lt;h3&gt;Extract Method&lt;/h3&gt;
 
 &lt;p&gt;is moving duplicate code into a method. Create a new method, and name it after the intention of the method (name it by what it does, not by how it does it). &lt;/p&gt;
@@ -710,9 +1430,9 @@ itself.&lt;/p&gt;
  
  <entry>
    <title>Refactoring - Code Smells</title>
-   <link href="http://jamelablack.github.io/2015/06/15/Refactoring-CodeSmells/"/>
+   <link href="http:/gritcommit.com/2015/06/15/Refactoring-CodeSmells/"/>
    <updated>2015-06-15T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/06/15/Refactoring-CodeSmells</id>
+   <id>http:/gritcommit.com/2015/06/15/Refactoring-CodeSmells</id>
    <content type="html">&lt;h2&gt;Code Smells&lt;/h2&gt;
 
 &lt;h3&gt;1. Duplicated Code&lt;/h3&gt;
@@ -830,9 +1550,9 @@ Tip When you feel the need to write a comment, first try to refactor the code so
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 7: File Uploading with Carrierwave</title>
-   <link href="http://jamelablack.github.io/2015/06/10/course3-Carrierwave/"/>
+   <link href="http:/gritcommit.com/2015/06/10/course3-Carrierwave/"/>
    <updated>2015-06-10T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/06/10/course3-Carrierwave</id>
+   <id>http:/gritcommit.com/2015/06/10/course3-Carrierwave</id>
    <content type="html">&lt;h2&gt;Adding Carrierwave to your Application&lt;/h2&gt;
 
 &lt;h4&gt;1. Install gem Carrierwave-aws&lt;/h4&gt;
@@ -900,9 +1620,9 @@ Tip When you feel the need to write a comment, first try to refactor the code so
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 7: Amazon S3</title>
-   <link href="http://jamelablack.github.io/2015/06/08/course3-Amazon-S3/"/>
+   <link href="http:/gritcommit.com/2015/06/08/course3-Amazon-S3/"/>
    <updated>2015-06-08T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/06/08/course3-Amazon-S3</id>
+   <id>http:/gritcommit.com/2015/06/08/course3-Amazon-S3</id>
    <content type="html">&lt;h2&gt;Amazon S3&lt;/h2&gt;
 
 &lt;p&gt;Amazon Simple Sotrogae Service is a great storage service websites where large amounts of data are required for you to upload your own content, such as images and videos and you users can upload content, as well.&lt;/p&gt;
@@ -913,9 +1633,9 @@ Tip When you feel the need to write a comment, first try to refactor the code so
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 6: Securing Access</title>
-   <link href="http://jamelablack.github.io/2015/06/06/course3-securing-access/"/>
+   <link href="http:/gritcommit.com/2015/06/06/course3-securing-access/"/>
    <updated>2015-06-06T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/06/06/course3-securing-access</id>
+   <id>http:/gritcommit.com/2015/06/06/course3-securing-access</id>
    <content type="html">&lt;h2&gt;Securing Access for Different Actors&lt;/h2&gt;
 
 &lt;p&gt;In past, to secure access we would have created a before filter for each controller and specified the action - however, this can become cumbersome depending on the size of the app.&lt;/p&gt;
@@ -949,9 +1669,9 @@ Tip When you feel the need to write a comment, first try to refactor the code so
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 6: Continuous Delivery</title>
-   <link href="http://jamelablack.github.io/2015/06/05/course3-seperating-actors/"/>
+   <link href="http:/gritcommit.com/2015/06/05/course3-seperating-actors/"/>
    <updated>2015-06-05T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/06/05/course3-seperating-actors</id>
+   <id>http:/gritcommit.com/2015/06/05/course3-seperating-actors</id>
    <content type="html">&lt;h2&gt;Actors&lt;/h2&gt;
 
 &lt;p&gt;Actors are different types of users, most likely referred to as admins, becasue they act differently within your application.&lt;/p&gt;
@@ -1015,9 +1735,9 @@ Tip When you feel the need to write a comment, first try to refactor the code so
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 6: Continuous Delivery</title>
-   <link href="http://jamelablack.github.io/2015/06/03/course3-Continuous-Delivery/"/>
+   <link href="http:/gritcommit.com/2015/06/03/course3-Continuous-Delivery/"/>
    <updated>2015-06-03T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/06/03/course3-Continuous-Delivery</id>
+   <id>http:/gritcommit.com/2015/06/03/course3-Continuous-Delivery</id>
    <content type="html">&lt;h2&gt;Continuous Delivery&lt;/h2&gt;
 
 &lt;h4&gt;Excerpt from Tealeaf:&lt;/h4&gt;
@@ -1086,9 +1806,9 @@ Here is an example of a circle.yml file that you can use:&lt;/p&gt;
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 6: Continuous Intgeration</title>
-   <link href="http://jamelablack.github.io/2015/05/30/course3-CI/"/>
+   <link href="http:/gritcommit.com/2015/05/30/course3-CI/"/>
    <updated>2015-05-30T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/05/30/course3-CI</id>
+   <id>http:/gritcommit.com/2015/05/30/course3-CI</id>
    <content type="html">&lt;h2&gt;Continuous Integration&lt;/h2&gt;
 
 &lt;p&gt;According to Martin Fowler&amp;#39;s &lt;a href=&quot;http://martinfowler.com/articles/continuousIntegration.html&quot;&gt;blog&lt;/a&gt;, Continuous Integration is
@@ -1118,9 +1838,9 @@ Continuous Integration is a software development practice where members of a tea
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 6: Simple Deployment Pipeline</title>
-   <link href="http://jamelablack.github.io/2015/05/28/course3-production-error-monitoring/"/>
+   <link href="http:/gritcommit.com/2015/05/28/course3-production-error-monitoring/"/>
    <updated>2015-05-28T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/05/28/course3-production-error-monitoring</id>
+   <id>http:/gritcommit.com/2015/05/28/course3-production-error-monitoring</id>
    <content type="html">&lt;h2&gt;Set-up Production Error Monitoring&lt;/h2&gt;
 
 &lt;p&gt;Regardless how well we have tested our application, there will always be errors on the production server. To get notified of production errors so you can respond to them, you need to set up an error monitoring service in production.&lt;/p&gt;
@@ -1142,9 +1862,9 @@ Continuous Integration is a software development practice where members of a tea
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 6: Simple Deployment Pipeline</title>
-   <link href="http://jamelablack.github.io/2015/05/26/course3-simple-deploy-pipeline/"/>
+   <link href="http:/gritcommit.com/2015/05/26/course3-simple-deploy-pipeline/"/>
    <updated>2015-05-26T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/05/26/course3-simple-deploy-pipeline</id>
+   <id>http:/gritcommit.com/2015/05/26/course3-simple-deploy-pipeline</id>
    <content type="html">&lt;h2&gt;&lt;a href=&quot;http://martinfowler.com/bliki/ContinuousDelivery.html&quot;&gt;Continuous Delivery&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt;Usually the first stage of a deployment pipeline will do any compilation and provide binaries for later stages. Later stages may include manual checks, such as any tests that can&amp;#39;t be automated. Stages can be automatic, or require human authorization to proceed, they may be parallelized over many machines to speed up the build. Deploying into production is usually the final stage in a pipeline.&lt;/p&gt;
@@ -1188,9 +1908,9 @@ Continuous Integration is a software development practice where members of a tea
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 6: Staging Server & Production Servers</title>
-   <link href="http://jamelablack.github.io/2015/05/24/course3-staging-prod-server/"/>
+   <link href="http:/gritcommit.com/2015/05/24/course3-staging-prod-server/"/>
    <updated>2015-05-24T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/05/24/course3-staging-prod-server</id>
+   <id>http:/gritcommit.com/2015/05/24/course3-staging-prod-server</id>
    <content type="html">&lt;p&gt;Follow this tutorial on &lt;a href=&quot;https://devcenter.heroku.com/articles/multiple-environments&quot;&gt;Heroku&lt;/a&gt; to understand the difference between staging and prodcution&lt;/p&gt;
 
 &lt;p&gt;A few things I&amp;#39;d like to add:&lt;/p&gt;
@@ -1207,17 +1927,17 @@ Continuous Integration is a software development practice where members of a tea
  
  <entry>
    <title>Course3 Staging Vs Production</title>
-   <link href="http://jamelablack.github.io/2015/05/22/course3-staging-vs-production/"/>
+   <link href="http:/gritcommit.com/2015/05/22/course3-staging-vs-production/"/>
    <updated>2015-05-22T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/05/22/course3-staging-vs-production</id>
+   <id>http:/gritcommit.com/2015/05/22/course3-staging-vs-production</id>
    <content type="html"></content>
  </entry>
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 6: Riding Unicorns</title>
-   <link href="http://jamelablack.github.io/2015/05/20/course3-riding_unicorns/"/>
+   <link href="http:/gritcommit.com/2015/05/20/course3-riding_unicorns/"/>
    <updated>2015-05-20T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/05/20/course3-riding_unicorns</id>
+   <id>http:/gritcommit.com/2015/05/20/course3-riding_unicorns</id>
    <content type="html">&lt;h2&gt;Using Unicorn as a Production Server&lt;/h2&gt;
 
 &lt;p&gt;Visit http://devcenter.heroku.com/articles/rails-unicorn&lt;/p&gt;
@@ -1263,9 +1983,9 @@ Continuous Integration is a software development practice where members of a tea
  
  <entry>
    <title>Course3 Procfile Foreman</title>
-   <link href="http://jamelablack.github.io/2015/05/10/course3-procfile-foreman/"/>
+   <link href="http:/gritcommit.com/2015/05/10/course3-procfile-foreman/"/>
    <updated>2015-05-10T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/05/10/course3-procfile-foreman</id>
+   <id>http:/gritcommit.com/2015/05/10/course3-procfile-foreman</id>
    <content type="html">&lt;hr&gt;
 
 &lt;p&gt;layout: post
@@ -1305,9 +2025,9 @@ Continuous Integration is a software development practice where members of a tea
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 6: Background Jobs</title>
-   <link href="http://jamelablack.github.io/2015/05/05/course3-background-jobs/"/>
+   <link href="http:/gritcommit.com/2015/05/05/course3-background-jobs/"/>
    <updated>2015-05-05T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/05/05/course3-background-jobs</id>
+   <id>http:/gritcommit.com/2015/05/05/course3-background-jobs</id>
    <content type="html">&lt;h2&gt;Background Jobs&lt;/h2&gt;
 
 &lt;p&gt;Email sending typically is not very fast since we have to rely on some third party application. Waiting can slow up your app and potentially frustrate users so it&amp;#39;s best to put non-essential and non-time-sensitive tasks in background jobs.&lt;/p&gt;
@@ -1400,9 +2120,9 @@ Beanstalk and Stalker may be better if you care about speed, as they have a pull
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 6: Mailgun & Heroku</title>
-   <link href="http://jamelablack.github.io/2015/05/01/course3-mailgun-heroku/"/>
+   <link href="http:/gritcommit.com/2015/05/01/course3-mailgun-heroku/"/>
    <updated>2015-05-01T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/05/01/course3-mailgun-heroku</id>
+   <id>http:/gritcommit.com/2015/05/01/course3-mailgun-heroku</id>
    <content type="html">&lt;h2&gt;To send emails from your Heroku app using Mailgun is simple:&lt;/h2&gt;
 
 &lt;h3&gt;1. Mailgun Addon&lt;/h3&gt;
@@ -1441,9 +2161,9 @@ Beanstalk and Stalker may be better if you care about speed, as they have a pull
  
  <entry>
    <title>POODR - Ch4: Creating Flexible Interfaces</title>
-   <link href="http://jamelablack.github.io/2015/04/27/POODR-ch4/"/>
+   <link href="http:/gritcommit.com/2015/04/27/POODR-ch4/"/>
    <updated>2015-04-27T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/04/27/POODR-ch4</id>
+   <id>http:/gritcommit.com/2015/04/27/POODR-ch4</id>
    <content type="html">&lt;p&gt;There is design detail that must be captured at this level but an object-oriented application is more than just classes. It is made up of classes but defined by messages. Classes control what’s in your source code repository; messages reflect the living, ani- mated application.
 Design, therefore, must be concerned with the messages that pass between ob- jects. It deals not only with what objects know (their responsibilities) and who they know (their dependencies), but how they talk to one another. The conversation be- tween objects takes place using their interfaces.&lt;/p&gt;
 
@@ -1524,9 +2244,9 @@ Construct public interfaces with an eye toward minimizing the context they requi
  
  <entry>
    <title>POODR - Ch3: Mangaging Dependencies</title>
-   <link href="http://jamelablack.github.io/2015/04/23/POODR-ch3/"/>
+   <link href="http:/gritcommit.com/2015/04/23/POODR-ch3/"/>
    <updated>2015-04-23T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/04/23/POODR-ch3</id>
+   <id>http:/gritcommit.com/2015/04/23/POODR-ch3</id>
    <content type="html">&lt;p&gt;Each message is initiated by an object to invoke some bit of behavior. All of the behavior is dispersed among the objects. Therefore, for any desired behavior:&lt;/p&gt;
 
 &lt;ul&gt;
@@ -1690,9 +2410,9 @@ This short statement belies the sophistication of the idea, which is based on th
  
  <entry>
    <title>POODR - Ch2: Designing Classes with a Single Responsibility</title>
-   <link href="http://jamelablack.github.io/2015/04/22/POODR-ch2/"/>
+   <link href="http:/gritcommit.com/2015/04/22/POODR-ch2/"/>
    <updated>2015-04-22T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/04/22/POODR-ch2</id>
+   <id>http:/gritcommit.com/2015/04/22/POODR-ch2</id>
    <content type="html">&lt;p&gt;The foundation of an object-orietned is the message, but most visible organizational structure is the class.&lt;/p&gt;
 
 &lt;h3&gt;OO Questions:&lt;/h3&gt;
@@ -1790,9 +2510,9 @@ Ruby defines Struct as &amp;quot;a convenient way to bundle a number of attribut
  
  <entry>
    <title>POODR - Ch1: Object Oriented Design</title>
-   <link href="http://jamelablack.github.io/2015/04/20/POODR-ch1/"/>
+   <link href="http:/gritcommit.com/2015/04/20/POODR-ch1/"/>
    <updated>2015-04-20T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/04/20/POODR-ch1</id>
+   <id>http:/gritcommit.com/2015/04/20/POODR-ch1</id>
    <content type="html">&lt;p&gt;Object Oriented Design requires that you shift from thinking about the world as a collection of predefined procedures to modeling th world as a series of messages that are past between objects.&lt;/p&gt;
 
 &lt;h2&gt;In Praise of Design&lt;/h2&gt;
@@ -1871,9 +2591,9 @@ your skills and your timeframe.&lt;/p&gt;
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 6: Mailgun</title>
-   <link href="http://jamelablack.github.io/2015/04/16/course3-mailgun/"/>
+   <link href="http:/gritcommit.com/2015/04/16/course3-mailgun/"/>
    <updated>2015-04-16T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/04/16/course3-mailgun</id>
+   <id>http:/gritcommit.com/2015/04/16/course3-mailgun</id>
    <content type="html">&lt;h2&gt;Mailgun&lt;/h2&gt;
 
 &lt;p&gt;Mailgun is an email service for developers - which is clear in its interface. It has a ver low-level design that is easy for tweaking and has alot of options.&lt;/p&gt;
@@ -1903,9 +2623,9 @@ your skills and your timeframe.&lt;/p&gt;
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 6: Email Service Providers</title>
-   <link href="http://jamelablack.github.io/2015/04/13/course3-email-service-providers/"/>
+   <link href="http:/gritcommit.com/2015/04/13/course3-email-service-providers/"/>
    <updated>2015-04-13T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/04/13/course3-email-service-providers</id>
+   <id>http:/gritcommit.com/2015/04/13/course3-email-service-providers</id>
    <content type="html">&lt;p&gt;With Gmail, there are clear sending &lt;a href=&quot;https://support.google.com/a/answer/166852?hl=en&quot;&gt;limitations&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;Sending out emails is something that you should offload onto a third-party provider as it is a critical business process. You want to ensure emails are recieved right away and not in the recipients email folder.&lt;/p&gt;
@@ -1920,9 +2640,9 @@ your skills and your timeframe.&lt;/p&gt;
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 6: ActiveSupport::Concerns</title>
-   <link href="http://jamelablack.github.io/2015/04/07/couse3-concerns/"/>
+   <link href="http:/gritcommit.com/2015/04/07/couse3-concerns/"/>
    <updated>2015-04-07T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/04/07/couse3-concerns</id>
+   <id>http:/gritcommit.com/2015/04/07/couse3-concerns</id>
    <content type="html">&lt;p&gt;In our Todos example, we created a method&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;before_create&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:generate_token&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
@@ -1979,9 +2699,9 @@ config.autoload_paths &amp;lt;&amp;lt; &amp;quot;#{Rails.root}/lib&amp;quot;&lt;
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 6: Inviting Users- Part 3</title>
-   <link href="http://jamelablack.github.io/2015/04/05/course3-invite-users/"/>
+   <link href="http:/gritcommit.com/2015/04/05/course3-invite-users/"/>
    <updated>2015-04-05T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/04/05/course3-invite-users</id>
+   <id>http:/gritcommit.com/2015/04/05/course3-invite-users</id>
    <content type="html">&lt;h2&gt;Feature Spec: Inviting Users&lt;/h2&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;nb&quot;&gt;require&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;spec_helper&amp;#39;&lt;/span&gt;
@@ -2043,9 +2763,9 @@ config.autoload_paths &amp;lt;&amp;lt; &amp;quot;#{Rails.root}/lib&amp;quot;&lt;
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 6: Inviting Users- Part 2</title>
-   <link href="http://jamelablack.github.io/2015/04/03/course3-invite-users/"/>
+   <link href="http:/gritcommit.com/2015/04/03/course3-invite-users/"/>
    <updated>2015-04-03T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/04/03/course3-invite-users</id>
+   <id>http:/gritcommit.com/2015/04/03/course3-invite-users</id>
    <content type="html">&lt;h2&gt;Inviting Users - 2nd part of Workflow:&lt;/h2&gt;
 
 &lt;ol&gt;
@@ -2249,9 +2969,9 @@ config.autoload_paths &amp;lt;&amp;lt; &amp;quot;#{Rails.root}/lib&amp;quot;&lt;
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 6: Inviting Users</title>
-   <link href="http://jamelablack.github.io/2015/03/31/course3-invite-users/"/>
+   <link href="http:/gritcommit.com/2015/03/31/course3-invite-users/"/>
    <updated>2015-03-31T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/03/31/course3-invite-users</id>
+   <id>http:/gritcommit.com/2015/03/31/course3-invite-users</id>
    <content type="html">&lt;p&gt;Let&amp;#39;s write add functionality to allow users to invite their friends:&lt;/p&gt;
 
 &lt;h3&gt;Workflow:&lt;/h3&gt;
@@ -2484,9 +3204,9 @@ the invalid inputs. - we want that number to be 0&lt;/p&gt;
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 6: Writing Feature Tests for Emails</title>
-   <link href="http://jamelablack.github.io/2015/03/25/course3-writing-feature-tests-for-emails/"/>
+   <link href="http:/gritcommit.com/2015/03/25/course3-writing-feature-tests-for-emails/"/>
    <updated>2015-03-25T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/03/25/course3-writing-feature-tests-for-emails</id>
+   <id>http:/gritcommit.com/2015/03/25/course3-writing-feature-tests-for-emails</id>
    <content type="html">&lt;h2&gt;Interact with Emails in Feature Tests:&lt;/h2&gt;
 
 &lt;p&gt;Sometimes applications may require you to complete a form and an email is
@@ -2527,9 +3247,9 @@ To test this feature, Capybara-email is a great way to test this functionality a
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD</title>
-   <link href="http://jamelablack.github.io/2015/03/20/course3-three-styles-of-bdd/"/>
+   <link href="http:/gritcommit.com/2015/03/20/course3-three-styles-of-bdd/"/>
    <updated>2015-03-20T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/03/20/course3-three-styles-of-bdd</id>
+   <id>http:/gritcommit.com/2015/03/20/course3-three-styles-of-bdd</id>
    <content type="html">&lt;h2&gt;Testing Styles in Rails: Three Styles of Behavior Driven Development&lt;/h2&gt;
 
 &lt;p&gt;Traditionally we have followed the following flow:&lt;/p&gt;
@@ -2585,9 +3305,9 @@ same way that we reference the Integration Tests in the &amp;quot;Meet in the Mi
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues</title>
-   <link href="http://jamelablack.github.io/2015/03/17/course3-transactions/"/>
+   <link href="http:/gritcommit.com/2015/03/17/course3-transactions/"/>
    <updated>2015-03-17T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/03/17/course3-transactions</id>
+   <id>http:/gritcommit.com/2015/03/17/course3-transactions</id>
    <content type="html">&lt;p&gt;The[ previous example reegarding updating video review while in queue does not follow typical Rails convention:
 - We are using in the update&lt;em&gt;queue method.
 - we have to use parameter naming conventions to parse out the queue&lt;/em&gt;item id and
@@ -2620,9 +3340,9 @@ position id in the form.
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions</title>
-   <link href="http://jamelablack.github.io/2015/03/15/course3-parameter-naming-conventions/"/>
+   <link href="http:/gritcommit.com/2015/03/15/course3-parameter-naming-conventions/"/>
    <updated>2015-03-15T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/03/15/course3-parameter-naming-conventions</id>
+   <id>http:/gritcommit.com/2015/03/15/course3-parameter-naming-conventions</id>
    <content type="html">&lt;h2&gt;Parameter Naming Conventions&lt;/h2&gt;
 
 &lt;p&gt;Visit Rails Guides&amp;#39; &lt;a href=&quot;http://guides.rubyonrails.org/form_helpers.html#understanding-parameter-naming-conventions.&quot;&gt;Parameter Naming Conventions&lt;/a&gt;
@@ -2687,9 +3407,9 @@ already exists in the current hash.&lt;/p&gt;
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 4: Update Review in Queue</title>
-   <link href="http://jamelablack.github.io/2015/03/10/course3-update-review-in-queue/"/>
+   <link href="http:/gritcommit.com/2015/03/10/course3-update-review-in-queue/"/>
    <updated>2015-03-10T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2015/03/10/course3-update-review-in-queue</id>
+   <id>http:/gritcommit.com/2015/03/10/course3-update-review-in-queue</id>
    <content type="html">&lt;p&gt;In Myflix, we want to be able to allow the user to update video rating in the video_play queue.&lt;/p&gt;
 
 &lt;p&gt;Goal: To change video rating from the queue&lt;em&gt;item index.
@@ -2726,9 +3446,9 @@ into the instance variable and will not database again when record is called.&lt
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 3: Part 3</title>
-   <link href="http://jamelablack.github.io/2015/03/07/course3-lesson3/"/>
+   <link href="http:/gritcommit.com/2015/03/07/course3-lesson3/"/>
    <updated>2015-03-07T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2015/03/07/course3-lesson3</id>
+   <id>http:/gritcommit.com/2015/03/07/course3-lesson3</id>
    <content type="html">&lt;h2&gt;Items Covered:&lt;/h2&gt;
 
 &lt;ol&gt;
@@ -2986,9 +3706,9 @@ During pry. you can use&lt;/p&gt;
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 3: Part 2</title>
-   <link href="http://jamelablack.github.io/2015/03/05/course3-lesson3/"/>
+   <link href="http:/gritcommit.com/2015/03/05/course3-lesson3/"/>
    <updated>2015-03-05T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2015/03/05/course3-lesson3</id>
+   <id>http:/gritcommit.com/2015/03/05/course3-lesson3</id>
    <content type="html">&lt;h2&gt;Items Covered:&lt;/h2&gt;
 
 &lt;ol&gt;
@@ -3134,9 +3854,9 @@ For more info:&lt;/p&gt;
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 3: Part 1</title>
-   <link href="http://jamelablack.github.io/2015/03/02/course3-lesson3/"/>
+   <link href="http:/gritcommit.com/2015/03/02/course3-lesson3/"/>
    <updated>2015-03-02T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2015/03/02/course3-lesson3</id>
+   <id>http:/gritcommit.com/2015/03/02/course3-lesson3</id>
    <content type="html">&lt;h2&gt;Items Covered:&lt;/h2&gt;
 
 &lt;ol&gt;
@@ -3223,9 +3943,9 @@ or not at all.&lt;/p&gt;
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 2: Generate Fake Data with Faker</title>
-   <link href="http://jamelablack.github.io/2015/02/28/course3-faker/"/>
+   <link href="http:/gritcommit.com/2015/02/28/course3-faker/"/>
    <updated>2015-02-28T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2015/02/28/course3-faker</id>
+   <id>http:/gritcommit.com/2015/02/28/course3-faker</id>
    <content type="html">&lt;h2&gt;Use Faker to Generate Fake Data&lt;/h2&gt;
 
 &lt;p&gt;Creating fake data when your model has uniqueness validations will throw errors
@@ -3269,9 +3989,9 @@ if your data is not unique.&lt;/p&gt;
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 2: Object Generation with Fabricators</title>
-   <link href="http://jamelablack.github.io/2015/02/26/course3-fabricators/"/>
+   <link href="http:/gritcommit.com/2015/02/26/course3-fabricators/"/>
    <updated>2015-02-26T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2015/02/26/course3-fabricators</id>
+   <id>http:/gritcommit.com/2015/02/26/course3-fabricators</id>
    <content type="html">&lt;p&gt;It&amp;#39;s typical to create many objects during testing and the more attributes you have
 the more cumbersome it could be to maintain, moreover, if an attribute changes, it then becomes very difficult
 to update all those tests.&lt;/p&gt;
@@ -3320,9 +4040,9 @@ to update all those tests.&lt;/p&gt;
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 2: Single Assertion Principle</title>
-   <link href="http://jamelablack.github.io/2015/02/23/course3-single-assertion-principle/"/>
+   <link href="http:/gritcommit.com/2015/02/23/course3-single-assertion-principle/"/>
    <updated>2015-02-23T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2015/02/23/course3-single-assertion-principle</id>
+   <id>http:/gritcommit.com/2015/02/23/course3-single-assertion-principle</id>
    <content type="html">&lt;h2&gt;Single Assertion principle states:&lt;/h2&gt;
 
 &lt;p&gt;A test suite should only have one assertion, so that if there is a failure
@@ -3342,9 +4062,9 @@ testing too much at once:&lt;/p&gt;
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 2: Alternative Style of Rspec</title>
-   <link href="http://jamelablack.github.io/2015/02/20/course3-alt-style-or-rspec/"/>
+   <link href="http:/gritcommit.com/2015/02/20/course3-alt-style-or-rspec/"/>
    <updated>2015-02-20T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2015/02/20/course3-alt-style-or-rspec</id>
+   <id>http:/gritcommit.com/2015/02/20/course3-alt-style-or-rspec</id>
    <content type="html">&lt;h2&gt;An Alternative Style of Rspec&lt;/h2&gt;
 
 &lt;ul&gt;
@@ -3426,9 +4146,9 @@ or the subject until it has to ...namingly when it reaches it or before.&lt;/p&g
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 2: Alternative Style of Rspec</title>
-   <link href="http://jamelablack.github.io/2015/02/18/cardinality-boundary-conditions/"/>
+   <link href="http:/gritcommit.com/2015/02/18/cardinality-boundary-conditions/"/>
    <updated>2015-02-18T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2015/02/18/cardinality-boundary-conditions</id>
+   <id>http:/gritcommit.com/2015/02/18/cardinality-boundary-conditions</id>
    <content type="html">&lt;h2&gt;Techniques you can use to grow your test suite:&lt;/h2&gt;
 
 &lt;p&gt;Testing tags (many to many relationship with Todos)
@@ -3477,9 +4197,9 @@ or the subject until it has to ...namingly when it reaches it or before.&lt;/p&g
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 2: Refactor in TDD</title>
-   <link href="http://jamelablack.github.io/2015/02/16/course3-refactor-in-TDD/"/>
+   <link href="http:/gritcommit.com/2015/02/16/course3-refactor-in-TDD/"/>
    <updated>2015-02-16T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2015/02/16/course3-refactor-in-TDD</id>
+   <id>http:/gritcommit.com/2015/02/16/course3-refactor-in-TDD</id>
    <content type="html">&lt;h3&gt;Add feature in the Red and refactor in the green.&lt;/h3&gt;
 
 &lt;ol&gt;
@@ -3520,9 +4240,9 @@ or the subject until it has to ...namingly when it reaches it or before.&lt;/p&g
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 2: Writing Controller Tests</title>
-   <link href="http://jamelablack.github.io/2015/02/13/course3-write-controller-tests/"/>
+   <link href="http:/gritcommit.com/2015/02/13/course3-write-controller-tests/"/>
    <updated>2015-02-13T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2015/02/13/course3-write-controller-tests</id>
+   <id>http:/gritcommit.com/2015/02/13/course3-write-controller-tests</id>
    <content type="html">&lt;h3&gt;With any test, there are typically 3 actions:&lt;/h3&gt;
 
 &lt;ol&gt;
@@ -3635,9 +4355,9 @@ you can specify &amp;quot;line:27&amp;quot; and it will run the test on that lin
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 2: Shoulda Matchers</title>
-   <link href="http://jamelablack.github.io/2015/02/10/shoulda-matchers/"/>
+   <link href="http:/gritcommit.com/2015/02/10/shoulda-matchers/"/>
    <updated>2015-02-10T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2015/02/10/shoulda-matchers</id>
+   <id>http:/gritcommit.com/2015/02/10/shoulda-matchers</id>
    <content type="html">&lt;p&gt;With rspec, there comes built-in matchers, which can be found: &lt;a href=&quot;http://www.relishapp.com/rspec/rspec-expectations/v/2-9/docs/built-in-matchers&quot;&gt;shoulda matchers&lt;/a&gt;&lt;/p&gt;
 
 &lt;h3&gt;1. Object Identity:&lt;/h3&gt;
@@ -3694,9 +4414,9 @@ two objects are the same when in reality they may equal the same but be differen
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 1: Front Page</title>
-   <link href="http://jamelablack.github.io/2015/02/07/course3-frontpage/"/>
+   <link href="http:/gritcommit.com/2015/02/07/course3-frontpage/"/>
    <updated>2015-02-07T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2015/02/07/course3-frontpage</id>
+   <id>http:/gritcommit.com/2015/02/07/course3-frontpage</id>
    <content type="html">&lt;h2&gt;Front Page&lt;/h2&gt;
 
 &lt;p&gt;Front Pages or Root/home pages are typically static images. Those
@@ -3716,9 +4436,9 @@ the view of the same name if the action is not present in the controller.&lt;/p&
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 1: Custom Form Builders</title>
-   <link href="http://jamelablack.github.io/2015/02/05/course3-custom-form-builder/"/>
+   <link href="http:/gritcommit.com/2015/02/05/course3-custom-form-builder/"/>
    <updated>2015-02-05T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2015/02/05/course3-custom-form-builder</id>
+   <id>http:/gritcommit.com/2015/02/05/course3-custom-form-builder</id>
    <content type="html">&lt;p&gt;Let&amp;#39;s say we have a Todo&amp;#39;s app, where we allow our users to create a new todo. We also want to show errors when validation errors occur:&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;c1&quot;&gt;#new.html.haml&lt;/span&gt;
@@ -3822,9 +4542,9 @@ errors on the Todos object.&lt;/p&gt;
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 1: Red, Green, Refactor</title>
-   <link href="http://jamelablack.github.io/2015/02/01/course3-red-green-refactor/"/>
+   <link href="http:/gritcommit.com/2015/02/01/course3-red-green-refactor/"/>
    <updated>2015-02-01T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2015/02/01/course3-red-green-refactor</id>
+   <id>http:/gritcommit.com/2015/02/01/course3-red-green-refactor</id>
    <content type="html">&lt;p&gt;Generalization or Trianglization:
 Writing general code&lt;/p&gt;
 
@@ -3862,9 +4582,9 @@ Tests are run with every build&lt;/p&gt;
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 1: From Test Later to Test Driven</title>
-   <link href="http://jamelablack.github.io/2015/01/28/course3-from-test-later-to-test-driven/"/>
+   <link href="http:/gritcommit.com/2015/01/28/course3-from-test-later-to-test-driven/"/>
    <updated>2015-01-28T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2015/01/28/course3-from-test-later-to-test-driven</id>
+   <id>http:/gritcommit.com/2015/01/28/course3-from-test-later-to-test-driven</id>
    <content type="html">&lt;h2&gt;There are several ways to integrate testing into your workflow:&lt;/h2&gt;
 
 &lt;h4&gt;1. Code First, Test Later&lt;/h4&gt;
@@ -3898,9 +4618,9 @@ your system - describing the interactions b/w various objects)&lt;/p&gt;
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 1: Git Flow</title>
-   <link href="http://jamelablack.github.io/2015/01/26/course3-git-flow/"/>
+   <link href="http:/gritcommit.com/2015/01/26/course3-git-flow/"/>
    <updated>2015-01-26T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2015/01/26/course3-git-flow</id>
+   <id>http:/gritcommit.com/2015/01/26/course3-git-flow</id>
    <content type="html">&lt;p&gt;How to create a branch and checkout at the same time:&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;git&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;checkout&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mod3&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
@@ -3920,9 +4640,9 @@ your system - describing the interactions b/w various objects)&lt;/p&gt;
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 1: First test in Rspec</title>
-   <link href="http://jamelablack.github.io/2015/01/23/course3-first-test-in-rspec/"/>
+   <link href="http:/gritcommit.com/2015/01/23/course3-first-test-in-rspec/"/>
    <updated>2015-01-23T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2015/01/23/course3-first-test-in-rspec</id>
+   <id>http:/gritcommit.com/2015/01/23/course3-first-test-in-rspec</id>
    <content type="html">&lt;ol&gt;
 &lt;li&gt;Add Rspec to your gemfile, make sure to include in both test and development:&lt;/li&gt;
 &lt;/ol&gt;
@@ -3977,9 +4697,9 @@ your system - describing the interactions b/w various objects)&lt;/p&gt;
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 1: Unit vs. Functional vs. Integration Tests</title>
-   <link href="http://jamelablack.github.io/2015/01/20/course3-unit-functional-integration-tests/"/>
+   <link href="http:/gritcommit.com/2015/01/20/course3-unit-functional-integration-tests/"/>
    <updated>2015-01-20T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2015/01/20/course3-unit-functional-integration-tests</id>
+   <id>http:/gritcommit.com/2015/01/20/course3-unit-functional-integration-tests</id>
    <content type="html">&lt;h3&gt;There are 3 types of tests:&lt;/h3&gt;
 
 &lt;ol&gt;
@@ -4033,9 +4753,9 @@ that the business objective is achieved&lt;/li&gt;
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 1: Technical Debt</title>
-   <link href="http://jamelablack.github.io/2015/01/17/coures3-technical-debt/"/>
+   <link href="http:/gritcommit.com/2015/01/17/coures3-technical-debt/"/>
    <updated>2015-01-17T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2015/01/17/coures3-technical-debt</id>
+   <id>http:/gritcommit.com/2015/01/17/coures3-technical-debt</id>
    <content type="html">&lt;p&gt;A typically response to testing is &amp;quot;I don&amp;#39;t have time, I have to meet my deadline&amp;quot;
 As your project size increases, you technical debt increases to the nth degree as time passes.&lt;/p&gt;
 
@@ -4052,9 +4772,9 @@ This is the pay off for the technical debt.&lt;/p&gt;
  
  <entry>
    <title>Build Robust & Production Quality Applications - Lesson 1: Rational for Testing</title>
-   <link href="http://jamelablack.github.io/2015/01/15/course3-rationale-for-testing/"/>
+   <link href="http:/gritcommit.com/2015/01/15/course3-rationale-for-testing/"/>
    <updated>2015-01-15T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2015/01/15/course3-rationale-for-testing</id>
+   <id>http:/gritcommit.com/2015/01/15/course3-rationale-for-testing</id>
    <content type="html">&lt;h2&gt;Why Do we test our software?&lt;/h2&gt;
 
 &lt;p&gt;Here, we are referring to automated testing:
@@ -4101,9 +4821,9 @@ stay there... therefore knowledge is lost.&lt;/li&gt;
  
  <entry>
    <title>Build Robust & Production Quality Applications: Precourse, Link_to Review</title>
-   <link href="http://jamelablack.github.io/2014/12/25/course3-link_to/"/>
+   <link href="http:/gritcommit.com/2014/12/25/course3-link_to/"/>
    <updated>2014-12-25T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2014/12/25/course3-link_to</id>
+   <id>http:/gritcommit.com/2014/12/25/course3-link_to</id>
    <content type="html">&lt;p&gt;This is a quick reivew of how to list all a catgories videos:&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@category&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;videos&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;each&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;video&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
@@ -4124,9 +4844,9 @@ stay there... therefore knowledge is lost.&lt;/li&gt;
  
  <entry>
    <title>Build Robust & Production Quality Applications: Precourse, Haml</title>
-   <link href="http://jamelablack.github.io/2014/12/20/course3-haml/"/>
+   <link href="http:/gritcommit.com/2014/12/20/course3-haml/"/>
    <updated>2014-12-20T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2014/12/20/course3-haml</id>
+   <id>http:/gritcommit.com/2014/12/20/course3-haml</id>
    <content type="html">&lt;p&gt;Writing Basic Haml
 1. No closing tags
 2. Nesting controlled via strict white-spacing and indenting
@@ -4247,9 +4967,9 @@ stay there... therefore knowledge is lost.&lt;/li&gt;
  
  <entry>
    <title>Build Robust & Production Quality Applications: Precourse, Views to Mockups</title>
-   <link href="http://jamelablack.github.io/2014/12/15/course3-from-views-to-mockups/"/>
+   <link href="http:/gritcommit.com/2014/12/15/course3-from-views-to-mockups/"/>
    <updated>2014-12-15T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2014/12/15/course3-from-views-to-mockups</id>
+   <id>http:/gritcommit.com/2014/12/15/course3-from-views-to-mockups</id>
    <content type="html">&lt;h2&gt;The Process of Building Queues from Mockups:&lt;/h2&gt;
 
 &lt;h3&gt;Building out the videos page&lt;/h3&gt;
@@ -4292,9 +5012,9 @@ stay there... therefore knowledge is lost.&lt;/li&gt;
  
  <entry>
    <title>Build Robust & Production Quality Applications: Precourse, From Design to Development</title>
-   <link href="http://jamelablack.github.io/2014/12/05/course3-from-design-to-dev/"/>
+   <link href="http:/gritcommit.com/2014/12/05/course3-from-design-to-dev/"/>
    <updated>2014-12-05T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2014/12/05/course3-from-design-to-dev</id>
+   <id>http:/gritcommit.com/2014/12/05/course3-from-design-to-dev</id>
    <content type="html">&lt;h2&gt;Items Covered:&lt;/h2&gt;
 
 &lt;ol&gt;
@@ -4373,9 +5093,9 @@ Currenty the data and images in these layouts/templates are hardcoded with data 
  
  <entry>
    <title>Build Robust & Production Quality Applications: Precourse, From Ideas to Products</title>
-   <link href="http://jamelablack.github.io/2014/11/27/course3-ideas-to-products/"/>
+   <link href="http:/gritcommit.com/2014/11/27/course3-ideas-to-products/"/>
    <updated>2014-11-27T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2014/11/27/course3-ideas-to-products</id>
+   <id>http:/gritcommit.com/2014/11/27/course3-ideas-to-products</id>
    <content type="html">&lt;h2&gt;The Process of Going from Ideas to Products&lt;/h2&gt;
 
 &lt;h3&gt;Prototype process for web applications&lt;/h3&gt;
@@ -4424,9 +5144,9 @@ Taking the .psd file and turning it into mockups. At this point, you want your .
  
  <entry>
    <title>Rapid Prototyping with Rails: Lesson 4, Twilio: Two-factor Auth</title>
-   <link href="http://jamelablack.github.io/2014/11/22/course3-twillio/"/>
+   <link href="http:/gritcommit.com/2014/11/22/course3-twillio/"/>
    <updated>2014-11-22T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2014/11/22/course3-twillio</id>
+   <id>http:/gritcommit.com/2014/11/22/course3-twillio</id>
    <content type="html">&lt;h2&gt;Two factor authentication upon login:&lt;/h2&gt;
 
 &lt;h3&gt;Pseudo code:&lt;/h3&gt;
@@ -4688,9 +5408,9 @@ in the sessions_controller:&lt;/p&gt;
  
  <entry>
    <title>Rapid Prototyping with Rails: Lesson 4, Comparing Metaprogramming vs. Concerns</title>
-   <link href="http://jamelablack.github.io/2014/11/20/course2-metapro-concerns/"/>
+   <link href="http:/gritcommit.com/2014/11/20/course2-metapro-concerns/"/>
    <updated>2014-11-20T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2014/11/20/course2-metapro-concerns</id>
+   <id>http:/gritcommit.com/2014/11/20/course2-metapro-concerns</id>
    <content type="html">&lt;h2&gt;There are two options for Extracting Common code:&lt;/h2&gt;
 
 &lt;ul&gt;
@@ -4817,9 +5537,9 @@ in the sessions_controller:&lt;/p&gt;
  
  <entry>
    <title>Rapid Prototyping with Rails: Lesson 4, ActiveSupport::Concerns</title>
-   <link href="http://jamelablack.github.io/2014/11/18/course2-ActiveSupportConcerns/"/>
+   <link href="http:/gritcommit.com/2014/11/18/course2-ActiveSupportConcerns/"/>
    <updated>2014-11-18T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2014/11/18/course2-ActiveSupportConcerns</id>
+   <id>http:/gritcommit.com/2014/11/18/course2-ActiveSupportConcerns</id>
    <content type="html">&lt;h2&gt;DRYing up code with ActiveSupport::Concerns&lt;/h2&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Extract&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;common&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;code&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Post&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Comment&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Model&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;abd&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;place&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;into&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Sluggable&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;module&lt;/span&gt;
@@ -4962,9 +5682,9 @@ in the sessions_controller:&lt;/p&gt;
  
  <entry>
    <title>Rapid Prototyping with Rails: Lesson 4, part 3</title>
-   <link href="http://jamelablack.github.io/2014/11/15/course2-lesson4/"/>
+   <link href="http:/gritcommit.com/2014/11/15/course2-lesson4/"/>
    <updated>2014-11-15T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2014/11/15/course2-lesson4</id>
+   <id>http:/gritcommit.com/2014/11/15/course2-lesson4</id>
    <content type="html">&lt;h2&gt;Items Covered:&lt;/h2&gt;
 
 &lt;ol&gt;
@@ -5207,9 +5927,9 @@ a div.&lt;/p&gt;
  
  <entry>
    <title>Rapid Prototyping with Rails: Lesson 4, part 2</title>
-   <link href="http://jamelablack.github.io/2014/11/12/course2-lesson4/"/>
+   <link href="http:/gritcommit.com/2014/11/12/course2-lesson4/"/>
    <updated>2014-11-12T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2014/11/12/course2-lesson4</id>
+   <id>http:/gritcommit.com/2014/11/12/course2-lesson4</id>
    <content type="html">&lt;h2&gt;Items covered:&lt;/h2&gt;
 
 &lt;ol&gt;
@@ -5534,9 +6254,9 @@ because you must consider nil condition.&lt;/p&gt;
  
  <entry>
    <title>Rapid Prototyping with Rails: Lesson 4, part 1</title>
-   <link href="http://jamelablack.github.io/2014/11/10/course2-lesson4/"/>
+   <link href="http:/gritcommit.com/2014/11/10/course2-lesson4/"/>
    <updated>2014-11-10T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2014/11/10/course2-lesson4</id>
+   <id>http:/gritcommit.com/2014/11/10/course2-lesson4</id>
    <content type="html">&lt;h2&gt;Items Covered&lt;/h2&gt;
 
 &lt;ol&gt;
@@ -5685,9 +6405,9 @@ In turn, we told ajax how to respond via html and js&lt;/p&gt;
  
  <entry>
    <title>Rapid Prototyping with Rails: Lesson 3, Working with has_secured_password</title>
-   <link href="http://jamelablack.github.io/2014/11/05/course2-has_secured_password/"/>
+   <link href="http:/gritcommit.com/2014/11/05/course2-has_secured_password/"/>
    <updated>2014-11-05T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2014/11/05/course2-has_secured_password</id>
+   <id>http:/gritcommit.com/2014/11/05/course2-has_secured_password</id>
    <content type="html">&lt;h2&gt;Steps:&lt;/h2&gt;
 
 &lt;ol&gt;
@@ -5723,9 +6443,9 @@ Salts adds a small chunk of random data to password to prevent those attacks.&lt
  
  <entry>
    <title>Rapid Prototyping with Rails: Lesson 3, Authentication</title>
-   <link href="http://jamelablack.github.io/2014/11/03/course2-authentication/"/>
+   <link href="http:/gritcommit.com/2014/11/03/course2-authentication/"/>
    <updated>2014-11-03T00:00:00-05:00</updated>
-   <id>http://jamelablack.github.io/2014/11/03/course2-authentication</id>
+   <id>http:/gritcommit.com/2014/11/03/course2-authentication</id>
    <content type="html">&lt;h2&gt;Steps&lt;/h2&gt;
 
 &lt;h3&gt;Step 1: Create routes&lt;/h3&gt;
@@ -5793,9 +6513,9 @@ Salts adds a small chunk of random data to password to prevent those attacks.&lt
  
  <entry>
    <title>Rapid Prototyping with Rails: Lesson 3, Feature Building</title>
-   <link href="http://jamelablack.github.io/2014/11/01/course2-features/"/>
+   <link href="http:/gritcommit.com/2014/11/01/course2-features/"/>
    <updated>2014-11-01T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2014/11/01/course2-features</id>
+   <id>http:/gritcommit.com/2014/11/01/course2-features</id>
    <content type="html">&lt;h2&gt;Review of Building Out a Feature&lt;/h2&gt;
 
 &lt;ol&gt;
@@ -5816,9 +6536,9 @@ Salts adds a small chunk of random data to password to prevent those attacks.&lt
  
  <entry>
    <title>Rapid Prototyping with Rails: Lesson 3, HTTP</title>
-   <link href="http://jamelablack.github.io/2014/10/30/course2-http/"/>
+   <link href="http:/gritcommit.com/2014/10/30/course2-http/"/>
    <updated>2014-10-30T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2014/10/30/course2-http</id>
+   <id>http:/gritcommit.com/2014/10/30/course2-http</id>
    <content type="html">&lt;h2&gt;HTTP has two parts:&lt;/h2&gt;
 
 &lt;h3&gt;1. Request:&lt;/h3&gt;
@@ -5865,9 +6585,9 @@ Salts adds a small chunk of random data to password to prevent those attacks.&lt
  
  <entry>
    <title>Rapid Prototyping with Rails: Lesson 3, part 4</title>
-   <link href="http://jamelablack.github.io/2014/10/28/course2-lesson3/"/>
+   <link href="http:/gritcommit.com/2014/10/28/course2-lesson3/"/>
    <updated>2014-10-28T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2014/10/28/course2-lesson3</id>
+   <id>http:/gritcommit.com/2014/10/28/course2-lesson3</id>
    <content type="html">&lt;h3&gt;1. Create vote controller action&lt;/h3&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;PostsController&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ApplicationController&lt;/span&gt;
@@ -5985,9 +6705,9 @@ want to add html_safe on user input elements.&lt;/p&gt;
  
  <entry>
    <title>Rapid Prototyping with Rails: Lesson 3, part 3</title>
-   <link href="http://jamelablack.github.io/2014/10/26/course2-lesson3/"/>
+   <link href="http:/gritcommit.com/2014/10/26/course2-lesson3/"/>
    <updated>2014-10-26T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2014/10/26/course2-lesson3</id>
+   <id>http:/gritcommit.com/2014/10/26/course2-lesson3</id>
    <content type="html">&lt;h2&gt;Items Covered&lt;/h2&gt;
 
 &lt;ol&gt;
@@ -6171,9 +6891,9 @@ into an actual form and submit content.&lt;/p&gt;
  
  <entry>
    <title>Rapid Prototyping with Rails: Lesson 3, part 2</title>
-   <link href="http://jamelablack.github.io/2014/10/24/course2-lesson3/"/>
+   <link href="http:/gritcommit.com/2014/10/24/course2-lesson3/"/>
    <updated>2014-10-24T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2014/10/24/course2-lesson3</id>
+   <id>http:/gritcommit.com/2014/10/24/course2-lesson3</id>
    <content type="html">&lt;h2&gt;Items Covererd:&lt;/h2&gt;
 
 &lt;ol&gt;
@@ -6386,9 +7106,9 @@ continously hitting the database.&lt;/p&gt;
  
  <entry>
    <title>Rapid Prototyping with Rails: Lesson 3, part 1</title>
-   <link href="http://jamelablack.github.io/2014/10/22/course2-lesson3/"/>
+   <link href="http:/gritcommit.com/2014/10/22/course2-lesson3/"/>
    <updated>2014-10-22T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2014/10/22/course2-lesson3</id>
+   <id>http:/gritcommit.com/2014/10/22/course2-lesson3</id>
    <content type="html">&lt;h2&gt;Items Covered:&lt;/h2&gt;
 
 &lt;ol&gt;
@@ -6525,9 +7245,9 @@ and a special character.&lt;/p&gt;
  
  <entry>
    <title>Rapid Prototyping with Rails: Lesson 2, Nested Routes</title>
-   <link href="http://jamelablack.github.io/2014/10/20/nested-routes/"/>
+   <link href="http:/gritcommit.com/2014/10/20/nested-routes/"/>
    <updated>2014-10-20T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2014/10/20/nested-routes</id>
+   <id>http:/gritcommit.com/2014/10/20/nested-routes</id>
    <content type="html">&lt;p&gt;Comments - using Nested Routes&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;create&lt;/span&gt;
@@ -6556,9 +7276,9 @@ and a special character.&lt;/p&gt;
  
  <entry>
    <title>Rapid Prototyping with Rails: Lesson 2, Walk-through (model-backed forms)</title>
-   <link href="http://jamelablack.github.io/2014/10/17/model-backed-forms/"/>
+   <link href="http:/gritcommit.com/2014/10/17/model-backed-forms/"/>
    <updated>2014-10-17T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2014/10/17/model-backed-forms</id>
+   <id>http:/gritcommit.com/2014/10/17/model-backed-forms</id>
    <content type="html">&lt;h2&gt;Rails Model Backed Forms - Create a Resource called: Dog&lt;/h2&gt;
 
 &lt;p&gt;Command to change port: rails s -p 3001&lt;/p&gt;
@@ -6864,9 +7584,9 @@ we can call regarding errors in our rails console&lt;/p&gt;
  
  <entry>
    <title>Rapid Prototyping with Rails: Lesson 2, Migrations</title>
-   <link href="http://jamelablack.github.io/2014/10/15/course2-migrations/"/>
+   <link href="http:/gritcommit.com/2014/10/15/course2-migrations/"/>
    <updated>2014-10-15T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2014/10/15/course2-migrations</id>
+   <id>http:/gritcommit.com/2014/10/15/course2-migrations</id>
    <content type="html">&lt;h1&gt;Items Covered:&lt;/h1&gt;
 
 &lt;ol&gt;
@@ -6935,9 +7655,9 @@ Schema.rb
  
  <entry>
    <title>Rapid Prototyping with Rails: Lesson 2, part 3</title>
-   <link href="http://jamelablack.github.io/2014/10/10/course2-lesson2/"/>
+   <link href="http:/gritcommit.com/2014/10/10/course2-lesson2/"/>
    <updated>2014-10-10T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2014/10/10/course2-lesson2</id>
+   <id>http:/gritcommit.com/2014/10/10/course2-lesson2</id>
    <content type="html">&lt;h1&gt;Items covered:&lt;/h1&gt;
 
 &lt;ol&gt;
@@ -7058,9 +7778,9 @@ or resource.&lt;/p&gt;
  
  <entry>
    <title>Rapid Prototyping with Rails: Lesson 2, part 2</title>
-   <link href="http://jamelablack.github.io/2014/10/07/course2-lesson2/"/>
+   <link href="http:/gritcommit.com/2014/10/07/course2-lesson2/"/>
    <updated>2014-10-07T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2014/10/07/course2-lesson2</id>
+   <id>http:/gritcommit.com/2014/10/07/course2-lesson2</id>
    <content type="html">&lt;h1&gt;Topics Covered:&lt;/h1&gt;
 
 &lt;ol&gt;
@@ -7370,9 +8090,9 @@ new request, which changes the address bar.&lt;/p&gt;
  
  <entry>
    <title>Rapid Prototyping with Rails: Lesson 2, part 1</title>
-   <link href="http://jamelablack.github.io/2014/10/05/course2-lesson2/"/>
+   <link href="http:/gritcommit.com/2014/10/05/course2-lesson2/"/>
    <updated>2014-10-05T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2014/10/05/course2-lesson2</id>
+   <id>http:/gritcommit.com/2014/10/05/course2-lesson2</id>
    <content type="html">&lt;p&gt;Items covered:
 1. Rails Forms
 2. Strong Parameters&lt;/p&gt;
@@ -7561,9 +8281,9 @@ your entry attempt, it will not throw an error as to let hackers know what ways 
  
  <entry>
    <title>Rapid Prototyping with Rails: Lesson 1</title>
-   <link href="http://jamelablack.github.io/2014/10/01/course2-lesson1/"/>
+   <link href="http:/gritcommit.com/2014/10/01/course2-lesson1/"/>
    <updated>2014-10-01T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2014/10/01/course2-lesson1</id>
+   <id>http:/gritcommit.com/2014/10/01/course2-lesson1</id>
    <content type="html">&lt;h1&gt;Items covered:&lt;/h1&gt;
 
 &lt;ol&gt;
@@ -7740,9 +8460,9 @@ while Post.create will update to the database immediately.&lt;/p&gt;
  
  <entry>
    <title>Intro to Ruby & Web Dev: Blackjack OO Game</title>
-   <link href="http://jamelablack.github.io/2014/09/25/blackjack-oo-game/"/>
+   <link href="http:/gritcommit.com/2014/09/25/blackjack-oo-game/"/>
    <updated>2014-09-25T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2014/09/25/blackjack-oo-game</id>
+   <id>http:/gritcommit.com/2014/09/25/blackjack-oo-game</id>
    <content type="html">&lt;h2&gt;Object Oriented Blackjack Game&lt;/h2&gt;
 
 &lt;ol&gt;
@@ -8020,9 +8740,9 @@ while Post.create will update to the database immediately.&lt;/p&gt;
  
  <entry>
    <title>Intro to Ruby & Web Dev: Tic-Tac-Toe OO Game</title>
-   <link href="http://jamelablack.github.io/2014/09/22/tic-tac-toe-oo/"/>
+   <link href="http:/gritcommit.com/2014/09/22/tic-tac-toe-oo/"/>
    <updated>2014-09-22T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2014/09/22/tic-tac-toe-oo</id>
+   <id>http:/gritcommit.com/2014/09/22/tic-tac-toe-oo</id>
    <content type="html">&lt;h1&gt;Goal&lt;/h1&gt;
 
 &lt;p&gt;Build a tic-tac-toe game with object oriented programming.&lt;/p&gt;
@@ -8210,9 +8930,9 @@ Check for winner&lt;/li&gt;
  
  <entry>
    <title>Intro to Ruby & Web Dev: Lesson 3</title>
-   <link href="http://jamelablack.github.io/2014/09/21/course1-lesson4/"/>
+   <link href="http:/gritcommit.com/2014/09/21/course1-lesson4/"/>
    <updated>2014-09-21T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2014/09/21/course1-lesson4</id>
+   <id>http:/gritcommit.com/2014/09/21/course1-lesson4</id>
    <content type="html">&lt;h1&gt;Items covered:&lt;/h1&gt;
 
 &lt;ol&gt;
@@ -8315,9 +9035,9 @@ So more like dashes and sprinkles of Jquery rather than overload of JQuery&lt;/p
  
  <entry>
    <title>Intro to Ruby & Web Dev: Lesson 3</title>
-   <link href="http://jamelablack.github.io/2014/09/14/course1-lesson3/"/>
+   <link href="http:/gritcommit.com/2014/09/14/course1-lesson3/"/>
    <updated>2014-09-14T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2014/09/14/course1-lesson3</id>
+   <id>http:/gritcommit.com/2014/09/14/course1-lesson3</id>
    <content type="html">&lt;h1&gt;Items covered&lt;/h1&gt;
 
 &lt;ol&gt;
@@ -8546,9 +9266,9 @@ We know that cookies have tied to the session because we did not reference an in
  
  <entry>
    <title>Intro to Ruby & Web Dev: Method Definition vs. Method Invocation</title>
-   <link href="http://jamelablack.github.io/2014/09/13/model-def-vs-invocation/"/>
+   <link href="http:/gritcommit.com/2014/09/13/model-def-vs-invocation/"/>
    <updated>2014-09-13T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2014/09/13/model-def-vs-invocation</id>
+   <id>http:/gritcommit.com/2014/09/13/model-def-vs-invocation</id>
    <content type="html">&lt;h2&gt;Method Definition&lt;/h2&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;method&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
@@ -8584,9 +9304,9 @@ Self being called outside of an instance method refers to the class.&lt;/p&gt;
  
  <entry>
    <title>Intro to Ruby & Web Dev: Inheritance</title>
-   <link href="http://jamelablack.github.io/2014/09/12/inheritance/"/>
+   <link href="http:/gritcommit.com/2014/09/12/inheritance/"/>
    <updated>2014-09-12T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2014/09/12/inheritance</id>
+   <id>http:/gritcommit.com/2014/09/12/inheritance</id>
    <content type="html">&lt;h1&gt;Inheritance&lt;/h1&gt;
 
 &lt;p&gt;Subclasses inherit attributes and behaviors of superclasses.&lt;/p&gt;
@@ -8652,9 +9372,9 @@ Protected methods act as public methods inside the class, therefore can be calle
  
  <entry>
    <title>Intro to Ruby & Web Dev: Tic-Tac-Toe Procedural Game</title>
-   <link href="http://jamelablack.github.io/2014/09/11/tic-tac-toe-procedural/"/>
+   <link href="http:/gritcommit.com/2014/09/11/tic-tac-toe-procedural/"/>
    <updated>2014-09-11T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2014/09/11/tic-tac-toe-procedural</id>
+   <id>http:/gritcommit.com/2014/09/11/tic-tac-toe-procedural</id>
    <content type="html">&lt;ol&gt;
 &lt;li&gt;Come up with requirements/specifications - that will determine your own scope.&lt;/li&gt;
 &lt;li&gt;Application logic, sequence of steps.&lt;/li&gt;
@@ -8749,9 +9469,9 @@ Check for winner&lt;/li&gt;
  
  <entry>
    <title>Intro to Ruby & Web Dev: The Object Model</title>
-   <link href="http://jamelablack.github.io/2014/09/10/the-object-model/"/>
+   <link href="http:/gritcommit.com/2014/09/10/the-object-model/"/>
    <updated>2014-09-10T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2014/09/10/the-object-model</id>
+   <id>http:/gritcommit.com/2014/09/10/the-object-model</id>
    <content type="html">&lt;h2&gt;What is OOP?&lt;/h2&gt;
 
 &lt;p&gt;A way for progammers to deal with large, complex systems.
@@ -8814,9 +9534,9 @@ Create a class, create an object, use a mixin.&lt;/p&gt;
  
  <entry>
    <title>Intro to Ruby & Web Dev: Lesson 2</title>
-   <link href="http://jamelablack.github.io/2014/09/07/course1-lesson2/"/>
+   <link href="http:/gritcommit.com/2014/09/07/course1-lesson2/"/>
    <updated>2014-09-07T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2014/09/07/course1-lesson2</id>
+   <id>http:/gritcommit.com/2014/09/07/course1-lesson2</id>
    <content type="html">&lt;h1&gt;Items covered:&lt;/h1&gt;
 
 &lt;ol&gt;
@@ -8934,9 +9654,9 @@ When creating modules you simply add &amp;quot;-able&amp;quot; to the end of you
  
  <entry>
    <title>Intro to Ruby & Web Dev: Lesson 1</title>
-   <link href="http://jamelablack.github.io/2014/09/01/course1-lesson1/"/>
+   <link href="http:/gritcommit.com/2014/09/01/course1-lesson1/"/>
    <updated>2014-09-01T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2014/09/01/course1-lesson1</id>
+   <id>http:/gritcommit.com/2014/09/01/course1-lesson1</id>
    <content type="html">&lt;h1&gt;Items covered:&lt;/h1&gt;
 
 &lt;ol&gt;
@@ -9003,9 +9723,9 @@ Pass by Value vs Pass by Reference:
  
  <entry>
    <title>Welcome to my Dev blog</title>
-   <link href="http://jamelablack.github.io/2014/08/30/path-to-becoming-a-ruby-dev/"/>
+   <link href="http:/gritcommit.com/2014/08/30/path-to-becoming-a-ruby-dev/"/>
    <updated>2014-08-30T00:00:00-04:00</updated>
-   <id>http://jamelablack.github.io/2014/08/30/path-to-becoming-a-ruby-dev</id>
+   <id>http:/gritcommit.com/2014/08/30/path-to-becoming-a-ruby-dev</id>
    <content type="html">&lt;p&gt;My name is Jam. I&amp;#39;m a recovering project manager with a creative knack for design, dance, and creating things. For the longest time, I&amp;#39;ve wanted a career to be super passionate about. I&amp;#39;d watch some of my favorite reality shows, like Project Runway, Top Chef.. etc. and be so inspired, maye even envious that they had something that they loved to do.. could do it hours on end. Rails Girls made learning to code accessible to me. . I had the pleasure of hearing&lt;a href=&quot;http://www.sandimetz.com/&quot;&gt;Sandi Metz&lt;/a&gt; gave a talk on &lt;a href=&quot;http://en.wikipedia%20org/wiki/Grit_%28personality_trait%29&quot;&gt;grit&lt;/a&gt; - which gave me some hope that I too, if I worked hard enough, that I could approach my life&amp;#39;s work with that same passion and creativity.&lt;/p&gt;
 
 &lt;p&gt;These are my daily takeways along my journey to becoming a rails dev. Hope you enjoy!&lt;/p&gt;

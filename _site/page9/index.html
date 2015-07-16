@@ -156,6 +156,14 @@
           
         
       
+        
+          
+        
+      
+        
+          
+        
+      
 
     <p>&copy; 2015. All rights reserved.</p>
   </div>
@@ -167,603 +175,310 @@
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/03/10/course3-update-review-in-queue/">
-        Build Robust & Production Quality Applications - Lesson 4: Update Review in Queue
+      <a href="/2015/04/22/POODR-ch2/">
+        POODR - Ch2: Designing Classes with a Single Responsibility
       </a>
     </h1>
 
-    <span class="post-date">10 Mar 2015</span>
+    <span class="post-date">22 Apr 2015</span>
 
-    <p>In Myflix, we want to be able to allow the user to update video rating in the video_play queue.</p>
+    <p>The foundation of an object-orietned is the message, but most visible organizational structure is the class.</p>
 
-<p>Goal: To change video rating from the queue<em>item index.
-To do so, we have to create the virtual attribute on the queue</em>item model, as though it is a column on the queue_item model (table). Since it is not in the model, we have to define the getter and setter.</p>
+<h3>OO Questions:</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#queue_item.rb</span>
-<span class="k">def</span> <span class="nf">rating</span>
+<p>What are your classes?
+How many should you have?
+What behavior will they implement?
+How much do they know about the other classes?
+How much of themselves should the expose?</p>
 
-<span class="k">end</span>
+<p>At this stage, your first obligation is to take a deep breath and insist that it be simple. Your goal is to model your application, using classes, such that is does what is is supposed to do right now. Design is more the art of perserving changability than it is the act of achieving perfection.</p>
 
-<span class="k">def</span> <span class="nf">rating</span><span class="o">=</span><span class="p">(</span><span class="n">new_rating</span><span class="p">)</span>
- <span class="o">-</span><span class="n">this</span> <span class="n">is</span> <span class="n">where</span> <span class="n">you</span> <span class="k">begin</span> <span class="n">to</span> <span class="n">write</span> <span class="n">your</span> <span class="n">tests</span>
-<span class="k">end</span></code></pre></div>
+<h3>Code should be TRUE:</h3>
 
-<h2>Update Column vs Update Attribute</h2>
+<p>Transparent: The consquences of change should be obvious in the code that is changing and in distant code thst relies on it.</p>
 
-<p>update<em>attributes will go through validation error unlike the update</em>column method,which will bypass validation.</p>
+<p>Reasonsable: The cost of any change should be proportional to the benefit thr change acheives</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">rating</span><span class="o">=</span><span class="p">(</span><span class="n">new_rating</span><span class="p">)</span>
-  <span class="n">review</span> <span class="o">=</span> <span class="no">Review</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">user_id</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="ss">video_id</span><span class="p">:</span> <span class="n">video</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
-  <span class="n">review</span><span class="o">.</span><span class="n">update_column</span><span class="p">(</span><span class="ss">:rating</span><span class="p">,</span> <span class="n">new_rating</span><span class="p">)</span>
-<span class="k">end</span></code></pre></div>
+<p>Usable: Existing code should be usable in a new and unexpected contents.</p>
 
-<h2>Memoization</h2>
+<p>Expemplary: The cod itself should encourage those who change it to perpetuate these qualities.
+TRUE ensures that each class has a single, well-defined responsibilty.</p>
 
-<p>Memoization means the first time the record is called, it will hit the database only once and store that info
-into the instance variable and will not database again when record is called.</p>
+<h2>Creating Classes That have a Single Responsibility</h2>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">review</span>
-  <span class="vi">@review</span> <span class="o">||=</span> <span class="no">Review</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">user_id</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="ss">video_id</span><span class="p">:</span> <span class="n">video</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
-<span class="k">end</span></code></pre></div>
+<p>A class should do the smallest posbbile useful thing, that is - it should have a sing responsibility.</p>
 
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/03/07/course3-lesson3/">
-        Build Robust & Production Quality Applications - Lesson 3: Part 3
-      </a>
-    </h1>
+<h3>Why Single Responsibility Matters</h3>
 
-    <span class="post-date">07 Mar 2015</span>
+<p>Appliciations that are easy to change consist of classes that are easy to reuse. Reusable classes are pluggable into units of well-defined behavior that have few entanglements.</p>
 
-    <h2>Items Covered:</h2>
+<p>A class that has more than one responsibility is difficult to reuse. If you want to resuse some (but not all) of it behavior, it is impossible to get only the parts you need.</p>
 
-<ol>
-<li>Feature Specs</li>
-<li>Capybara</li>
-<li>Request Specs</li>
-</ol>
+<p>If the responsibilties are so coupled that you cannot use just the beviour you need, you could duplicat the code of interest.</p>
 
-<h3>Types of Testing We&#39;ve Covered:</h3>
+<h3>Deterimining If a Class Has Single Responsibility</h3>
+
+<p>How can you determine if a class contains the behavior or belongs somewhere else?
+Ask it! &quot;Mr Gear, What is your ratio?&quot;</p>
+
+<p>Another way to figure it out is to attempt to describe the class in one sentence. If the simplest description you can devise includes &quot;and&quot;, the class likely has more than one responsibility. If the description includes &quot;or&quot;, then the class has more than one responsibility and they aren&#39;t even related.</p>
+
+<p>When a class is related to it&#39;s purpose, its considered &quot;highly cohesive&quot; or to have single responsibility (Single Responsibility Principle)</p>
+
+<h3>Determining when to make design decisions:</h3>
+
+<p>Don&#39;t feel compelled to make design decisions prematurely. When the future cost of doing nothing is the same as the current cost, postpone the decision. Make the decision only when you must with the information you have at the time.</p>
+
+<h2>Writing Code that Embraces Change</h2>
+
+<p>Here are a few well known techniques that you can use to create code that embaces change:</p>
+
+<h3>1. Depend on Behavior, not Data</h3>
+
+<p>Behavior is captured in methods anid invoked by sending messages. In addition to behavior, objects often contain data. Data is held in an instance variable and can be anything from an simple string to complex hash. Data can be accessed in 2 ways: 1. you can refer directly to the instance variable
+2. you can wrap the intance variable in an accessor method</p>
+
+<h4>Hide Data Structures</h4>
+
+<h4>1. Always wrap instance variables in accessor methods insteadof directly referring to the variables</h4>
+
+<h5>2. Use Structs</h5>
+
+<p>Direct references into complicated structure are confusing, because they obscure what the data really is and the maintenance is a nightmare.
+In Ruby, it&#39;s easy to seperate structure from meaning - just as you use a method to wrap an instance variable, you can use a Ruby Struct class to wrap a structure.
+Ruby defines Struct as &quot;a convenient way to bundle a number of attributes together, using accessor methods, without having to write an explicit class.</p>
+
+<h2>2. Enforce Single Responsibilities Everywhere</h2>
+
+<h4>3. Extract Extra Responsibilities from Methods</h4>
+
+<p>Methods, like classes should have single responsibility so they are easier to use. Apply the same design techniques as you would with classes.</p>
 
 <ul>
-<li>Models (Model Specs)</li>
-<li>Controllers (Controller Specs)</li>
-<li>Views, Routes, Helpers, Mailers (Feature Specs)</li>
+<li>Seperating iteration from the action that&#39;s being performed on each element is a common case of multiple responsibitlity that is easy to recognize.</li>
 </ul>
 
-<h2>Feature Specs</h2>
+<p>The imapct of the single refactoring like ithis is small, but the cumulative effect of this coding style is huge. Methods that have single resonsibility confer the following benefits:</p>
 
-<p>Feature Specs cover all the above in integration, although there are also specs
-for every item listed above, however mailers, routes, views, and helpers do not need to be tested in isolation.</p>
+<h5>1. Expose previously hidden qualities</h5>
 
-<p>With feature specs, you mimic the user&#39;s experience originating with the browser.
-This is the first example of vertical integration.
-Specs are typically broken into features.</p>
+<h5>2. Avoid the need for comments</h5>
 
-<p>There is something called &quot;request specs&quot; which focuses more horizontal integration. This is when you want to test multiple requests and responses across various controllers, making sure that things flow in a sequence.</p>
+<h5>3. Encourage reuse</h5>
 
-<p>In this course, we will NOT use request<em>specs, becasue typically request</em>specs are used to capture
-business processes from end to end. However any business process worth measuring must be
-centered around the customer expereince...</p>
+<h5>4. Easy to move to another class</h5>
 
-<h2>Capybara</h2>
+<h3>Isolate Extra Responsibilities in Classes</h3>
 
-<p>The Capybara gem is the way you can simulate user interaction with the browser.
-Load RSpec 2.x support by adding the following line (typically to your spec_helper.rb file):</p>
+<p>Once every method has a single responsibility, the scope of your class will be more apparent</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;capybara/rspec&#39;</span></code></pre></div>
+<p>The path to changeable and maintable object oriented software begins with classes that have a single responsibility. Classes that do one thing isolate that thing from the rest of your application. This isolation allows change without consquence and reuse without duplication.</p>
 
-<p>If you are using Rails, put your Capybara specs in spec/features.</p>
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/04/20/POODR-ch1/">
+        POODR - Ch1: Object Oriented Design
+      </a>
+    </h1>
 
-<p>If you are not using Rails, tag all the example groups in which you want to use Capybara with :type =&gt; :feature.</p>
+    <span class="post-date">20 Apr 2015</span>
 
-<p>You can now write your specs like so:</p>
+    <p>Object Oriented Design requires that you shift from thinking about the world as a collection of predefined procedures to modeling th world as a series of messages that are past between objects.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;the signin process&quot;</span><span class="p">,</span> <span class="ss">:type</span> <span class="o">=&gt;</span> <span class="ss">:feature</span> <span class="k">do</span>
-  <span class="n">before</span> <span class="ss">:each</span> <span class="k">do</span>
-    <span class="no">User</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="ss">:email</span> <span class="o">=&gt;</span> <span class="s1">&#39;user@example.com&#39;</span><span class="p">,</span> <span class="ss">:password</span> <span class="o">=&gt;</span> <span class="s1">&#39;password&#39;</span><span class="p">)</span>
-  <span class="k">end</span>
+<h2>In Praise of Design</h2>
 
-  <span class="n">it</span> <span class="s2">&quot;signs me in&quot;</span> <span class="k">do</span>
-    <span class="n">visit</span> <span class="s1">&#39;/sessions/new&#39;</span>
-    <span class="n">within</span><span class="p">(</span><span class="s2">&quot;#session&quot;</span><span class="p">)</span> <span class="k">do</span>
-      <span class="n">fill_in</span> <span class="s1">&#39;Email&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="s1">&#39;user@example.com&#39;</span>
-      <span class="n">fill_in</span> <span class="s1">&#39;Password&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="s1">&#39;password&#39;</span>
-    <span class="k">end</span>
-    <span class="n">click_button</span> <span class="s1">&#39;Sign in&#39;</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_content</span> <span class="s1">&#39;Success&#39;</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
+<p>Desgin really doesn&#39;t become a concern if nothing ever changes (requirements). But something always changes and it is the need for change that makes desugn matter.</p>
 
-<p>Use :js =&gt; true to switch to the Capybara.javascript_driver (:selenium by default), or provide a :driver option to switch to one specific driver. For example:</p>
+<h3>Why is Change Hard?</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s1">&#39;some stuff which requires js&#39;</span><span class="p">,</span> <span class="ss">:js</span> <span class="o">=&gt;</span> <span class="kp">true</span> <span class="k">do</span>
-  <span class="n">it</span> <span class="s1">&#39;will use the default js driver&#39;</span>
-  <span class="n">it</span> <span class="s1">&#39;will switch to one specific driver&#39;</span><span class="p">,</span> <span class="ss">:driver</span> <span class="o">=&gt;</span> <span class="ss">:webkit</span>
-<span class="k">end</span></code></pre></div>
+<p>Object oriented applications are made of partst that interact to produce the behavior of the whole. The parts are objects, interactions are emobodied in the messages that pass between them.</p>
 
-<p>**Capybara Built in DSL (reads more like UAT - User Accpetance tests) - reads more higher level
-- feature is in fact just an alias for describe ...,
-- :type =&gt; :feature,
-- background is an alias for before, scenario for it,
-- and given/given! aliases for let/let!, respectively.</p>
+<p>OOD is about managing dependencies. It&#39;s a set of coding techniques that arrange dependencies such that objects can tolerate change. Changing one object forces change upon its collabortors.</p>
 
-<p>Finally, Capybara also comes with a built in DSL for creating descriptive acceptance tests:</p>
+<p>However when objects know too much, they have expectations about the world in which they reside. And these expectations contstrain them.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">feature</span> <span class="s2">&quot;Signing in&quot;</span> <span class="k">do</span>
-  <span class="n">background</span> <span class="k">do</span>
-    <span class="no">User</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="ss">:email</span> <span class="o">=&gt;</span> <span class="s1">&#39;user@example.com&#39;</span><span class="p">,</span> <span class="ss">:password</span> <span class="o">=&gt;</span> <span class="s1">&#39;caplin&#39;</span><span class="p">)</span>
-  <span class="k">end</span>
+<h2>A Practical Definition of Design</h2>
 
-  <span class="n">scenario</span> <span class="s2">&quot;Signing in with correct credentials&quot;</span> <span class="k">do</span>
-    <span class="n">visit</span> <span class="s1">&#39;/sessions/new&#39;</span>
-    <span class="n">within</span><span class="p">(</span><span class="s2">&quot;#session&quot;</span><span class="p">)</span> <span class="k">do</span>
-      <span class="n">fill_in</span> <span class="s1">&#39;Email&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="s1">&#39;user@example.com&#39;</span>
-      <span class="n">fill_in</span> <span class="s1">&#39;Password&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="s1">&#39;caplin&#39;</span>
-    <span class="k">end</span>
-    <span class="n">click_button</span> <span class="s1">&#39;Sign in&#39;</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_content</span> <span class="s1">&#39;Success&#39;</span>
-  <span class="k">end</span>
+<p>Design is an art of arranging code. Design has two components:
+You must not only write code for the feature you plan to deliver today, you must also create code that is amendable to being changed later.</p>
 
-  <span class="n">given</span><span class="p">(</span><span class="ss">:other_user</span><span class="p">)</span> <span class="p">{</span> <span class="no">User</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="ss">:email</span> <span class="o">=&gt;</span> <span class="s1">&#39;other@example.com&#39;</span><span class="p">,</span> <span class="ss">:password</span> <span class="o">=&gt;</span> <span class="s1">&#39;rous&#39;</span><span class="p">)</span> <span class="p">}</span>
+<p>Design that is that anticipates specific future requirements almost always ends badly. It shouldn&#39;t guess hte future, but rather perserves options for accomodating the future, leaving you room to move.</p>
 
-  <span class="n">scenario</span> <span class="s2">&quot;Signing in as another user&quot;</span> <span class="k">do</span>
-    <span class="n">visit</span> <span class="s1">&#39;/sessions/new&#39;</span>
-    <span class="n">within</span><span class="p">(</span><span class="s2">&quot;#session&quot;</span><span class="p">)</span> <span class="k">do</span>
-      <span class="n">fill_in</span> <span class="s1">&#39;Email&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="n">other_user</span><span class="o">.</span><span class="n">email</span>
-      <span class="n">fill_in</span> <span class="s1">&#39;Password&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="n">other_user</span><span class="o">.</span><span class="n">password</span>
-    <span class="k">end</span>
-    <span class="n">click_button</span> <span class="s1">&#39;Sign in&#39;</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_content</span> <span class="s1">&#39;Invalid email or password&#39;</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
+<p>Primary goal is to allow you to desiglm later, and its primary goal is reduce the cost of change.</p>
 
-<h3>Capybara Drivers</h3>
+<h3>Design Principles</h3>
 
-<ol>
-<li><p>RackTest is really fast, and does not really fire-up the browser. It&#39;s a headless driver
-therefore doesn&#39;t really simulate the browser experience. RackTest does not support Js.</p></li>
-<li><p>Selenuim is a popular driver that does handle Js and fire-ups Firefox.
-But this option is very slow.</p></li>
-<li><p>Capybara Webkit is another headless driver that can execute Js well.
-It&#39;s much faster than selenium but slower than RackTest.</p></li>
-</ol>
+<p>SOLID stands for Single Responsibilty, Open-Closed, Liskov Substitution, Interface Segregation, &amp; Dependancy Inversion</p>
 
-<h3>First feature spec</h3>
+<p>DRY - Don&#39;t Repeat Yourself</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;spec/helper&#39;</span>
-<span class="n">feature</span> <span class="s1">&#39;User signs in&#39;</span> <span class="k">do</span>
-  <span class="n">background</span> <span class="k">do</span>
-    <span class="no">User</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">username</span><span class="p">:</span> <span class="s2">&quot;john&quot;</span><span class="p">,</span> <span class="ss">full_name</span><span class="p">:</span> <span class="s2">&quot;John Doe&quot;</span><span class="p">)</span>
-  <span class="k">end</span>
+<p>LoD - Law of Demeter</p>
 
-  <span class="n">scenario</span> <span class="s2">&quot;with existing username&quot;</span> <span class="k">do</span>
-    <span class="n">visit</span> <span class="n">root_path</span>
-    <span class="n">fill_in</span> <span class="s2">&quot;Username&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s2">&quot;john&quot;</span>
-    <span class="n">click_button</span> <span class="s2">&quot;Sign in&quot;</span>
-    <span class="n">page</span><span class="o">.</span><span class="n">should</span> <span class="n">have_content</span> <span class="s2">&quot;John Doe&quot;</span>
-    <span class="k">end</span>
-  <span class="k">end</span></code></pre></div>
+<h3>Design Patterns</h3>
 
-<p>The &#39;fill_ in &quot;Username&quot;, &#39; is referring to the label<em>tag :username, &quot;Username&quot;
-  - you can also refer to fill</em> in the label tag, the name, or the input_ id,
-  although its best practice to use the label tag because it easier to read.</p>
+<p>give us the power to name common problems and solve those problems in common ways, allowing us to big fuzzy things into focus.</p>
 
-<h3>Request Specs</h3>
+<h3>The Act of Design</h3>
 
-<p>Watch RailsCast video on <a href="http://railscasts.com/episodes/257-request-specs-and-capybara">Capybara &amp; Request Specs</a></p>
+<p>How design fails:
+1. Lack of it - programmers typically now little about design
+2. Under-designed - lack of knowledge of design principles
+3. Over-design - seasoned devs may disgn relentlessly
+4. Object Oriented Desgin fails when the act of design is seperated from the act of programming. The feedback loop should be timely and incremental; the iterative techniques of the Agile Development are perfect for well-designd OO applications.</p>
+
+<h3>When to Design</h3>
+
+<p>Agile believes that the mot cost-effective way to produce what customers&#39;s really want is to collaborate with the, building software one bit at atime such that each deivered bit has the opprotunity to alter ideas about the next.</p>
+
+<p>There is no need to do BUFD (Big Upfront Design)</p>
+
+<p>The Agile Process gaurantees change and yu ability to do so depneds on your design (sinple, flexibe, and malleable code).</p>
+
+<h3>Judging Design</h3>
+
+<p>Back in the day, design was jusged by the number of lines of code (sometimes referred to as SLOC). The ultimate software metric would be cost per feature over the time interval the matters.</p>
+
+<p>Failure to design increases your technical debt.</p>
+
+<p>Your decision about design depends on two things.:
+your skills and your timeframe.</p>
+
+<h2>A brief introduction to Object Oriented Programming:</h2>
+
+<p>OO applications are made of objects and messages that pass between them.</p>
+
+<h3>Procedural Langauges</h3>
+
+<p>is a non-object oriented progamming technique. Every possible data type and po]eration already exists, you can&#39;t make up wholly new operations or brand new data types.</p>
+
+<h2>Object Oriented Programming</h2>
+
+<p>Ruby has a string object instead of a string data type. Because Ruby string objects supply their own operations, Ruby doesn&#39;t have to know anything in particular about the string data type but rather it only need to know how to send object messages.</p>
+
+<p>Ruby allows to you to provide classes tha essentially blueprints for the consturction of similar objects. A class defines methods (definitions of behavior) and attributes(definitons of variables), while also allowing you to instantiate new objects with same operations or behavior.</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/04/16/course3-mailgun/">
+        Build Robust & Production Quality Applications - Lesson 6: Mailgun
+      </a>
+    </h1>
+
+    <span class="post-date">16 Apr 2015</span>
+
+    <h2>Mailgun</h2>
+
+<p>Mailgun is an email service for developers - which is clear in its interface. It has a ver low-level design that is easy for tweaking and has alot of options.</p>
 
 <ul>
-<li>Request Specs are alternatives to the Rails Builtin Integration Testing
-(Refer to RailsCast video 187)</li>
+<li>It focuses on transaction emails and it optimized for deliverability.</li>
+<li>It also allows for the receipt of emails.</li>
+<li>You can specify an email address that you want mailgun to listen. Mailgun can pre-process the message and parse out parts of the email and send to your app for processing.</li>
+<li>It can handle campaign emails, number of clicks, etc.</li>
 </ul>
 
-<p>In terminal, run:</p>
+<h2>How to Integrate Mailgun into our Server</h2>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="mi">1</span><span class="o">.</span> <span class="n">rails</span> <span class="n">g</span> <span class="ss">rspec</span><span class="p">:</span><span class="n">install</span>
+<p>We are using Heroku and there is a <a href="https://addons.heroku.com/mailgun">Mailgun/Heroku add-on</a>. There is a free option that limits to 300 emails/day.</p>
 
-<span class="mi">2</span><span class="o">.</span> <span class="n">rails</span> <span class="n">g</span> <span class="n">intergration_test</span> <span class="n">task</span>
+<p>It&#39;s pretty simple beyond that. You just log into Heroku, select your app, and run the command:</p>
 
-<span class="mi">3</span><span class="o">.</span> <span class="no">Open</span> <span class="n">up</span> <span class="n">task_spec</span><span class="p">,</span> <span class="n">code</span> <span class="n">should</span> <span class="n">be</span> <span class="n">fine</span> <span class="n">as</span> <span class="n">is</span><span class="p">,</span> <span class="n">but</span> <span class="n">you</span> <span class="n">would</span>
-<span class="n">change</span> <span class="n">the</span> <span class="n">request</span> <span class="n">verb</span> <span class="ow">and</span> <span class="n">the</span> <span class="n">assertion</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">heroku</span> <span class="ss">addons</span><span class="p">:</span><span class="n">create</span> <span class="n">mailgun</span></code></pre></div>
 
-<span class="mi">4</span><span class="o">.</span> <span class="n">rake</span> <span class="ss">spec</span><span class="p">:</span><span class="n">requests</span></code></pre></div>
+<h3>Read Documentation on Sending Emails via SMTP</h3>
 
-<p>Example:</p>
+<p>Go to your configuation for your production env, and change the setting to those listed. Make sure you keep stmp as the delivery method. Env variables will be set by Heroku, so you don&#39;t have to worry about that.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;Tasks&quot;</span> <span class="k">do</span>
-  <span class="n">describe</span> <span class="s2">&quot;GET /tasks&quot;</span> <span class="k">do</span>
-    <span class="n">it</span>  <span class="s2">&quot;displays tasks&quot;</span> <span class="k">do</span>
-      <span class="no">Task</span><span class="o">.</span><span class="n">create!</span><span class="p">(</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s2">&quot;paint fence&quot;</span><span class="p">)</span>
-      <span class="n">get</span> <span class="n">tasks_path</span>
-      <span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">should</span> <span class="kp">include</span><span class="p">(</span><span class="s2">&quot;paint fence&quot;</span><span class="p">)</span>
-      <span class="k">end</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-
-<span class="n">describe</span> <span class="s2">&quot;POST /tasks&quot;</span> <span class="k">do</span>
-    <span class="n">it</span> <span class="s2">&quot;create task&quot;</span> <span class="k">do</span>
-      <span class="n">post_via_redirect</span> <span class="n">tasks_path</span><span class="p">,</span> <span class="ss">tasks</span><span class="p">:</span> <span class="p">{</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;mow lawn&quot;</span><span class="p">}</span>
-      <span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">should</span> <span class="kp">include</span><span class="p">(</span><span class="s2">&quot;mow lawn&quot;</span><span class="p">)</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<p>One issue with request specs this that they dont mimic the user&#39;s experience
-becasue you&#39;e submitting the request directly, rather than going through the form
-like the user would - that is why we use Capybara (rather than webrat) &amp; Launchy</p>
-
-<p>Installing Capybara, allows us to change our existing tests:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;Tasks&quot;</span> <span class="k">do</span>
-  <span class="n">describe</span> <span class="s2">&quot;GET /tasks&quot;</span> <span class="k">do</span>
-    <span class="n">it</span>  <span class="s2">&quot;displays tasks&quot;</span> <span class="k">do</span>
-      <span class="no">Task</span><span class="o">.</span><span class="n">create!</span><span class="p">(</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s2">&quot;paint fence&quot;</span><span class="p">)</span>
-      <span class="n">visit</span> <span class="n">tasks_path</span>
-      <span class="n">page</span><span class="o">.</span><span class="n">should</span> <span class="kp">include</span><span class="p">(</span><span class="s2">&quot;paint fence&quot;</span><span class="p">)</span>
-      <span class="k">end</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-
-<span class="n">describe</span> <span class="s2">&quot;POST /tasks&quot;</span> <span class="k">do</span>
-    <span class="n">it</span> <span class="s2">&quot;create task&quot;</span> <span class="k">do</span>
-      <span class="n">visit</span> <span class="n">tasks_path</span>
-      <span class="n">fill_in</span> <span class="s2">&quot;New Task&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s2">&quot;mow lawn&quot;</span>
-      <span class="n">click_button</span> <span class="s2">&quot;Add&quot;</span>
-      <span class="n">page</span><span class="o">.</span><span class="n">should</span> <span class="n">have_content</span><span class="p">(</span><span class="s2">&quot;successfully added task&quot;</span><span class="p">)</span>
-      <span class="n">page</span><span class="o">.</span><span class="n">should</span> <span class="n">have_content</span><span class="p">(</span><span class="s2">&quot;mow lawn&quot;</span><span class="p">)</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<p>*What if the test fails and you don&#39;t know why?
-Thats where the gem &quot;Launchy&quot; comes in:
- -anywhere in the test, you can write:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">save_and_open_page</span></code></pre></div>
-
-<p>Capybara does not test Javascript with out Selenium:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">it</span> <span class="s2">&quot;supports js&quot;</span><span class="p">,</span> <span class="ss">js</span><span class="p">:</span> <span class="kp">true</span> <span class="k">do</span>
-   <span class="n">visit</span> <span class="n">tasks_path</span>
-   <span class="n">click_link</span> <span class="s2">&quot;test js&quot;</span>
-   <span class="n">page</span><span class="o">.</span><span class="n">should</span> <span class="n">have_content</span><span class="p">(</span><span class="s2">&quot;js works&quot;</span><span class="p">)</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<hr>
-
-<p>Let&#39;s try adding Js to our first test and see if it is supported by
-Selenium.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">describe</span> <span class="s2">&quot;Tasks&quot;</span> <span class="k">do</span>
-<span class="n">describe</span> <span class="s2">&quot;GET /tasks&quot;</span> <span class="k">do</span><span class="p">,</span> <span class="ss">js</span><span class="p">:</span> <span class="kp">true</span> <span class="k">do</span>
-  <span class="n">it</span>  <span class="s2">&quot;displays tasks&quot;</span> <span class="k">do</span>
-    <span class="no">Task</span><span class="o">.</span><span class="n">create!</span><span class="p">(</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s2">&quot;paint fence&quot;</span><span class="p">)</span>
-    <span class="n">visit</span> <span class="n">tasks_path</span>
-    <span class="n">page</span><span class="o">.</span><span class="n">should</span> <span class="kp">include</span><span class="p">(</span><span class="s2">&quot;paint fence&quot;</span><span class="p">)</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<p>The test will fail because Selenium does not support database transactions</p>
-
-<h3>In #spec_helper.rb:</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Change</span> <span class="n">config</span><span class="o">.</span><span class="n">use_transactional_</span> <span class="n">fixtures</span> <span class="o">=</span> <span class="kp">true</span><span class="p">,</span> <span class="n">to</span> <span class="kp">false</span><span class="o">.</span></code></pre></div>
-
-<p>Selenium does not support database transactions.</p>
-
-<p>But this will mean our database transactions will carryover in between
-tests and we dont want that. So the answer is the database cleaner
-gem that will run in between tests. You must add the config code
-from the documentation into the spec_helper, removing transactions since the
-arent supported by Selenuim.</p>
-
-<hr>
-
-<p>To run pry in a spec, you must use:
-require &#39;pry&#39;; binding.pry before the error/after the action
-During pry. you can use</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Launchy</span> <span class="s2">&quot;save_and_open_page&quot;</span></code></pre></div>
+<p>Mailgun supports two delivery methods. The reason we can use smtp is becasue ActionMailer will help us to prepare to proper map format. But HTTP is also an option. You don&#39;t have to rely on Rails to do that. You can just use REST client that will use an HTTP POST. Check the API documentation to see what other headers can be sent.</p>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/03/05/course3-lesson3/">
-        Build Robust & Production Quality Applications - Lesson 3: Part 2
+      <a href="/2015/04/13/course3-email-service-providers/">
+        Build Robust & Production Quality Applications - Lesson 6: Email Service Providers
       </a>
     </h1>
 
-    <span class="post-date">05 Mar 2015</span>
+    <span class="post-date">13 Apr 2015</span>
 
-    <h2>Items Covered:</h2>
+    <p>With Gmail, there are clear sending <a href="https://support.google.com/a/answer/166852?hl=en">limitations</a>.</p>
+
+<p>Sending out emails is something that you should offload onto a third-party provider as it is a critical business process. You want to ensure emails are recieved right away and not in the recipients email folder.</p>
+
+<p>Mailgun &amp; Postmark are the recommended email service providers. When considering vendors, you want to focus on devliverability.</p>
+
+<p>Check out the is <a href="http://www.quora.com/Why-are-Mailgun-and-Postmark-so-much-more-expensive-than-Sendgrid-and-AWS-SES">Quora article</a> on comparing well-known email service providers. In this course, we will use Mailgun.</p>
+
+<p>Good <a href="http://www.gotealeaf.com/blog/handling-emails-in-rails">blogpost</a> for getting set up with Gmail.</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/04/07/couse3-concerns/">
+        Build Robust & Production Quality Applications - Lesson 6: ActiveSupport::Concerns
+      </a>
+    </h1>
+
+    <span class="post-date">07 Apr 2015</span>
+
+    <p>In our Todos example, we created a method</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">before_create</span> <span class="ss">:generate_token</span></code></pre></div>
+
+<p>for and then defined the generate_ token method under private,
+within the Todos model.</p>
+
+<p>But what if you want to include this in several models?
+DRY does not only mean &quot;Dont Repeat Yourself&quot;, but it also means to have
+one authoritative source for method calls</p>
+
+<p>That&#39;s where ActiveSupport::Concerns can help by basically extracting the common code into a module</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">lib</span><span class="o">/</span><span class="n">tokenable</span><span class="o">.</span><span class="n">rb</span>
+<span class="k">module</span> <span class="nn">Tokenable</span>
+<span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+
+  <span class="n">included</span> <span class="k">do</span>
+    <span class="n">before_create</span> <span class="ss">:generate_token</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">generate_token</span>
+    <span class="nb">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="no">SecureRandom</span><span class="o">.</span><span class="n">urlsafe_base64</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<p>Then in the Todo model:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Todo</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="kp">include</span> <span class="no">Tokenable</span></code></pre></div>
+
+<p>With Rails 3 or later, the lib directory is no longer automatically loaded
+You instead have to:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">require_relative</span> <span class="s1">&#39;../..lib/tokenable&#39;</span>
+
+<span class="k">class</span> <span class="nc">Todo</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="kp">include</span> <span class="no">Tokenable</span>
+
+<span class="k">end</span></code></pre></div>
+
+<p>Now if you dont want to require_relative everytime:
+You can do one of the two:</p>
 
 <ol>
-<li>Structural Refactor</li>
-<li>Skinny Controller, Fat Models</li>
-<li>Rspec Macros</li>
-<li>Rspec Shared Examples</li>
+<li>move the Tokenable file to your models folder</li>
+<li>go to /enviornments/application.rb
+config.autoload_paths &lt;&lt; &quot;#{Rails.root}/lib&quot;</li>
 </ol>
 
-<h2>Structural Refactor</h2>
-
-<p>Controllers are more of traffic control and methods containing logic should refarctored to the model level</p>
-
-<ul>
-<li>For simple refactors such as moving methods from controllers to methods,
-since your test suite is already comprehensive enough to cover the current model, you dont have to create additional tests at the model level, only if you decide to add additional functionality.</li>
-</ul>
-
-<p>Typically you shouldn&#39;t have more than one conditional or return from a method within a method. You should refactor by moving a piece of the code to private method.</p>
-
-<h2>Skinny Controller, Fat Models</h2>
-
-<p>One of the most common refactors in Rails and one of the most well-known architectural principals in rails.</p>
-
-<p>Fat Models, means the models assume the most responsibilty.
-Good blog post to read: <a href="http://weblog.jamisbuck.org/2006/10/18/skinny-controller-fat-model">Skinny Models, Fat Controllers</a>
-Here - James talks about moving responsibilty from the view, to the controller, and then to the model.</p>
-
-<p>Examples of Opensource Project Management Tools that have need to go on a Fat Controller Diet:
-<a href="https://github.com/chiliproject/chiliproject">ChilliProject</a>
-<a href="https://github.com/edavis10/redmine">Redmine</a></p>
-
-<h3>Refactoring to fat models in MyFlix</h3>
-
-<p>Tip: When refactoring your controllers to fat models, do not move methods that take parameters in a form
-because that is the purpose of the controller - to talk to the views and models.
-Look for those that iterate through the model.</p>
-
-<h2>Rspec Macros</h2>
-
-<p>Allows you to extract logic that can be used by multiple rspec controllers.</p>
-
-<p>So rather than the following at the begining of each controller test:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">before</span> <span class="k">do</span>
-  <span class="n">frank</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
-  <span class="n">session</span><span class="o">[</span><span class="ss">:user_id</span><span class="o">]</span> <span class="o">=</span> <span class="n">frank</span><span class="o">.</span><span class="n">id</span>
-<span class="k">end</span></code></pre></div>
-
-<p>We could create a macro, spec/support/macros.rb and include the above code:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">set_current_user</span>
-  <span class="n">frank</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span>
-    <span class="n">session</span><span class="o">[</span><span class="ss">:user_id</span><span class="o">]</span> <span class="o">=</span> <span class="n">frank</span><span class="o">.</span><span class="n">id</span>
-  <span class="k">end</span>
-
-<span class="k">def</span> <span class="nf">current_user</span>
-  <span class="no">User</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">session</span><span class="o">[</span><span class="n">user_id</span><span class="o">]</span><span class="p">)</span>
-<span class="k">end</span></code></pre></div>
-
-<p>AND in your test:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">before</span> <span class="p">{</span><span class="n">set_current_user</span><span class="p">}</span></code></pre></div>
-
-<p>Now, if I want to clear the current user to test the path of an unauthorized user
-create another macro called clear<em>current</em>user, make it the first line in your test.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">clear_current_user</span>
-  <span class="n">session</span><span class="o">[</span><span class="n">user_id</span><span class="o">]</span> <span class="o">=</span> <span class="kp">nil</span>
-<span class="k">end</span></code></pre></div>
-
-<h2>Shared Examples</h2>
-
-<p>What bout you want to test the redirect for unauthenticated users for not just index but index and new</p>
-
-<p>Create a Shared Example:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#spec/support/shares_examples.rb</span>
-<span class="n">shared_examples</span> <span class="s2">&quot;require_sign_in&quot;</span> <span class="k">do</span>
-  <span class="n">it</span> <span class="s2">&quot;redirects to the front page&quot;</span> <span class="k">do</span>
-    <span class="n">response</span><span class="o">.</span><span class="n">should</span> <span class="n">redirect_to</span> <span class="n">root_path</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<p>In your test: you can&#39;t just write:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">it</span> <span class="n">behaves_like</span> <span class="s2">&quot;require_sign_in&quot;</span></code></pre></div>
-
-<p>because you have to clear the current user and hit the action first:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">context</span> <span class="s2">&quot;user not signed in&quot;</span> <span class="k">do</span>
-  <span class="n">before</span> <span class="k">do</span>
-    <span class="n">clear_current_user</span>
-    <span class="n">get</span> <span class="ss">:index</span>
-  <span class="k">end</span>
-  <span class="n">it</span> <span class="n">behaves_like</span> <span class="s2">&quot;require_sign_in&quot;</span>
-<span class="k">end</span></code></pre></div>
-
-<p>But this is frustrating becasue although we DRY&#39;d up our code a little,
-we still have to add a before block for the clear<em>current</em>user and the index.</p>
-
-<p>It would be great if there&#39;s a way to pass the action to the shared example, and there is:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">shared_examples</span> <span class="s2">&quot;require_sign_in&quot;</span> <span class="k">do</span>
-  <span class="n">it</span> <span class="s2">&quot;redirects to the front page&quot;</span> <span class="k">do</span>
-    <span class="n">clear_current_user</span>
-    <span class="n">action</span>
-    <span class="n">response</span><span class="o">.</span><span class="n">should</span> <span class="n">redirect_to</span> <span class="n">root_path</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<p>AND in your test:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">context</span> <span class="s2">&quot;not_signed_in&quot;</span> <span class="k">do</span>
-    <span class="n">it_behaves_like</span> <span class="s2">&quot;require_sign_in&quot;</span> <span class="k">do</span>
-    <span class="n">let</span><span class="p">(</span><span class="ss">:action</span><span class="p">)</span> <span class="p">{</span> <span class="n">get</span> <span class="ss">:index</span> <span class="p">}</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<p>AND you actually don&#39;t need the context anymore:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">index</span><span class="o">&gt;</span>
-<span class="n">it_behaves_like</span> <span class="s2">&quot;require_sign_in&quot;</span> <span class="k">do</span>
-  <span class="n">let</span><span class="p">(</span><span class="ss">:action</span><span class="p">)</span> <span class="p">{</span> <span class="n">get</span> <span class="ss">:index</span> <span class="p">}</span>
-<span class="k">end</span>
-
-<span class="o">&lt;</span><span class="kp">new</span><span class="o">&gt;</span>
-<span class="n">it_behaves_like</span> <span class="s2">&quot;require_sign_in&quot;</span> <span class="k">do</span>
-  <span class="n">let</span><span class="p">(</span><span class="ss">:action</span><span class="p">)</span> <span class="p">{</span> <span class="n">get</span> <span class="ss">:new</span> <span class="p">}</span>
-<span class="k">end</span>
-
-<span class="o">&lt;</span><span class="n">create</span><span class="o">&gt;</span>
-<span class="n">it_behaves_like</span> <span class="s2">&quot;require_sign_in&quot;</span> <span class="k">do</span>
-  <span class="n">let</span><span class="p">(</span><span class="ss">:action</span><span class="p">)</span> <span class="p">{</span> <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">todo</span><span class="p">:</span> <span class="p">{</span><span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;something&#39;</span><span class="p">}</span> <span class="p">}</span>
-<span class="k">end</span></code></pre></div>
-
-<p>Shared examples can be used on both controller and model levels
-For more info:</p>
-
-<p><a href="https://www.relishapp.com/rspec/rspec-core/docs/example-groups/shared-examples">Shared Examples Docs</a></p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/03/02/course3-lesson3/">
-        Build Robust & Production Quality Applications - Lesson 3: Part 1
-      </a>
-    </h1>
-
-    <span class="post-date">02 Mar 2015</span>
-
-    <h2>Items Covered:</h2>
-
-<ol>
-<li>Growing Complexity</li>
-<li>Interactive Debugging for Solution Delivery</li>
-<li>Transactions</li>
-</ol>
-
-<h2>Growing Complexity Guided By Tests</h2>
-
-<p>Tags.all.map(&amp;:name) == Tags.all.map{|tag| tag.name}</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">create</span>
-  <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:todo</span><span class="o">]</span><span class="p">)</span>
-  <span class="k">if</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">save</span>
-    <span class="n">location_string</span> <span class="o">=</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;at&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">strip</span>
-    <span class="vi">@todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;location#(location_string)&quot;</span><span class="p">)</span>
-    <span class="n">redrect_to</span> <span class="n">root_path</span>
-  <span class="k">else</span>
-  <span class="n">render</span> <span class="ss">:new</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<p>strip method removes all spaces.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">create</span>
-  <span class="vi">@todo</span> <span class="o">=</span> <span class="no">Todo</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:todo</span><span class="o">]</span><span class="p">)</span>
-  <span class="k">if</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">save</span>
-    <span class="n">location_string</span> <span class="o">=</span> <span class="vi">@todo</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;at&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">strip</span>
-    <span class="n">locations</span> <span class="o">=</span> <span class="n">location_string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;and&#39;</span><span class="p">)</span>
-    <span class="n">locations</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">location</span><span class="o">|</span>
-    <span class="vi">@todo</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;location:#(location)&quot;</span><span class="p">)</span>
-    <span class="n">redrect_to</span> <span class="n">root_path</span>
-  <span class="k">else</span>
-  <span class="n">render</span> <span class="ss">:new</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<h3>When to use each vs map</h3>
-
-<p>each is used for when you want to iterate through a an collection of data, an
-array for example but you dont want to manipulate the result.
-map is ideal for when iterating over a collection and then you need to alter of manipulate those returned values for input into another problem.</p>
-
-<h3>When to use split vs regex</h3>
-
-<p>Use split when searching for one element
-And regex when searching for more than one.</p>
-
-<h2>Interactive Debugging for Solution Discovery</h2>
-
-<p>After writing and implementing your test cases, you should run sanity checks within your browser.
-If bugs are identified, you should run write tests to isolate it the bug.</p>
-
-<p>Use Binding.pry to in your controller being tested, after the problematic line.
-Binding.pry is really just irb so you now have a means to experiment with your code
-until you find the right solution.</p>
-
-<p>For a good regex tutorial:
-<a href="www.regular-expressions.info">Regex Tutorial</a>
-<a href="www.rubular.com">Rubular</a></p>
-
-<p>.split method cannot run on nil so Ruby 1.9 introduced .try(:split),
-which will run .split if not nil.</p>
-
-<h2>Transactions</h2>
-
-<p>Wrapping batch operations into transactions:</p>
-
-<p>To update the queue in MyFlix, the position entered must be an integer.
-If not, the entire page will fail to update. This is unlike normal transactions
-where we can include a validation error.
-This is where the concept of transactions come in. If all actions in the transaction
-do not save, it will rollback.</p>
-
-<p>Transactions are protective blocks where SQL statements are only permanent if
-they can all succeed as one atomic action. The classic example is a transfer between
-two accounts where you can only have a deposit if the withdrawal succeeded and vice versa.
-Transactions enforce the integrity of the database and guard the data against program errors or database break-downs.
-So basically you should use transaction blocks whenever you have a number of statements that must be executed together
-or not at all.</p>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/02/28/course3-faker/">
-        Build Robust & Production Quality Applications - Lesson 2: Generate Fake Data with Faker
-      </a>
-    </h1>
-
-    <span class="post-date">28 Feb 2015</span>
-
-    <h2>Use Faker to Generate Fake Data</h2>
-
-<p>Creating fake data when your model has uniqueness validations will throw errors
-if your data is not unique.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:todo</span><span class="p">)</span> <span class="k">do</span>
-  <span class="nb">name</span> <span class="p">{</span> <span class="s2">&quot;cooking&quot;</span> <span class="p">}</span>
-  <span class="n">user</span>
-<span class="k">end</span></code></pre></div>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span> <span class="k">do</span>
-  <span class="n">email</span> <span class="p">{</span> <span class="s2">&quot;joe@example.com&quot;</span><span class="p">}</span> <span class="c1">#This will throw an error eventually if email record already exists.</span>
-<span class="k">end</span></code></pre></div>
-
-<h3>Examples</h3>
-
-<p>Creating a category:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:category</span><span class="p">)</span> <span class="k">do</span>
-  <span class="nb">name</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Name</span><span class="o">.</span><span class="n">name</span> <span class="p">}</span>
-<span class="k">end</span></code></pre></div>
-
-<p>Creating a video:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:video</span><span class="p">)</span> <span class="k">do</span>
-  <span class="n">title</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Lorem</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="p">}</span>
-  <span class="n">description</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Lorem</span><span class="o">.</span><span class="n">paragraph</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="p">}</span>
-<span class="k">end</span></code></pre></div>
-
-<p>Creating an invitation:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Fabricator</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">)</span> <span class="k">do</span>
-  <span class="n">recipient_name</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Name</span><span class="o">.</span><span class="n">name</span> <span class="p">}</span>
-  <span class="n">recipient_email</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Internet</span><span class="o">.</span><span class="n">email</span> <span class="p">}</span>
-  <span class="n">message</span> <span class="p">{</span> <span class="no">Faker</span><span class="o">::</span><span class="no">Lorem</span><span class="o">.</span><span class="n">paragraphs</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="p">}</span>
-<span class="k">end</span></code></pre></div>
-
-<p>Read more: <a href="https://github.com/stympy/faker">Faker Docs</a></p>
+<p>then remove require_relative from the model.</p>
 
   </div>
   

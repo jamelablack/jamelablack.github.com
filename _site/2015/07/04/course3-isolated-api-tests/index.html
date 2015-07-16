@@ -156,6 +156,14 @@
           
         
       
+        
+          
+        
+      
+        
+          
+        
+      
 
     <p>&copy; 2015. All rights reserved.</p>
   </div>
@@ -201,14 +209,19 @@
 <span class="k">end</span></code></pre></div>
 
 <h3>Step 3: Add :vcr to the transactions you want to record</h3>
-<div class="highlight"><pre><code class="language-text" data-lang="text">it &quot;charges the card successfully&quot;, :vcr do
-response = StripeWapper::Charge.create(amount: 300, card: token)
-expect(response).to be_successful
-end
-</code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">it</span> <span class="s2">&quot;charges the card successfully&quot;</span><span class="p">,</span> <span class="ss">:vcr</span> <span class="k">do</span>
+  <span class="n">response</span> <span class="o">=</span> <span class="no">StripeWapper</span><span class="o">::</span><span class="no">Charge</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">amount</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span> <span class="ss">card</span><span class="p">:</span> <span class="n">token</span><span class="p">)</span>
+  <span class="n">expect</span><span class="p">(</span><span class="n">response</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">be_successful</span>
+<span class="k">end</span></code></pre></div>
+
 <h3>Step 4: Cassettes &amp; Configs</h3>
 
 <p>As default, spec/cassettes holds all recordings and a creates data files for each spec ran. VCR allows for extensive customization. Including how many recordings per spec whether it be once or all.</p>
+
+<h3>Refactor</h3>
+
+<p>You can add Stripe.api<em>key = ENV[&#39;STRIPE</em>SECRET_KEY&#39;] to your initializers (config/initializers/stripe.rb), rather than including in each test.</p>
 
 </div>
 
@@ -218,27 +231,27 @@ end
     
       <li>
         <h3>
-          <a href="/2015/07/03/course3-integrated-API-tests/">
-            Build Robust & Production Quality Applications - Lesson 8: Fully Integrated API Tests
-            <small>03 Jul 2015</small>
+          <a href="/2015/07/18/course3-testing-talks/">
+            Build Robust & Production Quality Applications - Lesson 8: - Mocks & Stubs
+            <small>18 Jul 2015</small>
           </a>
         </h3>
       </li>
     
       <li>
         <h3>
-          <a href="/2015/07/02/course3-API-wrappers/">
-            Build Robust & Production Quality Applications - Lesson 8: How to Build API Wrappers
-            <small>02 Jul 2015</small>
+          <a href="/2015/07/17/course3-mocks-and-stubs/">
+            Build Robust & Production Quality Applications - Lesson 8: - Mocks & Stubs
+            <small>17 Jul 2015</small>
           </a>
         </h3>
       </li>
     
       <li>
         <h3>
-          <a href="/2015/07/01/course3-credit-card-payments/">
-            Build Robust & Production Quality Applications - Lesson 7: Processing Credit Card Payments Online with Stripe
-            <small>01 Jul 2015</small>
+          <a href="/2015/07/16/course3-mocking/">
+            Build Robust & Production Quality Applications - Lesson 8: - Mocking
+            <small>16 Jul 2015</small>
           </a>
         </h3>
       </li>

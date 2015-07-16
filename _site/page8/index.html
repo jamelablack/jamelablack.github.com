@@ -156,6 +156,14 @@
           
         
       
+        
+          
+        
+      
+        
+          
+        
+      
 
     <p>&copy; 2015. All rights reserved.</p>
   </div>
@@ -167,459 +175,448 @@
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/03/31/course3-invite-users/">
-        Build Robust & Production Quality Applications - Lesson 6: Inviting Users
+      <a href="/2015/05/10/course3-procfile-foreman/">
+        Course3 Procfile Foreman
       </a>
     </h1>
 
-    <span class="post-date">31 Mar 2015</span>
+    <span class="post-date">10 May 2015</span>
 
-    <p>Let&#39;s write add functionality to allow users to invite their friends:</p>
+    <hr>
 
-<h3>Workflow:</h3>
+<p>layout: post
+  title: &quot;Build Robust &amp; Production Quality Applications - Lesson 6: Procfile &amp; Foreman&quot;
+  tags: tealeaf</p>
 
-<ol>
-<li>User can input friends name and email, click invite friend link</li>
-<li>An email is sent to friend</li>
-<li>Friend open email, clicks link and then is directed to Registration Form</li>
-<li>Email address is pre-filled</li>
-<li>Upon sign up, user automatically follows recommender and vice versa</li>
-</ol>
+<hr>
 
-<h3>Steps:</h3>
+<p>On your server, you can run both web and worker processes locally - you can also do the same on Heroku, identifiying the processes you would like to run in your Procfile. A procfile is placed in the root of your diretory and declare what types of processes you want run in your app.</p>
 
-<h5>1. Copy ui controller into views/invitations/new.html.haml</h5>
+<p>In your procfile, you will define:</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">%</span><span class="n">section</span><span class="o">.</span><span class="n">invite</span><span class="o">.</span><span class="n">container</span>
-  <span class="o">.</span><span class="n">row</span>
-    <span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">10</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="n">offset</span><span class="o">-</span><span class="mi">1</span>
-      <span class="o">%</span><span class="n">form</span><span class="o">.</span><span class="n">invite</span>
-        <span class="o">%</span><span class="n">header</span>
-          <span class="o">%</span><span class="n">h1</span> <span class="no">Invite</span> <span class="n">a</span> <span class="n">friend</span> <span class="n">to</span> <span class="n">join</span> <span class="no">MyFlix</span><span class="o">!</span>
-        <span class="o">%</span><span class="n">fieldset</span>
-          <span class="o">.</span><span class="n">form</span><span class="o">-</span><span class="n">group</span>
-            <span class="o">%</span><span class="n">label</span> <span class="no">Friend</span><span class="s1">&#39;s Name</span>
-<span class="s1">            .row</span>
-<span class="s1">              .col-sm-4</span>
-<span class="s1">                %input.form-control(type=&quot;text&quot;)</span>
-<span class="s1">          .form-group</span>
-<span class="s1">            %label Friend&#39;</span><span class="n">s</span> <span class="no">Email</span> <span class="no">Address</span>
-            <span class="o">.</span><span class="n">row</span>
-              <span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">4</span>
-                <span class="o">%</span><span class="n">input</span><span class="o">.</span><span class="n">form</span><span class="o">-</span><span class="n">control</span><span class="p">(</span><span class="n">type</span><span class="o">=</span><span class="s2">&quot;email&quot;</span><span class="p">)</span>
-          <span class="o">.</span><span class="n">form</span><span class="o">-</span><span class="n">group</span>
-            <span class="o">%</span><span class="n">label</span> <span class="no">Invitation</span> <span class="no">Message</span>
-            <span class="o">.</span><span class="n">row</span>
-              <span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">6</span>
-                <span class="o">%</span><span class="n">textarea</span><span class="o">.</span><span class="n">form</span><span class="o">-</span><span class="n">control</span><span class="p">(</span><span class="n">rows</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span> <span class="no">Please</span> <span class="n">join</span> <span class="n">this</span> <span class="n">really</span> <span class="n">cool</span> <span class="n">site!</span>
-        <span class="o">%</span><span class="n">fieldset</span><span class="o">.</span><span class="n">form</span><span class="o">-</span><span class="n">group</span><span class="o">.</span><span class="n">action</span>
-          <span class="o">%</span><span class="n">input</span><span class="p">(</span><span class="n">type</span><span class="o">=</span><span class="s2">&quot;submit&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;Send Invitation&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;btn btn-default&quot;</span><span class="p">)</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">process</span> <span class="n">type</span><span class="o">&gt;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">command</span><span class="o">&gt;</span>
+<span class="ss">web</span><span class="p">:</span> <span class="n">bundle</span> <span class="nb">exec</span> <span class="n">rails</span> <span class="n">server</span> <span class="o">-</span><span class="nb">p</span> <span class="vg">$PORT</span>
+<span class="ss">worker</span><span class="p">:</span> <span class="n">bundle</span> <span class="nb">exec</span> <span class="n">rake</span> <span class="ss">jobs</span><span class="p">:</span><span class="n">work</span> <span class="p">(</span><span class="n">example</span> <span class="n">from</span> <span class="n">delayed</span> <span class="n">jobs</span><span class="p">)</span>
+<span class="ss">worker</span><span class="p">:</span> <span class="n">sidekiq</span></code></pre></div>
 
-<h4>2. Edit template to create need attributes: recipient name, email, message</h4>
+<h2>Develop locally with Foreman</h2>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">section</span><span class="o">.</span><span class="n">invite</span><span class="o">.</span><span class="n">container</span>
-  <span class="o">.</span><span class="n">row</span>
-    <span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="mi">10</span><span class="o">.</span><span class="n">col</span><span class="o">-</span><span class="n">sm</span><span class="o">-</span><span class="n">offset</span><span class="o">-</span><span class="mi">1</span>
-      <span class="o">%</span><span class="n">form</span><span class="o">.</span><span class="n">invite</span>
-      <span class="o">=</span> <span class="n">bootstrap_form_for</span> <span class="vi">@invitation</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s2">&quot;invite&quot;</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
-        <span class="o">%</span><span class="n">header</span>
-          <span class="o">%</span><span class="n">h1</span> <span class="no">Invite</span> <span class="n">a</span> <span class="n">friend</span> <span class="n">to</span> <span class="n">join</span> <span class="no">MyFlix</span><span class="o">!</span>
-        <span class="o">%</span><span class="n">fieldset</span>
-          <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:recipient_name</span><span class="p">,</span> <span class="ss">label</span><span class="p">:</span> <span class="s2">&quot;Friend&#39;s Name&quot;</span>
-          <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_field</span> <span class="ss">:recipient_email</span><span class="p">,</span> <span class="ss">label</span><span class="p">:</span> <span class="s2">&quot;Friend&#39;s Email Address&quot;</span>
-          <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">text_area</span> <span class="ss">:message</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="s2">&quot;span4&quot;</span><span class="p">,</span> <span class="ss">rows</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="ss">placeholder</span><span class="p">:</span>  <span class="s2">&quot;Please join this really cool site!&quot;</span><span class="p">,</span> <span class="ss">label</span><span class="p">:</span> <span class="s2">&quot;Message&quot;</span>
-        <span class="o">%</span><span class="n">fieldset</span><span class="o">.</span><span class="n">form</span><span class="o">-</span><span class="n">group</span><span class="o">.</span><span class="n">action</span>
-          <span class="o">%</span><span class="n">input</span><span class="p">(</span><span class="n">type</span><span class="o">=</span><span class="s2">&quot;submit&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;Send Invitation&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;btn btn-default&quot;</span><span class="p">)</span></code></pre></div>
+<p>Instead of having to start both Sidekiq and our Rails server locally, we can use format to initiate both processes by runniong &quot;foreman start&quot; in your app directory.</p>
 
-<h4>3. Create new and create routes for invitations</h4>
+<h2>Heroku</h2>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">resources</span> <span class="ss">:invitations</span><span class="p">,</span> <span class="ss">only</span><span class="p">:</span> <span class="o">[</span><span class="ss">:new</span><span class="p">,</span> <span class="ss">:create</span><span class="o">]</span></code></pre></div>
+<p>will parse out the web processes from your Procfile.</p>
 
-<h4>4. Create InvitationsController</h4>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">heroku</span> <span class="n">ps</span></code></pre></div>
 
-<h4>5. Begin with InvitationsController spec</h4>
+<p>will list the processes running</p>
 
-<h4>6. Create context: for valid inputs and invalid inputs</h4>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">heroku</span> <span class="n">logs</span></code></pre></div>
 
-<h3>GET new</h3>
+<p>will list all process types</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#invitation_controller_spec.rb</span>
-<span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
+<p>Heroku will allow you to run one web &amp; worker processes but if you&#39;d like to run more, it may costs.</p>
 
-<span class="n">describe</span> <span class="no">InvitationsController</span> <span class="k">do</span>
-  <span class="n">describe</span> <span class="s2">&quot;GET new&quot;</span> <span class="k">do</span>
-    <span class="n">it</span> <span class="s2">&quot;sets @invitation to a new invitation&quot;</span> <span class="k">do</span>
-      <span class="n">set_current_user</span>
-      <span class="n">get</span> <span class="ss">:new</span>
-      <span class="n">expect</span><span class="p">(</span><span class="n">assigns</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">))</span><span class="o">.</span><span class="n">to</span> <span class="n">be_new_record</span>
-      <span class="n">expect</span><span class="p">(</span><span class="n">assigns</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">))</span><span class="o">.</span><span class="n">to</span> <span class="n">be_instance_of</span> <span class="no">Invitation</span>
-    <span class="k">end</span>
-    <span class="n">it_behaves_like</span> <span class="s2">&quot;requires sign in&quot;</span> <span class="k">do</span>
-      <span class="n">let</span><span class="p">(</span><span class="ss">:action</span><span class="p">)</span> <span class="p">{</span> <span class="n">get</span> <span class="ss">:new</span> <span class="p">}</span>
-    <span class="k">end</span>
-  <span class="k">end</span></code></pre></div>
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/05/05/course3-background-jobs/">
+        Build Robust & Production Quality Applications - Lesson 6: Background Jobs
+      </a>
+    </h1>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">InvitationsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+    <span class="post-date">05 May 2015</span>
+
+    <h2>Background Jobs</h2>
+
+<p>Email sending typically is not very fast since we have to rely on some third party application. Waiting can slow up your app and potentially frustrate users so it&#39;s best to put non-essential and non-time-sensitive tasks in background jobs.</p>
+
+<p>Since you can web processes and background job processes running locally, you need tp run both the rails server and sidekiq servers to process jobs respectively.</p>
+
+<h3>Resque</h3>
+
+<p>came out of Github - Resque is our Redis-backed library for creating background jobs, placing those jobs on multiple queues, and processing them later.</p>
+
+<p>Benefits: has admin interface, is powered by Github
+Delayed Job does not require Redis, both uses a pulling queue
+Beanstalk and Stalker may be better if you care about speed, as they have a pulling mechanism</p>
+
+<p>Sidekiq is a higher performance background solution than Resque and can even be ported, added on top of resque solution.</p>
+
+<p>Check out the Railscast on Resque for intro.</p>
+
+<h3>Sidekiq</h3>
+
+<p>In order to use Sidekiq, you must install and run <a href="http://redis.io">Redis</a>. Once downloaded, run the &quot;$ src/redis-server&quot; in the redis-3.0.2 folder.</p>
+
+<p>You must also gem install sidekiq, and run &quot;bundle exec sidekiq&quot;</p>
+
+<p>When watching the Railscast on Sidekiq, it talks about the creation of workers:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/controllers/invitations_controller.rb</span>
+<span class="k">class</span> <span class="nc">InvitationsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
   <span class="n">before_filter</span> <span class="ss">:require_user</span>
   <span class="k">def</span> <span class="nf">new</span>
     <span class="vi">@invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">new</span>
-  <span class="k">end</span></code></pre></div>
-
-<h3>Generate Migration</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">CreateInvitations</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span>
-  <span class="k">def</span> <span class="nf">change</span>
-    <span class="n">create_table</span> <span class="ss">:invitations</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
-      <span class="n">t</span><span class="o">.</span><span class="n">integer</span> <span class="ss">:inviter_id</span>
-      <span class="n">t</span><span class="o">.</span><span class="n">string</span> <span class="ss">:recipient_name</span><span class="p">,</span> <span class="ss">:recipient_email</span>
-      <span class="n">t</span><span class="o">.</span><span class="n">text</span> <span class="ss">:message</span>
-      <span class="n">t</span><span class="o">.</span><span class="n">timestamps</span>
-    <span class="k">end</span>
   <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
 
-<h3>Create Invitation Model/Model Spec</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#invitation.rb</span>
-<span class="k">class</span> <span class="nc">Invitation</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
-<span class="n">before_create</span> <span class="ss">:generate_token</span>
-  <span class="n">belongs_to</span> <span class="ss">:inviter</span><span class="p">,</span> <span class="ss">class_name</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span>
-  <span class="n">validates_presence_of</span> <span class="ss">:recipient_name</span><span class="p">,</span> <span class="ss">:recipient_email</span><span class="p">,</span> <span class="ss">:message</span>
-
-  <span class="k">def</span> <span class="nf">generate_token</span>
-    <span class="nb">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="no">SecureRandom</span><span class="o">.</span><span class="n">urlsafe_base64</span>
-    <span class="k">end</span>
-  <span class="k">end</span></code></pre></div>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#invitation_model_spec.rb</span>
-<span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
-
-<span class="n">describe</span> <span class="no">Invitation</span> <span class="k">do</span>
-  <span class="n">it</span> <span class="p">{</span> <span class="n">should</span> <span class="n">validate_presence_of</span><span class="p">(</span><span class="ss">:recipient_name</span><span class="p">)</span> <span class="p">}</span>
-  <span class="n">it</span> <span class="p">{</span> <span class="n">should</span> <span class="n">validate_presence_of</span><span class="p">(</span><span class="ss">:recipient_email</span><span class="p">)</span> <span class="p">}</span>
-  <span class="n">it</span> <span class="p">{</span> <span class="n">should</span> <span class="n">validate_presence_of</span><span class="p">(</span><span class="ss">:message</span><span class="p">)</span> <span class="p">}</span></code></pre></div>
-
-<h3>POST create</h3>
-
-<h4>Context: with valid Inputs</h4>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#invitations_controller_spec.rb</span>
-  <span class="n">describe</span> <span class="s2">&quot;POST create&quot;</span> <span class="k">do</span>
-    <span class="n">it_behaves_like</span> <span class="s2">&quot;requires sign in&quot;</span> <span class="k">do</span>
-      <span class="n">let</span><span class="p">(</span><span class="ss">:action</span><span class="p">)</span> <span class="p">{</span> <span class="n">post</span> <span class="ss">:create</span> <span class="p">}</span>
-    <span class="k">end</span>
-    <span class="n">context</span> <span class="s2">&quot;with valid input&quot;</span> <span class="k">do</span>
-      <span class="n">it</span> <span class="s2">&quot;redirects to ithe invitation new page&quot;</span> <span class="k">do</span>
-        <span class="n">set_current_user</span>
-        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_name</span><span class="p">:</span> <span class="s2">&quot;Jam Black&quot;</span><span class="p">,</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">response</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">redirect_to</span> <span class="n">new_invitation_path</span>
-      <span class="k">end</span>
-
-      <span class="n">it</span> <span class="s2">&quot;creates the invitation&quot;</span> <span class="k">do</span>
-        <span class="n">set_current_user</span>
-        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_name</span><span class="p">:</span> <span class="s2">&quot;Jam Black&quot;</span><span class="p">,</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
-        <span class="n">expect</span><span class="p">(</span><span class="no">Invitation</span><span class="o">.</span><span class="n">count</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">eq</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-      <span class="k">end</span>
-      <span class="n">it</span> <span class="s2">&quot;sends an email to the recipient&quot;</span> <span class="k">do</span>
-        <span class="n">set_current_user</span>
-        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_name</span><span class="p">:</span> <span class="s2">&quot;Jam Black&quot;</span><span class="p">,</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
-        <span class="n">expect</span><span class="p">(</span><span class="no">ActionMailer</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">deliveries</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">to</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">eq</span><span class="p">(</span><span class="o">[</span><span class="s1">&#39;jam@jamblack.com&#39;</span><span class="o">]</span><span class="p">)</span>
-      <span class="k">end</span>
-
-      <span class="n">it</span> <span class="s2">&quot;sets the flash success message&quot;</span> <span class="k">do</span>
-        <span class="n">set_current_user</span>
-        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_name</span><span class="p">:</span> <span class="s2">&quot;Jam Black&quot;</span><span class="p">,</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">flash</span><span class="o">[</span><span class="ss">:success</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">be_present</span>
-      <span class="k">end</span>
-    <span class="k">end</span></code></pre></div>
-
-<h4>Context: With invalid inputs</h4>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#invitations_controller_spec.rb</span>
-    <span class="n">context</span> <span class="s2">&quot;with invalid input&quot;</span> <span class="k">do</span>
-      <span class="n">after</span> <span class="p">{</span> <span class="no">ActionMailer</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">deliveries</span><span class="o">.</span><span class="n">clear</span> <span class="p">}</span>
-      <span class="n">it</span> <span class="s2">&quot;renders the :new template&quot;</span> <span class="k">do</span>
-        <span class="n">set_current_user</span>
-        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">response</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">render_template</span> <span class="ss">:new</span>
-      <span class="k">end</span>
-
-      <span class="n">it</span> <span class="s2">&quot;does not create an invitation&quot;</span> <span class="k">do</span>
-        <span class="n">set_current_user</span>
-        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
-        <span class="n">expect</span><span class="p">(</span><span class="no">Invitation</span><span class="o">.</span><span class="n">count</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">eq</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-      <span class="k">end</span>
-      <span class="n">it</span> <span class="s2">&quot;does not send out an email&quot;</span> <span class="k">do</span>
-        <span class="n">set_current_user</span>
-        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
-        <span class="n">expect</span><span class="p">(</span><span class="no">ActionMailer</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">deliveries</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">be_empty</span>
-      <span class="k">end</span>
-
-      <span class="n">it</span> <span class="s2">&quot;sets the flash error message&quot;</span> <span class="k">do</span>
-        <span class="n">set_current_user</span>
-        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span><span class="p">)</span><span class="o">.</span> <span class="n">to</span> <span class="n">be_present</span>
-      <span class="k">end</span>
-
-      <span class="n">it</span> <span class="s2">&quot;sets </span><span class="si">#@invitation</span><span class="s2">&quot;</span> <span class="k">do</span>
-        <span class="n">set_current_user</span>
-        <span class="n">post</span> <span class="ss">:create</span><span class="p">,</span> <span class="ss">invitation</span><span class="p">:</span> <span class="p">{</span> <span class="ss">recipient_email</span><span class="p">:</span> <span class="s2">&quot;jam@jamblack.com&quot;</span><span class="p">,</span> <span class="ss">message</span><span class="p">:</span> <span class="s2">&quot;Join Myflix!&quot;</span> <span class="p">}</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">assigns</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">))</span><span class="o">.</span><span class="n">to</span> <span class="n">be_present</span>
-      <span class="k">end</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#invitations_controller.rb</span>
   <span class="k">def</span> <span class="nf">create</span>
     <span class="vi">@invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">invitation_params</span><span class="o">.</span><span class="n">merge!</span><span class="p">(</span><span class="ss">inviter_id</span><span class="p">:</span> <span class="n">current_user</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="vi">@invitation</span><span class="o">.</span><span class="n">save</span>
-      <span class="no">AppMailer</span><span class="o">.</span><span class="n">send_invitation_email</span><span class="p">(</span><span class="vi">@invitation</span><span class="p">)</span><span class="o">.</span><span class="n">deliver</span>
+      <span class="no">InivtationWorker</span><span class="o">.</span><span class="n">perform_async</span>
       <span class="n">flash</span><span class="o">[</span><span class="ss">:success</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;You&#39;ve successfully invited </span><span class="si">#{</span><span class="vi">@invitation</span><span class="o">.</span><span class="n">recipient_name</span><span class="si">}</span><span class="s2">.&quot;</span>
       <span class="n">redirect_to</span> <span class="n">new_invitation_path</span>
     <span class="k">else</span>
       <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Please fill in all inputs.&quot;</span>
       <span class="n">render</span> <span class="ss">:new</span>
     <span class="k">end</span>
-  <span class="k">end</span>
+  <span class="k">end</span></code></pre></div>
 
-  <span class="kp">private</span>
-  <span class="k">def</span> <span class="nf">invitation_params</span>
-    <span class="n">params</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="ss">:invitation</span><span class="p">)</span><span class="o">.</span><span class="n">permit</span><span class="p">(</span><span class="ss">:recipient_name</span><span class="p">,</span> <span class="ss">:recipient_email</span><span class="p">,</span> <span class="ss">:message</span><span class="p">,</span> <span class="ss">:inviter_id</span><span class="p">)</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/workers</span>
+<span class="k">class</span> <span class="nc">InvitationWorker</span>
+  <span class="kp">include</span> <span class="no">Sidekiq</span><span class="o">::</span><span class="no">Worker</span>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">AppMailer</span> <span class="o">&lt;</span> <span class="no">ActionMailer</span><span class="o">::</span><span class="no">Base</span>
-  <span class="k">def</span> <span class="nf">send_invitation_email</span><span class="p">(</span><span class="n">invitation</span><span class="p">)</span>
-    <span class="vi">@invitation</span> <span class="o">=</span> <span class="n">invitation</span>
-    <span class="n">mail</span> <span class="ss">to</span><span class="p">:</span> <span class="n">invitation</span><span class="o">.</span><span class="n">recipient_email</span><span class="p">,</span> <span class="ss">from</span><span class="p">:</span> <span class="s2">&quot;info@myflix.com&quot;</span><span class="p">,</span> <span class="ss">subject</span><span class="p">:</span> <span class="s2">&quot;Invitation to join Myflix&quot;</span>
+  <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="n">invitation_id</span><span class="p">)</span>
+    <span class="n">invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">invitation_id</span><span class="p">)</span>
+    <span class="no">AppMailer</span><span class="o">.</span><span class="n">send_invitation_email</span><span class="p">(</span><span class="n">invitation</span><span class="p">)</span><span class="o">.</span><span class="n">deliver</span>
   <span class="k">end</span>
 <span class="k">end</span></code></pre></div>
 
-<h3>Remember to:</h3>
+<p>But instead of creating workers, we can just use <a href="https://github.com/mperham/sidekiq/wiki/Delayed-extensions#actionmailer">delayed extentions</a></p>
 
-<p>clear the ActionMailer deliveries in the valid input context so they don&#39;t interfer with
-the invalid inputs. - we want that number to be 0</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/controlers/invitations_controller.rb</span>
+  <span class="k">def</span> <span class="nf">create</span>
+    <span class="vi">@invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">invitation_params</span><span class="o">.</span><span class="n">merge!</span><span class="p">(</span><span class="ss">inviter_id</span><span class="p">:</span> <span class="n">current_user</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
 
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/03/25/course3-writing-feature-tests-for-emails/">
-        Build Robust & Production Quality Applications - Lesson 6: Writing Feature Tests for Emails
-      </a>
-    </h1>
-
-    <span class="post-date">25 Mar 2015</span>
-
-    <h2>Interact with Emails in Feature Tests:</h2>
-
-<p>Sometimes applications may require you to complete a form and an email is
-is generated.
-To test this feature, Capybara-email is a great way to test this functionality and provides a nice interface that allows you to write specs on the level of user interaction. This is better than as creating a feature test for ActionMailer and its deliveries because it will require too much low level detail.</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">gem</span> <span class="s1">&#39;capybara-email&#39;</span>
- <span class="ss">documentation</span><span class="p">:</span> <span class="n">github</span><span class="o">//</span><span class="n">dockyard</span><span class="o">/</span><span class="n">capybara</span><span class="o">-</span><span class="n">email</span></code></pre></div>
-
-<p>Example spec for inviting a user:</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#user_resets_password_spec.rb</span>
-<span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
-<span class="n">feature</span> <span class="s1">&#39;User resets password&#39;</span> <span class="k">do</span>
-  <span class="n">scenario</span> <span class="s1">&#39;user successfully resets the password&#39;</span> <span class="k">do</span>
-    <span class="n">alice</span> <span class="o">=</span> <span class="no">Fabricate</span><span class="p">(</span><span class="ss">:user</span><span class="p">,</span> <span class="ss">password</span><span class="p">:</span> <span class="s1">&#39;old_password&#39;</span><span class="p">)</span>
-    <span class="n">visit</span> <span class="n">sign_in_path</span>
-    <span class="n">click_link</span> <span class="s2">&quot;Forgot Password&quot;</span>
-    <span class="n">fill_in</span> <span class="s2">&quot;Email Address&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="n">alice</span><span class="o">.</span><span class="n">email</span>
-    <span class="n">click_button</span> <span class="s2">&quot;Send Email&quot;</span>
-
-    <span class="n">open_email</span><span class="p">(</span><span class="n">alice</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
-    <span class="n">current_email</span><span class="o">.</span><span class="n">click_link</span><span class="p">(</span><span class="s2">&quot;Reset My Password&quot;</span><span class="p">)</span>
-
-    <span class="n">fill_in</span> <span class="s2">&quot;New Password&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s2">&quot;new_password&quot;</span>
-    <span class="n">click_button</span> <span class="s2">&quot;Reset Password&quot;</span>
-
-    <span class="n">fill_in</span> <span class="s2">&quot;Email Address&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="n">alice</span><span class="o">.</span><span class="n">email</span>
-    <span class="n">fill_in</span> <span class="s2">&quot;Password&quot;</span><span class="p">,</span> <span class="ss">with</span><span class="p">:</span> <span class="s2">&quot;new_password&quot;</span>
-    <span class="n">click_button</span> <span class="s2">&quot;Sign in&quot;</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">)</span><span class="o">.</span> <span class="n">to</span> <span class="n">have_content</span><span class="p">(</span><span class="s2">&quot;Welcome, </span><span class="si">#{</span><span class="n">alice</span><span class="o">.</span><span class="n">full_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="n">clear_email</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/03/20/course3-three-styles-of-bdd/">
-        Build Robust & Production Quality Applications - Lesson 5: Three Styles of BDD
-      </a>
-    </h1>
-
-    <span class="post-date">20 Mar 2015</span>
-
-    <h2>Testing Styles in Rails: Three Styles of Behavior Driven Development</h2>
-
-<p>Traditionally we have followed the following flow:</p>
-
-<h3>Meet in the Middle Technique</h3>
-
-<ol>
-<li>Turn mock ups into view templates:
-copy the mockups and replace the placeholder data</li>
-<li>Controller Tests (inner layer)- the controller tests will drive the model layer
-tests, routes, db migrations, etc.</li>
-<li>Model Level Tests(inner layer) - if we need active record based and non-active record based
-model - logic, we will need to drop down to model layer to test their</li>
-<li>Feature Specs/Integration - (Outer most layer) Tests will allow us to test everything including the view templates</li>
-</ol>
-
-<ul>
-<li>Here you will end up with less feature/integration specs than outside in because they are typically written after multiple specs.</li>
-</ul>
-
-<h3>Inside out Approach</h3>
-
-<ol>
-<li>Start from the models and migrations that are required for that feature and then
-right specs to test that model</li>
-<li>Controller Level</li>
-<li>View/Intergation Specs</li>
-</ol>
-
-<ul>
-<li>easier to start .. allows you to work with something small</li>
-<li>But you sometimes don&#39;t know where you&#39;re going and you may end up
-adding alot of code that is not needed.</li>
-<li>This is used primarily in productized shops where its easier to add a model to a more mature product.</li>
-</ul>
-
-<h3>Outside in Approach</h3>
-
-<p>Start at the Integration Level - This integration level does not mean in the
-same way that we reference the Integration Tests in the &quot;Meet in the Middle&quot; technique where where we test multiple features (horizontal) but rather vertical -integration means where we test for models, controllers and views for one feature
-- written in a very business level decision level - you have to think &#39;what is the business value we are looking to provide?&#39;</p>
-
-<ul>
-<li>route, controller, models</li>
-<li>also called BDD or ABDD (A is for Acceptance)</li>
-<li>often used in consultancys, clients provide the feature</li>
-<li>often follows more a natural flow</li>
-<li>requires you to know rails really well and how things work together</li>
-<li>people often use cucumber or rspec feature tests for this.</li>
-</ul>
-
-  </div>
-  
-  <div class="post">
-    <h1 class="post-title">
-      <a href="/2015/03/17/course3-transactions/">
-        Build Robust & Production Quality Applications - Lesson 4: Transactions & Exception Resues
-      </a>
-    </h1>
-
-    <span class="post-date">17 Mar 2015</span>
-
-    <p>The[ previous example reegarding updating video review while in queue does not follow typical Rails convention:
-- We are using in the update<em>queue method.
-- we have to use parameter naming conventions to parse out the queue</em>item id and
-position id in the form.
-- We have to specify the order of queue_items using in the user model according to position.</p>
-
-<h3>Using Transactions &amp; Exception Rescues when the value does not save.</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">update_queue</span>
-  <span class="k">begin</span>
-    <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">transaction</span> <span class="k">do</span>
-      <span class="n">params</span><span class="o">[</span><span class="ss">:queue_items</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">queue_item_data</span><span class="o">|</span>
-        <span class="n">queue_item</span> <span class="o">=</span> <span class="no">QueueItem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">queue_item_data</span><span class="o">[</span><span class="s2">&quot;id&quot;</span><span class="o">]</span><span class="p">)</span>
-        <span class="n">queue_item</span><span class="o">.</span><span class="n">update_attributes!</span><span class="p">(</span><span class="ss">position</span><span class="p">:</span> <span class="n">queue_item_data</span><span class="o">[</span><span class="s2">&quot;position&quot;</span><span class="o">]</span><span class="p">)</span>
-      <span class="k">end</span>
+    <span class="k">if</span> <span class="vi">@invitation</span><span class="o">.</span><span class="n">save</span>
+      <span class="no">AppMailer</span><span class="o">.</span><span class="n">delay</span><span class="o">.</span><span class="n">send_invitation_email</span><span class="p">(</span><span class="vi">@invitation</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+      <span class="n">flash</span><span class="o">[</span><span class="ss">:success</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;You&#39;ve successfully invited </span><span class="si">#{</span><span class="vi">@invitation</span><span class="o">.</span><span class="n">recipient_name</span><span class="si">}</span><span class="s2">.&quot;</span>
+      <span class="n">redirect_to</span> <span class="n">new_invitation_path</span>
+    <span class="k">else</span>
+      <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Please fill in all inputs.&quot;</span>
+      <span class="n">render</span> <span class="ss">:new</span>
     <span class="k">end</span>
-  <span class="k">rescue</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">RecordInvalid</span>
-    <span class="n">flash</span><span class="o">[</span><span class="ss">:error</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;You must use whole numbers for play position.&quot;</span>
-    <span class="n">redirect_to</span> <span class="n">my_queue_path</span>
-    <span class="k">return</span>
-  <span class="k">end</span>
+  <span class="k">end</span></code></pre></div>
 
-  <span class="n">current_user</span><span class="o">.</span><span class="n">queue_items</span><span class="o">.</span><span class="n">each_with_index</span> <span class="k">do</span> <span class="o">|</span><span class="n">queue_item</span><span class="p">,</span> <span class="n">index</span><span class="o">|</span>
-    <span class="n">queue_item</span><span class="o">.</span><span class="n">update_attributes</span><span class="p">(</span><span class="ss">position</span><span class="p">:</span> <span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<p>Since we aren&#39;t running .perform_async on a worker, we need to pass @invitiation.id to the AppMailer:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#app/app_mailer.rb</span>
+<span class="k">def</span> <span class="nf">send_invitation_email</span><span class="p">(</span><span class="n">invitation_id</span><span class="p">)</span>
+    <span class="vi">@invitation</span> <span class="o">=</span> <span class="no">Invitation</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">invitation_id</span><span class="p">)</span>
+    <span class="n">mail</span> <span class="ss">to</span><span class="p">:</span> <span class="vi">@invitation</span><span class="o">.</span><span class="n">recipient_email</span><span class="p">,</span> <span class="ss">from</span><span class="p">:</span> <span class="s2">&quot;info@myflix.com&quot;</span><span class="p">,</span> <span class="ss">subject</span><span class="p">:</span> <span class="s2">&quot;Invitation to join Myflix&quot;</span>
   <span class="k">end</span>
-  <span class="n">redirect_to</span> <span class="n">my_queue_path</span>
 <span class="k">end</span></code></pre></div>
+
+<p>To run tests, you have to add the following to run them <a href="https://github.com/mperham/sidekiq/wiki/Testing">inline</a>:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#spec/spec_helper.rb</span>
+
+<span class="nb">require</span> <span class="s1">&#39;sidekiq/testing&#39;</span>
+<span class="no">Sidekiq</span><span class="o">::</span><span class="no">Testing</span><span class="o">.</span><span class="n">inline!</span></code></pre></div>
 
   </div>
   
   <div class="post">
     <h1 class="post-title">
-      <a href="/2015/03/15/course3-parameter-naming-conventions/">
-        Build Robust & Production Quality Applications - Lesson 4: Parameter Naming Conventions
+      <a href="/2015/05/01/course3-mailgun-heroku/">
+        Build Robust & Production Quality Applications - Lesson 6: Mailgun & Heroku
       </a>
     </h1>
 
-    <span class="post-date">15 Mar 2015</span>
+    <span class="post-date">01 May 2015</span>
 
-    <h2>Parameter Naming Conventions</h2>
+    <h2>To send emails from your Heroku app using Mailgun is simple:</h2>
 
-<p>Visit Rails Guides&#39; <a href="http://guides.rubyonrails.org/form_helpers.html#understanding-parameter-naming-conventions.">Parameter Naming Conventions</a>
-Use that as the starting point to construct the params that hit the server.</p>
+<h3>1. Mailgun Addon</h3>
 
-<p>As you&#39;ve seen in the previous sections, values from forms can be at the top level of
-the params hash or nested in another hash. For example, in a standard create action for a
-Person model, params[:person] would usually be a hash of all the attributes for the person to create.
-The params hash can also contain arrays, arrays of hashes and so on.</p>
+<p>Add the <a href="https://addons.heroku.com/mailgun">Mailgun</a> add-on to your Heroku app through the command line (within your app project directory)</p>
 
-<p>Fundamentally HTML forms don&#39;t know about any sort of structured data, all they generate
-is name-value pairs, where pairs are just plain strings. The arrays and hashes you see
-in your application are the result of some parameter naming conventions that Rails uses.</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">heroku</span> <span class="ss">addons</span><span class="p">:</span><span class="n">create</span> <span class="n">mailgun</span></code></pre></div>
 
-<h3>Basic Structures</h3>
+<p>or you can add via their web interface</p>
 
-<p>The two basic structures are arrays and hashes. Hashes mirror the syntax used for accessing the value in params. For example, if a form contains:</p>
+<p><img src="jamelablack.github.io/images/mailgun.png" alt="Mailgun Heroku Image" title="Mailgun addon"></p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">input</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;person_name&quot;</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;person[name]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;Henry&quot;</span><span class="o">/&gt;</span></code></pre></div>
+<h3>2. Change your smtp settings</h3>
 
-<p>the params hash will contain</p>
+<p>Then you copy and paste their smtp settings into your config/production.rb file. Make sure to change your domain name and add your default url options (which should point to your domain name) - if not, you will get an error: Errno::ECONNREFUSED: Connection refused - connect(2) for action mailer ...port(25)</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="p">{</span><span class="s1">&#39;person&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;Henry&#39;</span><span class="p">}}</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">config</span><span class="o">.</span><span class="n">action_mailer</span><span class="o">.</span><span class="n">delivery_method</span> <span class="o">=</span> <span class="ss">:smtp</span>
+  <span class="c1"># SMTP settings for mailgun</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">action_mailer</span><span class="o">.</span><span class="n">smtp_settings</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="ss">:port</span>           <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;MAILGUN_SMTP_PORT&#39;</span><span class="o">]</span><span class="p">,</span>
+    <span class="ss">:address</span>        <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;MAILGUN_SMTP_SERVER&#39;</span><span class="o">]</span><span class="p">,</span>
+    <span class="ss">:user_name</span>      <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;MAILGUN_SMTP_LOGIN&#39;</span><span class="o">]</span><span class="p">,</span>
+    <span class="ss">:password</span>       <span class="o">=&gt;</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;MAILGUN_SMTP_PASSWORD&#39;</span><span class="o">]</span><span class="p">,</span>
+    <span class="ss">:domain</span>         <span class="o">=&gt;</span> <span class="s1">&#39;aqueous-coast-5067.herokuapp.com&#39;</span><span class="p">,</span>
+    <span class="ss">:authentication</span> <span class="o">=&gt;</span> <span class="ss">:plain</span><span class="p">,</span>
+  <span class="p">}</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">action_mailer</span><span class="o">.</span><span class="n">default_url_options</span> <span class="o">=</span> <span class="p">{</span> <span class="ss">:host</span> <span class="o">=&gt;</span> <span class="s1">&#39;aqueous-coast-5067.herokuapp.com&#39;</span> <span class="p">}</span></code></pre></div>
 
-<p>and params[:person][:name] will retrieve the submitted value in the controller.</p>
+<h3>3. Heroku config</h3>
 
-<p>Hashes can be nested as many levels as required, for example:</p>
+<p>You do not have to store the ENV variable in application.yml, you only have to run &quot;heroku config&quot; from your command line.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">input</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;person_address_city&quot;</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;person[address][city]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;New York&quot;</span><span class="o">/&gt;</span></code></pre></div>
+<h3>4. If you find you do need to store ENV variable in your app, check out Figaro.</h3>
 
-<p>will result in the params hash being</p>
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/04/27/POODR-ch4/">
+        POODR - Ch4: Creating Flexible Interfaces
+      </a>
+    </h1>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="p">{</span><span class="s1">&#39;person&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="s1">&#39;address&#39;</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="s1">&#39;city&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;New York&#39;</span><span class="p">}}}</span></code></pre></div>
+    <span class="post-date">27 Apr 2015</span>
 
-<p>Normally Rails ignores duplicate parameter names. If the parameter name contains
-an empty set of square brackets [] then they will be accumulated in an array.
-If you wanted users to be able to input multiple phone numbers, you
-could place this in the form:</p>
+    <p>There is design detail that must be captured at this level but an object-oriented application is more than just classes. It is made up of classes but defined by messages. Classes control what’s in your source code repository; messages reflect the living, ani- mated application.
+Design, therefore, must be concerned with the messages that pass between ob- jects. It deals not only with what objects know (their responsibilities) and who they know (their dependencies), but how they talk to one another. The conversation be- tween objects takes place using their interfaces.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">input</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;person[phone_number][]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="o">/&gt;</span>
-<span class="o">&lt;</span><span class="n">input</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;person[phone_number][]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="o">/&gt;</span>
-<span class="o">&lt;</span><span class="n">input</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;person[phone_number][]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="o">/&gt;</span></code></pre></div>
+<p>##Defining Public Interfaces
+ The kitchen does many things but does not, thankfully, expose them all to its customers. It has a public interface that customers are expected to use; the menu. Within the kitchen many things happen, many other messages get passed, but these messages are private and thus invisible to customers. Each of your classes is like a kitchen. The class exists to fulfill a single responsibil- ity but implements many methods.</p>
 
-<p>This would result in params[:person][:phone_number] being an array containing the inputted phone numbers.</p>
+<p>###Public Interfaces
+The methods that make up the public interface of your class comprise the face it presents to the world. They:
+• Reveal its primary responsibility
+• Are expected to be invoked by others
+• Will not change on a whim
+• Are safe for others to depend on
+• Are thoroughly documented in the tests</p>
 
-<h3>Combining Them</h3>
+<h3>Private Interfaces</h3>
 
-<p>We can mix and match these two concepts. One element of a hash might be an array as in the previous example,
-or you can have an array of hashes. For example, a form might let you create any number of addresses by repeating the following form fragment</p>
+<p>All other methods in the class are part of its private interface. They:
+• Handle implementation details
+• Are not expected to be sent by other objects • Can change for any reason whatsoever
+• Are unsafe for others to depend on
+• May not even be referenced in the tests</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&lt;</span><span class="n">input</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;addresses[][line1]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="o">/&gt;</span>
-<span class="o">&lt;</span><span class="n">input</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;addresses[][line2]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="o">/&gt;</span>
-<span class="o">&lt;</span><span class="n">input</span> <span class="nb">name</span><span class="o">=</span><span class="s2">&quot;addresses[][city]&quot;</span> <span class="n">type</span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="o">/&gt;</span></code></pre></div>
+<p>Domain objects are easy to find but they are not at the design center of your application. Instead, they are a trap for the unwary. If you fixate on domain objects you will tend to coerce behavior into them. Design experts notice domain objects without concentrating on them; they focus not on these objects but on the messages that pass between them. These messages are guides that lead you to discover other objects, ones that are just as necessary but far less obvious.</p>
 
-<p>This would result in params[:addresses] being an array of hashes with keys line1, line2 and city.
-Rails decides to start accumulating values in a new hash whenever it encounters an input name that
-already exists in the current hash.</p>
+<p>Before you sit at the keyboard and start typing you should form an intention about the objects and the messages needed to satisfy this use case.</p>
 
-<p>There&#39;s a restriction, however, while hashes can be nested arbitrarily, only one level of &quot;arrayness&quot; is allowed. Arrays can usually be replaced by hashes; for example, instead of having an array of model objects, one can have a hash of model objects keyed by their id, an array index or some other parameter.</p>
+<h3>Using Sequence Diagrams</h3>
+
+<p>There is a perfect, low-cost way to experiment with objects and messages: sequence diagrams.
+Therein lies the value of sequence diagrams. They explicitly specify the messages that pass between objects, and because objects should only communicate using public interfaces, sequence diagrams are a vehicle for exposing, experimenting with, and ultimately defining those interfaces.</p>
+
+<p>Also, notice now that you have drawn a sequence diagram, this design conversation has been inverted. The previous design emphasis was on classes and who and what they knew. Suddenly, the conversation has changed; it is now revolving around mes- sages. Instead of deciding on a class and then figuring out its responsibilities, you are now deciding on a message and figuring out where to send it.</p>
+
+<p>This transition from class-based design to message-based design is a turning point in your design career. The message-based perspective yields more flexible applications than does the class-based perspective. Changing the fundamental design question from “I know I need this class, what should it do?” to “I need to send this message, who should respond to it?” is the first step in that direction.
+You don’t send messages because you have objects, you have objects because you send messages.</p>
+
+<h3>Asking for “What” Instead of Telling “How”</h3>
+
+<p>The distinction between a message that asks for what the sender wants and a message that tells the receiver how to behave may seem subtle but the consequences are significant. Understanding this difference is a key part of creating reusable classes with well-defined public interfaces.</p>
+
+<h3>Seeking Context Independence</h3>
+
+<p>The context that an object expects has a direct effect on how difficult it is to reuse. Objects that have a simple context are easy to use and easy to test; they expect few things from their surroundings. Objects that have a complicated context are hard to use and hard to test; they require complicated setup before they can do anything.
+The best possible situation is for an object to be completely independent of its context. An object that could collaborate with others without knowing who they are or what they do could be reused in novel and unanticipated ways.
+You already know the technique for collaborating with others without knowing who they are—dependency injection.</p>
+
+<h3>Trusting Other Objects</h3>
+
+<p>If objects were human and could describe their own relationships, in Figure 4.5 Trip would be telling Mechanic: “I know what I want and I know how you do it;” in Figure 4.6: “I know what I want and I know what you do” and in Figure 4.7: “I know what I want and I trust you to do your part.”
+This blind trust is a keystone of object-oriented design. It allows objects to collab- orate without binding themselves to context and is necessary in any application that expects to grow and change.</p>
+
+<h2>Create Explicit Interfaces</h2>
+
+<p>Your goal is to write code that works today, that can easily be reused, and that can be adapted for unexpected use in the future. Other people will invoke your methods; it is your obligation to communicate which ones are dependable.
+www.it-ebooks.info
+Writing Code That Puts Its Best (Inter)Face Forward 77 Every time you create a class, declare its interfaces. Methods in the public
+interface should
+• Be explicitly identified as such
+• Be more about what than how
+• Have names that, insofar as you can anticipate, will not change • Take a hash as an options parameter</p>
+
+<p>Be just as intentional about the private interface; make it inescapably obvious. Tests, because they serve as documentation, can support this endeavor. Either do not test private methods or, if you must, segregate those tests from the tests of public methods. Do not allow your tests to fool others into unintentionally depending on the changeable, private interface.
+Ruby provides three relevant keywords: public, protected, and private. Use of these keywords serves two distinct purposes. First, they indicate which methods are stable and which are unstable. Second, they control how visible a method is to other parts of your application. These two purposes are very different. Conveying informa- tion that a method is stable or unstable is one thing; attempting to control how others use it is quite another.
+Public, Protected, and Private Keywords
+The private keyword denotes the least stable kind of method and provides the most restricted visibility. Private methods must be called with an implicit receiver, or, inversely, may never be called with an explicit receiver.</p>
+
+<p>The protected keyword also indicates an unstable method, but one with slightly different visibility restrictions. Protected methods allow explicit receivers as long as the receiver is self or an instance of the same class or subclass of self.</p>
+
+<p>Honor the Public Interfaces of Others
+Do your best to interact with other classes using only their public interfaces.f your design forces the use of a private method in another class, first rethink your design. It’s possible that a committed effort will unearth an alternative; you should try very hard to find one. A dependency on a private method of an external framework is a form of technical debt. Avoid these dependencies.</p>
+
+<p>Minimize Context
+Construct public interfaces with an eye toward minimizing the context they require from others. Keep the what versus how distinction in mind; create public methods that allow senders to get what they want without knowing how your class implements its behavior.</p>
+
+<p>Do what best suits your needs, but create some kind of defined public interface and use it. This reduces your class’s context, making it easier to reuse and simpler to test.</p>
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/2015/04/23/POODR-ch3/">
+        POODR - Ch3: Mangaging Dependencies
+      </a>
+    </h1>
+
+    <span class="post-date">23 Apr 2015</span>
+
+    <p>Each message is initiated by an object to invoke some bit of behavior. All of the behavior is dispersed among the objects. Therefore, for any desired behavior:</p>
+
+<ul>
+<li>an object either knows it personally,</li>
+<li>inherits it, or</li>
+<li>knows another object who knows it.</li>
+</ul>
+
+<p>This chapter is about the third, getting access to behavior when that behavior is implemented in other objects.</p>
+
+<p>Because well designed objects have a single responsibility, their very nature requires that they collaborate to accomplish complex tasks. This collaboration is powerful and perilous. To collaborate, an object must know something know about others. Knowing creates a dependency. If not managed carefully, these dependencies will strangle your application.</p>
+
+<h2>Understanding Dependencies</h2>
+
+<p>An object depends on another object if, when one object changes, the other might be forced to change in turn.</p>
+
+<h3>Recognizing Dependencies</h3>
+
+<p>An object has a dependency when it knows
+• The name of another class. Gear expects a class named Wheel to exist.
+• The name of a message that it intends to send to someone other than self. Gear expects a Wheel instance to respond to diameter.
+• The arguments that a message requires. Gear knows that Wheel.new requires a rim and a tire.
+• The order of those arguments. Gear knows the first argument to Wheel.new should be rim, the second, tire.</p>
+
+<p>Your design challenge is to manage dependencies so that each class has the fewest possible; a class should know just enough to do its job and not one thing more</p>
+
+<h3>Coupling Between Objects (CBO)</h3>
+
+<p>Alternatively, you could say that each coupling creates a dependency.The dependencies cause these objects to act like a single thing. They move in lockstep; they change together.
+When two (or three or more) objects are so tightly coupled that they behave as a unit, it’s impossible to reuse just one. Changes to one object force changes to all. Left unchecked, unmanaged dependencies cause an entire application to become an entan- gled mess. A day will come when it’s easier to rewrite everything than to change anything.</p>
+
+<h3>Other Dependencies</h3>
+
+<p>One especially destructive kind of dependency occurs where an object knows another who knows another who knows something; that is, where many messages are chained together to reach behavior that lives in a distant object. This is the “knowing the name of a message you plan to send to someone other than self ” dependency, only magnified. Message chaining creates a dependency between the original object and every object and message along the way to its ultimate target. These additional couplings greatly increase the chance that the first object will be forced to change because a change to any of the intermediate objects might affect it. This is a Law of Demeter Violation.</p>
+
+<h2>Writing Loosley Coupled Code</h2>
+
+<h3>Inject Dependencies</h3>
+
+<p>Referring to another class by name create a sticky spot.</p>
+
+<p>Change:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Gear</span>
+<span class="kp">attr_reader</span> <span class="ss">:chainring</span><span class="p">,</span> <span class="ss">:cog</span><span class="p">,</span> <span class="ss">:rim</span><span class="p">:,</span> <span class="ss">:tire</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">chainring</span><span class="p">,</span> <span class="n">cog</span><span class="p">,</span> <span class="n">rim</span><span class="p">,</span> <span class="n">tire</span><span class="p">)</span>
+    <span class="vi">@chainring</span> <span class="o">=</span> <span class="n">chainring</span>
+    <span class="vi">@cog</span> <span class="o">=</span> <span class="n">cog</span>
+    <span class="vi">@rim</span> <span class="o">=</span> <span class="n">rim</span>
+    <span class="vi">@tire</span> <span class="o">=</span> <span class="n">tire</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">gear_inches</span>
+    <span class="n">ratio</span> <span class="o">*</span> <span class="no">Wheel</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">rim</span><span class="p">,</span><span class="n">tire</span><span class="p">)</span><span class="o">.</span><span class="n">diameter</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="no">Gear</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="mi">52</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">1</span><span class="o">.</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">gear_inches</span></code></pre></div>
+
+<p>to:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Gear</span>
+<span class="kp">attr_reader</span> <span class="ss">:chainring</span><span class="p">,</span> <span class="ss">:cog</span><span class="p">,</span> <span class="ss">:wheel</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">chainring</span><span class="p">,</span> <span class="n">cog</span><span class="p">,</span> <span class="n">wheel</span><span class="p">)</span>
+    <span class="vi">@chainring</span> <span class="o">=</span> <span class="n">chainring</span>
+    <span class="vi">@cog</span> <span class="o">=</span> <span class="n">cog</span>
+    <span class="vi">@wheel</span> <span class="o">=</span> <span class="n">wheel</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">gear_inches</span>
+    <span class="n">ratio</span> <span class="o">*</span> <span class="n">wheel</span><span class="o">.</span><span class="n">diameter</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="no">Gear</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="mi">52</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="no">Wheel</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="mi">26</span><span class="p">,</span> <span class="mi">1</span><span class="o">.</span><span class="mi">5</span><span class="p">))</span><span class="o">.</span><span class="n">gear_inches</span></code></pre></div>
+
+<p>Gear can now collaborate with any object that implements diameter.</p>
+
+<p>This technique is known as dependency injection. Despite its fearsome reputation, dependency injection truly is this simple. Gear previously had explicit dependencies on the Wheel class and on the type and order of its initialization arguments, but through injection these dependencies have been reduced to a single dependency on the diameter method. Gear is now smarter because it knows less.</p>
+
+<p>Using dependency injection to shape code relies on your ability to recognize that the responsibility for knowing the name of a class and the responsibility for knowing the name of a message to send to that class may belong in different objects.</p>
+
+<h3>Isolate Dependencies</h3>
+
+<p>It’s best to break all unnecessary dependences but, unfortunately, while this is always technically possible it may not be actually possible. Therefore, if you cannot remove unnecessary dependencies, you should isolate them within your class.</p>
+
+<h4>Isolate Instance Creation</h4>
+
+<p>In the first, creation of the new instance of Wheel has been moved from Gear’s gear<em>inches method to Gear’s initialization method. This cleans up the gear</em>inches method and publicly exposes the dependency in the initialize method.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Gear</span>
+<span class="kp">attr_reader</span> <span class="ss">:chainring</span><span class="p">,</span> <span class="ss">:cog</span><span class="p">,</span> <span class="ss">:rim</span><span class="p">,</span> <span class="ss">:tire</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">chainring</span><span class="p">,</span> <span class="n">cog</span><span class="p">,</span> <span class="n">rim</span><span class="p">,</span> <span class="n">tire</span><span class="p">)</span>
+    <span class="vi">@chainring</span> <span class="o">=</span> <span class="n">chainring</span>
+    <span class="vi">@cog</span> <span class="o">=</span> <span class="n">cog</span>
+    <span class="vi">@wheel</span> <span class="o">=</span> <span class="no">Wheel</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">rim</span><span class="p">,</span> <span class="n">tire</span><span class="p">)</span>
+  <span class="k">end</span></code></pre></div>
+
+<p>The next alternative isolates creation of a new Wheel in its own explicitly defined wheel method. This new method lazily creates a new instance of Wheel, using Ruby’s ||= operator. In this case, creation of a new instance of Wheel is deferred until gear_inches invokes the new wheel method.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Gear</span>
+<span class="kp">attr_reader</span> <span class="ss">:chainring</span><span class="p">,</span> <span class="ss">:cog</span><span class="p">,</span> <span class="ss">:rim</span><span class="p">,</span> <span class="ss">:tire</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">chainring</span><span class="p">,</span> <span class="n">cog</span><span class="p">,</span> <span class="n">rim</span><span class="p">,</span> <span class="n">tire</span><span class="p">)</span>
+      <span class="vi">@chainring</span> <span class="o">=</span> <span class="n">chainring</span>
+      <span class="vi">@cog</span>       <span class="o">=</span> <span class="n">cog</span>
+      <span class="vi">@rim</span>       <span class="o">=</span> <span class="n">rim</span>
+      <span class="vi">@tire</span>      <span class="o">=</span> <span class="n">tire</span>
+  <span class="k">end</span>
+  <span class="k">def</span> <span class="nf">gear_inches</span>
+    <span class="n">ratio</span> <span class="o">*</span> <span class="n">wheel</span><span class="o">.</span><span class="n">diameter</span>
+  <span class="k">end</span>
+  <span class="k">def</span> <span class="nf">wheel</span>
+    <span class="vi">@wheel</span> <span class="o">||=</span> <span class="no">Wheel</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">rim</span><span class="p">,</span> <span class="n">tire</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></div>
+
+<h3>Isolate Vulnerable External Messages</h3>
+
+<p>Now that you’ve isolated references to external class names it’s time to turn your attention to external messages, that is, messages that are “sent to someone other than self.” This technique becomes necessary when a class contains embedded references to a message that is likely to change. Isolating the reference provides some insurance against being affected by that change. Although not every external method is a candi- date for this preemptive isolation, it’s worth examining your code, looking for and wrapping the most vulnerable dependencies.</p>
+
+<p>An alternative way to eliminate these side effects is to avoid the problem from the very beginning by reversing the direction of the dependency. This idea will be addressed soon but first there’s one more coding technique to cover.</p>
+
+<h2>Remove Arguement-Order Dependencies</h2>
+
+<h3>Explicitly Define Defaults</h3>
+
+<p>When you send a message that requires arguments, you, as the sender, cannot avoid having knowledge of those arguments. This dependency is unavoidable. However, passing arguments often involves a second, more subtle, dependency. Many method signatures not only require arguments, but they also require that those arguments be passed in a specific, fixed order.</p>
+
+<h4>Use Hashes for Initialization Arguments</h4>
+
+<p>There’s a simple way to avoid depending on fixed-order arguments. If you have control over the Gear initialize method, change the code to take a hash of options instead of a fixed list of parameters. The initialize method now takes just one argument, args, a hash that contains all of the inputs. The above technique has several advantages. The first and most obvious is that it removes every dependency on argument order. This technique adds verbosity. In many situations verbosity is a detriment, but in this case it has value. The verbosity exists at the intersection between the needs of the present and the uncertainty of the future. Using fixed-order arguments requires less code today but you pay for this decrease in volume of code with an increase in the risk that changes will cascade into dependents later.</p>
+
+<h4>Explicitly Define Defaults</h4>
+
+<p>There are many techniques for adding defaults. Simple non-boolean defaults can be specified using Ruby’s || method. This is a common technique but one you should use with caution; there are situations in which it might not do what you want. The || method acts as an or condition; it first evaluates the left-hand expression and then, if the expression returns false or nil, proceeds to evaluate and return the result of the right-hand expression. The use of || above therefore, relies on the fact that the [] method of Hash returns nil for missing keys.
+In the case where args contains a :boolean_thing key that defaults to true, use of || in this way makes it impossible for the caller to ever explicitly set the final variable to false or nil.</p>
+
+<p>The above technique for substituting an options hash for a list of fixed-order arguments is perfect for cases where you are forced to depend on external interfaces that you cannot change. Do not allow these kinds of external dependencies to permeate your code; protect yourself by wrapping each in a method that is owned by your own application.</p>
+
+<h2>Managing Dependecy Direction</h2>
+
+<h3>Reversing  Dependecies</h3>
+
+<h4>Choosing Dependency Direction</h4>
+
+<p>Pretend for a moment that your classes are people. If you were to give them advice about how to behave you would tell them to depend on things that change less often than you do.
+This short statement belies the sophistication of the idea, which is based on three simple truths about code:
+• Some classes are more likely than others to have changes in requirements.
+• Concrete classes are more likely to change than abstract classes.
+• Changing a class that has many dependents will result in widespread consequences.</p>
+
+<h4>Recognizing Concretions and Abstractions</h4>
+
+<p>The second idea concerns itself with the concreteness and abstractness of code. The term abstract is used here just as Merriam-Webster defines it, as “disassociated from any specific instance,” and, as so many things in Ruby, represents an idea about code as opposed to a specific technical restriction.</p>
+
+<p>The wonderful thing about abstractions is that they represent common, stable qualities. They are less likely to change than are the concrete classes from which they were extracted. Depending on an abstraction is always safer than depending on a concretion because by its very nature, the abstraction is more stable. Ruby does not make you explicitly declare the abstraction in order to define the interface, but for design purposes you can behave as if your virtual interface is as real as a class. Indeed, in the rest of this discussion, the term “class” stands for both class and this kind of interface. These interfaces can have dependents and so must be taken into account during design.</p>
+
+<p>Depend on things that change less often than you do is a heuristic that stands in for all the ideas in this section. The zones are a useful way to organize your thoughts but in the fog of development it may not be obvious which classes go where.</p>
 
   </div>
   
