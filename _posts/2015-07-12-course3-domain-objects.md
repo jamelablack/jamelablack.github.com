@@ -3,8 +3,8 @@ layout: post
 title: "Build Robust & Production Quality Applications - Lesson 8: Beyond MVC - Domain Objects"
 tags: tealeaf
 ---
-##Policy Objects
-Are objects that are within the domain object model. Not all of them inherit from active record though, often times they do not always map to database tables.
+##Domain Objects
+Domain Objects are objects that are within the domain object model. Not all of them inherit from active record though, often times they do not always map to database tables.
 
 For important attributes, it may be worth it to create a seperate domain object rather than calling an object to access that attribute.
 

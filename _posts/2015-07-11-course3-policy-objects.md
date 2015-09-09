@@ -5,7 +5,7 @@ tags: tealeaf
 ---
 
 ##Policy Objects
-Complicated code in your logic - cure that thing with Policy Objects!
+Do you have complicated code in your logic - cure that baby with Policy Objects!
 Policy Objects can be used to represent the state of an object:
 
 {%highlight ruby%}
